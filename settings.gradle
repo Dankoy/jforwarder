@@ -1,1 +1,3 @@
 rootProject.name = 'jforwarder'
+
+include 'coub_connector'
