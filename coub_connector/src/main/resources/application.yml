@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: coub_connector
+
+coub:
+  connector:
+    url: "https://coub.com/"
+    apiUrl: "https://coub.com/api/v2/"
+
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        cloud:
+          openfeign: DEBUG
+
+
+#debug: true
