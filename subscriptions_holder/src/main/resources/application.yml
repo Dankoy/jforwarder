@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: subscription_holder
+
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: validate
+
+    show-sql: true
+
+  datasource:
+    url: ENC(39g3EzgM/ERP7cuefR7UVIixfmzzk5d7DwduA6hikA58UMtYimlpj+pHyUrmjH7K)
+    username: ENC(Q11d86lj5Fu0dZk9EiAaqKb11aJ9oc5e)
+    password: ENC(sd1CNQox07aaV9FLpQquvR4JlbtU/pvU3oHd/l1LXvE=)
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: classpath:db/migration
+    enabled: true
+
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+
+
+jasypt:
+  encryptor:
+    password: masterpassword
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
