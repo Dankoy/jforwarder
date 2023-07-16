@@ -21,6 +21,8 @@ public class CommunityServiceImpl implements CommunityService {
 
   private final TelegramChatService telegramChatService;
 
+  private final SectionService sectionService;
+
   @Override
   @FilterActiveSubscriptions
   public List<Community> getAll() {
@@ -28,8 +30,14 @@ public class CommunityServiceImpl implements CommunityService {
   }
 
   @Override
-  public Community getByName(String name) {
-    var optional = communityRepository.getByName(name);
+  public List<Community> getByName(String name) {
+    return communityRepository.getByName(name);
+
+  }
+
+  @Override
+  public Community getByNameAndSectionName(String name, String sectionName) {
+    var optional = communityRepository.getByNameAndSectionName(name, sectionName);
 
     return optional.orElseThrow(
         () -> new ResourceNotFoundException(String.format("Not found - %s", name)));
@@ -40,13 +48,20 @@ public class CommunityServiceImpl implements CommunityService {
   @Transactional
   public Community create(Community community) {
 
-    var existingOptional = communityRepository.getByName(community.getName());
+    var existingOptional = communityRepository.getByNameAndSectionName(community.getName(),
+        community.getSection().getName());
+
+    var sectionOptional = sectionService.getSectionByName(community.getSection().getName());
+
+    var section = sectionOptional.orElseThrow(() -> new ResourceNotFoundException(
+        String.format("Not found - %s", community.getSection().getName())));
 
     if (existingOptional.isPresent()) {
       throw new SubscriptionHolderException(
           String.format("Already exists - %s", community.getName()));
     } else {
       community.setChats(new ArrayList<>());
+      community.setSection(section);
       return communityRepository.save(community);
     }
 
@@ -60,9 +75,9 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional
-  public Community addChat(String communityName, TelegramChat chat) {
+  public Community addChat(String communityName, String sectionName, TelegramChat chat) {
 
-    var existingOptional = communityRepository.getByName(communityName);
+    var existingOptional = communityRepository.getByNameAndSectionName(communityName, sectionName);
     var optionalChat = telegramChatService.getByTelegramChatId(chat.getChatId());
 
     if (existingOptional.isPresent()) {
@@ -90,9 +105,9 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional
-  public void delete(String name) {
+  public void delete(String name, String sectionName) {
 
-    var existingOptional = communityRepository.getByName(name);
+    var existingOptional = communityRepository.getByNameAndSectionName(name, sectionName);
 
     existingOptional.ifPresent(communityRepository::delete);
 
@@ -101,9 +116,9 @@ public class CommunityServiceImpl implements CommunityService {
 
   @Override
   @Transactional
-  public void deleteChatFromCommunity(String communityName, TelegramChat chat) {
+  public void deleteChatFromCommunity(String communityName, String sectionName, TelegramChat chat) {
 
-    var existingOptional = communityRepository.getByName(communityName);
+    var existingOptional = communityRepository.getByNameAndSectionName(communityName, sectionName);
 
     existingOptional.ifPresent(c -> {
       c.getChats().remove(chat);

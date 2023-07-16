@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 
 import jakarta.validation.Valid;
+import jakarta.websocket.server.PathParam;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class SubscriptionController {
   }
 
   @GetMapping(path = "/api/v1/subscriptions/{name}")
-  public Community getSubscriptionByCommunityName(@PathVariable(name = "name") String name) {
+  public List<Community> getSubscriptionByCommunityName(@PathVariable(name = "name") String name) {
 
     return communityService.getByName(name);
 
@@ -60,6 +61,7 @@ public class SubscriptionController {
   @PutMapping(path = "/api/v1/subscriptions/{communityName}")
   public CommunityDTO subscribeChatToCommunity(
       @PathVariable(name = "communityName") String communityName,
+      @PathParam(value = "sectionName") String sectionName,
       @Valid @RequestBody TelegramChatDTO telegramChatDTO
   ) {
 
@@ -70,18 +72,21 @@ public class SubscriptionController {
 
     var chat = TelegramChatDTO.fromDTO(telegramChatDTO);
 
-    var updated = communityService.addChat(communityName, chat);
+    var updated = communityService.addChat(communityName, sectionName, chat);
 
     return CommunityDTO.toDTO(updated);
 
   }
 
 
-  @DeleteMapping(path = "/api/v1/subscriptions/{communityName}")
+  @DeleteMapping(path = "/api/v1/subscriptions/{communityName}/{sectionName}")
   @ResponseStatus(code = HttpStatus.ACCEPTED)
-  public void deleteCommunity(@PathVariable(name = "communityName") String communityName) {
+  public void deleteCommunity(
+      @PathVariable(name = "communityName") String communityName,
+      @PathVariable(name = "sectionName") String sectionName
+  ) {
 
-    communityService.delete(communityName);
+    communityService.delete(communityName, sectionName);
 
   }
 
@@ -89,12 +94,13 @@ public class SubscriptionController {
   @ResponseStatus(code = HttpStatus.ACCEPTED)
   public void unsubscribeChat(
       @PathVariable(name = "communityName") String communityName,
+      @PathParam(value = "sectionName") String sectionName,
       @PathVariable(name = "externalChatId") String externalChatId
   ) {
 
     var chat = telegramChatService.getByTelegramChatId(externalChatId);
 
-    chat.ifPresent(c -> communityService.deleteChatFromCommunity(communityName, c));
+    chat.ifPresent(c -> communityService.deleteChatFromCommunity(communityName, sectionName, c));
 
   }
 

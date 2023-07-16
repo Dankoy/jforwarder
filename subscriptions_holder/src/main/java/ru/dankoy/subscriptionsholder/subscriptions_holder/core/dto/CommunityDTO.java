@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,6 +29,9 @@ public class CommunityDTO {
 
   private String lastPermalink;
 
+  @NotNull
+  private SectionDTO section;
+
   @NotEmpty
   private List<TelegramChatDTO> chats = new ArrayList<>();
 
@@ -41,6 +43,7 @@ public class CommunityDTO {
         .externalId(community.getExternalId())
         .name(community.getName())
         .lastPermalink(community.getLastPermalink())
+        .section(SectionDTO.toDTO(community.getSection()))
         .chats(
             community.getChats().stream()
                 .map(TelegramChatDTO::toDTO)
@@ -57,7 +60,8 @@ public class CommunityDTO {
         dto.externalId,
         dto.name,
         dto.lastPermalink,
-        dto.chats.stream().map(TelegramChatDTO::fromDTO).toList()
+        dto.chats.stream().map(TelegramChatDTO::fromDTO).toList(),
+        SectionDTO.fromDTO(dto.section)
     );
 
   }

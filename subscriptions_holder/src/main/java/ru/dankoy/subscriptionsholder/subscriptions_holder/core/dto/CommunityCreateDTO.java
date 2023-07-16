@@ -3,6 +3,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,6 +28,9 @@ public class CommunityCreateDTO {
 
   private String lastPermalink;
 
+  @NotNull
+  private CommunityCreateSectionDTO section;
+
 
   public static CommunityCreateDTO toDTO(Community community) {
 
@@ -34,6 +38,7 @@ public class CommunityCreateDTO {
         .externalId(community.getExternalId())
         .name(community.getName())
         .lastPermalink(community.getLastPermalink())
+        .section(CommunityCreateSectionDTO.toDTO(community.getSection()))
         .build();
 
   }
@@ -45,7 +50,8 @@ public class CommunityCreateDTO {
         dto.externalId,
         dto.name,
         dto.lastPermalink,
-        null
+        new ArrayList<>(),
+        CommunityCreateSectionDTO.fromDTO(dto.section)
     );
 
   }

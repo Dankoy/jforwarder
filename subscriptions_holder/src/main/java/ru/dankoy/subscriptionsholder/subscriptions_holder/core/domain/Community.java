@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +47,9 @@ public class Community {
       inverseJoinColumns = @JoinColumn(name = "telegram_chat_id", referencedColumnName = "id"))
   private List<TelegramChat> chats = new ArrayList<>();
 
+  @ManyToOne(targetEntity = Section.class, fetch = FetchType.EAGER)
+  @JoinColumn(name = "section_id", referencedColumnName = "id")
+  private Section section;
 
   public Community(String name) {
     this.name = name;
