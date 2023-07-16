@@ -10,7 +10,7 @@ import ru.dankoy.coubconnector.coub_connector.core.domain.coubcom.coub.CoubWrapp
 //GET
 //    https://coub.com/api/v2/timeline/community/anime/rising?page=1
 
-@FeignClient(name = "coubs", url = "${coub.connector.apiUrl}/timeline/community/")
+@FeignClient(name = "coubs", url = "${coub.connector.apiUrl}timeline/community/")
 public interface CoubFeign {
 
 
