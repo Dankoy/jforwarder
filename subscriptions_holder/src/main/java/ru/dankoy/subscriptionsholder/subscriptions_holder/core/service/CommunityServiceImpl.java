@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.aspects.FilterActiveSubscriptions;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramChat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
@@ -21,6 +22,7 @@ public class CommunityServiceImpl implements CommunityService {
   private final TelegramChatService telegramChatService;
 
   @Override
+  @FilterActiveSubscriptions
   public List<Community> getAll() {
     return communityRepository.findAll();
   }
