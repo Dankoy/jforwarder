@@ -9,6 +9,6 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramCh
 public interface TelegramChatRepository extends JpaRepository<TelegramChat, Long> {
 
 
-  Optional<TelegramChat> findByChatId(String chatId);
+  Optional<TelegramChat> findByChatId(long chatId);
 
 }

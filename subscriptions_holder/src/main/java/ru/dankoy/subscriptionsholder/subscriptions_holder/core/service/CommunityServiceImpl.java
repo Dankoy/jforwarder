@@ -2,15 +2,13 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.aspects.FilterActiveSubscriptions;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramChat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.SubscriptionHolderException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.CommunityRepository;
 
 @Service
@@ -57,10 +55,9 @@ public class CommunityServiceImpl implements CommunityService {
         String.format("Not found - %s", community.getSection().getName())));
 
     if (existingOptional.isPresent()) {
-      throw new SubscriptionHolderException(
+      throw new ResourceConflictException(
           String.format("Already exists - %s", community.getName()));
     } else {
-      community.setChats(new ArrayList<>());
       community.setSection(section);
       return communityRepository.save(community);
     }
@@ -73,35 +70,6 @@ public class CommunityServiceImpl implements CommunityService {
     return communityRepository.save(community);
   }
 
-  @Override
-  @Transactional
-  public Community addChat(String communityName, String sectionName, TelegramChat chat) {
-
-    var existingOptional = communityRepository.getByNameAndSectionName(communityName, sectionName);
-    var optionalChat = telegramChatService.getByTelegramChatId(chat.getChatId());
-
-    if (existingOptional.isPresent()) {
-
-      var community = existingOptional.get();
-
-      optionalChat.ifPresentOrElse(
-          c -> community.getChats().add(c),
-          () -> {
-            var savedChat = telegramChatService.save(chat);
-            community.getChats().add(savedChat);
-          });
-
-      return communityRepository.save(community);
-
-    } else {
-
-      throw new ResourceNotFoundException(
-          String.format("Not found - %s", communityName));
-
-    }
-
-
-  }
 
   @Override
   @Transactional
@@ -110,20 +78,6 @@ public class CommunityServiceImpl implements CommunityService {
     var existingOptional = communityRepository.getByNameAndSectionName(name, sectionName);
 
     existingOptional.ifPresent(communityRepository::delete);
-
-  }
-
-
-  @Override
-  @Transactional
-  public void deleteChatFromCommunity(String communityName, String sectionName, TelegramChat chat) {
-
-    var existingOptional = communityRepository.getByNameAndSectionName(communityName, sectionName);
-
-    existingOptional.ifPresent(c -> {
-      c.getChats().remove(chat);
-      communityRepository.save(c);
-    });
 
   }
 

@@ -8,16 +8,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(name = "communities")
@@ -36,16 +31,6 @@ public class Community {
 
   @Column(name = "name")
   private String name;
-
-  @Column(name = "last_permalink")
-  private String lastPermalink;
-
-  @BatchSize(size = 10)
-  @ManyToMany(fetch = FetchType.EAGER)
-  @JoinTable(name = "community_chat",
-      joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "telegram_chat_id", referencedColumnName = "id"))
-  private List<TelegramChat> chats = new ArrayList<>();
 
   @ManyToOne(targetEntity = Section.class, fetch = FetchType.EAGER)
   @JoinColumn(name = "section_id", referencedColumnName = "id")

@@ -24,7 +24,7 @@ public class FilterActiveSubscriptionsAspect {
     var res = (List<Community>) joinPoint.proceed();
 
     var filtered = res.stream()
-        .filter(c -> !c.getChats().isEmpty())
+//        .filter(c -> !c.getChats().isEmpty())
         .toList();
 
     logger.info("Filtered communities - {}", filtered);

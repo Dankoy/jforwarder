@@ -12,5 +12,5 @@ public interface TelegramChatService {
 
   void deleteChats(List<TelegramChat> chats);
 
-  Optional<TelegramChat> getByTelegramChatId(String chatId);
+  Optional<TelegramChat> getByTelegramChatId(long chatId);
 }

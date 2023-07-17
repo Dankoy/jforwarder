@@ -6,16 +6,17 @@ drop table if exists sections;
 
 create table communities
 (
-    id             bigserial primary key,
-    external_id    bigint,
-    name           varchar(255) not null,
-    last_permalink varchar(10),
-    section_id     bigint       not null
+    id          bigserial primary key,
+    external_id bigint,
+    name        varchar(255) not null,
+--     last_permalink varchar(10),
+    section_id  bigint       not null
 );
 create table telegram_chats
 (
-    id      bigserial primary key,
-    chat_id varchar(255) unique not null
+    id       bigserial primary key,
+    chat_id  bigint unique not null,
+    username varchar(50)
 );
 create table sections
 (
@@ -23,10 +24,17 @@ create table sections
     name varchar(20) unique not null
 );
 
-create table community_chat
+-- create table community_chat
+-- (
+--     community_id     bigint references communities (id) on delete cascade,
+--     telegram_chat_id bigint references telegram_chats (id),
+--     primary key (community_id, telegram_chat_id)
+-- );
+
+
+create table subscription_chat_permalink
 (
     community_id     bigint references communities (id) on delete cascade,
-    telegram_chat_id bigint references telegram_chats (id),
-    primary key (community_id, telegram_chat_id)
+    telegram_chat_id bigint references telegram_chats (id) on delete cascade,
+    last_permalink   varchar(10)
 );
-

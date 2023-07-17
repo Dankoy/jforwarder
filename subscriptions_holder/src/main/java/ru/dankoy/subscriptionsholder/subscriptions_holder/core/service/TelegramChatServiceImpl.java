@@ -41,7 +41,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   }
 
   @Override
-  public Optional<TelegramChat> getByTelegramChatId(String chatId) {
+  public Optional<TelegramChat> getByTelegramChatId(long chatId) {
 
     return telegramChatRepository.findByChatId(chatId);
 

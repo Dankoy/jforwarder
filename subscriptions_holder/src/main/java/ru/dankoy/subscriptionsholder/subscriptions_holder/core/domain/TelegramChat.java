@@ -24,6 +24,9 @@ public class TelegramChat {
   private long id;
 
   @Column(name = "chat_id")
-  private String chatId;
+  private long chatId;
+
+  @Column(name = "username")
+  private String userName;
 
 }

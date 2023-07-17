@@ -27,13 +27,8 @@ public class CommunityDTO {
   @NotNull
   private String name;
 
-  private String lastPermalink;
-
   @NotNull
   private SectionDTO section;
-
-  @NotEmpty
-  private List<TelegramChatDTO> chats = new ArrayList<>();
 
 
   public static CommunityDTO toDTO(Community community) {
@@ -42,13 +37,7 @@ public class CommunityDTO {
         .id(community.getId())
         .externalId(community.getExternalId())
         .name(community.getName())
-        .lastPermalink(community.getLastPermalink())
         .section(SectionDTO.toDTO(community.getSection()))
-        .chats(
-            community.getChats().stream()
-                .map(TelegramChatDTO::toDTO)
-                .toList()
-        )
         .build();
 
   }
@@ -59,8 +48,6 @@ public class CommunityDTO {
         dto.id,
         dto.externalId,
         dto.name,
-        dto.lastPermalink,
-        dto.chats.stream().map(TelegramChatDTO::fromDTO).toList(),
         SectionDTO.fromDTO(dto.section)
     );
 

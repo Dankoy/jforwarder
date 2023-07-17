@@ -17,10 +17,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunityCreateDTO {
-
-  @Min(1)
-  private long externalId;
+public class CommunityTelegramChatCommunityCreateDTO {
 
   @NotEmpty
   private String name;
@@ -30,21 +27,20 @@ public class CommunityCreateDTO {
   private CommunityCreateSectionDTO section;
 
 
-  public static CommunityCreateDTO toDTO(Community community) {
+  public static CommunityTelegramChatCommunityCreateDTO toDTO(Community community) {
 
     return builder()
-        .externalId(community.getExternalId())
         .name(community.getName())
         .section(CommunityCreateSectionDTO.toDTO(community.getSection()))
         .build();
 
   }
 
-  public static Community fromDTO(CommunityCreateDTO dto) {
+  public static Community fromDTO(CommunityTelegramChatCommunityCreateDTO dto) {
 
     return new Community(
         0,
-        dto.externalId,
+        0,
         dto.name,
         CommunityCreateSectionDTO.fromDTO(dto.section)
     );
