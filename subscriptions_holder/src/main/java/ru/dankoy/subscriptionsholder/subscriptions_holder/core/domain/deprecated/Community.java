@@ -1,24 +1,20 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.deprecated;
 
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import java.util.Set;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
-@Entity
-@Table(name = "communities")
+@Deprecated(forRemoval = false)
+//@Entity
+//@Table(name = "communities")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,12 +31,9 @@ public class Community {
   @Column(name = "name")
   private String name;
 
-  @BatchSize(size = 10)
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "community_section",
-      joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
-      inverseJoinColumns = @JoinColumn(name = "section_id", referencedColumnName = "id"))
-  private Set<Section> sections;
+  @ManyToOne(targetEntity = Section.class, fetch = FetchType.EAGER)
+  @JoinColumn(name = "section_id", referencedColumnName = "id")
+  private Section section;
 
   public Community(String name) {
     this.name = name;

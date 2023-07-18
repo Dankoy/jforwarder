@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,7 +29,7 @@ public class CommunityCreateDTO {
 
   @Valid
   @NotNull
-  private CommunityCreateSectionDTO section;
+  private Set<CommunityCreateSectionDTO> sections;
 
 
   public static CommunityCreateDTO toDTO(Community community) {
@@ -35,7 +37,11 @@ public class CommunityCreateDTO {
     return builder()
         .externalId(community.getExternalId())
         .name(community.getName())
-        .section(CommunityCreateSectionDTO.toDTO(community.getSection()))
+        .sections(
+            community.getSections().stream()
+                .map(CommunityCreateSectionDTO::toDTO)
+                .collect(Collectors.toSet())
+        )
         .build();
 
   }
@@ -46,7 +52,9 @@ public class CommunityCreateDTO {
         0,
         dto.externalId,
         dto.name,
-        CommunityCreateSectionDTO.fromDTO(dto.section)
+        dto.sections.stream()
+            .map(CommunityCreateSectionDTO::fromDTO)
+            .collect(Collectors.toSet())
     );
 
   }

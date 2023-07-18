@@ -2,15 +2,15 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Optional;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramChat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
 public interface TelegramChatService {
 
-  List<TelegramChat> saveAll(List<TelegramChat> chats);
+  List<Chat> saveAll(List<Chat> chats);
 
-  TelegramChat save(TelegramChat chat);
+  Chat save(Chat chat);
 
-  void deleteChats(List<TelegramChat> chats);
+  void deleteChats(List<Chat> chats);
 
-  Optional<TelegramChat> getByTelegramChatId(long chatId);
+  Optional<Chat> getByTelegramChatId(long chatId);
 }

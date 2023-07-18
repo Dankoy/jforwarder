@@ -1,9 +1,8 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,7 @@ public class CommunityDTO {
   private String name;
 
   @NotNull
-  private SectionDTO section;
+  private Set<SectionDTO> sections;
 
 
   public static CommunityDTO toDTO(Community community) {
@@ -37,7 +36,11 @@ public class CommunityDTO {
         .id(community.getId())
         .externalId(community.getExternalId())
         .name(community.getName())
-        .section(SectionDTO.toDTO(community.getSection()))
+        .sections(
+            community.getSections().stream()
+                .map(SectionDTO::toDTO)
+                .collect(Collectors.toSet())
+        )
         .build();
 
   }
@@ -48,7 +51,9 @@ public class CommunityDTO {
         dto.id,
         dto.externalId,
         dto.name,
-        SectionDTO.fromDTO(dto.section)
+        dto.sections.stream()
+            .map(SectionDTO::fromDTO)
+            .collect(Collectors.toSet())
     );
 
   }

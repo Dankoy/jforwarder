@@ -12,11 +12,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "telegram_chats")
+@Table(name = "chats")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TelegramChat {
+public class Chat {
 
   @Id
   @Column(name = "id")

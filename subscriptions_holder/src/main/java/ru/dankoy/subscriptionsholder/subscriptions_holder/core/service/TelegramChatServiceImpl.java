@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramChat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TelegramChatRepository;
 
 @RequiredArgsConstructor
@@ -18,7 +18,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
   @Transactional
   @Override
-  public List<TelegramChat> saveAll(List<TelegramChat> chats) {
+  public List<Chat> saveAll(List<Chat> chats) {
 
     return telegramChatRepository.saveAll(chats);
 
@@ -27,21 +27,21 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
   @Transactional
   @Override
-  public TelegramChat save(TelegramChat chat) {
+  public Chat save(Chat chat) {
 
     return telegramChatRepository.save(chat);
 
   }
 
   @Override
-  public void deleteChats(List<TelegramChat> chats) {
+  public void deleteChats(List<Chat> chats) {
 
     telegramChatRepository.deleteAll(chats);
 
   }
 
   @Override
-  public Optional<TelegramChat> getByTelegramChatId(long chatId) {
+  public Optional<Chat> getByTelegramChatId(long chatId) {
 
     return telegramChatRepository.findByChatId(chatId);
 

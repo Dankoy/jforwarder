@@ -1,6 +1,9 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
@@ -16,5 +19,16 @@ public class SectionServiceImpl implements SectionService {
   @Override
   public Optional<Section> getSectionByName(String name) {
     return sectionRepository.getByName(name);
+  }
+
+  @Override
+  public List<Section> getBySectionNames(Set<Section> sections) {
+
+    return sectionRepository.getByNameIsIn(
+        sections.stream()
+            .map(Section::getName)
+            .collect(Collectors.toSet())
+    );
+
   }
 }

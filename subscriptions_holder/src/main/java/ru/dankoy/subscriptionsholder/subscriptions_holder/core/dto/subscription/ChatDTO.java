@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramChat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
 
 @ToString
@@ -15,7 +15,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TelegramCh
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TelegramChatDTO {
+public class ChatDTO {
 
   @Min(1)
   private long id;
@@ -26,19 +26,19 @@ public class TelegramChatDTO {
   @NotEmpty
   private String username;
 
-  public static TelegramChatDTO toDTO(TelegramChat telegramChat) {
+  public static ChatDTO toDTO(Chat chat) {
 
     return builder()
-        .id(telegramChat.getId())
-        .chatId(telegramChat.getChatId())
-        .username(telegramChat.getUserName())
+        .id(chat.getId())
+        .chatId(chat.getChatId())
+        .username(chat.getUserName())
         .build();
 
   }
 
-  public static TelegramChat fromDTO(TelegramChatDTO dto) {
+  public static Chat fromDTO(ChatDTO dto) {
 
-    return new TelegramChat(
+    return new Chat(
         dto.id,
         dto.chatId,
         dto.username

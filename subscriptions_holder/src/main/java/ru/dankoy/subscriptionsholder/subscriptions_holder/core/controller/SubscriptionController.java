@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionCreateDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionUpdatePermalinkDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionUpdatePermalinkDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SubscriptionService;
 
 

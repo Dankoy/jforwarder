@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription;
 
 
 import jakarta.validation.Valid;
@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.CommunityCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SectionDTO;
 
 @ToString
 @Getter
@@ -20,7 +22,15 @@ public class SubscriptionUpdatePermalinkDTO {
 
   @Valid
   @NotNull
-  private CommunityTelegramChatPKCreateDTO communityChat;
+  private SubscriptionCreateCommunityDTO community;
+
+  @Valid
+  @NotNull
+  private SectionDTO section;
+
+  @Valid
+  @NotNull
+  private ChatCreateDTO chat;
 
   @NotEmpty
   private String lastPermalink;
@@ -29,7 +39,9 @@ public class SubscriptionUpdatePermalinkDTO {
   public static SubscriptionUpdatePermalinkDTO toDTO(Subscription subscription) {
 
     return SubscriptionUpdatePermalinkDTO.builder()
-        .communityChat(CommunityTelegramChatPKCreateDTO.toDTO(subscription.getCommunityChat()))
+        .community(SubscriptionCreateCommunityDTO.toDTO(subscription.getCommunity()))
+        .section(SectionDTO.toDTO(subscription.getSection()))
+        .chat(ChatCreateDTO.toDTO(subscription.getChat()))
         .lastPermalink(subscription.getLastPermalink())
         .build();
 
@@ -38,7 +50,10 @@ public class SubscriptionUpdatePermalinkDTO {
   public static Subscription fromDTO(SubscriptionUpdatePermalinkDTO dto) {
 
     return new Subscription(
-        CommunityTelegramChatPKCreateDTO.fromDTO(dto.getCommunityChat()),
+        0,
+        SubscriptionCreateCommunityDTO.fromDTO(dto.getCommunity()),
+        SectionDTO.fromDTO(dto.getSection()),
+        ChatCreateDTO.fromDTO(dto.getChat()),
         dto.getLastPermalink()
     );
 

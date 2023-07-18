@@ -1,22 +1,34 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository;
 
+import feign.Param;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunityTelegramChatPK;
+import org.springframework.data.jpa.repository.Query;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
 
 public interface SubscriptionRepository extends
-    JpaRepository<Subscription, CommunityTelegramChatPK> {
+    JpaRepository<Subscription, Long> {
 
-  List<Subscription> getAllByCommunityChatCommunityName(String communityName);
+  List<Subscription> getAllByCommunityName(String communityName);
 
-  List<Subscription> getAllByCommunityChatTelegramChatId(long telegramChatId);
+  List<Subscription> getAllByChatChatId(long telegramChatId);
 
-  Optional<Subscription> getSubscriptionByCommunityChatTelegramChatChatIdAndCommunityChatCommunityNameAndCommunityChatCommunitySectionName(
-      long externalChatId, String communityName, String sectionName);
 
-  Optional<Subscription> getSubscriptionByCommunityChatTelegramChatIdAndCommunityChatCommunityNameAndCommunityChatCommunitySectionName(
-      long chatId, String communityName, String sectionName);
+  @Query(
+      """
+          select s, ch, sect, c from Subscription s
+          join s.community c
+          join s.chat ch
+          join s.section sect
+          where c.name = :communityName
+          and ch.chatId = :externalChatId
+          and sect.name = :sectionName
+              """
+  )
+  Optional<Subscription> getByChatChatIdAndCommunityNameAndSectionName(
+      @Param("externalChatId") long externalChatId,
+      @Param("communityName") String communityName,
+      @Param("sectionName") String sectionName);
 
 }
