@@ -10,9 +10,40 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscripti
 public interface SubscriptionRepository extends
     JpaRepository<Subscription, Long> {
 
-  List<Subscription> getAllByCommunityName(String communityName);
 
-  List<Subscription> getAllByChatChatId(long telegramChatId);
+  @Query(
+      """
+          select s, ch, sect, c from Subscription s
+          join s.community c
+          join s.chat ch
+          join s.section sect
+              """
+  )
+  @Override
+  List<Subscription> findAll();
+
+  @Query(
+      """
+          select s, ch, sect, c from Subscription s
+          join s.community c
+          join s.chat ch
+          join s.section sect
+          where c.name = :communityName
+              """
+  )
+  List<Subscription> getAllByCommunityName(@Param("communityName") String communityName);
+
+
+  @Query(
+      """
+          select s, ch, sect, c from Subscription s
+          join s.community c
+          join s.chat ch
+          join s.section sect
+          where ch.chatId = :telegramChatId
+              """
+  )
+  List<Subscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
 
   @Query(
