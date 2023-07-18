@@ -31,6 +31,7 @@ public class SubscriptionDTO {
   public static SubscriptionDTO toDTO(Subscription subscription) {
 
     return SubscriptionDTO.builder()
+        .id(subscription.getId())
         .community(CommunityWithoutSectionsDTO.toDTO(subscription.getCommunity()))
         .section(SectionDTO.toDTO(subscription.getSection()))
         .chat(ChatDTO.toDTO(subscription.getChat()))
