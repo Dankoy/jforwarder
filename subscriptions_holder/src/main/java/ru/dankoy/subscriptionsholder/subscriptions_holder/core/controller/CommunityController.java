@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.CommunityCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.CommunityDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.CommunityService;
@@ -25,16 +24,20 @@ public class CommunityController {
 
 
   @GetMapping(path = "/api/v1/communities")
-  public List<Community> getAllCommunities() {
+  public List<CommunityDTO> getAllCommunities() {
 
-    return communityService.getAll();
+    var c = communityService.getAll();
+
+    return c.stream().map(CommunityDTO::toDTO).toList();
 
   }
 
   @GetMapping(path = "/api/v1/communities/{name}")
-  public List<Community> getCommunitiesByName(@PathVariable(name = "name") String name) {
+  public CommunityDTO getCommunitiesByName(@PathVariable(name = "name") String name) {
 
-    return communityService.getByName(name);
+    var c =  communityService.getByName(name);
+
+    return CommunityDTO.toDTO(c);
 
   }
 

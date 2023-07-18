@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
+
+@NamedEntityGraph(
+    name = "sections-entity-graph",
+    attributeNodes = {
+        @NamedAttributeNode("sections")
+    }
+)
 @Entity
 @Table(name = "communities")
 @Data
@@ -35,12 +44,12 @@ public class Community {
   @Column(name = "name")
   private String name;
 
-  @BatchSize(size = 10)
+  @BatchSize(size = 10) // not necessary if entity graph is used
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "community_section",
       joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
       inverseJoinColumns = @JoinColumn(name = "section_id", referencedColumnName = "id"))
-  private Set<Section> sections;
+  private Set<Section> sections; //entity graph
 
   public Community(String name) {
     this.name = name;

@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.aspects.FilterActiveSubscriptions;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
@@ -27,14 +26,16 @@ public class CommunityServiceImpl implements CommunityService {
   private final SectionService sectionService;
 
   @Override
-  @FilterActiveSubscriptions
   public List<Community> getAll() {
     return communityRepository.findAll();
   }
 
   @Override
-  public List<Community> getByName(String name) {
-    return communityRepository.getByName(name);
+  public Community getByName(String name) {
+    var optional = communityRepository.getByName(name);
+
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Not found - %s", name)));
 
   }
 
@@ -133,11 +134,9 @@ public class CommunityServiceImpl implements CommunityService {
   @Transactional
   public void delete(String name) {
 
-    var existing = communityRepository.getByName(name);
+    var optional = communityRepository.getByName(name);
 
-    if (!existing.isEmpty()) {
-      communityRepository.deleteAll(existing);
-    }
+    optional.ifPresent(communityRepository::delete);
 
   }
 

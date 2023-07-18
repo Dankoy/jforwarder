@@ -9,7 +9,7 @@ public interface CommunityService {
 
   List<Community> getAll();
 
-  List<Community> getByName(String name);
+  Community getByName(String name);
 
   Community getByNameAndSectionName(String name, String sectionName);
 
