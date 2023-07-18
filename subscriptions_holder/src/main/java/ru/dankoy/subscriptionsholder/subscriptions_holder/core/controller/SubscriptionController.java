@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionUpdatePermalinkDTO;
@@ -27,28 +26,31 @@ public class SubscriptionController {
   private final SubscriptionService subscriptionService;
 
   @GetMapping(value = "/api/v1/subscriptions")
-  public List<Subscription> getAll() {
-    return subscriptionService.getAll();
+  public List<SubscriptionDTO> getAll() {
+    var s = subscriptionService.getAll();
+
+    return s.stream().map(SubscriptionDTO::toDTO).toList();
+
   }
 
   @GetMapping(value = "/api/v1/subscriptions/{communityName}")
-  public List<Subscription> getAllByCommunityName(
+  public List<SubscriptionDTO> getAllByCommunityName(
       @PathVariable(value = "communityName") String communityName) {
-    return subscriptionService.getAllByCommunityName(communityName);
+    var s = subscriptionService.getAllByCommunityName(communityName);
+    return s.stream().map(SubscriptionDTO::toDTO).toList();
+
   }
 
   @GetMapping(value = "/api/v1/subscriptions/{telegramChatId}")
-  public List<Subscription> getAllByTelegramChatId(
+  public List<SubscriptionDTO> getAllByTelegramChatId(
       @PathVariable(value = "telegramChatId") long chatId) {
-    return subscriptionService.getAllByChatId(chatId);
+    var s = subscriptionService.getAllByChatId(chatId);
+    return s.stream().map(SubscriptionDTO::toDTO).toList();
+
   }
 
   @PostMapping(path = "/api/v1/subscriptions")
   public SubscriptionDTO subscribeChatToCommunity(@Valid @RequestBody SubscriptionCreateDTO dto) {
-
-    // добавляет чат к существующему community и все
-    // если чат существует в базе, то использует его
-    // если чата нет в базе, то создает новую запись в таблице чатов
 
     var subscription = SubscriptionCreateDTO.fromDTO(dto);
 

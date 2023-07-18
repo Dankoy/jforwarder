@@ -19,7 +19,7 @@ public class SubscriptionDTO {
 
   private long id;
 
-  private CommunityDTO community;
+  private CommunityWithoutSectionsDTO community;
 
   private SectionDTO section;
 
@@ -31,7 +31,7 @@ public class SubscriptionDTO {
   public static SubscriptionDTO toDTO(Subscription subscription) {
 
     return SubscriptionDTO.builder()
-        .community(CommunityDTO.toDTO(subscription.getCommunity()))
+        .community(CommunityWithoutSectionsDTO.toDTO(subscription.getCommunity()))
         .section(SectionDTO.toDTO(subscription.getSection()))
         .chat(ChatDTO.toDTO(subscription.getChat()))
         .lastPermalink(subscription.getLastPermalink())
@@ -43,7 +43,7 @@ public class SubscriptionDTO {
 
     return new Subscription(
         dto.getId(),
-        CommunityDTO.fromDTO(dto.getCommunity()),
+        CommunityWithoutSectionsDTO.fromDTO(dto.getCommunity()),
         SectionDTO.fromDTO(dto.getSection()),
         ChatDTO.fromDTO(dto.getChat()),
         dto.getLastPermalink()
