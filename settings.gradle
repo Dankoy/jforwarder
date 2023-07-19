@@ -1,6 +1,6 @@
 rootProject.name = 'jforwarder'
 
-include 'coub_connector'
+include 't_coubs_initiator'
 include 'subscriptions_holder'
 include 'spring_eureka_registry'
 include 'spring_gateway'

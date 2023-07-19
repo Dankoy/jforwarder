@@ -7,13 +7,14 @@ spring:
 
   cloud:
     gateway:
+      filter:
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: coub-connector
-          uri: lb://coub-connector
+        - id: coub-com
+          uri: https://coub.com/
           predicates:
             - Path=/cc/**
           filters:
@@ -67,3 +68,9 @@ management:
       enabled: true
     diskspace:
       enabled: true
+
+logging:
+  level:
+    org.springframework.web.HttpLogging: TRACE
+    reactor.netty.http.server: DEBUG
+    reactor.netty.http.client: DEBUG
