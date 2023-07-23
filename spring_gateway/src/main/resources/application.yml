@@ -7,7 +7,6 @@ spring:
 
   cloud:
     gateway:
-      filter:
       discovery:
         locator:
           enabled: true
@@ -33,6 +32,12 @@ spring:
           uri: lb://subscriptions-holder
           predicates:
             - Path=/sh/**
+          filters:
+            - StripPrefix=1
+        - id: kafka-message-producer
+          uri: lb://kafka-message-producer
+          predicates:
+            - Path=/kmp/**
           filters:
             - StripPrefix=1
 
