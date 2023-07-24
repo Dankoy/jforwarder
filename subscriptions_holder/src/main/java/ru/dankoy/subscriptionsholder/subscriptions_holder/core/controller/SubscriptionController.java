@@ -7,10 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.SubscriptionCreateDTO;
@@ -33,18 +33,10 @@ public class SubscriptionController {
 
   }
 
-  @GetMapping(value = "/api/v1/subscriptions/{communityName}")
-  public List<SubscriptionDTO> getAllByCommunityName(
-      @PathVariable(value = "communityName") String communityName) {
-    var s = subscriptionService.getAllByCommunityName(communityName);
-    return s.stream().map(SubscriptionDTO::toDTO).toList();
-
-  }
-
-  @GetMapping(value = "/api/v1/subscriptions/{telegramChatId}")
+  @GetMapping(value = "/api/v1/subscriptions", params = {"telegramChatId"})
   public List<SubscriptionDTO> getAllByTelegramChatId(
-      @PathVariable(value = "telegramChatId") long chatId) {
-    var s = subscriptionService.getAllByChatId(chatId);
+      @RequestParam(value = "telegramChatId") long telegramChatId) {
+    var s = subscriptionService.getAllByChatId(telegramChatId);
     return s.stream().map(SubscriptionDTO::toDTO).toList();
 
   }
