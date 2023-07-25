@@ -17,4 +17,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   public List<Subscription> getAllSubscriptions() {
     return subscriptionFeign.getAllSubscriptions();
   }
+
+  @Override
+  public List<Subscription> getAllSubscriptionsWithActiveChats() {
+    return subscriptionFeign.getAllSubscriptionsWithActiveChats(true);
+  }
 }

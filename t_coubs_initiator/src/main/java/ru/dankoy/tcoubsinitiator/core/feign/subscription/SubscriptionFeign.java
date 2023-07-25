@@ -18,4 +18,7 @@ public interface SubscriptionFeign {
   @GetMapping(path = "/api/v1/subscriptions")
   List<Subscription> getAllSubscriptions();
 
+  @GetMapping(path = "/api/v1/subscriptions", params = {"active"})
+  List<Subscription> getAllSubscriptionsWithActiveChats(boolean active);
+
 }

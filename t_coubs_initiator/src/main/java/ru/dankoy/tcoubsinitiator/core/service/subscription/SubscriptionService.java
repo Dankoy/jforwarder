@@ -7,4 +7,5 @@ public interface SubscriptionService {
 
   List<Subscription> getAllSubscriptions();
 
+  List<Subscription> getAllSubscriptionsWithActiveChats();
 }

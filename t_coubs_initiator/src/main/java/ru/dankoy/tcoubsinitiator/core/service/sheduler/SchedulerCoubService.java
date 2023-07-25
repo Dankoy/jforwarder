@@ -5,7 +5,6 @@ package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -26,11 +25,11 @@ public class SchedulerCoubService {
   private final CoubService coubService;
   private final MessageProducerService messageProducerService;
 
-    @Scheduled(fixedDelay = 600000)
-//  @Scheduled(fixedDelay = 10000)
+  //    @Scheduled(fixedDelay = 600000)
+  @Scheduled(fixedDelay = 60000)
   public void scheduledOperation() {
 
-    List<Subscription> subscriptions = subscriptionService.getAllSubscriptions();
+    List<Subscription> subscriptions = subscriptionService.getAllSubscriptionsWithActiveChats();
     log.info("Subscriptions - {}", subscriptions);
 
     int page = 1;
@@ -97,26 +96,32 @@ public class SchedulerCoubService {
 
       } else {
 
-        log.info("No permalink found for subscription '{}-{}', take last published coub",
+        log.info("No permalink found for subscription '{}-{}', take all found coubs",
             subscription.getCommunity().getName(),
             subscription.getSection().getName()
         );
-        // фильтрует по времени и берет самый первый кубб
 
-        List<Coub> newCoubs = Stream.of(coubs.get(0)).toList();
-        subscription.setCoubs(newCoubs);
+        log.debug("Found last coub - {}", subscription.getCoubs());
 
-        log.debug("Found last coub - {}", newCoubs);
 
       }
 
     }
 
+    // remove subscriptions without coubs
+
+    var toSend = subscriptions.stream()
+        .filter(s -> !s.getCoubs().isEmpty())
+        .toList();
+
     //send to message producer service
 
-    log.debug("Coubs to send for all subscriptions - {}", subscriptions);
+    log.info("Coubs to send for all subscriptions - {}", toSend);
 
-    messageProducerService.sendSubscriptionsData(subscriptions);
+    if (!toSend.isEmpty()) {
+      messageProducerService.sendSubscriptionsData(toSend);
+    }
+
 
   }
 
