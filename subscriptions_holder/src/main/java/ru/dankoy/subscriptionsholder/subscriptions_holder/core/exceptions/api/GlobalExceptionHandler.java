@@ -30,7 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     ApiError err = new ApiError(
         LocalDateTime.now(),
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.NOT_FOUND,
         "Resource Not Found",
         details);
 

@@ -17,21 +17,33 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @AllArgsConstructor
 public class ChatDTO {
 
-  @Min(1)
   private long id;
 
-  @NotEmpty
   private long chatId;
 
-  @NotEmpty
+  private String type;
+
+  private String title;
+
+  private String firstName;
+
+  private String lastName;
+
   private String username;
+
+  private boolean active;
 
   public static ChatDTO toDTO(Chat chat) {
 
     return builder()
         .id(chat.getId())
         .chatId(chat.getChatId())
-        .username(chat.getUserName())
+        .type(chat.getType())
+        .title(chat.getTitle())
+        .firstName(chat.getFirstName())
+        .lastName(chat.getLastName())
+        .username(chat.getUsername())
+        .active(chat.isActive())
         .build();
 
   }
@@ -41,7 +53,12 @@ public class ChatDTO {
     return new Chat(
         dto.id,
         dto.chatId,
-        dto.username
+        dto.type,
+        dto.title,
+        dto.firstName,
+        dto.lastName,
+        dto.username,
+        dto.active
     );
 
   }

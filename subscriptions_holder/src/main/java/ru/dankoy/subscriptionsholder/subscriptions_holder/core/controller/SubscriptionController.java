@@ -25,9 +25,20 @@ public class SubscriptionController {
 
   private final SubscriptionService subscriptionService;
 
+
   @GetMapping(value = "/api/v1/subscriptions")
   public List<SubscriptionDTO> getAll() {
     var s = subscriptionService.getAll();
+
+    return s.stream().map(SubscriptionDTO::toDTO).toList();
+
+  }
+
+  @GetMapping(value = "/api/v1/subscriptions", params = {"active"})
+  public List<SubscriptionDTO> getAllWithActiveChats(
+      @RequestParam(value = "active", defaultValue = "true") boolean active) {
+
+    var s = subscriptionService.getAllWithActiveChats(active);
 
     return s.stream().map(SubscriptionDTO::toDTO).toList();
 

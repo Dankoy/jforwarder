@@ -1,7 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,14 +15,30 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @AllArgsConstructor
 public class ChatCreateDTO {
 
-  @Min(1)
   private long chatId;
 
+  private String type;
+
+  private String title;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String username;
+
+  private boolean active;
 
   public static ChatCreateDTO toDTO(Chat chat) {
 
     return builder()
         .chatId(chat.getChatId())
+        .type(chat.getType())
+        .title(chat.getTitle())
+        .firstName(chat.getFirstName())
+        .lastName(chat.getLastName())
+        .username(chat.getUsername())
+        .active(chat.isActive())
         .build();
 
   }
@@ -34,7 +48,12 @@ public class ChatCreateDTO {
     return new Chat(
         0,
         dto.chatId,
-        null
+        dto.type,
+        dto.title,
+        dto.firstName,
+        dto.lastName,
+        dto.username,
+        dto.active
     );
 
   }

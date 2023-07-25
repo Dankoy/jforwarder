@@ -29,6 +29,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   }
 
   @Override
+  public List<Subscription> getAllWithActiveChats(boolean active) {
+    return subscriptionRepository.findAllWithActiveChats(active);
+  }
+
+  @Override
   public List<Subscription> getAllByCommunityName(String communityName) {
     return subscriptionRepository.getAllByCommunityName(communityName);
   }

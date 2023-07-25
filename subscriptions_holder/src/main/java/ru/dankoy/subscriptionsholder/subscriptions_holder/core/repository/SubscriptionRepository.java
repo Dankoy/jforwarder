@@ -22,6 +22,18 @@ public interface SubscriptionRepository extends
   @Override
   List<Subscription> findAll();
 
+
+  @Query(
+      """
+          select s, ch, sect, c from Subscription s
+          join s.community c
+          join s.chat ch
+          join s.section sect
+          where ch.active = :active
+              """
+  )
+  List<Subscription> findAllWithActiveChats(@Param("active") boolean active);
+
   @Query(
       """
           select s, ch, sect, c from Subscription s

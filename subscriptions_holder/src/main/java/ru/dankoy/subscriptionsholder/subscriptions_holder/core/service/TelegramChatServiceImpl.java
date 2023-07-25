@@ -33,6 +33,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
   }
 
+  @Transactional
   @Override
   public void deleteChats(List<Chat> chats) {
 

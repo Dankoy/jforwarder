@@ -8,6 +8,8 @@ public interface SubscriptionService {
 
   List<Subscription> getAll();
 
+  List<Subscription> getAllWithActiveChats(boolean active);
+
   List<Subscription> getAllByCommunityName(String communityName);
 
   List<Subscription> getAllByChatId(long chatId);

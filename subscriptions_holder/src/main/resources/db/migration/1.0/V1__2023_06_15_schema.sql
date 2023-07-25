@@ -16,7 +16,12 @@ create table chats
 (
     id       bigserial primary key,
     chat_id  bigint unique not null,
-    username varchar(50)
+    type varchar(50),
+    title varchar(80),
+    first_name varchar(50),
+    last_name varchar(50),
+    username varchar(50),
+    active boolean not null
 );
 create table sections
 (
