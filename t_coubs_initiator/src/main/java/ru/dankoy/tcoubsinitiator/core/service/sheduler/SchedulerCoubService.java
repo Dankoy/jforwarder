@@ -34,17 +34,24 @@ public class SchedulerCoubService {
 
     int page = 1;
     int perPage = 25;
-    for (Subscription subscription : subscriptions) {
 
-      // this is cached, so we have to work with copy of this list
-      List<Coub> coubs = getCoubsForSubscription(
-          subscription.getCommunity().getName(),
-          subscription.getSection().getName(),
-          1,
-          25);
+    try {
+      for (Subscription subscription : subscriptions) {
 
-      subscription.addCoubs(coubs);
+        // this is cached, so we have to work with copy of this list
+        List<Coub> coubs = getCoubsForSubscription(
+            subscription.getCommunity().getName(),
+            subscription.getSection().getName(),
+            1,
+            25);
+        Thread.sleep(1000);
 
+        subscription.addCoubs(coubs);
+
+      }
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException("Interrupted while trying to get coubs", e);
     }
 
     log.debug("Coubs for subscriptions - {}", subscriptions);
