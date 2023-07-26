@@ -20,6 +20,12 @@ ext {
 }
 
 dependencies {
+
+    // micrometer + zipkin bridge
+    implementation 'io.micrometer:micrometer-observation' // for metrics actuator (prometheus)
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
+
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'

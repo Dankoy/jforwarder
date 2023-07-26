@@ -40,7 +40,7 @@ dependencies {
 
     implementation 'org.flywaydb:flyway-core'
 
-    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
@@ -59,6 +59,13 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // micrometer + zipkin bridge
+    implementation 'io.micrometer:micrometer-observation' // for metrics actuator (prometheus)
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
+    implementation 'io.github.openfeign:feign-micrometer'
+
 }
 
 dependencyManagement {
