@@ -5,6 +5,14 @@ spring:
   application:
     name: spring-gateway
 
+#  data:
+#    redis:
+#      database: 0
+#      host: localhost
+#      port: 6379
+#      password: mypass
+#      timeout: 60000
+
   cloud:
     gateway:
       discovery:
@@ -18,6 +26,11 @@ spring:
             - Path=/cc/**
           filters:
             - StripPrefix=1
+#            - name: RequestRateLimiter
+#              args:
+#                redis-rate-limiter.replenishRate: 2
+#                redis-rate-limiter.burstCapacity: 5
+#                redis-rate-limiter.requestedTokens: 10
         - id: spring-eureka-registry
           uri: lb://spring-eureka-registry
           predicates:
