@@ -360,6 +360,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     try {
 
       execute(sendMessage);
+      log.info("Sent message to chat '{}' for subscription '{}' {} {}",
+          message.chat(),
+          message.id(),
+          message.community().getName(),
+          message.section().getName());
+      log.info("Send - {}", sendMessage);
 
     } catch (TelegramApiRequestException e) {
       if (e.getErrorCode() == 403) {
@@ -367,9 +373,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
         log.warn("User doesn't want to receive messages from bot. Make it not active");
 
         var found = telegramChatService.getChatById(chatId);
-        found.setActive(false);
-        telegramChatService.update(found);
 
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
+        }
       }
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
