@@ -25,8 +25,7 @@ public class SchedulerCoubService {
   private final CoubService coubService;
   private final MessageProducerService messageProducerService;
 
-  //    @Scheduled(fixedDelay = 600000)
-  @Scheduled(fixedDelay = 60000)
+  @Scheduled(fixedDelay = 600000)
   public void scheduledOperation() {
 
     List<Subscription> subscriptions = subscriptionService.getAllSubscriptionsWithActiveChats();
@@ -44,7 +43,7 @@ public class SchedulerCoubService {
             subscription.getSection().getName(),
             1,
             25);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         subscription.addCoubs(coubs);
 
