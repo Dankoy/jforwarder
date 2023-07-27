@@ -1,7 +1,7 @@
 application:
   bot:
-    name: #name
-    token: #token
+    name: ${TELEGRAM_BOT_NAME:name}
+    token: ${TELEGRAM_BOT_API_TOKEN:name}
   templates:
     dir: "/freemarker/templates"
 

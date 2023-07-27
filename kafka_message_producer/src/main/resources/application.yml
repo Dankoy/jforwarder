@@ -7,8 +7,9 @@ spring:
   application:
     name: kafka-message-producer
   kafka:
+    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092}
     producer:
-      bootstrap-servers: "127.0.0.1:9092"
+      bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092}
       client-id: "coubs-producer"
       retries: 5
 

@@ -101,6 +101,3 @@ logging:
     root: INFO
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
-    org.springframework.web.HttpLogging: TRACE
-    reactor.netty.http.server: DEBUG
-    reactor.netty.http.client: DEBUG
