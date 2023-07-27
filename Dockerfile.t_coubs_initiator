@@ -1,0 +1,15 @@
+FROM  --platform=linux/arm64 gradle:8.2.1-jdk17
+LABEL authors="turtality"
+
+ARG JAR_VERSION
+ENV ENV_JAR_VERSION $JAR_VERSION
+
+ENV ENV_PATH_TO_JAR=build/libs/app-$JAR_VERSION-SNAPSHOT.jar
+
+WORKDIR /app
+COPY ./t_coubs_initiator/src ./src
+COPY ./t_coubs_initiator/build.gradle ./
+
+RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"] # not alpine
+
+ENTRYPOINT java -jar $ENV_PATH_TO_JAR
