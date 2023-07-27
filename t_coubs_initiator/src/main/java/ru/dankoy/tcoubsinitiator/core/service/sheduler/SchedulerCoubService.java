@@ -25,7 +25,7 @@ public class SchedulerCoubService {
   private final CoubService coubService;
   private final MessageProducerService messageProducerService;
 
-  @Scheduled(fixedDelay = 600000)
+  @Scheduled(initialDelay=30_000, fixedRate=6_000_000) // 100 mins
   public void scheduledOperation() {
 
     List<Subscription> subscriptions = subscriptionService.getAllSubscriptionsWithActiveChats();
