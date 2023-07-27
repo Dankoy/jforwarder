@@ -27,7 +27,7 @@ ext {
 
 dependencies {
 
-    // sleuth + zipkin
+    // sleuth + zipkin - doesn't work with boot 3.x.x
 //    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
 //    implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
 
@@ -58,10 +58,15 @@ dependencies {
     implementation 'org.springframework.kafka:spring-kafka'
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
+    // lombok
     compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // development
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

@@ -48,10 +48,15 @@ dependencies {
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.github.openfeign:feign-micrometer'
 
+    // lombok
     compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // development
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+
+    // test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }

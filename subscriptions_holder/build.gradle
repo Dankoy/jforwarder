@@ -16,7 +16,7 @@ plugins {
 apply plugin: JasyptPlugin
 
 group = 'ru.dankoy.subscriptionsholder'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
@@ -38,36 +38,47 @@ ext {
 
 dependencies {
 
+    // flyway
     implementation 'org.flywaydb:flyway-core'
 
+    // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
+    // eureka
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+    // web
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // aop
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // data
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'org.postgresql:postgresql'
 
     // feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
+    // lombok
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     // micrometer + zipkin bridge
     implementation 'io.micrometer:micrometer-observation' // for metrics actuator (prometheus)
     implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.github.openfeign:feign-micrometer'
+
+    // development
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // tests
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
 }
 
