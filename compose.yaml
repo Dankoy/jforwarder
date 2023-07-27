@@ -1,8 +1,11 @@
 version: "3.9"
 
 services:
+
+  ###### kafka related start #####
   kafka:
     image: docker.io/bitnami/kafka:3.5
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
@@ -11,19 +14,28 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 # 1 for local dev tests w/o compose
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 # 2 for ui and compose
       - KAFKA_CFG_NODE_ID=1
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093 # 2 for ui and compose
+      #      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 # 1 for local dev tests w/o compose
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSQ
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
     volumes:
       - kafka_volume:/bitnami/kafka
     networks:
       - jforwarder-network
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.1
+    container_name: kafka-ui
     ports:
       - "8080:8080"
     environment:
@@ -32,7 +44,101 @@ services:
     networks:
       - jforwarder-network
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
+
+  kafka-message-producer:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka_message_producer
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/kafka_message_producer:0.0.1
+    container_name: kafka-message-producer
+    ports:
+      - "8083:8083"
+    networks:
+      - jforwarder-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - KAFKA_SERVER=kafka:9092
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+
+  kafka-message-consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile.kafka_message_consumer
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/kafka_message_consumer:0.0.1
+    container_name: kafka-message-consumer
+    ports:
+      - "8085:8085"
+    networks:
+      - jforwarder-network
+    depends_on:
+      kafka:
+        condition: service_healthy
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+      - KAFKA_SERVER=http://kafka:9092
+
+  ###### kafka related end #####
+
+  ###### subscriptions holder related start #####
+
+  subscriptions-holder-service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.subscriptions_holder
+      args:
+        - JAR_VERSION=0.0.2
+    image: evawe/subscriptions_holder:0.0.2
+    container_name: subscriptions-holder
+    ports:
+      - "8082:8082"
+    networks:
+      - jforwarder-network
+    depends_on:
+      subscriptions-holder-postgres:
+        condition: service_healthy
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - POSTGRES_CONTAINER_URL=${POSTGRES_CONTAINER_URL}
+      - POSTGRES_CONTAINER_USER=${POSTGRES_CONTAINER_USER}
+      - POSTGRES_CONTAINER_PASSWORD=${POSTGRES_CONTAINER_PASSWORD}
+      - JASYPT_PASSWORD=${JASYPT_MASTER_PASSWORD}
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8082/actuator" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+    restart: always
 
   subscriptions-holder-postgres:
     env_file: .env
@@ -42,12 +148,152 @@ services:
       POSTGRES_DB: ${POSTGRES_CONTAINER_DB}
       POSTGRES_PASSWORD: ${POSTGRES_CONTAINER_PASSWORD}
       POSTGRES_USER: ${POSTGRES_CONTAINER_USER}
+      PGUSER: ${POSTGRES_CONTAINER_USER}
     ports:
       - '5432:5432'
     networks:
       - jforwarder-network
     volumes:
       - subscriptions_holder_postgres_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ###### subscriptions holder related end #####
+
+  ###### zipkin related start #####
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - '9411:9411'
+    networks:
+      - jforwarder-network
+
+  ###### zipkin related end #####
+
+  ###### eureka related start #####
+
+  spring-eureka-registry:
+    build:
+      context: .
+      dockerfile: Dockerfile.spring_eureka_registry
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/spring_eureka_registry:0.0.1
+    container_name: spring-eureka-registry
+    ports:
+      - "8761:8761"
+    networks:
+      - jforwarder-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8761/actuator" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  ###### eureka related end #####
+
+  ###### gateway related start #####
+
+  spring-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.spring_gateway
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/spring_gateway:0.0.1
+    container_name: spring-gateway
+    ports:
+      - "8760:8760"
+    networks:
+      - jforwarder-network
+    depends_on:
+      spring-eureka-registry:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8760/actuator" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  ###### gateway related start #####
+
+  ###### coubs initiator  related start #####
+
+  t-coubs-initiator:
+    build:
+      context: .
+      dockerfile: Dockerfile.t_coubs_initiator
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/t_coubs_initiator:0.0.1
+    container_name: t-coubs-initiator
+    ports:
+      - "8081:8081"
+    networks:
+      - jforwarder-network
+    depends_on:
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+      subscriptions-holder-service:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+      - GATEWAY_COUB_URL=http://spring-gateway:8760/cc/
+
+    ###### coubs initiator related end #####
+
+  #### telegram bot related start ####
+  telegram-bot:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram_bot
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/coub_forwarder_telegram_bot:0.0.1
+    container_name: telegram-bot
+    ports:
+      - "8084:8084"
+    networks:
+      - jforwarder-network
+    depends_on:
+      spring-eureka-registry:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+      - TELEGRAM_BOT_NAME=${TELEGRAM_BOT_NAME}
+      - TELEGRAM_BOT_API_TOKEN=${TELEGRAM_BOT_API_TOKEN}
+
+  #### telegram bot related end ####
+
+
+  #  redis-rate-limiter:
+  #    image: 'redis:latest'
+  #    container_name: redis-rate-limiter
+  #    ports:
+  #      - '6379:6379'
+  #    networks:
+  #      - jforwarder-network
+
 
 volumes:
   kafka_volume:
