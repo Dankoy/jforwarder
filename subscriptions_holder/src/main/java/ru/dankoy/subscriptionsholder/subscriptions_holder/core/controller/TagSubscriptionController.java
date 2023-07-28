@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubscriptionService;
 
 
@@ -22,40 +24,57 @@ public class TagSubscriptionController {
 
 
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
-  public List<TagSubscription> getAllByActiveChat(@RequestParam("active") boolean active) {
+  public List<TagSubscriptionDTO> getAllByActiveChat(@RequestParam("active") boolean active) {
 
-    return tagSubscriptionService.getAllByActiveTelegramChats(active);
+    var subs = tagSubscriptionService.getAllByActiveTelegramChats(active);
+
+    return subs.stream()
+        .map(TagSubscriptionDTO::toDTO)
+        .toList();
 
   }
 
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"telegramChatId"})
-  public List<TagSubscription> getAllByTelegramChat(
+  public List<TagSubscriptionDTO> getAllByTelegramChat(
       @RequestParam("telegramChatId") long telegramChatId) {
 
-    return tagSubscriptionService.getAllByTelegramChatId(telegramChatId);
+    var subs = tagSubscriptionService.getAllByTelegramChatId(telegramChatId);
 
+    return subs.stream()
+        .map(TagSubscriptionDTO::toDTO)
+        .toList();
   }
 
 
   @PostMapping(value = "/api/v1/tag_subscriptions")
-  public TagSubscription create(@RequestBody TagSubscription tagSubscription) {
+  public TagSubscriptionDTO create(@Valid @RequestBody TagSubscriptionCreateDTO dto) {
 
-    return tagSubscriptionService.createSubscription(tagSubscription);
+    var ts = TagSubscriptionCreateDTO.fromDTO(dto);
+
+    var sub = tagSubscriptionService.createSubscription(ts);
+
+    return TagSubscriptionDTO.toDTO(sub);
 
   }
 
   @DeleteMapping(value = "/api/v1/tag_subscriptions")
-  public void delete(@RequestBody TagSubscription tagSubscription) {
+  public void delete(@Valid @RequestBody TagSubscriptionCreateDTO dto) {
 
-    tagSubscriptionService.deleteSubscription(tagSubscription);
+    var ts = TagSubscriptionCreateDTO.fromDTO(dto);
+
+    tagSubscriptionService.deleteSubscription(ts);
 
   }
 
 
   @PutMapping("/api/v1/tag_subscriptions")
-  public TagSubscription updatePermalink(@RequestBody TagSubscription tagSubscription) {
+  public TagSubscriptionDTO updatePermalink(@Valid @RequestBody TagSubscriptionCreateDTO dto) {
 
-    return tagSubscriptionService.updatePermalink(tagSubscription);
+    var ts = TagSubscriptionCreateDTO.fromDTO(dto);
+
+    var sub = tagSubscriptionService.updatePermalink(ts);
+
+    return TagSubscriptionDTO.toDTO(sub);
 
   }
 
