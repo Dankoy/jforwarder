@@ -138,7 +138,6 @@ services:
       interval: 5s
       timeout: 2s
       retries: 10
-    restart: always
 
   subscriptions-holder-postgres:
     env_file: .env
@@ -284,6 +283,33 @@ services:
       - TELEGRAM_BOT_API_TOKEN=${TELEGRAM_BOT_API_TOKEN}
 
   #### telegram bot related end ####
+
+  #### coub tags searcher start ####
+  coub-tags-searcher:
+    build:
+      context: .
+      dockerfile: Dockerfile.coub_tags_searcher
+      args:
+        - JAR_VERSION=0.0.1
+    image: evawe/coub_tags_searcher:0.0.1
+    container_name: coub-tags-searcher
+    ports:
+      - "8086:8086"
+    networks:
+      - jforwarder-network
+    depends_on:
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+      - GATEWAY_COUB_URL=http://spring-gateway:8760/cc/
+  #### coub tags searcher start ####
+
 
 
   #  redis-rate-limiter:
