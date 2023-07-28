@@ -1,21 +1,20 @@
-package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription;
-
+package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription;
 
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Community {
+public class Scope {
 
   private long id;
-  private long externalId;
+
   private String name;
 
 }

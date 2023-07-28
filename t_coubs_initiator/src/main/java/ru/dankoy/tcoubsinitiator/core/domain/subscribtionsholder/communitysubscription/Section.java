@@ -1,4 +1,4 @@
-package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription;
+package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription;
 
 
 import lombok.AllArgsConstructor;

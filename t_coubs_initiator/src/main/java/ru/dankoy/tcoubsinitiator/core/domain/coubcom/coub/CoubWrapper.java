@@ -17,6 +17,9 @@ public class CoubWrapper {
 
   private int next;
 
+  @JsonProperty("total_pages")
+  private int totalPages;
+
   @Getter
   private List<Coub> coubs;
 

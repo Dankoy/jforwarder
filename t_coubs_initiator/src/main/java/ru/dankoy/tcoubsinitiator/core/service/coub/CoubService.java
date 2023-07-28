@@ -5,5 +5,8 @@ import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
 public interface CoubService {
 
   CoubWrapper getCoubsWrapperForCommunityAndSection(String communityName, String sectionName,
-      int page, int perPage);
+      long page, int perPage);
+
+  CoubWrapper getCoubsWrapperForTag(String tag,String orderBy, String type,
+      String scope, long page, int perPage);
 }

@@ -1,11 +1,11 @@
 package ru.dankoy.tcoubsinitiator.core.service.subscription;
 
 import java.util.List;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 
 public interface SubscriptionService {
 
-  List<Subscription> getAllSubscriptions();
+  List<CommunitySubscription> getAllSubscriptions();
 
-  List<Subscription> getAllSubscriptionsWithActiveChats();
+  List<CommunitySubscription> getAllSubscriptionsWithActiveChats();
 }

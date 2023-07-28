@@ -16,7 +16,7 @@ public class CoubServiceImpl implements CoubService {
 
   @Override
   public CoubWrapper getCoubsWrapperForCommunityAndSection(String communityName, String sectionName,
-      int page, int perPage) {
+      long page, int perPage) {
 
     var wrapper = coubFeign.getCoubsForCommunityWrapperPageable(communityName, sectionName, page,
         perPage);
@@ -26,6 +26,18 @@ public class CoubServiceImpl implements CoubService {
 
     return wrapper;
 
+  }
+
+  @Override
+  public CoubWrapper getCoubsWrapperForTag(String tag, String orderBy, String type,
+      String scope, long page, int perPage) {
+
+    var wrapper = coubFeign.getCoubsForTagWrapperPageable(tag, orderBy, type, scope, page, perPage);
+
+    wrapper.getCoubs()
+        .forEach(permalinkCreatorService::createCoubPermalink);
+
+    return wrapper;
   }
 
 }

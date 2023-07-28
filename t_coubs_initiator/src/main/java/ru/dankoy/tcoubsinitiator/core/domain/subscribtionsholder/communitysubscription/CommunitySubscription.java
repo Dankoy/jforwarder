@@ -1,4 +1,4 @@
-package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription;
+package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription;
 
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscription {
+public class CommunitySubscription {
 
   private long id;
   private Community community;
@@ -42,7 +42,6 @@ public class Subscription {
       coubs.add(newCoub);
 
     }
-
 
   }
 

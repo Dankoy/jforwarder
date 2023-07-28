@@ -3,7 +3,7 @@ package ru.dankoy.tcoubsinitiator.core.service.subscription;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 import ru.dankoy.tcoubsinitiator.core.feign.subscription.SubscriptionFeign;
 
 
@@ -14,12 +14,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   private final SubscriptionFeign subscriptionFeign;
 
   @Override
-  public List<Subscription> getAllSubscriptions() {
+  public List<CommunitySubscription> getAllSubscriptions() {
     return subscriptionFeign.getAllSubscriptions();
   }
 
   @Override
-  public List<Subscription> getAllSubscriptionsWithActiveChats() {
+  public List<CommunitySubscription> getAllSubscriptionsWithActiveChats() {
     return subscriptionFeign.getAllSubscriptionsWithActiveChats(true);
   }
 }

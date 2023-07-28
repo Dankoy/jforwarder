@@ -1,4 +1,4 @@
-package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription;
+package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription;
 
 
 import lombok.AllArgsConstructor;
@@ -7,15 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+@EqualsAndHashCode
 @Getter
 @ToString
-@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Chat {
+public class Tag {
 
   private long id;
-  private long chatId;
-  private String username;
+
+  private String title;
 
 }

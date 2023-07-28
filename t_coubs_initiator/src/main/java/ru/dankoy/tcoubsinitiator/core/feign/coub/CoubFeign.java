@@ -12,16 +12,29 @@ import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
 //    https://coub.com/api/v2/timeline/community/anime/rising?page=1
 
 @Cacheable(cacheNames = "coubs-feign-cache", cacheManager = "caffeineCacheManager")
-@FeignClient(name = "coubs", url = "${coub.connector.gatewayApiUrl}api/v2/timeline/community/")
+@FeignClient(name = "coubs", url = "${coub.connector.gatewayApiUrl}api/v2/")
 public interface CoubFeign {
 
 
-  @GetMapping(value = "{communityName}/{section}")
+  @GetMapping(value = "timeline/community/{communityName}/{section}", params = {"page", "per_page"})
   CoubWrapper getCoubsForCommunityWrapperPageable(
       @PathVariable(value = "communityName") String community,
       @PathVariable(value = "section") String section,
-      @RequestParam("page") int page,
+      @RequestParam("page") long page,
       @RequestParam("per_page") int perPage);
+
+
+  @GetMapping(value = "timeline/tag/{tag}", params = {"order_by", "type", "scope", "page",
+      "per_page"})
+  CoubWrapper getCoubsForTagWrapperPageable(
+      @PathVariable(value = "tag") String tag,
+      @RequestParam("order_by") String orderBy,
+      @RequestParam("type") String type,
+      @RequestParam("scope") String scope,
+      @RequestParam("page") long page,
+      @RequestParam("per_page") long perPage
+
+  );
 
 
 }
