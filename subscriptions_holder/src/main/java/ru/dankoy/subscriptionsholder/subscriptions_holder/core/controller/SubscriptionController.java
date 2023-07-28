@@ -75,7 +75,7 @@ public class SubscriptionController {
   }
 
   @PutMapping(path = "/api/v1/subscriptions")
-  public SubscriptionDTO subscribeChatToCommunity(
+  public SubscriptionDTO updatePermalink(
       @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
 
     var subscription = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
