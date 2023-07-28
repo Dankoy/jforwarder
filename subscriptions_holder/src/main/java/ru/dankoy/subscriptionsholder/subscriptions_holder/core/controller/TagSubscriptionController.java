@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TagSubscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubscriptionService;
 
 
@@ -24,7 +24,15 @@ public class TagSubscriptionController {
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
   public List<TagSubscription> getAllByActiveChat(@RequestParam("active") boolean active) {
 
-    return tagSubscriptionService.getAllByActiveTelegramChat(active);
+    return tagSubscriptionService.getAllByActiveTelegramChats(active);
+
+  }
+
+  @GetMapping(value = "/api/v1/tag_subscriptions", params = {"telegramChatId"})
+  public List<TagSubscription> getAllByTelegramChat(
+      @RequestParam("telegramChatId") long telegramChatId) {
+
+    return tagSubscriptionService.getAllByTelegramChatId(telegramChatId);
 
   }
 

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Tag;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.Tag;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagService;
 
 @RequiredArgsConstructor

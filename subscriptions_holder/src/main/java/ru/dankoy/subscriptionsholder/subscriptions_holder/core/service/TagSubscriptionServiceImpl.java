@@ -1,11 +1,10 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TagSubscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TagSubscriptionRepository;
@@ -17,17 +16,19 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
   private final TagSubscriptionRepository tagSubscriptionRepository;
   private final TagService tagService;
+  private final ScopeService scopeService;
+  private final OrderService orderService;
+  private final TypeService typeService;
   private final TelegramChatService telegramChatService;
 
   @Override
-  public Optional<TagSubscription> getByTagTitleAndTelegramChatId(String title,
-      long telegramChatId) {
-    return tagSubscriptionRepository.getByChatChatIdAndTagTitle(telegramChatId, title);
+  public List<TagSubscription> getAllByActiveTelegramChats(boolean active) {
+    return tagSubscriptionRepository.findAllWithActiveChats(active);
   }
 
   @Override
-  public List<TagSubscription> getAllByActiveTelegramChat(boolean active) {
-    return tagSubscriptionRepository.findAllWithActiveChats(active);
+  public List<TagSubscription> getAllByTelegramChatId(long telegramChatId) {
+    return tagSubscriptionRepository.getAllByChatChatId(telegramChatId);
   }
 
   @Transactional
@@ -35,9 +36,10 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   public TagSubscription createSubscription(TagSubscription tagSubscription) {
 
     // check existence
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitle(
+    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
         tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle()
+        tagSubscription.getTag().getTitle(),
+        tagSubscription.getOrder().getName()
     );
 
     // if exists throw exception
@@ -48,8 +50,11 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
         }
     );
 
-    // check if tag exists. Throws ResourceNotFoundException
+    // Throws ResourceNotFoundException
     var tag = tagService.getByTitle(tagSubscription.getTag().getTitle());
+    var scope = scopeService.getByName(tagSubscription.getScope().getName());
+    var type = typeService.getByName(tagSubscription.getType().getName());
+    var order = orderService.getByName(tagSubscription.getOrder().getName());
 
     // todo: do i even need to save chat when creating subscription?
 
@@ -60,19 +65,33 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
       var chat = optionalChat.get();
 
-      tagSubscription.setChat(chat);
-      tagSubscription.setTag(tag);
+      var newTagSubscription = new TagSubscription(
+          0,
+          tag,
+          chat,
+          order,
+          scope,
+          type,
+          null
+      );
 
-      return tagSubscriptionRepository.save(tagSubscription);
+      return tagSubscriptionRepository.save(newTagSubscription);
 
     } else {
 
       var createdChat = telegramChatService.save(tagSubscription.getChat());
 
-      tagSubscription.setChat(createdChat);
-      tagSubscription.setTag(tag);
+      var newTagSubscription = new TagSubscription(
+          0,
+          tag,
+          createdChat,
+          order,
+          scope,
+          type,
+          null
+      );
 
-      return tagSubscriptionRepository.save(tagSubscription);
+      return tagSubscriptionRepository.save(newTagSubscription);
 
     }
 
@@ -82,9 +101,10 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   @Override
   public void deleteSubscription(TagSubscription tagSubscription) {
 
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitle(
+    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
         tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle()
+        tagSubscription.getTag().getTitle(),
+        tagSubscription.getOrder().getName()
     );
 
     optional.ifPresent(tagSubscriptionRepository::delete);
@@ -93,9 +113,10 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
   @Override
   public TagSubscription updatePermalink(TagSubscription tagSubscription) {
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitle(
+    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
         tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle()
+        tagSubscription.getTag().getTitle(),
+        tagSubscription.getOrder().getName()
     );
 
     var found = optional.orElseThrow(

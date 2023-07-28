@@ -14,14 +14,14 @@ create table communities
 
 create table chats
 (
-    id       bigserial primary key,
-    chat_id  bigint unique not null,
-    type varchar(50),
-    title varchar(80),
+    id         bigserial primary key,
+    chat_id    bigint unique not null,
+    type       varchar(50),
+    title      varchar(80),
     first_name varchar(50),
-    last_name varchar(50),
-    username varchar(50),
-    active boolean not null
+    last_name  varchar(50),
+    username   varchar(50),
+    active     boolean       not null
 );
 create table sections
 (
@@ -37,11 +37,11 @@ create table community_section
 );
 
 
-create table subscriptions
+create table community_subscriptions
 (
-    id   bigserial primary key,
-    community_id     bigint references communities (id) on delete cascade,
-    section_id       bigint references sections (id),
-    chat_id bigint references chats (id) on delete cascade,
-    last_permalink   varchar(10)
+    id             bigserial primary key,
+    community_id   bigint references communities (id) on delete cascade,
+    section_id     bigint references sections (id),
+    chat_id        bigint references chats (id) on delete cascade,
+    last_permalink varchar(10)
 );

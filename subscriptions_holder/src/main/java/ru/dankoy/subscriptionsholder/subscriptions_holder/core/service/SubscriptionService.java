@@ -2,25 +2,25 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Optional;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 
 public interface SubscriptionService {
 
-  List<Subscription> getAll();
+  List<CommunitySubscription> getAll();
 
-  List<Subscription> getAllWithActiveChats(boolean active);
+  List<CommunitySubscription> getAllWithActiveChats(boolean active);
 
-  List<Subscription> getAllByCommunityName(String communityName);
+  List<CommunitySubscription> getAllByCommunityName(String communityName);
 
-  List<Subscription> getAllByChatId(long chatId);
+  List<CommunitySubscription> getAllByChatId(long chatId);
 
-  Optional<Subscription> getByCommunityNameSectionNameChatId(String communityName,
+  Optional<CommunitySubscription> getByCommunityNameSectionNameChatId(String communityName,
       String sectionName, long chatId);
 
-  Subscription subscribeChatToCommunity(Subscription subscription);
+  CommunitySubscription subscribeChatToCommunity(CommunitySubscription communitySubscription);
 
-  void unsubscribeChatFromCommunity(Subscription subscription);
+  void unsubscribeChatFromCommunity(CommunitySubscription communitySubscription);
 
-  Subscription updateLastPermalink(Subscription subscription);
+  CommunitySubscription updateLastPermalink(CommunitySubscription communitySubscription);
 
 }

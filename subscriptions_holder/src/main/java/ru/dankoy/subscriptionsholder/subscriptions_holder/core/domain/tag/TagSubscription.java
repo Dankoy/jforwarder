@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag;
 
 
 import jakarta.persistence.Column;
@@ -11,20 +11,19 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
 @Getter
 @ToString
-@EqualsAndHashCode
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "subscriptions")
-public class Subscription {
+@Table(name = "tag_subscriptions")
+public class TagSubscription {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,17 +31,24 @@ public class Subscription {
   private long id;
 
   @ManyToOne
-  @JoinColumn(name = "community_id")
-  private Community community;
-
-  @ManyToOne
-  @JoinColumn(name = "section_id")
-  private Section section;
+  @JoinColumn(name = "tag_id")
+  private Tag tag;
 
   @ManyToOne
   @JoinColumn(name = "chat_id")
   private Chat chat;
 
+  @ManyToOne
+  @JoinColumn(name = "order_id")
+  private Order order;
+
+  @ManyToOne
+  @JoinColumn(name = "scope_id")
+  private Scope scope;
+
+  @ManyToOne
+  @JoinColumn(name = "type_id")
+  private Type type;
 
   @Column(name = "last_permalink")
   private String lastPermalink;

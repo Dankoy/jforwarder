@@ -5,62 +5,62 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 
-public interface SubscriptionRepository extends
-    JpaRepository<Subscription, Long> {
+public interface CommunitySubscriptionRepository extends
+    JpaRepository<CommunitySubscription, Long> {
 
 
   @Query(
       """
-          select s, ch, sect, c from Subscription s
+          select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
               """
   )
   @Override
-  List<Subscription> findAll();
+  List<CommunitySubscription> findAll();
 
 
   @Query(
       """
-          select s, ch, sect, c from Subscription s
+          select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
           where ch.active = :active
               """
   )
-  List<Subscription> findAllWithActiveChats(@Param("active") boolean active);
+  List<CommunitySubscription> findAllWithActiveChats(@Param("active") boolean active);
 
   @Query(
       """
-          select s, ch, sect, c from Subscription s
+          select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
           where c.name = :communityName
               """
   )
-  List<Subscription> getAllByCommunityName(@Param("communityName") String communityName);
+  List<CommunitySubscription> getAllByCommunityName(@Param("communityName") String communityName);
 
 
   @Query(
       """
-          select s, ch, sect, c from Subscription s
+          select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
           where ch.chatId = :telegramChatId
               """
   )
-  List<Subscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
+  List<CommunitySubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
 
   @Query(
       """
-          select s, ch, sect, c from Subscription s
+          select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
@@ -69,7 +69,7 @@ public interface SubscriptionRepository extends
           and sect.name = :sectionName
               """
   )
-  Optional<Subscription> getByChatChatIdAndCommunityNameAndSectionName(
+  Optional<CommunitySubscription> getByChatChatIdAndCommunityNameAndSectionName(
       @Param("externalChatId") long externalChatId,
       @Param("communityName") String communityName,
       @Param("sectionName") String sectionName);

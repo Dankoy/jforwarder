@@ -8,46 +8,46 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SubscriptionRepository;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.CommunitySubscriptionRepository;
 
 
 @RequiredArgsConstructor
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-  private final SubscriptionRepository subscriptionRepository;
+  private final CommunitySubscriptionRepository communitySubscriptionRepository;
   private final CommunityService communityService;
   private final TelegramChatService telegramChatService;
   private final SectionService sectionService;
 
   @Override
-  public List<Subscription> getAll() {
-    return subscriptionRepository.findAll();
+  public List<CommunitySubscription> getAll() {
+    return communitySubscriptionRepository.findAll();
   }
 
   @Override
-  public List<Subscription> getAllWithActiveChats(boolean active) {
-    return subscriptionRepository.findAllWithActiveChats(active);
+  public List<CommunitySubscription> getAllWithActiveChats(boolean active) {
+    return communitySubscriptionRepository.findAllWithActiveChats(active);
   }
 
   @Override
-  public List<Subscription> getAllByCommunityName(String communityName) {
-    return subscriptionRepository.getAllByCommunityName(communityName);
+  public List<CommunitySubscription> getAllByCommunityName(String communityName) {
+    return communitySubscriptionRepository.getAllByCommunityName(communityName);
   }
 
   @Override
-  public List<Subscription> getAllByChatId(long chatId) {
-    return subscriptionRepository.getAllByChatChatId(chatId);
+  public List<CommunitySubscription> getAllByChatId(long chatId) {
+    return communitySubscriptionRepository.getAllByChatChatId(chatId);
   }
 
   @Override
-  public Optional<Subscription> getByCommunityNameSectionNameChatId(String communityName,
+  public Optional<CommunitySubscription> getByCommunityNameSectionNameChatId(String communityName,
       String sectionName, long chatId) {
 
-    return subscriptionRepository
+    return communitySubscriptionRepository
         .getByChatChatIdAndCommunityNameAndSectionName(
             chatId, communityName, sectionName);
 
@@ -55,12 +55,12 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
   @Transactional
   @Override
-  public Subscription subscribeChatToCommunity(Subscription subscription) {
+  public CommunitySubscription subscribeChatToCommunity(CommunitySubscription communitySubscription) {
 
-    var foundSubscriptionOptional = subscriptionRepository
+    var foundSubscriptionOptional = communitySubscriptionRepository
         .getByChatChatIdAndCommunityNameAndSectionName(
-            subscription.getChat().getChatId(), subscription.getCommunity().getName(),
-            subscription.getSection().getName());
+            communitySubscription.getChat().getChatId(), communitySubscription.getCommunity().getName(),
+            communitySubscription.getSection().getName());
 
     // if exists - exception
     foundSubscriptionOptional.ifPresent(s -> {
@@ -73,21 +73,21 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
     );
 
-    Set<Section> sectionsToFind = Collections.singleton(subscription.getSection());
+    Set<Section> sectionsToFind = Collections.singleton(communitySubscription.getSection());
 
-    var foundSectionOptional = sectionService.getSectionByName(subscription.getSection().getName());
+    var foundSectionOptional = sectionService.getSectionByName(communitySubscription.getSection().getName());
 
     var foundSection = foundSectionOptional.orElseThrow(
         () -> new ResourceNotFoundException(
-            String.format("Section not found - %s", subscription.getSection().getName())));
+            String.format("Section not found - %s", communitySubscription.getSection().getName())));
 
     // Получаем коммунити
     var foundCommunity = communityService.getByNameAndSectionIn(
-        subscription.getCommunity().getName(),
+        communitySubscription.getCommunity().getName(),
         sectionsToFind);
 
     var foundTelegramChat = telegramChatService.getByTelegramChatId(
-        subscription.getChat().getChatId()
+        communitySubscription.getChat().getChatId()
     );
 
     if (foundTelegramChat.isPresent()) {
@@ -96,61 +96,61 @@ public class SubscriptionServiceImpl implements SubscriptionService {
       // use it
 
       // if subscription not exist - create new subscription for chat
-      var newSubscription = new Subscription(
+      var newSubscription = new CommunitySubscription(
           0, foundCommunity, foundSection, chat, null
       );
 
-      return subscriptionRepository.save(newSubscription);
+      return communitySubscriptionRepository.save(newSubscription);
 
     } else {
 
       // if chat not exists - create it and create subscription
 
-      var createdChat = telegramChatService.save(subscription.getChat());
+      var createdChat = telegramChatService.save(communitySubscription.getChat());
 
-      var newSubscription = new Subscription(
+      var newSubscription = new CommunitySubscription(
           0, foundCommunity, foundSection, createdChat, null
       );
 
-      return subscriptionRepository.save(newSubscription);
+      return communitySubscriptionRepository.save(newSubscription);
 
     }
   }
 
   @Transactional
   @Override
-  public void unsubscribeChatFromCommunity(Subscription subscription) {
+  public void unsubscribeChatFromCommunity(CommunitySubscription communitySubscription) {
 
-    var subscriptionFoundOptional = subscriptionRepository
+    var subscriptionFoundOptional = communitySubscriptionRepository
         .getByChatChatIdAndCommunityNameAndSectionName(
-            subscription.getChat().getChatId(),
-            subscription.getCommunity().getName(),
-            subscription.getSection().getName());
+            communitySubscription.getChat().getChatId(),
+            communitySubscription.getCommunity().getName(),
+            communitySubscription.getSection().getName());
 
-    subscriptionFoundOptional.ifPresent(subscriptionRepository::delete);
+    subscriptionFoundOptional.ifPresent(communitySubscriptionRepository::delete);
 
   }
 
   @Transactional
   @Override
-  public Subscription updateLastPermalink(Subscription subscription) {
+  public CommunitySubscription updateLastPermalink(CommunitySubscription communitySubscription) {
 
-    var foundSubscriptionOptional = subscriptionRepository
+    var foundSubscriptionOptional = communitySubscriptionRepository
         .getByChatChatIdAndCommunityNameAndSectionName(
-            subscription.getChat().getChatId(),
-            subscription.getCommunity().getName(),
-            subscription.getSection().getName());
+            communitySubscription.getChat().getChatId(),
+            communitySubscription.getCommunity().getName(),
+            communitySubscription.getSection().getName());
 
     var found = foundSubscriptionOptional.orElseThrow(() -> new ResourceNotFoundException(
             String.format("Subscription not found for community '%s-%s' and chat '%d'",
-                subscription.getCommunity().getName(),
-                subscription.getSection().getName(),
-                subscription.getChat().getChatId())
+                communitySubscription.getCommunity().getName(),
+                communitySubscription.getSection().getName(),
+                communitySubscription.getChat().getChatId())
         )
     );
 
-    found.setLastPermalink(subscription.getLastPermalink());
-    return subscriptionRepository.save(found);
+    found.setLastPermalink(communitySubscription.getLastPermalink());
+    return communitySubscriptionRepository.save(found);
 
   }
 

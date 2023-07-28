@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SectionDTO;
 
 @ToString
@@ -33,20 +33,20 @@ public class SubscriptionCreateDTO {
   private String lastPermalink;
 
 
-  public static SubscriptionCreateDTO toDTO(Subscription subscription) {
+  public static SubscriptionCreateDTO toDTO(CommunitySubscription communitySubscription) {
 
     return SubscriptionCreateDTO.builder()
-        .community(SubscriptionCreateCommunityDTO.toDTO(subscription.getCommunity()))
-        .section(SectionDTO.toDTO(subscription.getSection()))
-        .chat(ChatCreateDTO.toDTO(subscription.getChat()))
-        .lastPermalink(subscription.getLastPermalink())
+        .community(SubscriptionCreateCommunityDTO.toDTO(communitySubscription.getCommunity()))
+        .section(SectionDTO.toDTO(communitySubscription.getSection()))
+        .chat(ChatCreateDTO.toDTO(communitySubscription.getChat()))
+        .lastPermalink(communitySubscription.getLastPermalink())
         .build();
 
   }
 
-  public static Subscription fromDTO(SubscriptionCreateDTO dto) {
+  public static CommunitySubscription fromDTO(SubscriptionCreateDTO dto) {
 
-    return new Subscription(
+    return new CommunitySubscription(
         0,
         SubscriptionCreateCommunityDTO.fromDTO(dto.getCommunity()),
         SectionDTO.fromDTO(dto.getSection()),

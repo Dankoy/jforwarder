@@ -1,14 +1,13 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
-import java.util.Optional;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.TagSubscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
 
 public interface TagSubscriptionService {
 
-  Optional<TagSubscription> getByTagTitleAndTelegramChatId(String title, long telegramChatId);
+  List<TagSubscription> getAllByActiveTelegramChats(boolean active);
 
-  List<TagSubscription> getAllByActiveTelegramChat(boolean active);
+  List<TagSubscription> getAllByTelegramChatId(long telegramChatId);
 
   TagSubscription createSubscription(TagSubscription tagSubscription);
 

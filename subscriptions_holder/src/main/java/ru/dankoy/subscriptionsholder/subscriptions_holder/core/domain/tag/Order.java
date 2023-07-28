@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag;
 
 
 import jakarta.persistence.Column;
@@ -19,15 +19,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tags")
-public class Tag {
+@Table(name = "tag_orders")
+public class Order {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private long id;
 
-  @Column(name = "title")
-  private String title;
+  @Column(name = "name")
+  private String name;
 
 }

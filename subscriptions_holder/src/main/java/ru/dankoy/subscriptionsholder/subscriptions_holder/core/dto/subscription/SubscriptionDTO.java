@@ -6,8 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Subscription;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.CommunityDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SectionDTO;
 
 @ToString
@@ -28,21 +27,21 @@ public class SubscriptionDTO {
   private String lastPermalink;
 
 
-  public static SubscriptionDTO toDTO(Subscription subscription) {
+  public static SubscriptionDTO toDTO(CommunitySubscription communitySubscription) {
 
     return SubscriptionDTO.builder()
-        .id(subscription.getId())
-        .community(CommunityWithoutSectionsDTO.toDTO(subscription.getCommunity()))
-        .section(SectionDTO.toDTO(subscription.getSection()))
-        .chat(ChatDTO.toDTO(subscription.getChat()))
-        .lastPermalink(subscription.getLastPermalink())
+        .id(communitySubscription.getId())
+        .community(CommunityWithoutSectionsDTO.toDTO(communitySubscription.getCommunity()))
+        .section(SectionDTO.toDTO(communitySubscription.getSection()))
+        .chat(ChatDTO.toDTO(communitySubscription.getChat()))
+        .lastPermalink(communitySubscription.getLastPermalink())
         .build();
 
   }
 
-  public static Subscription fromDTO(SubscriptionDTO dto) {
+  public static CommunitySubscription fromDTO(SubscriptionDTO dto) {
 
-    return new Subscription(
+    return new CommunitySubscription(
         dto.getId(),
         CommunityWithoutSectionsDTO.fromDTO(dto.getCommunity()),
         SectionDTO.fromDTO(dto.getSection()),
