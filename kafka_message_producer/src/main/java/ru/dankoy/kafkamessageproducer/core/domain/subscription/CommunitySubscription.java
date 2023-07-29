@@ -16,7 +16,7 @@ import ru.dankoy.kafkamessageproducer.core.domain.coub.Coub;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscription {
+public class CommunitySubscription {
 
   private long id;
   private Community community;
