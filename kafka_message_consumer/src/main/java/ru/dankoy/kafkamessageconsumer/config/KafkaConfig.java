@@ -63,7 +63,7 @@ public class KafkaConfig {
 //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3); // max amount of messages got by one poll
     props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
-        5_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
+        20_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
 //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
@@ -97,7 +97,7 @@ public class KafkaConfig {
 //        record -> record.value().contains("World"));
 
     var executor = new SimpleAsyncTaskExecutor("k-consumer-");
-    executor.setConcurrencyLimit(10);
+    executor.setConcurrencyLimit(3);
     var listenerTaskExecutor = new ConcurrentTaskExecutor(executor);
     factory.getContainerProperties().setListenerTaskExecutor(listenerTaskExecutor);
     return factory;
@@ -116,7 +116,7 @@ public class KafkaConfig {
 //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3); // max amount of messages got by one poll
     props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
-        5_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
+        20_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
 //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
@@ -139,14 +139,13 @@ public class KafkaConfig {
     factory.setConcurrency(
         1); // if you have one consumer but two topics or partitions, then set to two, etc.
     factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
-    factory.getContainerProperties()
-        .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+    factory.getContainerProperties().setPollTimeout(1_000); // wait in kafka for messages if queue is empty
 
     // idlepeetweenpolls - in pair with maxPollInterval make time between two polls
     // somehow these settings make consumer consume messages every 15 seconds
 
     var executor = new SimpleAsyncTaskExecutor("k-consumer-");
-    executor.setConcurrencyLimit(10);
+    executor.setConcurrencyLimit(3);
     var listenerTaskExecutor = new ConcurrentTaskExecutor(executor);
     factory.getContainerProperties().setListenerTaskExecutor(listenerTaskExecutor);
     return factory;
@@ -202,7 +201,7 @@ public class KafkaConfig {
 
     @KafkaListener(
         topics = "${application.kafka.topic.community-subscription}",
-        groupId = "${spring.kafka.consumer.group-id}",
+        groupId = "${application.kafka.consumers.community-coubs.group-id}",
         clientIdPrefix = "${application.kafka.consumers.community-coubs.client-id}",
         containerFactory = "listenerContainerFactoryCommunitySubscription")
     public void listen(@Payload List<CommunitySubscriptionMessage> values) {
@@ -223,7 +222,7 @@ public class KafkaConfig {
 
     @KafkaListener(
         topics = "${application.kafka.topic.tag-subscription}",
-        groupId = "${spring.kafka.consumer.group-id}",
+        groupId = "${application.kafka.consumers.tag-coubs.group-id}",
         clientIdPrefix = "${application.kafka.consumers.tag-coubs.client-id}",
         containerFactory = "listenerContainerFactoryTagSubscription")
     public void listen(@Payload List<TagSubscriptionMessage> values) {
