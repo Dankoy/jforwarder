@@ -535,6 +535,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var sendMessage = new SendMessage();
 
     var tagName = message.tag().getTitle();
+    var orderName = message.order().getName();
     var coubUrl = message.coub().getUrl();
     var chatId = message.chat().getChatId();
 
@@ -542,6 +543,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("tagName", tagName);
+    templateData.put("orderName", orderName);
     templateData.put("url", coubUrl);
     var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
 
