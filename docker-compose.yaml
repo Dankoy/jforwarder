@@ -14,11 +14,11 @@ services:
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 # 1 for local dev tests w/o compose
+#      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 # 1 for local dev tests w/o compose
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 # 2 for ui and compose
       - KAFKA_CFG_NODE_ID=1
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093 # 2 for ui and compose
-      #      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 # 1 for local dev tests w/o compose
+#      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 # 1 for local dev tests w/o compose
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSQ
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
@@ -48,12 +48,14 @@ services:
         condition: service_healthy
 
   kafka-message-producer:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.kafka_message_producer
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/kafka_message_producer:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/kafka_message_producer:${JAR_VERSION}
     container_name: kafka-message-producer
     ports:
       - "8083:8083"
@@ -74,12 +76,14 @@ services:
       - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
 
   kafka-message-consumer:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.kafka_message_consumer
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/kafka_message_consumer:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/kafka_message_consumer:${JAR_VERSION}
     container_name: kafka-message-consumer
     ports:
       - "8085:8085"
@@ -110,8 +114,8 @@ services:
       context: .
       dockerfile: Dockerfile.subscriptions_holder
       args:
-        - JAR_VERSION=0.0.2
-    image: evawe/subscriptions_holder:0.0.2
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/subscriptions_holder:${JAR_VERSION}
     container_name: subscriptions-holder
     ports:
       - "8082:8082"
@@ -177,12 +181,14 @@ services:
   ###### eureka related start #####
 
   spring-eureka-registry:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.spring_eureka_registry
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/spring_eureka_registry:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/spring_eureka_registry:${JAR_VERSION}
     container_name: spring-eureka-registry
     ports:
       - "8761:8761"
@@ -199,12 +205,14 @@ services:
   ###### gateway related start #####
 
   spring-gateway:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.spring_gateway
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/spring_gateway:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/spring_gateway:${JAR_VERSION}
     container_name: spring-gateway
     ports:
       - "8760:8760"
@@ -229,12 +237,14 @@ services:
   ###### coubs initiator  related start #####
 
   t-coubs-initiator:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.t_coubs_initiator
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/t_coubs_initiator:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/t_coubs_initiator:${JAR_VERSION}
     container_name: t-coubs-initiator
     ports:
       - "8081:8081"
@@ -264,8 +274,8 @@ services:
       context: .
       dockerfile: Dockerfile.telegram_bot
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/coub_forwarder_telegram_bot:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/coub_forwarder_telegram_bot:${JAR_VERSION}
     container_name: telegram-bot
     ports:
       - "8084:8084"
@@ -286,12 +296,14 @@ services:
 
   #### coub tags searcher start ####
   coub-tags-searcher:
+    env_file:
+      - .env
     build:
       context: .
       dockerfile: Dockerfile.coub_tags_searcher
       args:
-        - JAR_VERSION=0.0.1
-    image: evawe/coub_tags_searcher:0.0.1
+        - JAR_VERSION=${JAR_VERSION}
+    image: evawe/coub_tags_searcher:${JAR_VERSION}
     container_name: coub-tags-searcher
     ports:
       - "8086:8086"
