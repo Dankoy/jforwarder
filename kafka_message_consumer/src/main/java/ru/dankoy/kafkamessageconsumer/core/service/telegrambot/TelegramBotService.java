@@ -1,10 +1,10 @@
 package ru.dankoy.kafkamessageconsumer.core.service.telegrambot;
 
-import ru.dankoy.kafkamessageconsumer.core.domain.message.SubscriptionMessage;
+import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 
 public interface TelegramBotService {
 
-  void sendMessage(SubscriptionMessage subscriptionMessage);
+  void sendMessage(CommunitySubscriptionMessage communitySubscriptionMessage);
 
 }
 

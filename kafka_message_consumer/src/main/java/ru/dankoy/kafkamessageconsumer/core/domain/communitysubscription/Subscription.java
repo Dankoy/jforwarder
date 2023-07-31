@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageconsumer.core.domain.subscription;
+package ru.dankoy.kafkamessageconsumer.core.domain.communitysubscription;
 
 
 import java.util.ArrayList;

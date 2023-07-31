@@ -23,7 +23,7 @@ import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
-import ru.dankoy.kafkamessageconsumer.core.domain.message.SubscriptionMessage;
+import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.SubscriptionMessageConsumer;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.SubscriptionMessageConsumerBotSender;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
@@ -45,7 +45,7 @@ public class KafkaConfig {
   }
 
   @Bean
-  public ConsumerFactory<String, SubscriptionMessage> consumerFactory(
+  public ConsumerFactory<String, CommunitySubscriptionMessage> consumerFactory(
       KafkaProperties kafkaProperties, ObjectMapper mapper) {
     var props = kafkaProperties.buildProducerProperties();
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -60,18 +60,18 @@ public class KafkaConfig {
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
 //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
-    var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, SubscriptionMessage>(props);
+    var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CommunitySubscriptionMessage>(props);
     kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
     return kafkaProducerConsumer;
   }
 
   @Bean("listenerContainerFactory")
-  public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, SubscriptionMessage>>
-  listenerContainerFactory(ConsumerFactory<String, SubscriptionMessage> consumerFactory) {
+  public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, CommunitySubscriptionMessage>>
+  listenerContainerFactory(ConsumerFactory<String, CommunitySubscriptionMessage> consumerFactory) {
 
     // this all applied only for spring boot starter
 
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, SubscriptionMessage>();
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, CommunitySubscriptionMessage>();
     factory.setConsumerFactory(consumerFactory);
     factory.setBatchListener(true);
     factory.setConcurrency(
@@ -119,7 +119,7 @@ public class KafkaConfig {
         topics = "${application.kafka.topic}",
         groupId = "${spring.kafka.consumer.group-id}",
         containerFactory = "listenerContainerFactory")
-    public void listen(@Payload List<SubscriptionMessage> values) {
+    public void listen(@Payload List<CommunitySubscriptionMessage> values) {
       log.info("values, values.size:{}", values.size());
       stringValueConsumer.accept(values);
     }
