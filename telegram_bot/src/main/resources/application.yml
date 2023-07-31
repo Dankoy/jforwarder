@@ -9,6 +9,11 @@ application:
 spring:
   application:
     name: telegram-bot
+  freemarker:
+    template-loader-path: "/freemarker/templates/"
+  devtools:
+    restart:
+      enabled: false
 
 server:
   port: 8084
@@ -29,6 +34,9 @@ eureka:
       enabled: true
   instance:
     prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+#    instance-id: "${spring.application.name}:${server.port}"
 
 
 management:
