@@ -16,7 +16,7 @@ plugins {
 apply plugin: JasyptPlugin
 
 group = 'ru.dankoy.subscriptionsholder'
-version = '0.0.2-SNAPSHOT'
+// version comes from root project
 
 java {
     sourceCompatibility = '17'
