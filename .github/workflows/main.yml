@@ -18,6 +18,9 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
+    - name: create .env file
+      run: touch .env && echo ${{ secrets.VARIABLE }} >> .env
+
     - name: Build with Gradle without tests
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
