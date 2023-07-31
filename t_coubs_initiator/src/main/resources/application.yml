@@ -1,6 +1,13 @@
 spring:
   application:
     name: t-coubs-initiator
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 160000000
+            readTimeout: 160000000
 
 server:
   port: 8081
