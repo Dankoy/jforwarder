@@ -168,6 +168,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       log.warn("Chat not found - {}", tChat.getId());
       sendMessage.setText("Please, first run /start command.");
       send(sendMessage);
+      throw new IllegalStateException("Accessed subscribe command without start");
     }
 
   }
