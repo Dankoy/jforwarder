@@ -10,6 +10,17 @@ eureka:
     registerWithEureka: true
     fetchRegistry: false
 
+  server:
+    expected-client-renewal-interval-seconds: 3
+    eviction-interval-timer-in-ms: 60000
+    renewal-percent-threshold: 0.85
+    renewal-threshold-update-interval-ms: 900000
+    registry-sync-retries: 3
+    max-threads-for-peer-replication: 5
+    wait-time-in-ms-when-sync-empty: 5
+  instance:
+    lease-expiration-duration-in-seconds: 90
+
 management:
   info:
     env:
