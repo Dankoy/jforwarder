@@ -1,6 +1,13 @@
 application:
   kafka:
-    topic: "coubs"
+    topic:
+      community-subscription: "coub-com-sub"
+      tag-subscription: "coub-tag-sub"
+    consumers:
+      community-coubs:
+        client-id: "community-coubs-producer" # custom props configuration in factory
+      tag-coubs:
+        client-id: "tag-coubs-producer" # custom props configuration in factory
 
 
 spring:
@@ -10,10 +17,11 @@ spring:
     bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092}
     consumer:
       bootstrap-servers: ${KAFKA_SERVER:http://127.0.0.1:9092}
-      client-id: "coubs-consumer"
+      client-id: "coubs-consumer" # default one
       group-id: "coubs_group"
     listener:
       ack-mode: batch
+
 
 
 server:

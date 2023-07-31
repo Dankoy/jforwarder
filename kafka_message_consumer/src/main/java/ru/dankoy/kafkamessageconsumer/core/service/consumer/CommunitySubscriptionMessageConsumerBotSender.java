@@ -9,7 +9,8 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 
 @Slf4j
 @RequiredArgsConstructor
-public class SubscriptionMessageConsumerBotSender implements SubscriptionMessageConsumer {
+public class CommunitySubscriptionMessageConsumerBotSender implements
+    CommunitySubscriptionMessageConsumer {
 
   private final TelegramBotService telegramBotService;
 

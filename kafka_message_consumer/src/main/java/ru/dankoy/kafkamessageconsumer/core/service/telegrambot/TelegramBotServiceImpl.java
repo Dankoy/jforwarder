@@ -3,6 +3,7 @@ package ru.dankoy.kafkamessageconsumer.core.service.telegrambot;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.feign.telegrambot.TelegramBotFeign;
 
 @Service
@@ -14,5 +15,10 @@ public class TelegramBotServiceImpl implements TelegramBotService {
   @Override
   public void sendMessage(CommunitySubscriptionMessage communitySubscriptionMessage) {
     telegramBotFeign.send(communitySubscriptionMessage);
+  }
+
+  @Override
+  public void sendMessage(TagSubscriptionMessage tagSubscriptionMessage) {
+    telegramBotFeign.send(tagSubscriptionMessage);
   }
 }
