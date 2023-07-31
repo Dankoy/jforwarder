@@ -12,7 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Community;
-import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
+import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
+import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
+import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
@@ -20,14 +23,27 @@ public interface SubscriptionsHolderFeign {
 
   //subscriptions
   @GetMapping(path = "/api/v1/subscriptions", params = {"telegramChatId"})
-  List<Subscription> getAllSubscriptionsByChatId(
+  List<CommunitySubscription> getAllSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
   @PostMapping(path = "/api/v1/subscriptions")
-  Subscription subscribe(@RequestBody Subscription subscription);
+  CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
 
   @DeleteMapping(path = "/api/v1/subscriptions")
-  void unsubscribe(@RequestBody Subscription subscription);
+  void unsubscribe(@RequestBody CommunitySubscription communitySubscription);
+
+
+  // tag subscriptions
+  @GetMapping(path = "/api/v1/tag_subscriptions", params = {"telegramChatId"})
+  List<TagSubscription> getAllTagSubscriptionsByChatId(
+      @RequestParam("telegramChatId") long telegramChatId);
+
+  @PostMapping(path = "/api/v1/tag_subscriptions")
+  TagSubscription subscribeByTag(@RequestBody TagSubscription tagSubscription);
+
+  @DeleteMapping(path = "/api/v1/tag_subscriptions")
+  void unsubscribeByTag(@RequestBody TagSubscription tagSubscription);
+
 
   // chats
   @GetMapping(path = "/api/v1/telegram_chat/{chatId}", params = {"chatId"})
@@ -42,5 +58,18 @@ public interface SubscriptionsHolderFeign {
   //communities
   @GetMapping(path = "/api/v1/communities")
   List<Community> getAllCommunities();
+
+
+  // tags
+  @GetMapping(path = "/api/v1/tags", params = {"title"})
+  Tag getTagByTitle(@RequestParam("title") String title);
+
+  @PostMapping(path = "/api/v1/tags")
+  Tag createTag(@RequestBody Tag tag);
+
+
+  // tag orders
+  @GetMapping(path = "/api/v1/tag_orders")
+  List<Order> getAllTagOrders();
 
 }

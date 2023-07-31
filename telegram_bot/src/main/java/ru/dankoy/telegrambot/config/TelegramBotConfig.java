@@ -13,11 +13,15 @@ import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.MySubscriptionsCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeToCommunityCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeToTagCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeFromCommunityCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeFromTagCommand;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
-import ru.dankoy.telegrambot.core.service.subscription.SubscriptionService;
+import ru.dankoy.telegrambot.core.service.order.OrderService;
+import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
+import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 @Configuration
@@ -39,20 +43,24 @@ public class TelegramBotConfig {
   TelegramBotImpl telegramBot(
       TelegramBotProperties properties,
       CommandsHolder commandsHolder,
-      SubscriptionService subscriptionService,
+      CommunitySubscriptionService communitySubscriptionService,
       TelegramChatService telegramChatService,
       TemplateBuilder templateBuilder,
-      CommunityService communityService
+      CommunityService communityService,
+      TagSubscriptionService tagSubscriptionService,
+      OrderService orderService
   ) {
 
     return new TelegramBotImpl(
         properties.getName(),
         properties.getToken(),
         commandsHolder.getCommands(),
-        subscriptionService,
+        communitySubscriptionService,
         telegramChatService,
         templateBuilder,
-        communityService
+        communityService,
+        tagSubscriptionService,
+        orderService
     );
   }
 
@@ -64,8 +72,10 @@ public class TelegramBotConfig {
     commandsHolder.addCommand(new MySubscriptionsCommand());
     commandsHolder.addCommand(new StartCommand());
     commandsHolder.addCommand(new HelpCommand());
-    commandsHolder.addCommand(new SubscribeCommand());
-    commandsHolder.addCommand(new UnsubscribeCommand());
+    commandsHolder.addCommand(new SubscribeToCommunityCommand());
+    commandsHolder.addCommand(new SubscribeToTagCommand());
+    commandsHolder.addCommand(new UnsubscribeFromCommunityCommand());
+    commandsHolder.addCommand(new UnsubscribeFromTagCommand());
     commandsHolder.addCommand(new CommunitiesCommand());
 
     return commandsHolder;

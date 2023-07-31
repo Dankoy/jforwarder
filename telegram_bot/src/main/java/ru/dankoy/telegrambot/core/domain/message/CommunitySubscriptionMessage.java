@@ -6,7 +6,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.Section;
 
 
-public record SubscriptionMessage(
+public record CommunitySubscriptionMessage(
     long id,
     Community community,
     Chat chat,

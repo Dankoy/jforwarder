@@ -8,26 +8,26 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.Section;
-import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
+import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @Service
 @RequiredArgsConstructor
-public class SubscriptionServiceImpl implements SubscriptionService {
+public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionService {
 
   private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
 
-  public List<Subscription> getSubscriptionsByChatId(long chatId) {
+  public List<CommunitySubscription> getSubscriptionsByChatId(long chatId) {
 
     return subscriptionsHolderFeign.getAllSubscriptionsByChatId(chatId);
 
   }
 
   @Override
-  public Subscription subscribe(String communityName, String sectionName, long chatId) {
+  public CommunitySubscription subscribe(String communityName, String sectionName, long chatId) {
 
-    var subscription = new Subscription(
+    var subscription = new CommunitySubscription(
         0,
         new Community(
             communityName
@@ -48,7 +48,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   @Override
   public void unsubscribe(String communityName, String sectionName, long chatId) {
 
-    var subscription = new Subscription(
+    var subscription = new CommunitySubscription(
         0,
         new Community(
             communityName

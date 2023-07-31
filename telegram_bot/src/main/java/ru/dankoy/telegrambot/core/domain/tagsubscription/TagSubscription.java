@@ -1,29 +1,39 @@
-package ru.dankoy.telegrambot.core.domain.subscription;
+package ru.dankoy.telegrambot.core.domain.tagsubscription;
 
 
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.telegrambot.core.domain.coub.Coub;
+import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 
-@EqualsAndHashCode
+
 @Getter
 @ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Subscription {
+public class TagSubscription {
+
 
   private long id;
-  private Community community;
-  private Chat chat;
-  private Section section;
-  private String lastPermalink;
 
+  private Tag tag;
+
+  private Chat chat;
+
+  private Order order;
+
+  private Scope scope;
+
+  private Type type;
+
+  private String lastPermalink;
 
   @Setter
   private List<Coub> coubs = new ArrayList<>();
@@ -42,7 +52,6 @@ public class Subscription {
       coubs.add(newCoub);
 
     }
-
 
   }
 
