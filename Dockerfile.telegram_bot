@@ -4,11 +4,13 @@ LABEL authors="turtality"
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
 
-ENV ENV_PATH_TO_JAR=build/libs/app-$JAR_VERSION-SNAPSHOT.jar
+ENV ENV_PATH_TO_JAR=telegram_bot/build/libs/telegram_bot-$JAR_VERSION.jar
 
 WORKDIR /app
-COPY ./telegram_bot/src ./src
-COPY ./telegram_bot/build.gradle ./
+COPY ./telegram_bot/src ./telegram_bot/src
+COPY ./telegram_bot/build.gradle ./telegram_bot/
+COPY ./build.gradle ./
+COPY ./settings.gradle ./
 
 RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"] # not alpine
 

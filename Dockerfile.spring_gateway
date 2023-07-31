@@ -4,11 +4,13 @@ LABEL authors="turtality"
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
 
-ENV ENV_PATH_TO_JAR=build/libs/app-$JAR_VERSION-SNAPSHOT.jar
+ENV ENV_PATH_TO_JAR=spring_gateway/build/libs/spring_gateway-$JAR_VERSION.jar
 
 WORKDIR /app
-COPY ./spring_gateway/src ./src
-COPY ./spring_gateway/build.gradle ./
+COPY ./spring_gateway/src ./spring_gateway/src
+COPY ./spring_gateway/build.gradle ./spring_gateway/
+COPY ./build.gradle ./
+COPY ./settings.gradle ./
 
 RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"] # not alpine
 
