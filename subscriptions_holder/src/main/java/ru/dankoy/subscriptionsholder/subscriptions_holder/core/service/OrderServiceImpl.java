@@ -1,5 +1,6 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.Order;
@@ -20,5 +21,10 @@ public class OrderServiceImpl implements OrderService {
     return optional.orElseThrow(
         () -> new ResourceNotFoundException(String.format("Tag order not found - %s", name))
     );
+  }
+
+  @Override
+  public List<Order> getAll() {
+    return orderRepository.findAll();
   }
 }
