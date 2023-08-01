@@ -19,7 +19,7 @@ chats.
 
 User can subscribe to different coub communities and sections in telegram bot. Then periodically bot
 will send new coubs to subscribed user. Bot sends only coubs that has been published after last sent
-coub to chat. If no coubs has been sent (new subscription), then bot get 25 coubs and sends them.
+coub to chat. 
 
 ## Microservice architecture
 
