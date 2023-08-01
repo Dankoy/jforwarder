@@ -27,4 +27,4 @@ coub to chat.
 
 ## Features in progress
 
-- Subscribe by tags
+- [x] Subscribe by tags (v0.2.1)
