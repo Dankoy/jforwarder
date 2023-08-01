@@ -19,8 +19,9 @@ import ru.dankoy.tcoubsinitiator.core.service.coub.CoubService;
 public class CoubFinderServiceImpl implements CoubFinderService {
 
   private static final long FIRST_PAGE = 1;
-  private static final int PER_PAGE = 25;
-  private static final long MAX_PAGE_TO_TRY = 5;
+  private static final int PER_PAGE = 10;
+  private static final long MAX_PAGE_TO_TRY = 2;
+  private static final int LIMIT_AMOUNT = 3;
 
   private final CoubService coubService;
 
@@ -48,7 +49,7 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
     if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
-      return useCoubsFromFirstPage(firstSetOfCoubs);
+      return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
 
     }
 
@@ -63,11 +64,11 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
       if (optionalLastCoubOnPage.isEmpty()) {
 
-        page++;
-
         if (page == MAX_PAGE_TO_TRY) {
-          return useCoubsFromFirstPage(firstSetOfCoubs);
+          return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
         }
+
+        page++;
 
         log.info("Coub with last permalink '{}' not found", lastPermalink);
         log.info("Trying page: {}", page);
@@ -125,7 +126,7 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
     if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
-      return useCoubsFromFirstPage(firstSetOfCoubs);
+      return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
 
     }
 
@@ -140,11 +141,11 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
       if (optionalLastCoubOnPage.isEmpty()) {
 
-        page++;
-
         if (page == MAX_PAGE_TO_TRY) {
-          return useCoubsFromFirstPage(firstSetOfCoubs);
+          return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
         }
+
+        page++;
 
         log.info("Coub with last permalink '{}' not found", lastPermalink);
         log.info("Trying page: {}", page);
@@ -192,6 +193,11 @@ public class CoubFinderServiceImpl implements CoubFinderService {
   private List<Coub> useCoubsFromFirstPage(List<Coub> coubs) {
     coubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
     return coubs;
+  }
+
+  private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
+    coubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
+    return coubs.subList(0, limit);
   }
 
   private void sleep(long millis) {
