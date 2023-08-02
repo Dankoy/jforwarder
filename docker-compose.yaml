@@ -55,7 +55,7 @@ services:
       dockerfile: Dockerfile.kafka_message_producer
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/kafka_message_producer:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/kafka_message_producer:${JAR_VERSION}
     container_name: kafka-message-producer
     ports:
       - "8083:8083"
@@ -83,7 +83,7 @@ services:
       dockerfile: Dockerfile.kafka_message_consumer
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/kafka_message_consumer:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/kafka_message_consumer:${JAR_VERSION}
     container_name: kafka-message-consumer
     ports:
       - "8085:8085"
@@ -115,7 +115,7 @@ services:
       dockerfile: Dockerfile.subscriptions_holder
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/subscriptions_holder:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/subscriptions_holder:${JAR_VERSION}
     container_name: subscriptions-holder
     ports:
       - "8082:8082"
@@ -144,7 +144,8 @@ services:
       retries: 10
 
   subscriptions-holder-postgres:
-    env_file: .env
+    env_file:
+      - .env
     image: 'postgres:latest'
     container_name: subscriptions-holder-postgres-db
     environment:
@@ -188,7 +189,7 @@ services:
       dockerfile: Dockerfile.spring_eureka_registry
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/spring_eureka_registry:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/spring_eureka_registry:${JAR_VERSION}
     container_name: spring-eureka-registry
     ports:
       - "8761:8761"
@@ -212,7 +213,7 @@ services:
       dockerfile: Dockerfile.spring_gateway
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/spring_gateway:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/spring_gateway:${JAR_VERSION}
     container_name: spring-gateway
     ports:
       - "8760:8760"
@@ -244,7 +245,7 @@ services:
       dockerfile: Dockerfile.t_coubs_initiator
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/t_coubs_initiator:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/t_coubs_initiator:${JAR_VERSION}
     container_name: t-coubs-initiator
     ports:
       - "8081:8081"
@@ -275,7 +276,7 @@ services:
       dockerfile: Dockerfile.telegram_bot
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/coub_forwarder_telegram_bot:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/coub_forwarder_telegram_bot:${JAR_VERSION}
     container_name: telegram-bot
     ports:
       - "8084:8084"
@@ -303,7 +304,7 @@ services:
       dockerfile: Dockerfile.coub_tags_searcher
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: evawe/coub_tags_searcher:${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/coub_tags_searcher:${JAR_VERSION}
     container_name: coub-tags-searcher
     ports:
       - "8086:8086"
