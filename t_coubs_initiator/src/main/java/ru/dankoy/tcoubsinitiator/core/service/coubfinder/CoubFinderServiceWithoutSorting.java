@@ -14,20 +14,16 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscr
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
 import ru.dankoy.tcoubsinitiator.core.service.coub.CoubService;
 
-/**
- * Sorts coubs by published date. So the coubs it returns are not the same as on site. Moved to
- * {@link CoubFinderServiceWithoutSorting} for better workflow without shadow logic
- */
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@ConditionalOnProperty(prefix = "coub", name = "sorting", havingValue = "by-published-date")
-public class CoubFinderServiceImpl implements CoubFinderService {
+@ConditionalOnProperty(prefix = "coub", name = "sorting", havingValue = "false",
+    matchIfMissing = true)
+public class CoubFinderServiceWithoutSorting implements CoubFinderService {
 
   private static final long FIRST_PAGE = 1;
   private static final int PER_PAGE = 10;
-  private static final long MAX_PAGE_TO_TRY = 2;
+  private static final long MAX_PAGE_TO_TRY = 3;
   private static final int LIMIT_AMOUNT = 3;
 
   private final CoubService coubService;
@@ -63,7 +59,6 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     while (page <= totalPages) {
 
       allCoubs.addAll(wrapper.getCoubs());
-      allCoubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
 
       Optional<Coub> optionalLastCoubOnPage = allCoubs.stream()
           .filter(c -> c.getPermalink().equals(lastPermalink))
@@ -107,7 +102,7 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
     }
 
-    return firstSetOfCoubs;
+    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
   }
 
   @Override
@@ -140,7 +135,6 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     while (page <= totalPages) {
 
       allCoubs.addAll(wrapper.getCoubs());
-      allCoubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
 
       Optional<Coub> optionalLastCoubOnPage = allCoubs.stream()
           .filter(c -> c.getPermalink().equals(lastPermalink))
@@ -186,19 +180,17 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
     }
 
-    return firstSetOfCoubs;
+    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
   }
 
 
   private void deleteOlderCoubs(List<Coub> coubs, Coub lastCoub) {
 
-    coubs.remove(lastCoub);
-    coubs.removeIf(c -> c.getPublishedAt().isBefore(lastCoub.getPublishedAt()));
+    coubs.subList(coubs.indexOf(lastCoub), coubs.size()).clear();
 
   }
 
   private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
-    coubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
     return coubs.subList(0, limit);
   }
 
