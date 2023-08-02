@@ -15,6 +15,21 @@ spring:
 
   cloud:
     gateway:
+      httpclient:
+        pool:
+          type: elastic
+          max-connections: 1000
+          acquire-timeout: 80000
+          max-life-time: 300s
+          max-idle-time: 20000
+        connect-timeout: 30000
+        response-timeout: 60s
+      default-filters:
+        - name: Retry
+          args:
+            methods: GET,PUT,POST,DELETE
+            exceptions:
+              - reactor.netty.http.client.PrematureCloseException
       discovery:
         locator:
           enabled: true
@@ -26,6 +41,8 @@ spring:
             - Path=/cc/**
           filters:
             - StripPrefix=1
+            - AddRequestHeader=Accept-Encoding, 'gzip, deflate, br'
+            - AddRequestHeader=User-Agent, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0'
 #            - name: RequestRateLimiter
 #              args:
 #                redis-rate-limiter.replenishRate: 2
