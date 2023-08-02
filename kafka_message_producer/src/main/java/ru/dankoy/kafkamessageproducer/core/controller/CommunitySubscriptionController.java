@@ -30,14 +30,6 @@ public class CommunitySubscriptionController {
 
     log.info("{}", communitySubscriptions);
 
-    for (CommunitySubscription communitySubscription : communitySubscriptions) {
-
-      // ascending order
-      communitySubscription.getCoubs()
-          .sort((emp1, emp2) -> emp1.getPublishedAt().compareTo(emp2.getPublishedAt()));
-
-    }
-
     List<CommunitySubscriptionMessage> converted = communitySubscriptions.stream()
         .map(converter::convert)
         .flatMap(Collection::stream)

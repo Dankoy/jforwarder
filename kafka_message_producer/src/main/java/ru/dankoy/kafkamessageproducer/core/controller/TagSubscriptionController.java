@@ -30,14 +30,6 @@ public class TagSubscriptionController {
 
     log.info("{}", tagSubscriptions);
 
-    for (var tagSubscription : tagSubscriptions) {
-
-      // ascending order
-      tagSubscription.getCoubs()
-          .sort((emp1, emp2) -> emp1.getPublishedAt().compareTo(emp2.getPublishedAt()));
-
-    }
-
     List<TagSubscriptionMessage> converted = tagSubscriptions.stream()
         .map(converter::convert)
         .flatMap(Collection::stream)
