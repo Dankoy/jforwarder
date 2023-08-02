@@ -17,11 +17,17 @@ coub:
     url: "https://coub.com/"
     apiUrl: "https://coub.com/api/v2/"
     gatewayApiUrl: ${GATEWAY_COUB_URL:http://localhost:8760/cc/}
+  sorting: false
 
 
 logging:
   level:
     root: INFO
+    ru:
+      dankoy:
+        tcoubsinitiator:
+          core:
+            feign: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
