@@ -57,5 +57,10 @@ management:
 logging:
   level:
     root: INFO
+    ru:
+      dankoy:
+        coubtagssearcher:
+          core:
+            feign: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
