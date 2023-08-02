@@ -1,6 +1,7 @@
 package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
 
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,10 @@ public class SchedulerSubscriptionServiceTag {
       log.info("Working with subscription - '{}'", subscription);
 
       List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForTagSubscription(subscription);
+
+      // reverse coubs
+      Collections.reverse(coubsToSend);
+
       subscription.addCoubs(coubsToSend);
 
     }

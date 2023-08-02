@@ -3,6 +3,7 @@ package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 // по заданному времени лезет в апи куба, проверяет свои подписки и создает сообщения
 
 
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +37,10 @@ public class SchedulerSubscriptionServiceCommunitySection {
 
       List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForCommunitySubscription(
           subscription);
+
+      // reverse coubs
+      Collections.reverse(coubsToSend);
+
       subscription.addCoubs(coubsToSend);
 
     }
