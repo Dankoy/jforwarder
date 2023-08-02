@@ -87,7 +87,7 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
       } else {
 
         log.info("Found coub with lastPermalink in current list");
-        log.info("Trying to sort and find unsent coubs");
+        log.info("Trying to find unsent coubs");
 
         var lastCoub = optionalLastCoubOnPage.get();
 
@@ -165,7 +165,7 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
       } else {
 
         log.info("Found coub with lastPermalink in current list");
-        log.info("Trying to sort and find unsent coubs");
+        log.info("Trying to find unsent coubs");
 
         var lastCoub = optionalLastCoubOnPage.get();
 
