@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
@@ -20,6 +22,10 @@ import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
 @RequiredArgsConstructor
 public class SchedulerSubscriptionServiceCommunitySection {
 
+  private static final int FIRST_PAGE = 0;
+  private static final int PAGE_SIZE = 3;
+
+
   private final SubscriptionService subscriptionService;
   private final MessageProducerCommunitySubscriptionService messageProducerCommunitySubscriptionService;
   private final CoubFinderService coubFinderService;
@@ -27,36 +33,69 @@ public class SchedulerSubscriptionServiceCommunitySection {
   @Scheduled(initialDelay = 30_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
 
-    List<CommunitySubscription> communitySubscriptions = subscriptionService.getAllSubscriptionsWithActiveChats();
-    log.info("Subscriptions - {}", communitySubscriptions);
+    int page = FIRST_PAGE;
+    int totalPages = Integer.MAX_VALUE;
 
-    // поиск кубов из апи с last_permalink
-    for (var subscription : communitySubscriptions) {
+    // iterate by pages
+    while (page <= totalPages) {
 
-      log.info("Working with subscription - '{}'", subscription);
+      var pageable = PageRequest.of(page, PAGE_SIZE);
+      Page<CommunitySubscription> communitySubscriptionsPage = subscriptionService.getAllSubscriptionsWithActiveChats(
+          pageable);
 
-      List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForCommunitySubscription(
-          subscription);
+      totalPages = communitySubscriptionsPage.getTotalPages() - 1;
 
-      // reverse coubs
-      Collections.reverse(coubsToSend);
+      log.info("CommunitySubscriptions page - {}", communitySubscriptionsPage);
+      log.info("CommunitySubscriptions - {}", communitySubscriptionsPage.getContent());
 
-      subscription.addCoubs(coubsToSend);
+      // поиск кубов из апи с last_permalink
+      for (var subscription : communitySubscriptionsPage) {
+
+        log.info("Working with subscription - '{}'", subscription);
+
+        List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForCommunitySubscription(
+            subscription);
+
+        // reverse coubs
+        Collections.reverse(coubsToSend);
+
+        subscription.addCoubs(coubsToSend);
+
+      }
+
+      // remove subscriptions without coubs
+
+      var toSend = communitySubscriptionsPage.stream()
+          .filter(s -> !s.getCoubs().isEmpty())
+          .toList();
+
+      //send to message producer service
+
+      log.info("Coubs to send for all subscriptions - {}", toSend);
+
+      if (!toSend.isEmpty()) {
+        messageProducerCommunitySubscriptionService.sendCommunitySubscriptionsData(toSend);
+      }
+
+      log.info("Page {} of {} is done", page, totalPages);
+      log.info("Amount of community subscriptions processed: {}",
+          communitySubscriptionsPage.getContent().size());
+
+      page++;
+
+      sleep(5_000);
 
     }
 
-    // remove subscriptions without coubs
+  }
 
-    var toSend = communitySubscriptions.stream()
-        .filter(s -> !s.getCoubs().isEmpty())
-        .toList();
+  private void sleep(long millis) {
 
-    //send to message producer service
-
-    log.info("Coubs to send for all subscriptions - {}", toSend);
-
-    if (!toSend.isEmpty()) {
-      messageProducerCommunitySubscriptionService.sendCommunitySubscriptionsData(toSend);
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException("Interrupted while trying to get coubs", e);
     }
 
   }

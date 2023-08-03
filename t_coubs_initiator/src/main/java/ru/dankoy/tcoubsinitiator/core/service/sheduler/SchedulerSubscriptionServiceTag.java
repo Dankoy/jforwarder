@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
@@ -18,6 +20,9 @@ import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionSer
 @RequiredArgsConstructor
 public class SchedulerSubscriptionServiceTag {
 
+  private static final int FIRST_PAGE = 0;
+  private static final int PAGE_SIZE = 3;
+
   private final TagSubscriptionService tagSubscriptionService;
   private final MessageProducerTagSubscriptionService messageProducerTagSubscriptionService;
   private final CoubFinderService coubFinderService;
@@ -25,35 +30,69 @@ public class SchedulerSubscriptionServiceTag {
   @Scheduled(initialDelay = 60_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
 
-    List<TagSubscription> tagSubscriptions = tagSubscriptionService.getAllSubscriptionsWithActiveChats();
-    log.info("Subscriptions - {}", tagSubscriptions);
+    int page = FIRST_PAGE;
+    int totalPages = Integer.MAX_VALUE;
 
-    // поиск кубов из апи с last_permalink
-    for (var subscription : tagSubscriptions) {
+    // iterate by pages
+    while (page <= totalPages) {
 
-      log.info("Working with subscription - '{}'", subscription);
+      var pageable = PageRequest.of(page, PAGE_SIZE);
 
-      List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForTagSubscription(subscription);
+      Page<TagSubscription> tagSubscriptionsPage = tagSubscriptionService.getAllSubscriptionsWithActiveChats(
+          pageable);
 
-      // reverse coubs
-      Collections.reverse(coubsToSend);
+      totalPages = tagSubscriptionsPage.getTotalPages() - 1;
 
-      subscription.addCoubs(coubsToSend);
+      log.info("TagSubscriptions page - {}", tagSubscriptionsPage);
+      log.info("TagSubscriptions - {}", tagSubscriptionsPage.getContent());
+
+      // поиск кубов из апи с last_permalink
+      for (var subscription : tagSubscriptionsPage) {
+
+        log.info("Working with subscription - '{}'", subscription);
+
+        List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForTagSubscription(subscription);
+
+        // reverse coubs
+        Collections.reverse(coubsToSend);
+
+        subscription.addCoubs(coubsToSend);
+
+      }
+
+      // remove subscriptions without coubs
+
+      var toSend = tagSubscriptionsPage.stream()
+          .filter(s -> !s.getCoubs().isEmpty())
+          .toList();
+
+      //send to message producer service
+
+      log.info("Coubs to send for all subscriptions - {}", toSend);
+
+      if (!toSend.isEmpty()) {
+        messageProducerTagSubscriptionService.sendTagSubscriptionsData(toSend);
+      }
+
+      log.info("Page {} of {} is done", page, totalPages);
+      log.info("Amount of tag subscriptions processed: {}",
+          tagSubscriptionsPage.getContent().size());
+
+      page++;
+
+      sleep(5_000);
 
     }
 
-    // remove subscriptions without coubs
+  }
 
-    var toSend = tagSubscriptions.stream()
-        .filter(s -> !s.getCoubs().isEmpty())
-        .toList();
+  private void sleep(long millis) {
 
-    //send to message producer service
-
-    log.info("Coubs to send for all subscriptions - {}", toSend);
-
-    if (!toSend.isEmpty()) {
-      messageProducerTagSubscriptionService.sendTagSubscriptionsData(toSend);
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      throw new RuntimeException("Interrupted while trying to get coubs", e);
     }
 
   }

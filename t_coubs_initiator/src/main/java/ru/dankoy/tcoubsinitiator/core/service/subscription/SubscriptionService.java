@@ -1,11 +1,12 @@
 package ru.dankoy.tcoubsinitiator.core.service.subscription;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 
 public interface SubscriptionService {
 
-  List<CommunitySubscription> getAllSubscriptions();
+  Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
 
-  List<CommunitySubscription> getAllSubscriptionsWithActiveChats();
+  Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
 }
