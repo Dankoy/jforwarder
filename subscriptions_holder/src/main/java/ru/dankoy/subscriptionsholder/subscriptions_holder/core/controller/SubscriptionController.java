@@ -4,6 +4,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,20 +29,19 @@ public class SubscriptionController {
 
 
   @GetMapping(value = "/api/v1/subscriptions")
-  public List<SubscriptionDTO> getAll() {
-    var s = subscriptionService.getAll();
-
-    return s.stream().map(SubscriptionDTO::toDTO).toList();
+  public Page<SubscriptionDTO> getAll(Pageable pageable) {
+    var s = subscriptionService.getAll(pageable);
+    return s.map(SubscriptionDTO::toDTO);
 
   }
 
   @GetMapping(value = "/api/v1/subscriptions", params = {"active"})
-  public List<SubscriptionDTO> getAllWithActiveChats(
-      @RequestParam(value = "active", defaultValue = "true") boolean active) {
+  public Page<SubscriptionDTO> getAllWithActiveChats(
+      @RequestParam(value = "active", defaultValue = "true") boolean active, Pageable pageable) {
 
-    var s = subscriptionService.getAllWithActiveChats(active);
+    var s = subscriptionService.getAllWithActiveChats(active, pageable);
 
-    return s.stream().map(SubscriptionDTO::toDTO).toList();
+    return s.map(SubscriptionDTO::toDTO);
 
   }
 
@@ -85,6 +86,5 @@ public class SubscriptionController {
     return SubscriptionDTO.toDTO(s);
 
   }
-
 
 }

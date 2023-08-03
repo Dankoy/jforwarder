@@ -2,13 +2,15 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 
 public interface SubscriptionService {
 
-  List<CommunitySubscription> getAll();
+  Page<CommunitySubscription> getAll(Pageable pageable);
 
-  List<CommunitySubscription> getAllWithActiveChats(boolean active);
+  Page<CommunitySubscription> getAllWithActiveChats(boolean active, Pageable pageable);
 
   List<CommunitySubscription> getAllByCommunityName(String communityName);
 
