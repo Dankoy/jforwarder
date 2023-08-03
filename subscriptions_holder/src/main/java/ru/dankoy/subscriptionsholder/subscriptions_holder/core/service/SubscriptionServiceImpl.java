@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
@@ -24,13 +26,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   private final SectionService sectionService;
 
   @Override
-  public List<CommunitySubscription> getAll() {
-    return communitySubscriptionRepository.findAll();
+  public Page<CommunitySubscription> getAll(Pageable pageable) {
+    return communitySubscriptionRepository.findAll(pageable);
   }
 
   @Override
-  public List<CommunitySubscription> getAllWithActiveChats(boolean active) {
-    return communitySubscriptionRepository.findAllWithActiveChats(active);
+  public Page<CommunitySubscription> getAllWithActiveChats(boolean active, Pageable pageable) {
+    return communitySubscriptionRepository.findAllByChatActive(active, pageable);
   }
 
   @Override

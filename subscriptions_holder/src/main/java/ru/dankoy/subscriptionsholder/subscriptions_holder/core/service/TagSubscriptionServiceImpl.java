@@ -2,6 +2,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
@@ -22,8 +24,8 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   private final TelegramChatService telegramChatService;
 
   @Override
-  public List<TagSubscription> getAllByActiveTelegramChats(boolean active) {
-    return tagSubscriptionRepository.findAllWithActiveChats(active);
+  public Page<TagSubscription> getAllByActiveTelegramChats(boolean active, Pageable pageable) {
+    return tagSubscriptionRepository.findAllByChatActive(active, pageable);
   }
 
   @Override
