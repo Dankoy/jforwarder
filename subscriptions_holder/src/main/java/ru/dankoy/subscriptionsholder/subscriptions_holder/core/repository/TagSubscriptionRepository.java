@@ -2,6 +2,10 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository;
 
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.EntityGraph.EntityGraphType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,33 +14,38 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSub
 public interface TagSubscriptionRepository extends
     JpaRepository<TagSubscription, Long> {
 
+  // todo: Pageable with query returns ArrayList<Object[]> for whatever reason.
+  //  Probably native query fix the problem.
+  //  Decided to use named graphs
 
-  @Query(
-      """
-          select ts, ch, ord, sco, tg, ty from TagSubscription ts
-          join ts.chat ch
-          join ts.tag tg
-          join ts.order ord
-          join ts.scope sco
-          join ts.type ty
-              """
-  )
+  //  @Query(
+//      """
+//          select ts, ch, ord, sco, tg, ty from TagSubscription ts
+//          join ts.chat ch
+//          join ts.tag tg
+//          join ts.order ord
+//          join ts.scope sco
+//          join ts.type ty
+//              """
+//  )
+  @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
   @Override
-  List<TagSubscription> findAll();
+  Page<TagSubscription> findAll(Pageable pageable);
 
 
-  @Query(
-      """
-          select ts, ch, t, ord, sco, ty from TagSubscription ts
-          join ts.chat ch
-          join ts.tag t
-          join ts.order ord
-          join ts.scope sco
-          join ts.type ty
-          where ch.active = :active
-              """
-  )
-  List<TagSubscription> findAllWithActiveChats(@Param("active") boolean active);
+  //  @Query(
+//      """
+//          select ts, ch, t, ord, sco, ty from TagSubscription ts
+//          join ts.chat ch
+//          join ts.tag t
+//          join ts.order ord
+//          join ts.scope sco
+//          join ts.type ty
+//          where ch.active = :active
+//              """
+//  )
+  @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
+  Page<TagSubscription> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
   @Query(
       """

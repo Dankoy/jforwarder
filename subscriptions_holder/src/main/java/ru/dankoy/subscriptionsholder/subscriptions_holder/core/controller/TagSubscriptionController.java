@@ -4,6 +4,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,13 +26,12 @@ public class TagSubscriptionController {
 
 
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
-  public List<TagSubscriptionDTO> getAllByActiveChat(@RequestParam("active") boolean active) {
+  public Page<TagSubscriptionDTO> getAllByActiveChat(@RequestParam("active") boolean active,
+      Pageable pageable) {
 
-    var subs = tagSubscriptionService.getAllByActiveTelegramChats(active);
+    var subs = tagSubscriptionService.getAllByActiveTelegramChats(active, pageable);
 
-    return subs.stream()
-        .map(TagSubscriptionDTO::toDTO)
-        .toList();
+    return subs.map(TagSubscriptionDTO::toDTO);
 
   }
 
