@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.config;
+package ru.dankoy.telegrambot.config;
 
 
 import feign.Capability;

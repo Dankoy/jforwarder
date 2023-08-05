@@ -1,9 +1,5 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.config;
+package ru.dankoy.spring_gateway.config;
 
-
-import feign.Capability;
-import feign.micrometer.MicrometerCapability;
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.observation.ObservationRegistry;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -14,11 +10,6 @@ import org.springframework.util.PathMatcher;
 
 @Configuration
 public class ObservabilityConfig {
-
-  @Bean
-  public Capability capability(final MeterRegistry registry) {
-    return new MicrometerCapability(registry);
-  }
 
   @Bean
   ObservationRegistryCustomizer<ObservationRegistry> skipActuatorEndpointsFromObservation() {
