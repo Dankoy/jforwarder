@@ -17,14 +17,12 @@ chats.
 
 ## Usage
 
-User can subscribe to different coub communities and sections in telegram bot. Then periodically bot
-will send new coubs to subscribed user. Bot sends only coubs that has been published after last sent
-coub to chat. 
+User can subscribe to different coub communities and sections or by tags in telegram bot. Then
+periodically bot will send new coubs to subscribed user. Bot sends only coubs that has been
+published after last sent coub to chat.
 
 ## Microservice architecture
 
-- in progress
+Microservice communication schema:    
+![drawio](jforwarder.drawio.svg)
 
-## Features in progress
-
-- [x] Subscribe by tags (v0.2.1)
