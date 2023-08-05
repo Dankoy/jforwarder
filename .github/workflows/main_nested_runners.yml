@@ -1,0 +1,264 @@
+name: Gradle Package and docker hub push
+
+on: [ workflow_dispatch ]
+
+jobs:
+  create-runners:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Multiple GitHub Runners in Runner
+        uses: dougcalobrisi/nested-github-runners-action@v0.9
+        with:
+          runners: 8
+          github-token: ${{ secrets.GH_TOKEN }}
+
+
+  runner1:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push coub_tags_searcher
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.coub_tags_searcher
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+
+  runner2:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push kafka_message_producer
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.kafka_message_producer
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  runner3:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push kafka_message_consumer
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.kafka_message_consumer
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+
+  runner4:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push spring_eureka_registry
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.spring_eureka_registry
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  runner5:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push spring_gateway
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.spring_gateway
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  runner6:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push subscriptions_holder
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.subscriptions_holder
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  runner7:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push t_coubs_initiator
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.t_coubs_initiator
+          platforms: linux/amd64,linux/arm64
+          push: true
+
+  runner8:
+    runs-on: nested-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push telegram_bot
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile.telegram_bot
+          platforms: linux/amd64,linux/arm64
+          push: true
