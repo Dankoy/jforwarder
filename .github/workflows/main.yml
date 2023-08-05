@@ -25,7 +25,7 @@ jobs:
           cache: gradle
 
       - name: Retrieve Version
-        run: echo "::set-output name=VERSION_NAME::$(${{ github.workspace }}/gradlew -q printVersionName)"
+        run: echo "VERSION_NAME=$(${{ github.workspace }}/gradlew -q printVersionName)" >> $GITHUB_OUTPUT
         id: project_version
 
       - name: Get version
@@ -49,5 +49,5 @@ jobs:
           context: .
           file: ./Dockerfile.{{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
-          tag: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
-          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
+          push: false
