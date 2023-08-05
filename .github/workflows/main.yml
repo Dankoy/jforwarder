@@ -12,7 +12,7 @@ jobs:
       matrix:
         docker-file: [ "coub_tags_searcher", "kafka_message_consumer", "kafka_message_producer",
                        "spring_eureka_registry", "spring_gateway", "subscriptions_holder",
-                       "t_coubs_initiator", "telegram_bot"
+                       "t_coubs_initiator", "coub_forwarder_telegram_bot"
         ]
 
     steps:
@@ -47,6 +47,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          build-args: |
+            JAR_VERSION=${{ env.version_name }}
           file: ./Dockerfile.${{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
