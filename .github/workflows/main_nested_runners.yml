@@ -1,4 +1,4 @@
-name: Gradle Package and docker hub push
+name: Gradle Package and docker hub push using nested runners
 
 on: [ workflow_dispatch ]
 
