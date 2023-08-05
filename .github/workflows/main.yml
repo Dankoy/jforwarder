@@ -25,7 +25,7 @@ jobs:
           cache: gradle
 
       - name: Retrieve Version
-        run: echo "VERSION_NAME=$(${{ github.workspace }}/gradlew -q printVersionName)" >> $GITHUB_OUTPUT
+        run: echo "VERSION_NAME=$(${{ github.workspace }}/gradlew -q printVersion)" >> $GITHUB_OUTPUT
         id: project_version
 
       - name: Get version
