@@ -50,4 +50,4 @@ jobs:
           file: ./Dockerfile.${{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
-          push: false
+          push: true
