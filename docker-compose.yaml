@@ -273,7 +273,7 @@ services:
       - .env
     build:
       context: .
-      dockerfile: Dockerfile.telegram_bot
+      dockerfile: Dockerfile.coub_forwarder_telegram_bot
       args:
         - JAR_VERSION=${JAR_VERSION}
     image: ${DOCKER_HUB_USER}/coub_forwarder_telegram_bot:${JAR_VERSION}
