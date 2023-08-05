@@ -11,6 +11,7 @@ jobs:
         with:
           runners: 8
           github-token: ${{ secrets.GH_TOKEN }}
+          docker-in-docker: true
 
 
   runner1:
