@@ -1,5 +1,8 @@
 # jforwarder
 
+![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/main.yml/badge.svg)    
+[![HitCount](https://hits.dwyl.com/dankoy/jforwarder.svg?style=flat)](http://hits.dwyl.com/dankoy/jforwarder)
+
 # Trademark disclaimer
 
 Coub and the Coub logo are trademarks of Coub.com Ltd and its affiliates. All rights reserved.    
