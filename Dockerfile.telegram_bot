@@ -1,4 +1,6 @@
-FROM  --platform=linux/arm64 gradle:8.2.1-jdk17
+FROM  gradle:8.2.1-jdk17
+#FROM  --platform=linux/arm64 gradle:8.2.1-jdk17
+
 LABEL authors="turtality"
 
 ARG JAR_VERSION
