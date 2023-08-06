@@ -1,6 +1,9 @@
-name: Build and docker hub push using matrix
+name: Build and docker hub push using matrix by @${{ github.actor }}
 
-on: [ workflow_dispatch ]
+on:
+  release:
+    types: [ published ]
+    branches: [main]
 
 jobs:
   build:
