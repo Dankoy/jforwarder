@@ -1,9 +1,11 @@
 name: Build and docker hub push using matrix
 
 on:
+  workflow_dispatch:
   release:
     types: [ published ]
     branches: [main]
+
 
 jobs:
   build:
