@@ -24,6 +24,23 @@ User can subscribe to different coub communities and sections or by tags in tele
 periodically bot will send new coubs to subscribed user. Bot sends only coubs that has been
 published after last sent coub to chat.
 
+## Stack
+
+1. Spring boot 3.1.1
+2. PostgreSQL
+3. Flyway
+4. Spring Cloud Netflix Eureka
+5. Spring Cloud Loadbalancer
+6. Spring Cloud Gateway
+7. Open feign
+8. Caffeine Cache
+9. Micrometer tracing
+10. Zipkin reporter brave
+11. Zipkin
+12. Docker compose
+13. Telegrambots 6.7.0
+
+
 ## Microservice architecture
 
 Microservice communication schema:    
