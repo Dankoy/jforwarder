@@ -24,6 +24,30 @@ User can subscribe to different coub communities and sections or by tags in tele
 periodically bot will send new coubs to subscribed user. Bot sends only coubs that has been
 published after last sent coub to chat.
 
+### Example of making community subscription
+
+1) To get all available communities and its sections:
+```/communities```
+ 
+    > Available communities:    
+     community: animals-pets    
+     sections: monthly, quarter, half, daily, fresh, rising, weekly    
+    ... truncated ...
+
+2) To subscribe to community:
+```/subscribe_by_community animals-pets weekly```
+
+3) Bot will periodically send links to coubs for every subscription user has.    
+
+    Example of message:    
+    > community #animals-pets #weekly    
+     https://coub.com/view/3ca3fu
+   
+4) Show user active subscriptions: ```/my_subscriptions```
+    > Community subscriptions:    
+   1: animals-pets weekly    
+   
+
 ## Stack
 
 1. Spring boot 3.1.1
