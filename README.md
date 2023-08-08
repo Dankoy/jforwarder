@@ -34,8 +34,9 @@ published after last sent coub to chat.
      sections: monthly, quarter, half, daily, fresh, rising, weekly    
     ... truncated ...
 
-2) To subscribe to community:
-```/subscribe_by_community animals-pets weekly```
+2) To subscribe to community or tag:    
+```/subscribe community animals-pets weekly```    
+```/subscribe tag cars newest```
 
 3) Bot will periodically send links to coubs for every subscription user has.    
 
