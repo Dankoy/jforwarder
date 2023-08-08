@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -95,6 +96,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       Message message = update.getMessage();
 
       if (update.getMessage().hasText()) {
+        log.info("Received message from '{}' with text '{}'", message.getChat().getId(),
+            message.getText());
         botAnswerUtils(message);
       }
     }
@@ -454,7 +457,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void send(SendMessage sendMessage) {
     try {
       execute(sendMessage);
-      log.info("Reply sent");
+      log.info("Reply sent to '{}' with message '{}'", sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
     } catch (TelegramApiException e) {
       log.error(e.getMessage());
     }
@@ -504,13 +508,16 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     try {
 
-      execute(sendMessage);
       log.info("Sent message to chat '{}' for subscription '{}' {} {}",
           message.chat(),
           message.id(),
           message.community().getName(),
           message.section().getName());
-      log.info("Send - {}", sendMessage);
+
+      execute(sendMessage);
+
+      log.info("Message sent to '{}' with message '{}'", sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
 
     } catch (TelegramApiRequestException e) {
       if (e.getErrorCode() == 403) {
@@ -552,12 +559,15 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     try {
 
-      execute(sendMessage);
       log.info("Sent message to chat '{}' for tag subscription '{}' {}",
           message.chat().getChatId(),
           message.id(),
           message.tag().getTitle());
-      log.info("Send - {}", sendMessage);
+
+      execute(sendMessage);
+
+      log.info("Message sent to '{}' with message '{}'", sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
 
     } catch (TelegramApiRequestException e) {
       if (e.getErrorCode() == 403) {
