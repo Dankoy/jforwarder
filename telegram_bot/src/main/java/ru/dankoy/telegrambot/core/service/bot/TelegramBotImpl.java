@@ -20,6 +20,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import ru.dankoy.telegrambot.core.domain.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
@@ -41,8 +42,9 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
 
-  private final static String COMMAND_FIRST_FIELD = "first";
-  private final static String COMMAND_SECOND_FIELD = "second";
+  private static final String COMMAND_FIRST_FIELD = "first";
+  private static final String COMMAND_SECOND_FIELD = "second";
+  private static final String COMMAND_SUBSCRIPTION_TYPE_FIELD = "subscription_type";
 
   private final String botName;
 
@@ -118,10 +120,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var startFromGroup = "/start" + getGroupChatBotName();
     var subsFromGroup = "/my_subscriptions" + getGroupChatBotName();
     var helpFromGroup = "/help" + getGroupChatBotName();
-    var subscribeCommunityFromGroup = "/subscribe_by_community" + getGroupChatBotName();
-    var unsubscribeCommunityFromGroup = "/unsubscribe_from_community" + getGroupChatBotName();
-    var subscribeTagFromGroup = "/subscribe_by_tag" + getGroupChatBotName();
-    var unsubscribeTagFromGroup = "/unsubscribe_from_tag" + getGroupChatBotName();
+    var subscribeCommunityFromGroup = "/subscribe" + getGroupChatBotName();
+    var unsubscribeCommunityFromGroup = "/unsubscribe" + getGroupChatBotName();
     var communitiesFromGroup = "/communities" + getGroupChatBotName();
     var tagOrdersFromGroup = "/tag_orders" + getGroupChatBotName();
 
@@ -131,22 +131,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       start(inputMessage);
     } else if (messageText.equals("/help") || messageText.equals(helpFromGroup)) {
       help(inputMessage);
-    } else if (messageText.startsWith("/subscribe_by_community") || messageText.startsWith(
+    } else if (messageText.startsWith("/subscribe") || messageText.startsWith(
         subscribeCommunityFromGroup)) {
       checkChatStatus(inputMessage);
-      subscribeToCommunity(inputMessage);
-    } else if (messageText.startsWith("/unsubscribe_from_community") || messageText.startsWith(
+      subscribeUtils(inputMessage);
+    } else if (messageText.startsWith("/unsubscribe") || messageText.startsWith(
         unsubscribeCommunityFromGroup)) {
       checkChatStatus(inputMessage);
-      unsubscribeFromCommunity(inputMessage);
-    } else if (messageText.startsWith("/subscribe_by_tag") || messageText.startsWith(
-        subscribeTagFromGroup)) {
-      checkChatStatus(inputMessage);
-      subscribeByTag(inputMessage);
-    } else if (messageText.startsWith("/unsubscribe_from_tag") || messageText.startsWith(
-        unsubscribeTagFromGroup)) {
-      checkChatStatus(inputMessage);
-      unsubscribeFromTag(inputMessage);
+      unsubscribeUtils(inputMessage);
     } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
       communities(inputMessage);
     } else if (messageText.equals("/tag_orders") || messageText.equals(tagOrdersFromGroup)) {
@@ -249,27 +241,13 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   }
 
-  private void subscribeToCommunity(Message inputMessage) {
+  private void subscribeToCommunity(Map<String, String> command, Message inputMessage) {
 
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
 
-    var messageText = inputMessage.getText();
-    // find community and section
-
-    String[] command = new String[0];
-    try {
-
-      command = parseCommand(messageText);
-
-    } catch (BotException e) {
-      message.setText(e.getMessage());
-      send(message);
-      return;
-    }
-
-    var communityName = command[1];
-    var sectionName = command[2];
+    var communityName = command.get(COMMAND_FIRST_FIELD);
+    var sectionName = command.get(COMMAND_SECOND_FIELD);
 
     try {
 
@@ -292,27 +270,13 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   }
 
-  private void unsubscribeFromCommunity(Message inputMessage) {
+  private void unsubscribeFromCommunity(Map<String, String> command, Message inputMessage) {
 
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
 
-    var messageText = inputMessage.getText();
-    // find community and section
-
-    String[] command = new String[0];
-    try {
-
-      command = parseCommand(messageText);
-
-    } catch (BotException e) {
-      message.setText(e.getMessage());
-      send(message);
-      return;
-    }
-
-    var communityName = command[1];
-    var sectionName = command[2];
+    var communityName = command.get(COMMAND_FIRST_FIELD);
+    var sectionName = command.get(COMMAND_SECOND_FIELD);
 
     try {
       communitySubscriptionService.unsubscribe(communityName,
@@ -329,15 +293,54 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   }
 
-  private void subscribeByTag(Message inputMessage) {
+  private void subscribeUtils(Message inputMessage) {
+
+    // find route by first word after command
+    var text = inputMessage.getText();
+
+    try {
+      Map<String, String> command = parseCommandTagMultipleWords(text);
+
+      // route
+      if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD).equals(SubscriptionType.TAG.getType())) {
+        subscribeByTag(command, inputMessage);
+      } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.COMMUNITY.getType())) {
+        subscribeToCommunity(command, inputMessage);
+      }
+    } catch (BotException e) {
+      send(SendMessage.builder().chatId(inputMessage.getChatId()).text(e.getMessage()).build());
+    }
+
+  }
+
+  private void unsubscribeUtils(Message inputMessage) {
+
+    // find route by first word after command
+    var text = inputMessage.getText();
+
+    try {
+      Map<String, String> command = parseCommandTagMultipleWords(text);
+
+      // route
+      if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.COMMUNITY.getType())) {
+        unsubscribeFromCommunity(command, inputMessage);
+      } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.TAG.getType())) {
+        unsubscribeFromTag(command, inputMessage);
+      }
+
+    } catch (BotException e) {
+      send(SendMessage.builder().chatId(inputMessage.getChatId()).text(e.getMessage()).build());
+    }
+
+  }
+
+  private void subscribeByTag(Map<String, String> command, Message inputMessage) {
 
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
-
-    var messageText = inputMessage.getText();
-    // find community and section
-
-    Map<String, String> command = parseCommandTagMultipleWords(messageText);
 
     var tagName = command.get(COMMAND_FIRST_FIELD);
     var orderName = command.get(COMMAND_SECOND_FIELD);
@@ -370,15 +373,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   }
 
-  private void unsubscribeFromTag(Message inputMessage) {
+  private void unsubscribeFromTag(Map<String, String> command, Message inputMessage) {
 
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
-
-    var messageText = inputMessage.getText();
-    // find community and section
-
-    Map<String, String> command = parseCommandTagMultipleWords(messageText);
 
     var tagName = command.get(COMMAND_FIRST_FIELD);
     var orderName = command.get(COMMAND_SECOND_FIELD);
@@ -454,29 +452,32 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     }
   }
 
-  private String[] parseCommand(String messageText) {
-
-    String[] command = messageText.split(" ");
-
-    if (command.length != 3) {
-      log.info("Command can't be parsed. {}", Arrays.asList(command));
-      throw new BotException("Command should have coub community name and section name");
-    } else {
-      return command;
-    }
-
-  }
-
   private Map<String, String> parseCommandTagMultipleWords(String messageText) {
 
     Map<String, String> result = new HashMap<>();
 
     String[] command = messageText.split(" ");
 
+    if (command.length < 4) {
+      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      throw new BotException(
+          "Validation exception. Please, validate your input command. Check example in /help.");
+    }
+
+    try {
+      SubscriptionType.valueOf(command[1].toUpperCase());
+    } catch (IllegalArgumentException e) {
+      log.error("Expected one of {}, but got {}", Arrays.asList(SubscriptionType.values()),
+          command[1]);
+      throw new BotException(String.format("Subscription type have to be one of '%s'",
+          Arrays.asList(SubscriptionType.values())));
+    }
+
     // Get all words after 0 and last element and concat in one string
-    var s = Arrays.stream(command, 1, command.length - 1)
+    var s = Arrays.stream(command, 2, command.length - 1)
         .collect(Collectors.joining(" "));
 
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
     result.put(COMMAND_FIRST_FIELD, s);
     result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
 
