@@ -13,11 +13,9 @@ import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.MySubscriptionsCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeToCommunityCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeToTagCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.TagOrdersCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeFromCommunityCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeFromTagCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
@@ -73,10 +71,8 @@ public class TelegramBotConfig {
     commandsHolder.addCommand(new MySubscriptionsCommand());
     commandsHolder.addCommand(new StartCommand());
     commandsHolder.addCommand(new HelpCommand());
-    commandsHolder.addCommand(new SubscribeToCommunityCommand());
-    commandsHolder.addCommand(new SubscribeToTagCommand());
-    commandsHolder.addCommand(new UnsubscribeFromCommunityCommand());
-    commandsHolder.addCommand(new UnsubscribeFromTagCommand());
+    commandsHolder.addCommand(new SubscribeCommand());
+    commandsHolder.addCommand(new UnsubscribeCommand());
     commandsHolder.addCommand(new CommunitiesCommand());
     commandsHolder.addCommand(new TagOrdersCommand());
 

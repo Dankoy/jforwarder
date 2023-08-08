@@ -6,11 +6,11 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
 @Slf4j
 @Component
-public class SubscribeToTagCommand extends BotCommand {
+public class SubscribeCommand extends BotCommand {
 
-  public SubscribeToTagCommand() {
-    super("subscribe_by_tag",
-        "subscribe to chosen tag");
+  public SubscribeCommand() {
+    super("subscribe",
+        "subscribe to tag or community");
   }
 
 }
