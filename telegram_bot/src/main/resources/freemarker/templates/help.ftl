@@ -7,7 +7,7 @@ Commands references:
 2) /subscribe {subscription_type} {field1} {field2}
 3) /unsubscribe {subscription_type} {field1} {field2}
     Available subscription_type: community and tag.
-    Contents of field1 and field2 depends on subscription_type. Please refer to example below.
+    Contents of field1 and field2 depend on subscription_type. Please refer to example below.
     To see available tag orders run /tag_orders command
     To see available communities run /communities command
 4) /tag_orders - shows available orders for tag subscriptions
