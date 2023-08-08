@@ -6,10 +6,10 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
 @Slf4j
 @Component
-public class UnsubscribeFromTagCommand extends BotCommand {
+public class UnsubscribeCommand extends BotCommand {
 
-  public UnsubscribeFromTagCommand() {
-    super("unsubscribe_from_tag", "unsubscribe from chosen tag");
+  public UnsubscribeCommand() {
+    super("unsubscribe", "unsubscribe from community or tag");
   }
 
 }
