@@ -48,8 +48,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private final String botName;
 
-  private final List<BotCommand> commands;
-
   private final CommunitySubscriptionService communitySubscriptionService;
 
   private final TelegramChatService telegramChatService;
@@ -80,7 +78,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     this.telegramChatService = telegramChatService;
     this.templateBuilder = templateBuilder;
     this.communityService = communityService;
-    this.commands = commands;
     this.tagSubscriptionService = tagSubscriptionService;
     this.orderService = orderService;
 
