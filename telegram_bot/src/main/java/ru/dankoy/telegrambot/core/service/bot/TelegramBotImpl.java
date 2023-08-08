@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
+import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
@@ -38,6 +40,9 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @Slf4j
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
+
+  private final static String COMMAND_FIRST_FIELD = "first";
+  private final static String COMMAND_SECOND_FIELD = "second";
 
   private final String botName;
 
@@ -332,19 +337,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var messageText = inputMessage.getText();
     // find community and section
 
-    String[] command = new String[0];
-    try {
+    Map<String, String> command = parseCommandTagMultipleWords(messageText);
 
-      command = parseCommand(messageText);
-
-    } catch (BotException e) {
-      message.setText(e.getMessage());
-      send(message);
-      return;
-    }
-
-    var tagName = command[1];
-    var orderName = command[2];
+    var tagName = command.get(COMMAND_FIRST_FIELD);
+    var orderName = command.get(COMMAND_SECOND_FIELD);
 
     try {
 
@@ -364,8 +360,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           tagName,
           orderName));
       send(message);
+    } catch (NotFoundException e) {
+      message.setText(e.getMessage());
+      send(message);
     } catch (Exception e) {
-      message.setText("Something went wrong. Validate your command");
+      message.setText("Something went wrong. Validate your command or check /help.");
       send(message);
     }
 
@@ -379,19 +378,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var messageText = inputMessage.getText();
     // find community and section
 
-    String[] command = new String[0];
-    try {
+    Map<String, String> command = parseCommandTagMultipleWords(messageText);
 
-      command = parseCommand(messageText);
-
-    } catch (BotException e) {
-      message.setText(e.getMessage());
-      send(message);
-      return;
-    }
-
-    var tagName = command[1];
-    var orderName = command[2];
+    var tagName = command.get(COMMAND_FIRST_FIELD);
+    var orderName = command.get(COMMAND_SECOND_FIELD);
 
     try {
 
@@ -474,6 +464,23 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } else {
       return command;
     }
+
+  }
+
+  private Map<String, String> parseCommandTagMultipleWords(String messageText) {
+
+    Map<String, String> result = new HashMap<>();
+
+    String[] command = messageText.split(" ");
+
+    // Get all words after 0 and last element and concat in one string
+    var s = Arrays.stream(command, 1, command.length - 1)
+        .collect(Collectors.joining(" "));
+
+    result.put(COMMAND_FIRST_FIELD, s);
+    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
+
+    return result;
 
   }
 
