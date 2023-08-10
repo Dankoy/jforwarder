@@ -3,10 +3,14 @@ FROM  gradle:8.2.1-jdk17
 
 LABEL authors="turtality"
 
+ARG TZ=Europe/Moscow
+ENV TZ ${TZ}
+
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
-
 ENV ENV_PATH_TO_JAR=kafka_message_consumer/build/libs/kafka_message_consumer-$JAR_VERSION.jar
+
+RUN echo $TZ > /etc/timezone
 
 WORKDIR /app
 COPY ./kafka_message_consumer/src ./kafka_message_consumer/src

@@ -3,14 +3,18 @@ FROM  gradle:8.2.1-jdk17
 # FROM --platform=linux/amd64 gradle:8.2.1-jdk17-alpine
 LABEL authors="turtality"
 
+ARG TZ=Europe/Moscow
+ENV TZ ${TZ}
+
 # мастер пароль jasypt
 ARG JASYPT_PASSWORD
 ENV ENV_JASYPT_PASSWORD $JASYPT_PASSWORD
 
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
-
 ENV ENV_PATH_TO_JAR=subscriptions_holder/build/libs/subscriptions_holder-$JAR_VERSION.jar
+
+RUN echo $TZ > /etc/timezone
 
 WORKDIR /app
 COPY ./subscriptions_holder/src ./subscriptions_holder/src
