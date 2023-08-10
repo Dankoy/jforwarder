@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
@@ -27,7 +28,7 @@ public class SchedulerSubscriptionServiceTag {
   private final MessageProducerTagSubscriptionService messageProducerTagSubscriptionService;
   private final CoubFinderService coubFinderService;
 
-  @Scheduled(initialDelay = 60_000, fixedRate = 6_000_000) // 100 mins
+  @Scheduled(initialDelay = 90_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
 
     int page = FIRST_PAGE;
@@ -36,7 +37,8 @@ public class SchedulerSubscriptionServiceTag {
     // iterate by pages
     while (page <= totalPages) {
 
-      var pageable = PageRequest.of(page, PAGE_SIZE);
+      var sort = Sort.by("id").ascending();
+      var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
       Page<TagSubscription> tagSubscriptionsPage = tagSubscriptionService.getAllSubscriptionsWithActiveChats(
           pageable);

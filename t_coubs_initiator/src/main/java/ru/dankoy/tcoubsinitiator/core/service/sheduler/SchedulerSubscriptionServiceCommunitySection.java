@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
@@ -39,7 +40,9 @@ public class SchedulerSubscriptionServiceCommunitySection {
     // iterate by pages
     while (page <= totalPages) {
 
-      var pageable = PageRequest.of(page, PAGE_SIZE);
+      var sort = Sort.by("id").ascending();
+      var pageable = PageRequest.of(page, PAGE_SIZE, sort);
+
       Page<CommunitySubscription> communitySubscriptionsPage = subscriptionService.getAllSubscriptionsWithActiveChats(
           pageable);
 
