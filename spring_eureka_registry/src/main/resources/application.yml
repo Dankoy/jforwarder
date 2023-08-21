@@ -38,6 +38,14 @@ management:
     diskspace:
       enabled: true
 
+  # For Exemplars to work we need histogram buckets
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
 logging:
   level:
     root: INFO

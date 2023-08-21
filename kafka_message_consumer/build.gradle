@@ -32,6 +32,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.github.openfeign:feign-micrometer'
+    implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
 
     // web
     implementation 'org.springframework.boot:spring-boot-starter-web'

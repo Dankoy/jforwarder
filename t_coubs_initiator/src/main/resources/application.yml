@@ -71,5 +71,12 @@ management:
     sampling:
       probability: 1.0
 
+  # For Exemplars to work we need histogram buckets
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
 
 
