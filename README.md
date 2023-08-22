@@ -65,11 +65,20 @@ published after last sent coub to chat.
 12. Docker compose
 13. Telegrambots 6.7.0
 
+## Monitoring stack
+
+1. Prometheus
+2. Grafana
+3. Prometheus node exporter
+4. Prometheus postgres exporter
 
 ## Microservice architecture
 
 Microservice communication schema:    
 ![drawio](jforwarder.drawio.svg)
+
+Microservice monitoring schema:    
+![drawio](jforwarder-monitoring.drawio.svg)
 
 ## Build
 
@@ -119,5 +128,23 @@ docker buildx build --platform linux/amd64,linux/arm64 --build-arg JAR_VERSION=x
 #### Run compose
 
 ```shell
-docker compose up
+docker compose up -d
+```
+
+### Monitoring 
+
+For monitoring created new docker compose project [monitoring](/monitoring)
+
+#### Add .env file in monitoring folder
+```
+POSTGRES_CONTAINER_PASSWORD=password
+POSTGRES_CONTAINER_USER=user
+DATA_SOURCE_NAME="postgresql://${POSTGRES_CONTAINER_USER}:${POSTGRES_CONTAINER_PASSWORD}@<container-name>:<port>/?sslmode=disable"
+GF_SECURITY_ADMIN_USER=user
+GF_SECURITY_ADMIN_PASSWORD=password
+```
+
+#### Run monitoring 
+```shell
+cd monitoring && docker compose up -d
 ```
