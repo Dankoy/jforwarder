@@ -19,3 +19,15 @@ scrape_configs:
                    't-coubs-initiator:8081',
                    'telegram-bot:8084'
       ]
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'host.docker.internal:9090' ]
+
+  - job_name: 'docker'
+    static_configs:
+      - targets: [ 'host.docker.internal:9323' ]
+
+  - job_name: 'node'
+    static_configs:
+      - targets: [ 'prometheus-node-exporter:9100' ]
