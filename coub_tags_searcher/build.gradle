@@ -49,7 +49,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // micrometer + zipkin bridge
-    implementation 'io.micrometer:micrometer-observation' // for metrics actuator (prometheus)
+    implementation 'io.micrometer:micrometer-observation' // observation enable
+    implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
     implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.github.openfeign:feign-micrometer'
