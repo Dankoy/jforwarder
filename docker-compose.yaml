@@ -169,13 +169,39 @@ services:
 
   ###### zipkin related start #####
 
+  zipkin-cassandra:
+    image: openzipkin/zipkin-cassandra
+    container_name: zipkin-cassandra
+    volumes:
+      - cassandra_volume:/cassandra
+    networks:
+      - jforwarder-network
+
+  zipkin-dependencies:
+    image: openzipkin/zipkin-dependencies
+    container_name: zipkin-dependencies
+    entrypoint: crond -f
+    environment:
+      - STORAGE_TYPE=cassandra3
+      - CASSANDRA_CONTACT_POINTS=zipkin-cassandra
+    depends_on:
+      zipkin-cassandra:
+        condition: service_healthy
+    networks:
+      - jforwarder-network
+
   zipkin:
     image: openzipkin/zipkin:latest
     container_name: zipkin
     environment:
-      MEM_MAX_SPANS: 100000
+      - STORAGE_TYPE=cassandra3
+      - CASSANDRA_ENSURE_SCHEMA=false
+      - CASSANDRA_CONTACT_POINTS=zipkin-cassandra
     ports:
       - '9411:9411'
+    depends_on:
+      zipkin-cassandra:
+        condition: service_healthy
     networks:
       - jforwarder-network
 
@@ -340,6 +366,8 @@ volumes:
   kafka_volume:
     driver: local
   subscriptions_holder_postgres_volume:
+    driver: local
+  cassandra_volume:
     driver: local
 
 networks:

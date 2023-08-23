@@ -55,6 +55,9 @@ dependencies {
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.github.openfeign:feign-micrometer'
 
+    // logging
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
+
     // development
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'

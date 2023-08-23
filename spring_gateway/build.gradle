@@ -27,6 +27,8 @@ dependencies {
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
     implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
 
+    // logging
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
 
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'

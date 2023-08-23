@@ -50,6 +50,8 @@ dependencies {
     implementation 'io.github.openfeign:feign-micrometer'
     implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
 
+    // logging
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
 
     // lombok
     compileOnly 'org.projectlombok:lombok'
