@@ -2,6 +2,18 @@ version: "3.9"
 
 services:
 
+# can't pull from gcr.io. Permission denied
+#  cadvisor:
+#    image: gcr.io/cadvisor-arm64:v0.47.2
+#    container_name: cadvisor
+#    volumes:
+#      - '/:/rootfs:ro'
+#      - '/var/run:/var/run:ro'
+#      - '/sys:/sys:ro'
+#      - '/var/lib/docker/:/var/lib/docker:ro'
+#    networks:
+#      - jforwarder-network
+
   prometheus-node-exporter:
     image: prom/node-exporter:latest
     container_name: prometheus-node-exporter
@@ -29,11 +41,8 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
     volumes:
       - grafana_volume:/var/lib/grafana
-      - './Dashboard.yml:/etc/grafana/provisioning/dashboards/Dashboard.yml'
-      - './4701_rev10.json:/etc/grafana/provisioning/dashboards/4701_rev10.json'
-      - './9628_rev7.json:/etc/grafana/provisioning/dashboards/9628_rev7.json'
-      - './1860_rev31.json:/etc/grafana/provisioning/dashboards/1860_rev31.json'
-      - './Datasource.yml:/etc/grafana/provisioning/datasources/Datasource.yml'
+      - './grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards'
+      - './grafana/provisioning/datasources:/etc/grafana/provisioning/datasources'
     networks:
       - jforwarder-network
 
@@ -44,7 +53,7 @@ services:
       - '9090:9090'
     command: '--config.file=/etc/prometheus/config.yml'
     volumes:
-      - './prometheus.yml:/etc/prometheus/config.yml'
+      - './prometheus/prometheus.yml:/etc/prometheus/config.yml'
       - prometheus_volume:/prometheus
     networks:
       - jforwarder-network
