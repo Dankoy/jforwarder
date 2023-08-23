@@ -27,3 +27,12 @@ providers:
     updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
     options:
       path: /etc/grafana/provisioning/dashboards/1860_rev31.json
+
+  - name: 'Spring boot with logs'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+    options:
+      path: /etc/grafana/provisioning/dashboards/17175_rev1.json

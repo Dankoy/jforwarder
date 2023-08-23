@@ -16,3 +16,39 @@ datasources:
     access: proxy
     url: "http://prometheus:9090"
     version: 1                            # well, versioning
+
+#  - id: Tempo
+#    name: Tempo
+#    type: tempo
+#    access: proxy
+#    orgId: 1
+#    url: http://grafana-tempo:3200
+#    basicAuth: false
+#    isDefault: false
+#    version: 1
+#    editable: false
+#    apiVersion: 1
+#    uid: tempo
+#    jsonData:
+#      httpMethod: GET
+#      tracesToLogs:
+#        datasourceUid: 'loki'
+#
+  - id: Loki
+    name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    orgId: 1
+    url: http://grafana-loki:3100
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    apiVersion: 1
+#    jsonData:
+#      derivedFields:
+#        - datasourceUid: tempo
+#          matcherRegex: \[.+,(.+?),
+#          name: traceID
+#          url: $${__value.raw}
