@@ -14,7 +14,7 @@ import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
-@NamedEntityGraph(name = "community-subscription-full",
+@NamedEntityGraph(name = "community-subscription-full-inherited",
     includeAllAttributes = true,
     attributeNodes = {
         @NamedAttributeNode("community"),
@@ -28,7 +28,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 @Entity
 @Table(name = "community_subs")
-public class CommunitySubscription extends Subscription {
+public class CommunitySubs extends Subscription {
 
   @ManyToOne
   @JoinColumn(name = "community_id")

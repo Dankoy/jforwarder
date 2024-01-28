@@ -17,7 +17,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Type;
 
-@NamedEntityGraph(name = "tag-subscription-full",
+@NamedEntityGraph(name = "tag-subscription-full-inherited",
     attributeNodes = {
         @NamedAttributeNode("tag"),
         @NamedAttributeNode("order"),
@@ -32,7 +32,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 @Entity
 @Table(name = "tag_subscriptions")
-public class TagSubscription extends Subscription {
+public class TagSubs extends Subscription {
 
   @ManyToOne
   @JoinColumn(name = "tag_id")
