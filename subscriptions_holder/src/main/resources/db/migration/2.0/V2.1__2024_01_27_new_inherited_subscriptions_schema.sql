@@ -11,23 +11,23 @@ create table subscriptions
     last_permalink varchar(10)
 );
 
-create table tag_subs
+create table community_subs
 (
     id           bigserial not null
-        constraint tag_subscriptions_pkey
+        constraint  community_subscriptions_inherited_pkey
             primary key
-        constraint tag_subscriptions_subscriptions_id_fk
+        constraint  community_subscriptions_inherited_subscriptions_id_fk
             references subscriptions,
     community_id bigint references communities (id) on delete cascade,
     section_id   bigint references sections (id)
 );
 
-create table community_subs
+create table tag_subs
 (
     id       bigserial not null
-        constraint community_subscriptions_pkey
+        constraint tag_subscriptions_inherited_pkey
             primary key
-        constraint community_subscriptions_subscriptions_id_fk
+        constraint tag_subscriptions_inherited_subscriptions_id_fk
             references subscriptions,
     tag_id   bigint references tags (id) on delete cascade,
     order_id bigint references tag_orders (id),
