@@ -7,7 +7,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 
 
 @Aspect

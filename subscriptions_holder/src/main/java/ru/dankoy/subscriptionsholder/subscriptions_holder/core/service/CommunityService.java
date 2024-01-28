@@ -2,8 +2,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Set;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
 public interface CommunityService {
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Community;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 
 public interface CommunityRepository extends JpaRepository<Community, Long> {
 

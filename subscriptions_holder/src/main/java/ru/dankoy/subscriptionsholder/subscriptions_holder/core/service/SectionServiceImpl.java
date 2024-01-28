@@ -6,7 +6,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SectionRepository;
 
 
