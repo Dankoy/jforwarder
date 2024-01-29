@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.ChatCreateDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.ChatDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramChatService;
 
