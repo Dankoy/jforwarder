@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 
+/**
+ * @deprecated in favor of {@link CommunitySubService}
+ */
+@Deprecated(since = "2024-01-27")
 public interface SubscriptionService {
 
   Page<CommunitySubscription> getAll(Pageable pageable);

@@ -11,6 +11,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 
+/**
+ * @deprecated in favor for {@link CommunitySubRepository}
+ */
+@Deprecated(since = "2024-01-27")
 public interface CommunitySubscriptionRepository extends
     JpaRepository<CommunitySubscription, Long> {
 

@@ -16,6 +16,10 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.Resour
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.CommunitySubscriptionRepository;
 
 
+/**
+ * @deprecated in favor of {@link CommunitySubServiceImpl}
+ */
+@Deprecated(since = "2024-01-27")
 @RequiredArgsConstructor
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
