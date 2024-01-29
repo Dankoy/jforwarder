@@ -11,6 +11,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
 
+/**
+ * @deprecated in favor for {@link TagSubRepository}
+ */
+@Deprecated(since = "2024-01-27")
 public interface TagSubscriptionRepository extends
     JpaRepository<TagSubscription, Long> {
 
