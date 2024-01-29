@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.TagSubs;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.TagSub;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Scope;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
@@ -26,7 +26,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 /**
  * @deprecated in favor for inherited classes
  * {@link
- * TagSubs}
+ * TagSub}
  */
 @Deprecated(since = "2024-01-28")
 @NamedEntityGraph(name = "tag-subscription-full",

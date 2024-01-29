@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
@@ -26,9 +27,10 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "community_subs")
-public class CommunitySubs extends Subscription {
+public class CommunitySub extends Subscription {
 
   @ManyToOne
   @JoinColumn(name = "community_id")

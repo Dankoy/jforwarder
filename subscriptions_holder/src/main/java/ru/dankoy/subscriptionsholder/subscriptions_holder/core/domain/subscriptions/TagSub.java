@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Scope;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
@@ -28,11 +29,12 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Getter
 @ToString
 @Data
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "tag_subscriptions")
-public class TagSubs extends Subscription {
+public class TagSub extends Subscription {
 
   @ManyToOne
   @JoinColumn(name = "tag_id")
