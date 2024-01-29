@@ -10,7 +10,7 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.T
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionFeign {
 
-  @PutMapping(path = "/api/v1/subscriptions")
+  @PutMapping(path = "/api/v1/community_subscriptions")
   CommunitySubscription updateCommunitySubscriptionPermalink(
       @RequestBody CommunitySubscription communitySubscription);
 

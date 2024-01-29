@@ -15,14 +15,14 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription
 public interface SubscriptionFeign {
 
 
-  @GetMapping(path = "/api/v1/subscriptions/{communityName}")
+  @GetMapping(path = "/api/v1/community_subscriptions/{communityName}")
   List<CommunitySubscription> getSubscriptionsByCommunityName(
       @PathVariable(value = "communityName") String communityName);
 
-  @GetMapping(path = "/api/v1/subscriptions", params = {"page", "size", "sort"})
+  @GetMapping(path = "/api/v1/community_subscriptions", params = {"page", "size", "sort"})
   Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
 
-  @GetMapping(path = "/api/v1/subscriptions", params = {"active", "page", "size", "sort"})
+  @GetMapping(path = "/api/v1/community_subscriptions", params = {"active", "page", "size", "sort"})
   Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(@RequestParam boolean active,
       Pageable pageable);
 
