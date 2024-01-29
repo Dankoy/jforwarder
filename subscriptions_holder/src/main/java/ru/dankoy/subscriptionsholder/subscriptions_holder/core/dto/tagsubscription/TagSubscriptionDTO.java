@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.TagSub;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 
 @ToString
@@ -29,7 +29,7 @@ public class TagSubscriptionDTO {
   private String lastPermalink;
 
 
-  public static TagSubscriptionDTO toDTO(TagSubscription tagSubscription) {
+  public static TagSubscriptionDTO toDTO(TagSub tagSubscription) {
 
     return new TagSubscriptionDTO(
         tagSubscription.getId(),
@@ -43,16 +43,17 @@ public class TagSubscriptionDTO {
 
   }
 
-  public static TagSubscription fromDTO(TagSubscriptionDTO dto) {
-    return new TagSubscription(
-        dto.getId(),
-        TagDTO.fromDTO(dto.getTag()),
-        ChatDTO.fromDTO(dto.getChat()),
-        OrderDTO.fromDTO(dto.getOrder()),
-        ScopeDTO.fromDTO(dto.getScope()),
-        TypeDTO.fromDTO(dto.getType()),
-        dto.getLastPermalink()
-    );
+  public static TagSub fromDTO(TagSubscriptionDTO dto) {
+
+    return TagSub.builder()
+        .id(0)
+        .tag(TagDTO.fromDTO(dto.getTag()))
+        .chat(ChatDTO.fromDTO(dto.getChat()))
+        .order(OrderDTO.fromDTO(dto.getOrder()))
+        .scope(ScopeDTO.fromDTO(dto.getScope()))
+        .type(TypeDTO.fromDTO(dto.getType()))
+        .lastPermalink(dto.getLastPermalink())
+        .build();
   }
 
 
