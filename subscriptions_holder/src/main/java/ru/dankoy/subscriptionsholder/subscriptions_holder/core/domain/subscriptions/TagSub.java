@@ -33,7 +33,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag_subscriptions")
+@Table(name = "tag_subs")
 public class TagSub extends Subscription {
 
   @ManyToOne
