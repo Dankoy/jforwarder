@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.subscription.ChatDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 
 @ToString
 @Getter
