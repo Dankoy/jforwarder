@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubscriptionService;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubService;
 
 
 @RequiredArgsConstructor
 @RestController
-public class TagSubscriptionController {
+public class TagSubController {
 
-  private final TagSubscriptionService tagSubscriptionService;
+  private final TagSubService tagSubService;
 
 
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
   public Page<TagSubscriptionDTO> getAllByActiveChat(@RequestParam("active") boolean active,
       Pageable pageable) {
 
-    var subs = tagSubscriptionService.getAllByActiveTelegramChats(active, pageable);
+    var subs = tagSubService.getAllByActiveTelegramChats(active, pageable);
 
     return subs.map(TagSubscriptionDTO::toDTO);
 
@@ -39,7 +39,7 @@ public class TagSubscriptionController {
   public List<TagSubscriptionDTO> getAllByTelegramChat(
       @RequestParam("telegramChatId") long telegramChatId) {
 
-    var subs = tagSubscriptionService.getAllByTelegramChatId(telegramChatId);
+    var subs = tagSubService.getAllByTelegramChatId(telegramChatId);
 
     return subs.stream()
         .map(TagSubscriptionDTO::toDTO)
@@ -52,7 +52,7 @@ public class TagSubscriptionController {
 
     var ts = TagSubscriptionCreateDTO.fromDTO(dto);
 
-    var sub = tagSubscriptionService.createSubscription(ts);
+    var sub = tagSubService.createSubscription(ts);
 
     return TagSubscriptionDTO.toDTO(sub);
 
@@ -63,7 +63,7 @@ public class TagSubscriptionController {
 
     var ts = TagSubscriptionCreateDTO.fromDTO(dto);
 
-    tagSubscriptionService.deleteSubscription(ts);
+    tagSubService.deleteSubscription(ts);
 
   }
 
@@ -73,7 +73,7 @@ public class TagSubscriptionController {
 
     var ts = TagSubscriptionCreateDTO.fromDTO(dto);
 
-    var sub = tagSubscriptionService.updatePermalink(ts);
+    var sub = tagSubService.updatePermalink(ts);
 
     return TagSubscriptionDTO.toDTO(sub);
 
