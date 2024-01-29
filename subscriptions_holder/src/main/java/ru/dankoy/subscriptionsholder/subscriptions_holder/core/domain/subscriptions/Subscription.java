@@ -12,6 +12,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
 
@@ -23,6 +26,9 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
     }
 )
 @Table(name = "subscriptions")
+@Data
+@SuperBuilder
+@NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Subscription {
