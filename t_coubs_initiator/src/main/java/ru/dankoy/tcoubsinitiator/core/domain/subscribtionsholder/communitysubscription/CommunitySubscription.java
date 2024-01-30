@@ -10,19 +10,17 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @Getter
-@ToString
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommunitySubscription {
+public class CommunitySubscription extends Subscription {
 
-  private long id;
   private Community community;
-  private Chat chat;
   private Section section;
-  private String lastPermalink;
 
 
   @Setter
