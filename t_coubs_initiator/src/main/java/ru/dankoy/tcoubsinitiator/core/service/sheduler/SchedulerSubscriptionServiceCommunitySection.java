@@ -3,12 +3,8 @@ package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 // по заданному времени лезет в апи куба, проверяет свои подписки и создает сообщения
 
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,10 +14,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCoubsRegistry;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
+import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerCommunitySubscriptionService;
-import ru.dankoy.tcoubsinitiator.core.service.registry.SentCoubsRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
 
 @Slf4j
@@ -36,9 +31,9 @@ public class SchedulerSubscriptionServiceCommunitySection {
   private final SubscriptionService subscriptionService;
   private final MessageProducerCommunitySubscriptionService messageProducerCommunitySubscriptionService;
   private final CoubFinderService coubFinderService;
-  private final SentCoubsRegistryService sentCoubsRegistryService;
+  private final FilterByRegistryService filter;
 
-  @Scheduled(initialDelay = 10_000, fixedRate = 6_000_000) // 100 mins
+  @Scheduled(initialDelay = 30_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
 
     int page = FIRST_PAGE;
@@ -73,30 +68,7 @@ public class SchedulerSubscriptionServiceCommunitySection {
 
       }
 
-      for (var sub : communitySubscriptionsPage) {
-
-        log.info("Filter by registry");
-        // filter subscriptions by registry
-        Set<SentCoubsRegistry> registry = sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
-            sub.getId(),
-            LocalDateTime.now().minusMonths(1)
-        );
-        log.info("Found registry - {}", registry);
-
-        Set<String> registryPermalinks = registry.stream()
-            .map(SentCoubsRegistry::getCoubPermalink)
-            .collect(Collectors.toSet());
-
-        List<Coub> filtered = new ArrayList<>(
-            sub.getCoubs().stream()
-                .filter(c -> !registryPermalinks.contains(c.getPermalink()))
-                .toList()
-        );
-        sub.setCoubs(filtered);
-
-        log.info("Filtered done");
-
-      }
+      filter.filterByRegistry(communitySubscriptionsPage.getContent());
 
       // remove subscriptions without coubs
 
