@@ -22,6 +22,7 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessag
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerServiceKafka;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerServiceKafka;
+import ru.dankoy.kafkamessageproducer.core.service.regisrty.SentCoubsRegisrtyService;
 import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionService;
 
 
@@ -34,6 +35,7 @@ public class KafkaConfig {
 
   private final String communityProducerClientId;
   private final String tagProducerClientId;
+
 
   public KafkaConfig(
       @Value("${application.kafka.topic.community_subscription}") String communitySubscriptionTopicName,
@@ -128,22 +130,26 @@ public class KafkaConfig {
   public CommunityMessageProducerService communityMessageProducerService(
       NewTopic topic1,
       KafkaTemplate<String, CommunitySubscriptionMessage> kafkaTemplateCommunity,
-      SubscriptionService subscriptionService) {
+      SubscriptionService subscriptionService,
+      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
     return new CommunityMessageProducerServiceKafka(
         kafkaTemplateCommunity,
         topic1.name(),
-        subscriptionService::updateCommunitySubscriptionPermalink);
+        subscriptionService::updateCommunitySubscriptionPermalink,
+        sentCoubsRegisrtyService::create);
   }
 
   @Bean
   public TagMessageProducerService tagMessageProducerService(
       NewTopic topic2,
       KafkaTemplate<String, TagSubscriptionMessage> kafkaTemplateTag,
-      SubscriptionService subscriptionService) {
+      SubscriptionService subscriptionService,
+      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
     return new TagMessageProducerServiceKafka(
         kafkaTemplateTag,
         topic2.name(),
-        subscriptionService::updateTagSubscriptionPermalink);
+        subscriptionService::updateTagSubscriptionPermalink,
+        sentCoubsRegisrtyService::create);
   }
 
 }

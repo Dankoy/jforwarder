@@ -1,17 +1,12 @@
 package ru.dankoy.kafkamessageproducer.core.service.messagesender;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.header.Header;
-import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +17,8 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
   private final String topic;
 
   private final Consumer<CommunitySubscriptionMessage> sendAck;
+
+  private final Consumer<CommunitySubscriptionMessage> sendAckToRegistry;
 
   @Override
   public void send(CommunitySubscriptionMessage communitySubscriptionMessage) {
@@ -45,6 +42,8 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
                   );
                   // if kafka accepted - send update last permalink in db for subscription
                   sendAck.accept(communitySubscriptionMessage);
+                  // update registry
+                  sendAckToRegistry.accept(communitySubscriptionMessage);
                 } else {
                   log.error("message id:{} was not sent", communitySubscriptionMessage.id(), ex);
                 }

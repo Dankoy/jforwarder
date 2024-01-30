@@ -18,6 +18,8 @@ public class TagMessageProducerServiceKafka implements TagMessageProducerService
 
   private final Consumer<TagSubscriptionMessage> sendAck;
 
+  private final Consumer<TagSubscriptionMessage> sendAckToRegistry;
+
   @Override
   public void send(TagSubscriptionMessage tagSubscriptionMessage) {
     try {
@@ -39,6 +41,8 @@ public class TagMessageProducerServiceKafka implements TagMessageProducerService
                   );
                   // if kafka accepted - send update last permalink in db for subscription
                   sendAck.accept(tagSubscriptionMessage);
+                  // update registry
+                  sendAckToRegistry.accept(tagSubscriptionMessage);
                   log.info("acknowledgement sent for {}", tagSubscriptionMessage);
                 } else {
                   log.error("message id:{} was not sent",
