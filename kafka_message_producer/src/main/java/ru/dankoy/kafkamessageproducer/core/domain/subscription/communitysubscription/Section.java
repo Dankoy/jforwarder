@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.subscription;
+package ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription;
 
 
 import lombok.AllArgsConstructor;
