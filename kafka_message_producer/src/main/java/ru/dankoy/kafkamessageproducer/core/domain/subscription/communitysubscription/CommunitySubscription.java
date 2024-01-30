@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
+package ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription;
 
 
 import lombok.AllArgsConstructor;
@@ -9,20 +9,15 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 
+@EqualsAndHashCode(callSuper = true)
 @Getter
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class TagSubscription extends Subscription {
+public class CommunitySubscription extends Subscription {
 
-  private Tag tag;
-
-  private Order order;
-
-  private Scope scope;
-
-  private Type type;
+  private Community community;
+  private Section section;
 
 }
