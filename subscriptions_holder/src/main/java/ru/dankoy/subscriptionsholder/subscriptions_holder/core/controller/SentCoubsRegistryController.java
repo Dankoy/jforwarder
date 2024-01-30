@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry.SentCoubsRegistry;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SentCoubsRegistryService;
 
 
@@ -27,30 +29,36 @@ public class SentCoubsRegistryController {
 
 
   @GetMapping(value = "/api/v1/sent_coubs_registry")
-  public Page<SentCoubsRegistry> getAll(Pageable pageable) {
-    return sentCoubsRegistryService.findAll(pageable);
+  public Page<SentCoubsRegistryDTO> getAll(Pageable pageable) {
+    var s = sentCoubsRegistryService.findAll(pageable);
+    return s.map(SentCoubsRegistryDTO::toDTO);
   }
 
 
   @GetMapping(value = "/api/v1/sent_coubs_registry", params = {"subscriptionId"})
-  public Page<SentCoubsRegistry> getAllBySubscriptionId(
+  public Page<SentCoubsRegistryDTO> getAllBySubscriptionId(
       @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
       Pageable pageable) {
-    return sentCoubsRegistryService.getAllBySubscriptionId(subscriptionId, pageable);
+    var s = sentCoubsRegistryService.getAllBySubscriptionId(subscriptionId, pageable);
+    return s.map(SentCoubsRegistryDTO::toDTO);
   }
 
   @GetMapping(value = "/api/v1/sent_coubs_registry", params = {"subscriptionId", "dateTime"})
-  public Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+  public Page<SentCoubsRegistryDTO> getAllBySubscriptionIdAndDateTimeAfter(
       @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
       Pageable pageable) {
-    return sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(subscriptionId, dateTime,
+    var s = sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(subscriptionId,
+        dateTime,
         pageable);
+    return s.map(SentCoubsRegistryDTO::toDTO);
   }
 
   @PostMapping(value = "/api/v1/sent_coubs_registry")
-  public SentCoubsRegistry create(@RequestBody SentCoubsRegistry sentCoubsRegistry) {
-    return sentCoubsRegistryService.create(sentCoubsRegistry);
+  public SentCoubsRegistryCreateDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
+    var fromDto = SentCoubsRegistryCreateDTO.fromDTO(dto);
+    var s = sentCoubsRegistryService.create(fromDto);
+    return SentCoubsRegistryCreateDTO.toDTO(s);
   }
 
   @DeleteMapping(value = "/api/v1/sent_coubs_registry/{id}")
