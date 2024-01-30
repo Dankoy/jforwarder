@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
-import ru.dankoy.kafkamessageproducer.core.service.converter.TagMessageConverter;
+import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
 
 @Slf4j
@@ -20,7 +20,7 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProdu
 @RequiredArgsConstructor
 public class TagSubscriptionController {
 
-  private final TagMessageConverter converter;
+  private final MessageConverter converter;
 
   private final TagMessageProducerService producerService;
 

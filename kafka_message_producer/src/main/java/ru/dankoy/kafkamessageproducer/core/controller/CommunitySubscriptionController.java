@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.kafkamessageproducer.core.service.converter.CommunityMessageConverter;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
+import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerService;
 
 @Slf4j
@@ -20,7 +20,7 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessag
 @RequiredArgsConstructor
 public class CommunitySubscriptionController {
 
-  private final CommunityMessageConverter converter;
+  private final MessageConverter converter;
 
   private final CommunityMessageProducerService producerService;
 
