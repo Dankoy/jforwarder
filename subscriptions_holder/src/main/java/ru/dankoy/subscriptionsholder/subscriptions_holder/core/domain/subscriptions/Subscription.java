@@ -31,7 +31,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class Subscription {
+public class Subscription {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
