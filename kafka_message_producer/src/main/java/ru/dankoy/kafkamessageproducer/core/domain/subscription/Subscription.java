@@ -29,21 +29,4 @@ public class Subscription {
   @Setter
   private List<Coub> coubs = new ArrayList<>();
 
-  public void addCoubs(List<Coub> coubsToAdd) {
-
-    for (var coub : coubsToAdd) {
-
-      var newCoub = new Coub(
-          coub.getId(),
-          coub.getTitle(),
-          coub.getPermalink(),
-          coub.getUrl(),
-          coub.getPublishedAt()
-      );
-      coubs.add(newCoub);
-
-    }
-
-  }
-
 }
