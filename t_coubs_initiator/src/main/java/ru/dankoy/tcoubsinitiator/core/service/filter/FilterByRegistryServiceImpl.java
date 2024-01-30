@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.dankoy.tcoubsinitiator.config.coub.CoubRegistryProperties;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCoubsRegistry;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
@@ -19,6 +20,7 @@ import ru.dankoy.tcoubsinitiator.core.service.registry.SentCoubsRegistryService;
 public class FilterByRegistryServiceImpl implements FilterByRegistryService {
 
   private final SentCoubsRegistryService sentCoubsRegistryService;
+  private final CoubRegistryProperties coubRegistryProperties;
 
   @Override
   public void filterByRegistry(List<? extends Subscription> subscriptions) {
@@ -29,7 +31,7 @@ public class FilterByRegistryServiceImpl implements FilterByRegistryService {
       // filter subscriptions by registry
       Set<SentCoubsRegistry> registry = sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
           sub.getId(),
-          LocalDateTime.now().minusMonths(1)
+          LocalDateTime.now().minusDays(coubRegistryProperties.filterDays())
       );
       log.info("Found registry - {}", registry);
 

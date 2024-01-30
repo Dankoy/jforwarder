@@ -3,14 +3,14 @@ package ru.dankoy.tcoubsinitiator.core.service.permalinkcreator;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.tcoubsinitiator.config.CoubProperties;
+import ru.dankoy.tcoubsinitiator.config.coub.CoubConnectorProperties;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Permalink;
 
 @RequiredArgsConstructor
 @Service
 public class PermalinkCreatorServiceImpl implements PermalinkCreatorService {
 
-  private final CoubProperties coubProperties;
+  private final CoubConnectorProperties coubProperties;
 
   @Override
   public void createCommunityPermalink(Permalink permalink) {

@@ -1,4 +1,4 @@
-package ru.dankoy.tcoubsinitiator.config;
+package ru.dankoy.tcoubsinitiator.config.coub;
 
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
