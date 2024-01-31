@@ -33,7 +33,7 @@ public class FilterByRegistryServiceImpl implements FilterByRegistryService {
           sub.getId(),
           LocalDateTime.now().minusDays(coubRegistryProperties.filterDays())
       );
-      log.info("Found registry - {}", registry);
+      log.debug("Found registry - {}", registry);
 
       Set<String> registryPermalinks = registry.stream()
           .map(SentCoubsRegistry::getCoubPermalink)
