@@ -18,6 +18,9 @@ coub:
     apiUrl: "https://coub.com/api/v2/"
     gatewayApiUrl: ${GATEWAY_COUB_URL:http://localhost:8760/cc/}
   sorting: false
+  registry:
+    filter:
+      days: 30
 
 
 logging:

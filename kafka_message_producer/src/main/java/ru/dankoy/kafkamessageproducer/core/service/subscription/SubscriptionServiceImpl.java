@@ -5,11 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.CommunitySubscription;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
 import ru.dankoy.kafkamessageproducer.core.feign.subscriptionsholder.subscription.SubscriptionFeign;
-import ru.dankoy.kafkamessageproducer.core.service.converter.CommunityMessageConverter;
-import ru.dankoy.kafkamessageproducer.core.service.converter.TagMessageConverter;
+import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 
 @Service
 @RequiredArgsConstructor
@@ -17,15 +16,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
   private final SubscriptionFeign subscriptionFeign;
 
-  private final CommunityMessageConverter communityMessageConverter;
-
-  private final TagMessageConverter tagMessageConverter;
+  private final MessageConverter messageConverter;
 
 
   public CommunitySubscription updateCommunitySubscriptionPermalink(
       CommunitySubscriptionMessage communitySubscriptionMessage) {
 
-    var subscription = communityMessageConverter.convert(communitySubscriptionMessage);
+    var subscription = messageConverter.convert(communitySubscriptionMessage);
 
     return subscriptionFeign.updateCommunitySubscriptionPermalink(subscription);
 
@@ -34,7 +31,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   @Override
   public TagSubscription updateTagSubscriptionPermalink(
       TagSubscriptionMessage tagSubscriptionMessage) {
-    var subscription = tagMessageConverter.convert(tagSubscriptionMessage);
+    var subscription = messageConverter.convert(tagSubscriptionMessage);
 
     return subscriptionFeign.updateTagSubscriptionPermalink(subscription);
   }

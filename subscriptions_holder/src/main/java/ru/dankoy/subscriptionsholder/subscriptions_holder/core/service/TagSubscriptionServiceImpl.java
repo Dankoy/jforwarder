@@ -11,7 +11,10 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.Resour
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TagSubscriptionRepository;
 
-
+/**
+ * @deprecated in favor for {@link TagSubServiceImpl}
+ */
+@Deprecated(since = "2024-01-27")
 @Service
 @RequiredArgsConstructor
 public class TagSubscriptionServiceImpl implements TagSubscriptionService {

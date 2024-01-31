@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
 
 @ToString

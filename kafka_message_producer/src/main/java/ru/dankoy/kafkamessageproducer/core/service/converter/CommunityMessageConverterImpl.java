@@ -1,12 +1,15 @@
 package ru.dankoy.kafkamessageproducer.core.service.converter;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.CommunitySubscription;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 
 
+/**
+ * @deprecated use {@link MessageConverter}
+ */
+@Deprecated(since = "2024-01-30")
 @Component
 public class CommunityMessageConverterImpl implements CommunityMessageConverter {
 
@@ -29,14 +32,13 @@ public class CommunityMessageConverterImpl implements CommunityMessageConverter 
   @Override
   public CommunitySubscription convert(CommunitySubscriptionMessage communitySubscriptionMessage) {
 
-    return new CommunitySubscription(
-        communitySubscriptionMessage.id(),
-        communitySubscriptionMessage.community(),
-        communitySubscriptionMessage.chat(),
-        communitySubscriptionMessage.section(),
-        communitySubscriptionMessage.coub().getPermalink(),
-        new ArrayList<>()
-    );
+    return CommunitySubscription.builder()
+        .id(communitySubscriptionMessage.id())
+        .community(communitySubscriptionMessage.community())
+        .chat(communitySubscriptionMessage.chat())
+        .section(communitySubscriptionMessage.section())
+        .lastPermalink(communitySubscriptionMessage.coub().getPermalink())
+        .build();
 
   }
 

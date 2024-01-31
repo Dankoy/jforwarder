@@ -28,6 +28,8 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
 
   private final CoubService coubService;
 
+  // todo: Подумать как обобщить
+
   @Override
   public List<Coub> findUnsentCoubsForCommunitySubscription(
       CommunitySubscription communitySubscription) {

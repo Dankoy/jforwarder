@@ -9,13 +9,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Section;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunitySubscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.CommunitySubscriptionRepository;
 
 
+/**
+ * @deprecated in favor of {@link CommunitySubServiceImpl}
+ */
+@Deprecated(since = "2024-01-27")
 @RequiredArgsConstructor
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {

@@ -22,14 +22,14 @@ public interface SubscriptionsHolderFeign {
 
 
   //subscriptions
-  @GetMapping(path = "/api/v1/subscriptions", params = {"telegramChatId"})
+  @GetMapping(path = "/api/v1/community_subscriptions", params = {"telegramChatId"})
   List<CommunitySubscription> getAllSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
-  @PostMapping(path = "/api/v1/subscriptions")
+  @PostMapping(path = "/api/v1/community_subscriptions")
   CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
 
-  @DeleteMapping(path = "/api/v1/subscriptions")
+  @DeleteMapping(path = "/api/v1/community_subscriptions")
   void unsubscribe(@RequestBody CommunitySubscription communitySubscription);
 
 

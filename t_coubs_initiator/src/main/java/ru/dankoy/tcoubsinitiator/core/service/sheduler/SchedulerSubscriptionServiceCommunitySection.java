@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
+import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerCommunitySubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
 
@@ -30,6 +31,7 @@ public class SchedulerSubscriptionServiceCommunitySection {
   private final SubscriptionService subscriptionService;
   private final MessageProducerCommunitySubscriptionService messageProducerCommunitySubscriptionService;
   private final CoubFinderService coubFinderService;
+  private final FilterByRegistryService filter;
 
   @Scheduled(initialDelay = 30_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
@@ -65,6 +67,8 @@ public class SchedulerSubscriptionServiceCommunitySection {
         subscription.addCoubs(coubsToSend);
 
       }
+
+      filter.filterByRegistry(communitySubscriptionsPage.getContent());
 
       // remove subscriptions without coubs
 
