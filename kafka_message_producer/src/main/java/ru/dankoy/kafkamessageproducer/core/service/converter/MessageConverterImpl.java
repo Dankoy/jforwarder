@@ -1,5 +1,6 @@
 package ru.dankoy.kafkamessageproducer.core.service.converter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
@@ -77,6 +78,7 @@ public class MessageConverterImpl implements MessageConverter {
             .id(tagSubscriptionMessage.id())
             .build())
         .coubPermalink(tagSubscriptionMessage.coub().getPermalink())
+        .dateTime(LocalDateTime.now())
         .build();
   }
 
@@ -88,6 +90,7 @@ public class MessageConverterImpl implements MessageConverter {
             .id(communitySubscriptionMessage.id())
             .build())
         .coubPermalink(communitySubscriptionMessage.coub().getPermalink())
+        .dateTime(LocalDateTime.now())
         .build();
   }
 
