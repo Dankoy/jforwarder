@@ -7,5 +7,7 @@ public interface OrderService {
 
   Order getByName(String name);
 
+  Order getByValue(String value);
+
   List<Order> getAll();
 }

@@ -7,5 +7,6 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
   Optional<Order> findByName(String name);
+  Optional<Order> findByValue(String value);
 
 }

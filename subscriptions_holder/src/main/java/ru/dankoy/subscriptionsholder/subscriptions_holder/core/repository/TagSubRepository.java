@@ -31,9 +31,9 @@ public interface TagSubRepository extends JpaRepository<TagSub, Long> {
 
 
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  Optional<TagSub> getByChatChatIdAndTagTitleAndOrderName(
+  Optional<TagSub> getByChatChatIdAndTagTitleAndOrderValue(
       @Param("externalChatId") long externalChatId,
       @Param("tagTitle") String tagTitle,
-      @Param("orderName") String orderName);
+      @Param("orderValue") String orderValue);
 
 }

@@ -14,15 +14,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 public class OrderCreateDTO {
 
   @NotEmpty
-  private String name;
-
-  @NotEmpty
   private String value;
 
   public static OrderCreateDTO toDTO(Order order) {
 
     return new OrderCreateDTO(
-        order.getName(),
         order.getValue()
     );
 
@@ -32,7 +28,7 @@ public class OrderCreateDTO {
 
     return new Order(
         0,
-        dto.getName(),
+        null,
         dto.getValue()
     );
 
