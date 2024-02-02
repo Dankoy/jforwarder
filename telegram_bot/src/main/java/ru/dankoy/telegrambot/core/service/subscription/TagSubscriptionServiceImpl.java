@@ -31,7 +31,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   @Override
   public TagSubscription subscribe(
       String tagName,
-      String orderName,
+      String orderValue,
       String scopeName,
       String typeName,
       long chatId) {
@@ -45,7 +45,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
           0,
           tag,
           new Chat(chatId),
-          new Order(orderName),
+          new Order(orderValue),
           new Scope(scopeName),
           new Type(typeName),
           null,
@@ -68,7 +68,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
             0,
             new Tag(created.getTitle()),
             new Chat(chatId),
-            new Order(orderName),
+            new Order(orderValue),
             new Scope(scopeName),
             new Type(typeName),
             null,
@@ -90,7 +90,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   @Override
   public void unsubscribe(
       String tagName,
-      String orderName,
+      String orderValue,
       String scopeName,
       String typeName,
       long chatId
@@ -100,7 +100,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
         0,
         new Tag(tagName),
         new Chat(chatId),
-        new Order(orderName),
+        new Order(orderValue),
         new Scope(scopeName),
         new Type(typeName),
         null,
