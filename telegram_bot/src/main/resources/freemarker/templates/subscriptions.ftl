@@ -9,7 +9,7 @@
     <#if tagSubscriptions?has_content>
   Tag subscriptions
         <#list tagSubscriptions as tagSubscription>
-          ${tagSubscription?counter}: ${tagSubscription.tag.title} ${tagSubscription.order.name}
+          ${tagSubscription?counter}: ${tagSubscription.tag.title} ${tagSubscription.order.value}
         </#list>
     </#if>
 <#else>

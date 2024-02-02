@@ -18,7 +18,9 @@ public class Order {
 
   private String name;
 
-  public Order(String name) {
-    this.name = name;
+  private String value;
+
+  public Order(String value) {
+    this.value = value;
   }
 }

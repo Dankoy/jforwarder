@@ -30,4 +30,7 @@ public class Order {
   @Column(name = "name")
   private String name;
 
+  @Column(name = "value")
+  private String value;
+
 }

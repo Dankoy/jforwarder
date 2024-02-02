@@ -9,14 +9,14 @@ public interface TagSubscriptionService {
 
   TagSubscription subscribe(
       String tagName,
-      String orderName,
+      String orderValue,
       String scopeName,
       String typeName,
       long chatId);
 
   void unsubscribe(
       String tagName,
-      String orderName,
+      String orderValue,
       String scopeName,
       String typeName,
       long chatId

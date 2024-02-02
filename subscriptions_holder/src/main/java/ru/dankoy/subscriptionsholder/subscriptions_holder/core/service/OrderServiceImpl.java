@@ -24,6 +24,15 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
+  public Order getByValue(String value) {
+    var optional = orderRepository.findByValue(value);
+
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Tag order not found - %s", value))
+    );
+  }
+
+  @Override
   public List<Order> getAll() {
     return orderRepository.findAll();
   }

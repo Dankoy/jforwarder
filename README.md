@@ -36,7 +36,7 @@ published after last sent coub to chat.
 
 2) To subscribe to community or tag:    
 ```/subscribe community animals-pets weekly```    
-```/subscribe tag cars newest```
+```/subscribe tag cars popular```
 
 3) Bot will periodically send links to coubs for every subscription user has.    
 

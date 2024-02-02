@@ -340,25 +340,25 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     message.setChatId(inputMessage.getChat().getId());
 
     var tagName = command.get(COMMAND_FIRST_FIELD);
-    var orderName = command.get(COMMAND_SECOND_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
 
     try {
 
       var s = tagSubscriptionService.subscribe(
           tagName,
-          orderName,
+          orderValue,
           "all",
           "",
           inputMessage.getChat().getId());
 
       message.setText(String.format("Subscribed to %s %s", s.getTag().getTitle(),
-          s.getOrder().getName()));
+          s.getOrder().getValue()));
       send(message);
 
     } catch (Conflict e) {
       message.setText(String.format("You are already subscribed to '%s - %s'",
           tagName,
-          orderName));
+          orderValue));
       send(message);
     } catch (NotFoundException e) {
       message.setText(e.getMessage());
@@ -376,18 +376,18 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     message.setChatId(inputMessage.getChat().getId());
 
     var tagName = command.get(COMMAND_FIRST_FIELD);
-    var orderName = command.get(COMMAND_SECOND_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
 
     try {
 
       tagSubscriptionService.unsubscribe(
           tagName,
-          orderName,
+          orderValue,
           "all",
           "",
           inputMessage.getChat().getId());
 
-      message.setText(String.format("Unsubscribed from %s %s", tagName, orderName));
+      message.setText(String.format("Unsubscribed from %s %s", tagName, orderValue));
       send(message);
 
     } catch (Exception e) {
@@ -424,7 +424,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     // escape special chars in order names
     var updated = orders.stream()
-        .map(order -> new Order(escapeMetaCharacters(order.getName())))
+        .map(order -> new Order(escapeMetaCharacters(order.getValue())))
         .toList();
 
     Map<String, Object> templateData = new HashMap<>();

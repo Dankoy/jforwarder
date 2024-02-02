@@ -37,10 +37,10 @@ public class TagSubServiceImpl implements TagSubService {
   public TagSub createSubscription(TagSub tagSubscription) {
 
     // check existence
-    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderName(
+    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
         tagSubscription.getChat().getChatId(),
         tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
+        tagSubscription.getOrder().getValue()
     );
 
     // if exists throw exception
@@ -55,7 +55,7 @@ public class TagSubServiceImpl implements TagSubService {
     var tag = tagService.getByTitle(tagSubscription.getTag().getTitle());
     var scope = scopeService.getByName(tagSubscription.getScope().getName());
     var type = typeService.getByName(tagSubscription.getType().getName());
-    var order = orderService.getByName(tagSubscription.getOrder().getName());
+    var order = orderService.getByValue(tagSubscription.getOrder().getValue());
 
     // todo: do i even need to save chat when creating subscription?
 
@@ -102,10 +102,10 @@ public class TagSubServiceImpl implements TagSubService {
   @Override
   public void deleteSubscription(TagSub tagSubscription) {
 
-    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderName(
+    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
         tagSubscription.getChat().getChatId(),
         tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
+        tagSubscription.getOrder().getValue()
     );
 
     optional.ifPresent(tagSubRepository::delete);
@@ -114,10 +114,10 @@ public class TagSubServiceImpl implements TagSubService {
 
   @Override
   public TagSub updatePermalink(TagSub tagSubscription) {
-    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderName(
+    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
         tagSubscription.getChat().getChatId(),
         tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
+        tagSubscription.getOrder().getValue()
     );
 
     var found = optional.orElseThrow(
