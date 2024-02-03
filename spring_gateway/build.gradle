@@ -28,7 +28,7 @@ dependencies {
     implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
 
     // logging
-    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.2'
 
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
