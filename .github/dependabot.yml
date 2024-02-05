@@ -15,6 +15,7 @@ updates:
         - "minor"
         - "patch"
 #    target-branch: "dependencies"
+    open-pull-requests-limit: 10
 
   # Maintain dependencies for GitHub Actions
   - package-ecosystem: "github-actions"
@@ -26,5 +27,6 @@ updates:
         update-types:
         - "minor"
         - "patch"
+    open-pull-requests-limit: 10
 
 
