@@ -29,8 +29,9 @@ jobs:
       - name: Get version
         run: echo "version_name=${{steps.project_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
 
-      - name: gradle build
-      - uses: gradle/gradle-build-action@v3
-        with:
-          arguments: clean build -x test
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+    
+      - name: Execute Gradle build
+        run: ./gradlew clean build -x test
 
