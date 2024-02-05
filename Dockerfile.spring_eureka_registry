@@ -1,5 +1,5 @@
-FROM  gradle:8.2.1-jdk17
-#FROM  --platform=linux/arm64 gradle:8.2.1-jdk17
+FROM  gradle:8.6.0-jdk17
+#FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
 LABEL authors="turtality"
 
@@ -10,15 +10,16 @@ ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
 ENV ENV_PATH_TO_JAR=spring_eureka_registry/build/libs/spring_eureka_registry-$JAR_VERSION.jar
 
-RUN echo $TZ > /etc/timezone
+RUN echo "$TZ" > /etc/timezone
 
 WORKDIR /app
+COPY ./buildSrc ./buildSrc
 COPY ./spring_eureka_registry/src ./spring_eureka_registry/src
 COPY ./spring_eureka_registry/build.gradle ./spring_eureka_registry/
 COPY ./build.gradle ./
 COPY ./settings.gradle ./
 
-RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"] # not alpine
+RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
 
 ENTRYPOINT java -Xms700m -Xmx700m \
              -XX:MaxMetaspaceSize=200m \
@@ -30,4 +31,4 @@ ENTRYPOINT java -Xms700m -Xmx700m \
              -XX:+UseGCOverheadLimit \
              -XX:+UseStringDeduplication \
              -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m \
-             -jar $ENV_PATH_TO_JAR
+             -jar "$ENV_PATH_TO_JAR"

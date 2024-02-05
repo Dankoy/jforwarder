@@ -1,41 +1,18 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.1.1'
-    id 'io.spring.dependency-management' version '1.1.0'
+    id 'multimodule-config'
+    id 'spring-conventions'
+    id 'micrometer-conventions'
+    id 'loki-conventions'
 }
 
 group = 'ru.dankoy'
 // version comes from root project
 
-java {
-    sourceCompatibility = '17'
-}
-
-repositories {
-    mavenCentral()
-}
-
-ext {
-    set('springCloudVersion', "2022.0.3")
-}
-
 dependencies {
-
-    // micrometer + zipkin bridge
-    implementation 'io.micrometer:micrometer-observation' // for metrics actuator (prometheus)
-    implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
-    implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
-    implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
-
-    // logging
-    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
 
     // gateway
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-
-    // actuator
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // eureka
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
@@ -47,15 +24,4 @@ dependencies {
 //    implementation 'com.github.ben-manes.caffeine:caffeine'
 //    implementation 'org.springframework.boot:spring-boot-starter-cache'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
 }

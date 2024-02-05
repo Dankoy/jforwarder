@@ -1,0 +1,12 @@
+// share spring boot and dependency management for other projects via plugin
+
+dependencies {
+
+    // web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+
+}
+
+

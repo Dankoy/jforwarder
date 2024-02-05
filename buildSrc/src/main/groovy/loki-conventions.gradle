@@ -1,0 +1,10 @@
+// share spring boot and dependency management for other projects via plugin
+
+dependencies {
+
+    // logging
+    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
+
+}
+
+
