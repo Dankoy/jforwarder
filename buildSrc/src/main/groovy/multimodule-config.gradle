@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'idea'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+
+repositories {
+    mavenCentral()
+}
+
+
+
+test {
+    useJUnitPlatform()
+}
+
+configurations {
+//    developmentOnly
+
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+// shared between all projects as plugin
+dependencies {
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+}
