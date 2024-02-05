@@ -1,6 +1,6 @@
-FROM  gradle:8.2.1-jdk17
-#FROM  --platform=linux/arm64 gradle:8.2.1-jdk17
-# FROM --platform=linux/amd64 gradle:8.2.1-jdk17-alpine
+FROM  gradle:8.6.0-jdk17
+#FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
+# FROM --platform=linux/amd64 gradle:8.6.0-jdk17-alpine
 LABEL authors="turtality"
 
 ARG TZ=Europe/Moscow
@@ -14,9 +14,10 @@ ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
 ENV ENV_PATH_TO_JAR=subscriptions_holder/build/libs/subscriptions_holder-$JAR_VERSION.jar
 
-RUN echo $TZ > /etc/timezone
+RUN echo "$TZ" > /etc/timezone
 
 WORKDIR /app
+COPY ./buildSrc ./buildSrc
 COPY ./subscriptions_holder/src ./subscriptions_holder/src
 COPY ./subscriptions_holder/build.gradle ./subscriptions_holder/
 COPY ./build.gradle ./
@@ -41,4 +42,4 @@ ENTRYPOINT java -Djasypt.encryptor.password=${JASYPT_PASSWORD} \
                   -XX:+UseGCOverheadLimit \
                   -XX:+UseStringDeduplication \
                   -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m \
-                  -jar $ENV_PATH_TO_JAR
+                  -jar "$ENV_PATH_TO_JAR"
