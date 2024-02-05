@@ -1,0 +1,57 @@
+name: Build and docker hub push using matrix
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        docker-file: [ "coub_tags_searcher", 
+                      "kafka_message_consumer", 
+                      "kafka_message_producer",
+                       "spring_eureka_registry", 
+                       "spring_gateway", 
+                       "subscriptions_holder",
+                       "t_coubs_initiator", 
+                       "coub_forwarder_telegram_bot"
+        ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Retrieve Version
+        run: echo "VERSION_NAME=$(${{ github.workspace }}/gradlew -q printVersion)" >> $GITHUB_OUTPUT
+        id: project_version
+
+      - name: Get version
+        run: echo "version_name=${{steps.project_version.outputs.VERSION_NAME}}" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          build-args: |
+            JAR_VERSION=${{ env.version_name }}
+          file: ./Dockerfile.${{ matrix.docker-file }}
+          platforms: linux/amd64,linux/arm64
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
+          push: false
