@@ -5,13 +5,14 @@ ext {
     set("PROJECT_VERSION", "0.3.1")
 }
 
+// doesn't work in build.gradle in buildSrc project
+ext {
+    springCloudDependencies = "org.springframework.cloud:spring-cloud-dependencies:2022.0.3"
+}
+
 //share project version between all projects
 allprojects {
     version = "${PROJECT_VERSION}-SNAPSHOT"
-}
-
-ext {
-    springCloudVersion = '2022.0.3'
 }
 
 tasks.register('printVersion') {

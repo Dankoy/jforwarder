@@ -5,13 +5,9 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-ext {
-    springCloudVersion = rootProject.springCloudVersion
-}
-
 dependencyManagement {
     imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        mavenBom "${springCloudDependencies}"
     }
 }
 
