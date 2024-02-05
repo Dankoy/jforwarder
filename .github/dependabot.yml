@@ -9,4 +9,20 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-    target-branch: "dependencies"
+    groups:
+      minor-patch-group:
+        update-types:
+        - "minor"
+        - "patch"
+#    target-branch: "dependencies"
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      minor-patch-group:
+        update-types:
+        - "minor"
+        - "patch"
