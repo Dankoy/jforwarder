@@ -8,6 +8,16 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+idea {
+    module {
+        //if you love browsing Javadoc
+        downloadJavadoc = true
+
+        //and hate reading sources :)
+        downloadSources = true
+    }
+}
+
 repositories {
     mavenCentral()
 }
