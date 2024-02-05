@@ -1,9 +1,11 @@
 name: Gradle build skip tests
 
 on:
-  workflow_dispatch:
   pull_request:
     branches: [ "dependencies", "main", "dev" ]
+    types:
+      - opened
+  workflow_dispatch:
 
 jobs:
   build:
