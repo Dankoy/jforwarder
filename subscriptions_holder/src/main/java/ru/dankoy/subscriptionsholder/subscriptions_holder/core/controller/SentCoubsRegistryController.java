@@ -55,6 +55,7 @@ public class SentCoubsRegistryController {
   }
 
   @PostMapping(value = "/api/v1/sent_coubs_registry")
+  @ResponseStatus(HttpStatus.CREATED)
   public SentCoubsRegistryCreateDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
     var fromDto = SentCoubsRegistryCreateDTO.fromDTO(dto);
     var s = sentCoubsRegistryService.create(fromDto);
