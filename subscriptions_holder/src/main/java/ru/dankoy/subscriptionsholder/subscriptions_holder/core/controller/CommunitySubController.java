@@ -15,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionUpdatePermalinkDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubUpdatePermalinkDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.CommunitySubService;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SubscriptionService;
 
 
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.Community
 public class CommunitySubController {
 
   private final CommunitySubService communitySubService;
+  private final SubscriptionService subscriptionService;
 
 
   @GetMapping(value = "/api/v1/community_subscriptions")
@@ -77,14 +79,14 @@ public class CommunitySubController {
   }
 
   @PutMapping(path = "/api/v1/community_subscriptions")
-  public CommunitySubDTO updatePermalink(
-      @Valid @RequestBody CommunitySubUpdatePermalinkDTO dto) {
+  public SubscriptionUpdatePermalinkDTO updatePermalink(
+      @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
 
-    var subscription = CommunitySubUpdatePermalinkDTO.fromDTO(dto);
+    var subscription = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
 
-    var s = communitySubService.updateLastPermalink(subscription);
+    var s = subscriptionService.updatePermalink(subscription);
 
-    return CommunitySubDTO.toDTO(s);
+    return SubscriptionUpdatePermalinkDTO.toDTO(s);
 
   }
 
