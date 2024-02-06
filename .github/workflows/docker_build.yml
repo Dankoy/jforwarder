@@ -57,5 +57,5 @@ jobs:
             JAR_VERSION=${{ env.version_name }}
           file: ./Dockerfile.${{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKERHUB_USERNAME || "docker.io" }}/${{ matrix.docker-file }}:${{ env.version_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME || 'docker.io' }}/${{ matrix.docker-file }}:${{ env.version_name }}
           push: false
