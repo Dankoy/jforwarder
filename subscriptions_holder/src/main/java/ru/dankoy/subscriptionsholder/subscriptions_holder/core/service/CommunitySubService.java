@@ -24,6 +24,4 @@ public interface CommunitySubService {
   @Transactional
   void unsubscribeChatFromCommunity(CommunitySub communitySubscription);
 
-  @Transactional
-  CommunitySub updateLastPermalink(CommunitySub communitySubscription);
 }

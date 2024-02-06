@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.TagSub;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TagSubRepository;
 
 @Service
@@ -109,26 +108,6 @@ public class TagSubServiceImpl implements TagSubService {
     );
 
     optional.ifPresent(tagSubRepository::delete);
-
-  }
-
-  @Override
-  public TagSub updatePermalink(TagSub tagSubscription) {
-    var optional = tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
-        tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getValue()
-    );
-
-    var found = optional.orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format("Subscription not found: %s", tagSubscription)
-        )
-    );
-
-    found.setLastPermalink(tagSubscription.getLastPermalink());
-
-    return tagSubRepository.save(found);
 
   }
 }
