@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionUpdatePermalinkDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SubscriptionService;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubService;
 
 
@@ -23,6 +25,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubSer
 public class TagSubController {
 
   private final TagSubService tagSubService;
+  private final SubscriptionService subscriptionService;
 
 
   @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
@@ -69,13 +72,14 @@ public class TagSubController {
 
 
   @PutMapping("/api/v1/tag_subscriptions")
-  public TagSubscriptionDTO updatePermalink(@Valid @RequestBody TagSubscriptionCreateDTO dto) {
+  public SubscriptionUpdatePermalinkDTO updatePermalink(
+      @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
 
-    var ts = TagSubscriptionCreateDTO.fromDTO(dto);
+    var ts = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
 
-    var sub = tagSubService.updatePermalink(ts);
+    var sub = subscriptionService.updatePermalink(ts);
 
-    return TagSubscriptionDTO.toDTO(sub);
+    return SubscriptionUpdatePermalinkDTO.toDTO(sub);
 
   }
 

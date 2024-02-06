@@ -1,4 +1,4 @@
-name: Build and docker hub push using matrix
+name: Docker build using matrix
 
 on:
   pull_request:

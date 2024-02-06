@@ -137,27 +137,4 @@ public class CommunitySubServiceImpl implements CommunitySubService {
     subscriptionFoundOptional.ifPresent(communitySubRepository::delete);
 
   }
-
-  @Transactional
-  @Override
-  public CommunitySub updateLastPermalink(CommunitySub communitySubscription) {
-
-    var foundSubscriptionOptional = communitySubRepository
-        .getByChatChatIdAndCommunityNameAndSectionName(
-            communitySubscription.getChat().getChatId(),
-            communitySubscription.getCommunity().getName(),
-            communitySubscription.getSection().getName());
-
-    var found = foundSubscriptionOptional.orElseThrow(() -> new ResourceNotFoundException(
-            String.format("Subscription not found for community '%s-%s' and chat '%d'",
-                communitySubscription.getCommunity().getName(),
-                communitySubscription.getSection().getName(),
-                communitySubscription.getChat().getChatId())
-        )
-    );
-
-    found.setLastPermalink(communitySubscription.getLastPermalink());
-    return communitySubRepository.save(found);
-
-  }
 }

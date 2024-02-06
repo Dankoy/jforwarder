@@ -16,6 +16,4 @@ public interface TagSubService {
 
   void deleteSubscription(TagSub tagSubscription);
 
-  TagSub updatePermalink(TagSub tagSubscription);
-
 }
