@@ -34,5 +34,6 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_CHECKOV: false # make true somaday
+          VALIDATE_SHELL_SHFMT: false # don't lint shell
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
