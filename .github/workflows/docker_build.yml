@@ -45,6 +45,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#using-secrets-in-a-workflow
+      # Except GITHUB_TOKEN,
+      # secrets are not passed to the runner when
+      # a workflow is triggered from a forked repository.
       - name: docker build
         uses: docker/build-push-action@v5
         with:
@@ -53,5 +57,5 @@ jobs:
             JAR_VERSION=${{ env.version_name }}
           file: ./Dockerfile.${{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME || "docker.io" }}/${{ matrix.docker-file }}:${{ env.version_name }}
           push: false
