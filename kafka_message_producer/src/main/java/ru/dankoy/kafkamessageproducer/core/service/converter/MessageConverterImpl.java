@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
@@ -17,81 +18,55 @@ public class MessageConverterImpl implements MessageConverter {
   public List<CommunitySubscriptionMessage> convert(CommunitySubscription communitySubscription) {
 
     return communitySubscription.getCoubs().stream()
-        .map(c -> new CommunitySubscriptionMessage(
-            communitySubscription.getId(),
-            communitySubscription.getCommunity(),
-            communitySubscription.getChat(),
-            communitySubscription.getSection(),
-            c,
-            communitySubscription.getLastPermalink()
-        ))
+        .map(
+            c ->
+                (CommunitySubscriptionMessage)
+                    CommunitySubscriptionMessage.builder()
+                        .id(communitySubscription.getId())
+                        .chat(communitySubscription.getChat())
+                        .coub(c)
+                        .community(communitySubscription.getCommunity())
+                        .section(communitySubscription.getSection())
+                        .lastPermalink(communitySubscription.getLastPermalink())
+                        .build())
         .toList();
-  }
-
-
-  @Override
-  public CommunitySubscription convert(CommunitySubscriptionMessage communitySubscriptionMessage) {
-
-    return CommunitySubscription.builder()
-        .id(communitySubscriptionMessage.id())
-        .community(communitySubscriptionMessage.community())
-        .chat(communitySubscriptionMessage.chat())
-        .section(communitySubscriptionMessage.section())
-        .lastPermalink(communitySubscriptionMessage.coub().getPermalink())
-        .build();
-
   }
 
   @Override
   public List<TagSubscriptionMessage> convert(TagSubscription tagSubscription) {
     return tagSubscription.getCoubs().stream()
-        .map(c -> new TagSubscriptionMessage(
-            tagSubscription.getId(),
-            tagSubscription.getTag(),
-            tagSubscription.getChat(),
-            tagSubscription.getOrder(),
-            tagSubscription.getScope(),
-            tagSubscription.getType(),
-            c,
-            tagSubscription.getLastPermalink()
-        ))
+        .map(
+            c ->
+                (TagSubscriptionMessage)
+                    TagSubscriptionMessage.builder()
+                        .id(tagSubscription.getId())
+                        .tag(tagSubscription.getTag())
+                        .chat(tagSubscription.getChat())
+                        .order(tagSubscription.getOrder())
+                        .scope(tagSubscription.getScope())
+                        .type(tagSubscription.getType())
+                        .coub(c)
+                        .lastPermalink(c.getPermalink())
+                        .build())
         .toList();
   }
 
   @Override
-  public TagSubscription convert(TagSubscriptionMessage tagSubscriptionMessage) {
-    return TagSubscription.builder()
-        .id(tagSubscriptionMessage.id())
-        .tag(tagSubscriptionMessage.tag())
-        .chat(tagSubscriptionMessage.chat())
-        .order(tagSubscriptionMessage.order())
-        .scope(tagSubscriptionMessage.scope())
-        .type(tagSubscriptionMessage.type())
-        .lastPermalink(tagSubscriptionMessage.coub().getPermalink())
-        .build();
-  }
-
-  @Override
-  public SentCoubsRegistry convertToRegistry(TagSubscriptionMessage tagSubscriptionMessage) {
+  public SentCoubsRegistry convertToRegistry(CoubMessage message) {
     return SentCoubsRegistry.builder()
-        .subscription(Subscription.builder()
-            .id(tagSubscriptionMessage.id())
-            .build())
-        .coubPermalink(tagSubscriptionMessage.coub().getPermalink())
+        .subscription(Subscription.builder().id(message.getId()).build())
+        .coubPermalink(message.getCoub().getPermalink())
         .dateTime(LocalDateTime.now())
         .build();
   }
 
   @Override
-  public SentCoubsRegistry convertToRegistry(
-      CommunitySubscriptionMessage communitySubscriptionMessage) {
-    return SentCoubsRegistry.builder()
-        .subscription(Subscription.builder()
-            .id(communitySubscriptionMessage.id())
-            .build())
-        .coubPermalink(communitySubscriptionMessage.coub().getPermalink())
-        .dateTime(LocalDateTime.now())
+  public Subscription convert(CoubMessage message) {
+
+    return Subscription.builder()
+        .id(message.getId())
+        .chat(message.getChat())
+        .lastPermalink(message.getCoub().getPermalink())
         .build();
   }
-
 }
