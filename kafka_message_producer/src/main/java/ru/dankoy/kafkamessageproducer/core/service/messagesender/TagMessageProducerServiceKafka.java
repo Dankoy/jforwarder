@@ -30,23 +30,22 @@ public class TagMessageProducerServiceKafka implements TagMessageProducerService
 
       producerRecord.headers().add("subscription_type", "BY_TAG".getBytes(StandardCharsets.UTF_8));
 
-      kafkaTemplate.send(producerRecord)
+      kafkaTemplate
+          .send(producerRecord)
           .whenComplete(
               (result, ex) -> {
                 if (ex == null) {
                   log.info(
                       "message id: {} was sent, offset: {}",
-                      tagSubscriptionMessage.id(),
-                      result.getRecordMetadata().offset()
-                  );
+                      tagSubscriptionMessage.getId(),
+                      result.getRecordMetadata().offset());
                   // if kafka accepted - send update last permalink in db for subscription
                   sendAck.accept(tagSubscriptionMessage);
                   // update registry
                   sendAckToRegistry.accept(tagSubscriptionMessage);
                   log.info("acknowledgement sent for {}", tagSubscriptionMessage);
                 } else {
-                  log.error("message id:{} was not sent",
-                      tagSubscriptionMessage.coub().getPermalink(), ex);
+                  log.error("message id:{} was not sent", tagSubscriptionMessage.getId(), ex);
                 }
               });
     } catch (Exception ex) {

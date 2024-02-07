@@ -28,24 +28,25 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
       ProducerRecord<String, CommunitySubscriptionMessage> producerRecord =
           new ProducerRecord<>(topic, communitySubscriptionMessage);
 
-      producerRecord.headers()
+      producerRecord
+          .headers()
           .add("subscription_type", "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8));
 
-      kafkaTemplate.send(producerRecord)
+      kafkaTemplate
+          .send(producerRecord)
           .whenComplete(
               (result, ex) -> {
                 if (ex == null) {
                   log.info(
                       "message id: {} was sent, offset: {}",
-                      communitySubscriptionMessage.id(),
-                      result.getRecordMetadata().offset()
-                  );
+                      communitySubscriptionMessage.getId(),
+                      result.getRecordMetadata().offset());
                   // if kafka accepted - send update last permalink in db for subscription
                   sendAck.accept(communitySubscriptionMessage);
                   // update registry
                   sendAckToRegistry.accept(communitySubscriptionMessage);
                 } else {
-                  log.error("message id:{} was not sent", communitySubscriptionMessage.id(), ex);
+                  log.error("message id:{} was not sent", communitySubscriptionMessage.getId(), ex);
                 }
               });
     } catch (Exception ex) {
