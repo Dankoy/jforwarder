@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.config;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -8,6 +7,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
@@ -25,7 +25,6 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProdu
 import ru.dankoy.kafkamessageproducer.core.service.regisrty.SentCoubsRegisrtyService;
 import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionService;
 
-
 @Slf4j
 @Configuration
 public class KafkaConfig {
@@ -36,13 +35,13 @@ public class KafkaConfig {
   private final String communityProducerClientId;
   private final String tagProducerClientId;
 
-
   public KafkaConfig(
-      @Value("${application.kafka.topic.community_subscription}") String communitySubscriptionTopicName,
+      @Value("${application.kafka.topic.community_subscription}")
+          String communitySubscriptionTopicName,
       @Value("${application.kafka.topic.tag_subscription}") String tagSubscriptionTopicName,
-      @Value("${application.kafka.producers.community-coubs.client-id}") String communityProducerClientId,
-      @Value("${application.kafka.producers.tag-coubs.client-id}") String tagProducerClientId
-  ) {
+      @Value("${application.kafka.producers.community-coubs.client-id}")
+          String communityProducerClientId,
+      @Value("${application.kafka.producers.tag-coubs.client-id}") String tagProducerClientId) {
     this.communitySubscriptionTopicName = communitySubscriptionTopicName;
     this.tagSubscriptionTopicName = tagSubscriptionTopicName;
     this.communityProducerClientId = communityProducerClientId;
@@ -56,8 +55,8 @@ public class KafkaConfig {
 
   @Bean
   public ProducerFactory<String, CommunitySubscriptionMessage> producerFactoryCommunity(
-      KafkaProperties kafkaProperties, ObjectMapper mapper) {
-    var props = kafkaProperties.buildProducerProperties();
+      KafkaProperties kafkaProperties, ObjectMapper mapper, SslBundles sslBundles) {
+    var props = kafkaProperties.buildProducerProperties(sslBundles);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
@@ -69,16 +68,16 @@ public class KafkaConfig {
     props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
     props.put(ProducerConfig.CLIENT_ID_CONFIG, communityProducerClientId);
 
-    var kafkaProducerFactory = new DefaultKafkaProducerFactory<String, CommunitySubscriptionMessage>(
-        props);
+    var kafkaProducerFactory =
+        new DefaultKafkaProducerFactory<String, CommunitySubscriptionMessage>(props);
     kafkaProducerFactory.setValueSerializer(new JsonSerializer<>(mapper));
     return kafkaProducerFactory;
   }
 
   @Bean
   public ProducerFactory<String, TagSubscriptionMessage> producerFactoryTag(
-      KafkaProperties kafkaProperties, ObjectMapper mapper) {
-    var props = kafkaProperties.buildProducerProperties();
+      KafkaProperties kafkaProperties, ObjectMapper mapper, SslBundles sslBundles) {
+    var props = kafkaProperties.buildProducerProperties(sslBundles);
     props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
@@ -90,8 +89,8 @@ public class KafkaConfig {
     props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 5);
     props.put(ProducerConfig.CLIENT_ID_CONFIG, tagProducerClientId);
 
-    var kafkaProducerFactory = new DefaultKafkaProducerFactory<String, TagSubscriptionMessage>(
-        props);
+    var kafkaProducerFactory =
+        new DefaultKafkaProducerFactory<String, TagSubscriptionMessage>(props);
     kafkaProducerFactory.setValueSerializer(new JsonSerializer<>(mapper));
     return kafkaProducerFactory;
   }
@@ -110,20 +109,12 @@ public class KafkaConfig {
 
   @Bean
   public NewTopic topic1() {
-    return TopicBuilder
-        .name(communitySubscriptionTopicName)
-        .partitions(1)
-        .replicas(1)
-        .build();
+    return TopicBuilder.name(communitySubscriptionTopicName).partitions(1).replicas(1).build();
   }
 
   @Bean
   public NewTopic topic2() {
-    return TopicBuilder
-        .name(tagSubscriptionTopicName)
-        .partitions(1)
-        .replicas(1)
-        .build();
+    return TopicBuilder.name(tagSubscriptionTopicName).partitions(1).replicas(1).build();
   }
 
   @Bean
@@ -135,7 +126,7 @@ public class KafkaConfig {
     return new CommunityMessageProducerServiceKafka(
         kafkaTemplateCommunity,
         topic1.name(),
-        subscriptionService::updateCommunitySubscriptionPermalink,
+        subscriptionService::updatePermalink,
         sentCoubsRegisrtyService::create);
   }
 
@@ -148,8 +139,7 @@ public class KafkaConfig {
     return new TagMessageProducerServiceKafka(
         kafkaTemplateTag,
         topic2.name(),
-        subscriptionService::updateTagSubscriptionPermalink,
+        subscriptionService::updatePermalink,
         sentCoubsRegisrtyService::create);
   }
-
 }
