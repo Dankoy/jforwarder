@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -9,46 +8,40 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription.TagSubscriptionDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionUpdatePermalinkDTO;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SubscriptionService;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagSubService;
-
 
 @RequiredArgsConstructor
 @RestController
 public class TagSubController {
 
   private final TagSubService tagSubService;
-  private final SubscriptionService subscriptionService;
 
-
-  @GetMapping(value = "/api/v1/tag_subscriptions", params = {"active"})
-  public Page<TagSubscriptionDTO> getAllByActiveChat(@RequestParam("active") boolean active,
-      Pageable pageable) {
+  @GetMapping(
+      value = "/api/v1/tag_subscriptions",
+      params = {"active"})
+  public Page<TagSubscriptionDTO> getAllByActiveChat(
+      @RequestParam("active") boolean active, Pageable pageable) {
 
     var subs = tagSubService.getAllByActiveTelegramChats(active, pageable);
 
     return subs.map(TagSubscriptionDTO::toDTO);
-
   }
 
-  @GetMapping(value = "/api/v1/tag_subscriptions", params = {"telegramChatId"})
+  @GetMapping(
+      value = "/api/v1/tag_subscriptions",
+      params = {"telegramChatId"})
   public List<TagSubscriptionDTO> getAllByTelegramChat(
       @RequestParam("telegramChatId") long telegramChatId) {
 
     var subs = tagSubService.getAllByTelegramChatId(telegramChatId);
 
-    return subs.stream()
-        .map(TagSubscriptionDTO::toDTO)
-        .toList();
+    return subs.stream().map(TagSubscriptionDTO::toDTO).toList();
   }
-
 
   @PostMapping(value = "/api/v1/tag_subscriptions")
   public TagSubscriptionDTO create(@Valid @RequestBody TagSubscriptionCreateDTO dto) {
@@ -58,7 +51,6 @@ public class TagSubController {
     var sub = tagSubService.createSubscription(ts);
 
     return TagSubscriptionDTO.toDTO(sub);
-
   }
 
   @DeleteMapping(value = "/api/v1/tag_subscriptions")
@@ -67,20 +59,5 @@ public class TagSubController {
     var ts = TagSubscriptionCreateDTO.fromDTO(dto);
 
     tagSubService.deleteSubscription(ts);
-
   }
-
-
-  @PutMapping("/api/v1/tag_subscriptions")
-  public SubscriptionUpdatePermalinkDTO updatePermalink(
-      @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
-
-    var ts = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
-
-    var sub = subscriptionService.updatePermalink(ts);
-
-    return SubscriptionUpdatePermalinkDTO.toDTO(sub);
-
-  }
-
 }
