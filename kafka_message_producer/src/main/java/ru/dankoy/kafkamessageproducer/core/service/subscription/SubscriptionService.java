@@ -1,16 +1,9 @@
 package ru.dankoy.kafkamessageproducer.core.service.subscription;
 
-import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 
 public interface SubscriptionService {
 
-  CommunitySubscription updateCommunitySubscriptionPermalink(
-      CommunitySubscriptionMessage subscription);
-
-  TagSubscription updateTagSubscriptionPermalink(
-      TagSubscriptionMessage subscription);
-
+  Subscription updatePermalink(CoubMessage coubMessage);
 }
