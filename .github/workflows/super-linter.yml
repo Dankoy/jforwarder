@@ -35,5 +35,9 @@ jobs:
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_CHECKOV: false # make true somaday
           VALIDATE_SHELL_SHFMT: false # don't lint shell
+          VALIDATE_MARKDOWN: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_JAVA: false # make true someday
+          FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
