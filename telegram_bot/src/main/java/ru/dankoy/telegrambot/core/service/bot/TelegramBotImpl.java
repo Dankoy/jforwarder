@@ -211,7 +211,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
     message.setText(
-        "Now you can subscribe to coub.com communities or/and tags and receive updates directly in chat");
+        "Now you can subscribe to coub.com communities or/and tags and receive updates directly in"
+            + " chat");
 
     send(message);
   }
