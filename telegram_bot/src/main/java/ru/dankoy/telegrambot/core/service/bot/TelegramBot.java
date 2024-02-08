@@ -8,5 +8,4 @@ public interface TelegramBot {
   void sendMessage(CommunitySubscriptionMessage message);
 
   void sendMessage(TagSubscriptionMessage message);
-
 }
