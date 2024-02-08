@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CommunityMessageProducerServiceKafka implements CommunityMessageProducerService {
 
-  private final KafkaTemplate<String, CommunitySubscriptionMessage> kafkaTemplate;
+  private final KafkaTemplate<String, CoubMessage> kafkaTemplate;
 
   private final String topic;
 
@@ -25,7 +26,7 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
     try {
       log.info("message: {}", communitySubscriptionMessage);
 
-      ProducerRecord<String, CommunitySubscriptionMessage> producerRecord =
+      ProducerRecord<String, CoubMessage> producerRecord =
           new ProducerRecord<>(topic, communitySubscriptionMessage);
 
       producerRecord

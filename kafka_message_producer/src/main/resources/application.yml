@@ -1,15 +1,10 @@
 application:
   kafka:
     topic:
-      community_subscription: "coub-com-sub"
-      tag_subscription: "coub-tag-sub"
+      coub-subscriptions: "coub-subscriptions"
     producers:
-      community-coubs:
-        client-id: "community-coubs-producer" # custom props configuration in factory
-      tag-coubs:
-        client-id: "tag-coubs-producer" # custom props configuration in factory
-
-
+      coubs:
+        client-id: "coubs-producer" # custom props configuration in factory
 
 spring:
   application:
@@ -17,7 +12,7 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092} # common bootstrap server for every producer
     producer:
-      client-id: "coub-producer"
+      client-id: "coubs-producer"
       retries: 5
 
 

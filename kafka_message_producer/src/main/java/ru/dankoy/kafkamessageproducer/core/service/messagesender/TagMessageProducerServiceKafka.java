@@ -6,13 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 
 @Slf4j
 @RequiredArgsConstructor
 public class TagMessageProducerServiceKafka implements TagMessageProducerService {
 
-  private final KafkaTemplate<String, TagSubscriptionMessage> kafkaTemplate;
+  private final KafkaTemplate<String, CoubMessage> kafkaTemplate;
 
   private final String topic;
 
@@ -25,7 +26,7 @@ public class TagMessageProducerServiceKafka implements TagMessageProducerService
     try {
       log.info("message: {}", tagSubscriptionMessage);
 
-      ProducerRecord<String, TagSubscriptionMessage> producerRecord =
+      ProducerRecord<String, CoubMessage> producerRecord =
           new ProducerRecord<>(topic, tagSubscriptionMessage);
 
       producerRecord.headers().add("subscription_type", "BY_TAG".getBytes(StandardCharsets.UTF_8));

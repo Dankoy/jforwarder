@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -18,15 +17,9 @@ import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerService;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerServiceKafka;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerServiceKafka;
-import ru.dankoy.kafkamessageproducer.core.service.regisrty.SentCoubsRegisrtyService;
-import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionService;
 
 @Slf4j
-@Configuration
+// @Configuration
 public class KafkaConfig {
 
   private final String communitySubscriptionTopicName;
@@ -117,29 +110,29 @@ public class KafkaConfig {
     return TopicBuilder.name(tagSubscriptionTopicName).partitions(1).replicas(1).build();
   }
 
-  @Bean
-  public CommunityMessageProducerService communityMessageProducerService(
-      NewTopic topic1,
-      KafkaTemplate<String, CommunitySubscriptionMessage> kafkaTemplateCommunity,
-      SubscriptionService subscriptionService,
-      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
-    return new CommunityMessageProducerServiceKafka(
-        kafkaTemplateCommunity,
-        topic1.name(),
-        subscriptionService::updatePermalink,
-        sentCoubsRegisrtyService::create);
-  }
-
-  @Bean
-  public TagMessageProducerService tagMessageProducerService(
-      NewTopic topic2,
-      KafkaTemplate<String, TagSubscriptionMessage> kafkaTemplateTag,
-      SubscriptionService subscriptionService,
-      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
-    return new TagMessageProducerServiceKafka(
-        kafkaTemplateTag,
-        topic2.name(),
-        subscriptionService::updatePermalink,
-        sentCoubsRegisrtyService::create);
-  }
+  //  @Bean
+  //  public CommunityMessageProducerService communityMessageProducerService(
+  //      NewTopic topic1,
+  //      KafkaTemplate<String, CommunitySubscriptionMessage> kafkaTemplateCommunity,
+  //      SubscriptionService subscriptionService,
+  //      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+  //    return new CommunityMessageProducerServiceKafka(
+  //        kafkaTemplateCommunity,
+  //        topic1.name(),
+  //        subscriptionService::updatePermalink,
+  //        sentCoubsRegisrtyService::create);
+  //  }
+  //
+  //  @Bean
+  //  public TagMessageProducerService tagMessageProducerService(
+  //      NewTopic topic2,
+  //      KafkaTemplate<String, TagSubscriptionMessage> kafkaTemplateTag,
+  //      SubscriptionService subscriptionService,
+  //      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+  //    return new TagMessageProducerServiceKafka(
+  //        kafkaTemplateTag,
+  //        topic2.name(),
+  //        subscriptionService::updatePermalink,
+  //        sentCoubsRegisrtyService::create);
+  //  }
 }
