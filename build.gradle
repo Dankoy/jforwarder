@@ -2,7 +2,7 @@
 // dependabot probably wont work with such configuration
 
 ext {
-    set("PROJECT_VERSION", "0.3.2")
+    set("PROJECT_VERSION", "0.3.3")
 }
 
 // doesn't work in build.gradle in buildSrc project
