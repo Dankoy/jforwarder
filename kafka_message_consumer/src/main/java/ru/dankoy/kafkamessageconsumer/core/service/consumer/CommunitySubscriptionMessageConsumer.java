@@ -5,5 +5,7 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionM
 
 public interface CommunitySubscriptionMessageConsumer {
 
-    void accept(List<CommunitySubscriptionMessage> value);
+  void accept(List<CommunitySubscriptionMessage> value);
+
+  void accept(CommunitySubscriptionMessage value);
 }

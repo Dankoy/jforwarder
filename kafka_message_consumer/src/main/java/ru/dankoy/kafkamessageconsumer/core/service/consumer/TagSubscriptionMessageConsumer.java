@@ -6,4 +6,6 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage
 public interface TagSubscriptionMessageConsumer {
 
   void accept(List<TagSubscriptionMessage> values);
+
+  void accept(TagSubscriptionMessage value);
 }

@@ -16,8 +16,15 @@ public class TagSubscriptionMessageConsumerBotSender implements TagSubscriptionM
   public void accept(List<TagSubscriptionMessage> values) {
     for (var value : values) {
       log.info("Sending message: {}", value);
-      telegramBotService.sendMessage(value);
+      telegramBotService.sendTagMessage(value);
       log.info("Message sent");
     }
+  }
+
+  @Override
+  public void accept(TagSubscriptionMessage value) {
+    log.info("Sending message: {}", value);
+    telegramBotService.sendTagMessage(value);
+    log.info("Message sent");
   }
 }

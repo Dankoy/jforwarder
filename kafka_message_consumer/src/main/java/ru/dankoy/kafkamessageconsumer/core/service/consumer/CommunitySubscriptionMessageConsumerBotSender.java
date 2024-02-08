@@ -6,11 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
-
 @Slf4j
 @RequiredArgsConstructor
-public class CommunitySubscriptionMessageConsumerBotSender implements
-    CommunitySubscriptionMessageConsumer {
+public class CommunitySubscriptionMessageConsumerBotSender
+    implements CommunitySubscriptionMessageConsumer {
 
   private final TelegramBotService telegramBotService;
 
@@ -18,8 +17,15 @@ public class CommunitySubscriptionMessageConsumerBotSender implements
   public void accept(List<CommunitySubscriptionMessage> values) {
     for (var value : values) {
       log.info("Sending message: {}", value);
-      telegramBotService.sendMessage(value);
+      telegramBotService.sendCommunityMessage(value);
       log.info("Message sent");
     }
+  }
+
+  @Override
+  public void accept(CommunitySubscriptionMessage value) {
+    log.info("Sending message: {}", value);
+    telegramBotService.sendCommunityMessage(value);
+    log.info("Message sent");
   }
 }
