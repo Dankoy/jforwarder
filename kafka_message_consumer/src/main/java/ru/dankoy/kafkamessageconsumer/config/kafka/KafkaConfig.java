@@ -1,5 +1,4 @@
-package ru.dankoy.kafkamessageconsumer.config;
-
+package ru.dankoy.kafkamessageconsumer.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
@@ -31,9 +29,14 @@ import ru.dankoy.kafkamessageconsumer.core.service.consumer.TagSubscriptionMessa
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.TagSubscriptionMessageConsumerBotSender;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
-
+/**
+ * Works fine with different topics.
+ *
+ * <p>Probably can use logic with one listener container factory. Example {@link
+ * KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig}
+ */
 @Slf4j
-@Configuration
+// @Configuration
 public class KafkaConfig {
 
   public final String communitySubscriptionTopic;
@@ -57,44 +60,51 @@ public class KafkaConfig {
     var props = kafkaProperties.buildProducerProperties();
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-    props.put(JsonDeserializer.TYPE_MAPPINGS,
-        "ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage"); //allow type for kafka
-//    props.put(JsonDeserializer.TRUSTED_PACKAGES,
-//        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
+    props.put(
+        JsonDeserializer.TYPE_MAPPINGS,
+        "ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage"); // allow type for kafka
+    //    props.put(JsonDeserializer.TRUSTED_PACKAGES,
+    //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3); // max amount of messages got by one poll
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
-        20_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
+    props.put(
+        ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
+        20_000); // polling interval. how many seconds consumer can work with pack of messages
+    // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
-//    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
+    //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
-    var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CommunitySubscriptionMessage>(
-        props);
+    var kafkaProducerConsumer =
+        new DefaultKafkaConsumerFactory<String, CommunitySubscriptionMessage>(props);
     kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
     return kafkaProducerConsumer;
   }
 
   @Bean("listenerContainerFactoryCommunitySubscription")
-  public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, CommunitySubscriptionMessage>>
-  listenerContainerFactoryCommunitySubscription(
-      ConsumerFactory<String, CommunitySubscriptionMessage> consumerFactoryCommunitySubscription) {
+  public KafkaListenerContainerFactory<
+          ConcurrentMessageListenerContainer<String, CommunitySubscriptionMessage>>
+      listenerContainerFactoryCommunitySubscription(
+          ConsumerFactory<String, CommunitySubscriptionMessage>
+              consumerFactoryCommunitySubscription) {
 
     // this all applied only for spring boot starter
 
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, CommunitySubscriptionMessage>();
+    var factory =
+        new ConcurrentKafkaListenerContainerFactory<String, CommunitySubscriptionMessage>();
     factory.setConsumerFactory(consumerFactoryCommunitySubscription);
     factory.setBatchListener(true);
     factory.setConcurrency(
         1); // if you have one consumer but two topics or partitions, then set to two, etc.
     factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
-    factory.getContainerProperties()
+    factory
+        .getContainerProperties()
         .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
 
     // idlepeetweenpolls - in pair with maxPollInterval make time between two polls
     // somehow these settings make consumer consume messages every 15 seconds
 
     // filter strategy
-//    factory.setRecordFilterStrategy(
-//        record -> record.value().contains("World"));
+    //    factory.setRecordFilterStrategy(
+    //        record -> record.value().contains("World"));
 
     var executor = new SimpleAsyncTaskExecutor("k-consumer-");
     executor.setConcurrencyLimit(3);
@@ -103,33 +113,36 @@ public class KafkaConfig {
     return factory;
   }
 
-
   @Bean
   public ConsumerFactory<String, TagSubscriptionMessage> consumerFactoryTagSubscription(
       KafkaProperties kafkaProperties, ObjectMapper mapper) {
     var props = kafkaProperties.buildProducerProperties();
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-    props.put(JsonDeserializer.TYPE_MAPPINGS,
-        "ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage"); //allow type for kafka
-//    props.put(JsonDeserializer.TRUSTED_PACKAGES,
-//        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
+    props.put(
+        JsonDeserializer.TYPE_MAPPINGS,
+        "ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage"); // allow type for kafka
+    //    props.put(JsonDeserializer.TRUSTED_PACKAGES,
+    //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3); // max amount of messages got by one poll
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
-        20_000); // polling interval. how many seconds consumer can work with pack of messages before he hits new poll
+    props.put(
+        ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG,
+        20_000); // polling interval. how many seconds consumer can work with pack of messages
+    // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
-//    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
+    //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
-    var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, TagSubscriptionMessage>(
-        props);
+    var kafkaProducerConsumer =
+        new DefaultKafkaConsumerFactory<String, TagSubscriptionMessage>(props);
     kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
     return kafkaProducerConsumer;
   }
 
   @Bean("listenerContainerFactoryTagSubscription")
-  public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, TagSubscriptionMessage>>
-  listenerContainerFactoryTagSubscription(
-      ConsumerFactory<String, TagSubscriptionMessage> consumerFactoryCommunitySubscription) {
+  public KafkaListenerContainerFactory<
+          ConcurrentMessageListenerContainer<String, TagSubscriptionMessage>>
+      listenerContainerFactoryTagSubscription(
+          ConsumerFactory<String, TagSubscriptionMessage> consumerFactoryCommunitySubscription) {
 
     // this all applied only for spring boot starter
 
@@ -139,7 +152,9 @@ public class KafkaConfig {
     factory.setConcurrency(
         1); // if you have one consumer but two topics or partitions, then set to two, etc.
     factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
-    factory.getContainerProperties().setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+    factory
+        .getContainerProperties()
+        .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
 
     // idlepeetweenpolls - in pair with maxPollInterval make time between two polls
     // somehow these settings make consumer consume messages every 15 seconds
@@ -153,16 +168,12 @@ public class KafkaConfig {
 
   @Bean
   public NewTopic topicCommunity() {
-    return TopicBuilder.name(communitySubscriptionTopic)
-        .partitions(1)
-        .replicas(1).build();
+    return TopicBuilder.name(communitySubscriptionTopic).partitions(1).replicas(1).build();
   }
 
   @Bean
   public NewTopic topicTag() {
-    return TopicBuilder.name(tagSubscriptionTopic)
-        .partitions(1)
-        .replicas(1).build();
+    return TopicBuilder.name(tagSubscriptionTopic).partitions(1).replicas(1).build();
   }
 
   @Bean
@@ -193,7 +204,6 @@ public class KafkaConfig {
 
     private final CommunitySubscriptionMessageConsumer communitySubscriptionMessageConsumer;
 
-
     public KafkaClientCommunitySubscription(
         CommunitySubscriptionMessageConsumer subscriptionMessageConsumerBotSender) {
       this.communitySubscriptionMessageConsumer = subscriptionMessageConsumerBotSender;
@@ -214,7 +224,6 @@ public class KafkaConfig {
 
     private final TagSubscriptionMessageConsumer tagSubscriptionMessageConsumer;
 
-
     public KafkaClientTagSubscription(
         TagSubscriptionMessageConsumer subscriptionMessageConsumerBotSender) {
       this.tagSubscriptionMessageConsumer = subscriptionMessageConsumerBotSender;
@@ -230,5 +239,4 @@ public class KafkaConfig {
       tagSubscriptionMessageConsumer.accept(values);
     }
   }
-
 }

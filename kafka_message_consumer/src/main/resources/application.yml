@@ -1,15 +1,17 @@
 application:
   kafka:
     topic:
-      community-subscription: "coub-com-sub"
-      tag-subscription: "coub-tag-sub"
+      coub-subscriptions: "coub-subscriptions"
     consumers:
-      community-coubs:
-        group-id: "community-group"
-        client-id: "community-coubs-producer" # custom props configuration in factory
-      tag-coubs:
-        group-id: "tag-group"
-        client-id: "tag-coubs-producer" # custom props configuration in factory
+      community-coubs-consumer:
+        group-id: "community-coubs-consumer-group"
+        client-id: "community-coubs-consumer-id" # custom props configuration in factory
+      tag-coubs-consumer:
+        group-id: "tag-coubs-consumer-group"
+        client-id: "tag-coubs-consumer-id" # custom props configuration in factory
+      coubs-consumer: # for handlers in one listener
+        group-id: "coubs-consumer-group"
+        client-id: "coubs-consumer-id"
 
 
 spring:
