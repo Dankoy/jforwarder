@@ -32,12 +32,12 @@ import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumerI
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
 /**
- * Works fine but multiple listener container factories are not necessary.
- * One with filter different filter strategies is enough.
- * Look {@link KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig}
+ * Works fine but multiple listener container factories are not necessary. One with filter different
+ * filter strategies is enough. Look {@link
+ * KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig}
  */
 @Slf4j
-//@Configuration
+// @Configuration
 public class KafkaBatchMultipleContainerFactoriesConfig {
 
   public final String coubSubscriptions;

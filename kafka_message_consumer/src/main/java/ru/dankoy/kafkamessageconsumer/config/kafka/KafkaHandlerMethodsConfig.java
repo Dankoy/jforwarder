@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -30,7 +29,7 @@ import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumerI
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
 @Slf4j
-//@Configuration
+// @Configuration
 public class KafkaHandlerMethodsConfig {
 
   public final String coubSubscriptions;
