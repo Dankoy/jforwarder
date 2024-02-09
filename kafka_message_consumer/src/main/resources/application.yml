@@ -1,8 +1,8 @@
 application:
   kafka:
     topic:
-      coub-com-subs: "coub-com-subs"
-      coub-tag-subs: "coub-tag-subs"
+      coub-com-subs: "coub-com-sub"
+      coub-tag-subs: "coub-tag-sub"
     consumers:
       community-coubs-consumer:
         group-id: "community-coubs-consumer-group"
