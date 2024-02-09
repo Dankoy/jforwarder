@@ -44,6 +44,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private static final String COMMAND_FIRST_FIELD = "first";
   private static final String COMMAND_SECOND_FIELD = "second";
   private static final String COMMAND_SUBSCRIPTION_TYPE_FIELD = "subscription_type";
+  private static final String COMMAND = "command";
 
   private final String botName;
 
@@ -133,6 +134,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       communities(inputMessage);
     } else if (messageText.equals("/tag_orders") || messageText.equals(tagOrdersFromGroup)) {
       tagOrders(inputMessage);
+    } else {
+      help(inputMessage);
     }
   }
 
@@ -251,9 +254,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       message.setText(
           String.format("You are already subscribed to '%s - %s'", communityName, sectionName));
       send(message);
-    } catch (Exception e) {
-      message.setText("Something went wrong. Validate your command");
+    } catch (NotFoundException e) {
+      message.setText(e.getMessage());
       send(message);
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     }
   }
 
@@ -272,9 +278,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       message.setText(String.format("Unsubscribed from %s %s", communityName, sectionName));
       send(message);
 
-    } catch (Exception e) {
-      message.setText("Something went wrong. Validate your command");
-      send(message);
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     }
   }
 
@@ -295,7 +300,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
         subscribeToCommunity(command, inputMessage);
       }
     } catch (BotException e) {
-      send(SendMessage.builder().chatId(inputMessage.getChatId()).text(e.getMessage()).build());
+      send(
+          SendMessage.builder()
+              .chatId(inputMessage.getChatId())
+              .text(e.getMessage())
+              .parseMode(ParseMode.MARKDOWN)
+              .build());
     }
   }
 
@@ -319,7 +329,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       }
 
     } catch (BotException e) {
-      send(SendMessage.builder().chatId(inputMessage.getChatId()).text(e.getMessage()).build());
+      send(
+          SendMessage.builder()
+              .chatId(inputMessage.getChatId())
+              .text(e.getMessage())
+              .parseMode(ParseMode.MARKDOWN)
+              .build());
     }
   }
 
@@ -348,9 +363,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (NotFoundException e) {
       message.setText(e.getMessage());
       send(message);
-    } catch (Exception e) {
-      message.setText("Something went wrong. Validate your command or check /help.");
-      send(message);
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     }
   }
 
@@ -370,9 +385,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       message.setText(String.format("Unsubscribed from %s %s", tagName, orderValue));
       send(message);
 
-    } catch (Exception e) {
-      message.setText("Something went wrong. Validate your command");
-      send(message);
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     }
   }
 
@@ -433,8 +447,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     if (command.length < 4) {
       log.error("Expected valid command but got - {}", Arrays.asList(command));
-      throw new BotException(
-          "Validation exception. Please, validate your input command. Check example in /help.");
+      throwSubscriptionException(command[0]);
     }
 
     try {
@@ -445,12 +458,13 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       throw new BotException(
           String.format(
               "Subscription type have to be one of '%s'",
-              Arrays.asList(SubscriptionType.values())));
+              Arrays.asList(SubscriptionType.values()).toString().toLowerCase()));
     }
 
     // Get all words after 0 and last element and concat in one string
     var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
 
+    result.put(COMMAND, command[0]);
     result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
     result.put(COMMAND_FIRST_FIELD, s);
     result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
@@ -583,5 +597,27 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       }
     }
     return inputString;
+  }
+
+  private SendMessage buildSubscriptionHelpMessage(Message message, String command) {
+
+    return SendMessage.builder()
+        .chatId(message.getChatId())
+        .text(getSubscriptionCommandHelp(command))
+        .parseMode(ParseMode.MARKDOWN)
+        .build();
+  }
+
+  private String getSubscriptionCommandHelp(String command) {
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put(COMMAND, command);
+
+    return templateBuilder.writeTemplate(templateData, "subscription_exception.ftl");
+  }
+
+  private void throwSubscriptionException(String command) {
+
+    throw new BotException(getSubscriptionCommandHelp(command));
   }
 }

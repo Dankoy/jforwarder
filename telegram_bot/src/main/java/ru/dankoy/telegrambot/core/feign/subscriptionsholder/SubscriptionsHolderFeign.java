@@ -1,6 +1,5 @@
 package ru.dankoy.telegrambot.core.feign.subscriptionsholder;
 
-
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,9 +19,10 @@ import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
 
-
-  //subscriptions
-  @GetMapping(path = "/api/v1/community_subscriptions", params = {"telegramChatId"})
+  // subscriptions
+  @GetMapping(
+      path = "/api/v1/community_subscriptions",
+      params = {"telegramChatId"})
   List<CommunitySubscription> getAllSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
@@ -32,9 +32,15 @@ public interface SubscriptionsHolderFeign {
   @DeleteMapping(path = "/api/v1/community_subscriptions")
   void unsubscribe(@RequestBody CommunitySubscription communitySubscription);
 
+  // communities
+
+  @GetMapping(path = "/api/v1/communities/{name}")
+  Community getCommunityByName(@PathVariable("name") String communityName);
 
   // tag subscriptions
-  @GetMapping(path = "/api/v1/tag_subscriptions", params = {"telegramChatId"})
+  @GetMapping(
+      path = "/api/v1/tag_subscriptions",
+      params = {"telegramChatId"})
   List<TagSubscription> getAllTagSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
@@ -44,9 +50,10 @@ public interface SubscriptionsHolderFeign {
   @DeleteMapping(path = "/api/v1/tag_subscriptions")
   void unsubscribeByTag(@RequestBody TagSubscription tagSubscription);
 
-
   // chats
-  @GetMapping(path = "/api/v1/telegram_chat/{chatId}", params = {"chatId"})
+  @GetMapping(
+      path = "/api/v1/telegram_chat/{chatId}",
+      params = {"chatId"})
   Chat getChatById(@PathVariable("chatId") long chatId);
 
   @PostMapping(path = "/api/v1/telegram_chat")
@@ -55,21 +62,25 @@ public interface SubscriptionsHolderFeign {
   @PutMapping(path = "/api/v1/telegram_chat")
   Chat updateChat(@RequestBody Chat chat);
 
-  //communities
+  // communities
   @GetMapping(path = "/api/v1/communities")
   List<Community> getAllCommunities();
 
-
   // tags
-  @GetMapping(path = "/api/v1/tags", params = {"title"})
+  @GetMapping(
+      path = "/api/v1/tags",
+      params = {"title"})
   Tag getTagByTitle(@RequestParam("title") String title);
 
   @PostMapping(path = "/api/v1/tags")
   Tag createTag(@RequestBody Tag tag);
 
-
   // tag orders
   @GetMapping(path = "/api/v1/tag_orders")
   List<Order> getAllTagOrders();
 
+  @GetMapping(
+      path = "/api/v1/tag_orders",
+      params = {"value"})
+  Order getOrderByValue(@RequestParam String value);
 }
