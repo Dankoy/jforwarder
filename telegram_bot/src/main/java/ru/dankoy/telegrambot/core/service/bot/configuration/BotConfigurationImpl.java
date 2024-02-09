@@ -7,14 +7,13 @@ import ru.dankoy.telegrambot.config.TelegramBotProperties;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
+import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 @Builder
-@Getter
-@RequiredArgsConstructor
 public record BotConfigurationImpl(
     TelegramBotProperties telegramBotProperties,
     CommandsHolder commandsHolder,
@@ -23,5 +22,6 @@ public record BotConfigurationImpl(
     TemplateBuilder templateBuilder,
     CommunityService communityService,
     TagSubscriptionService tagSubscriptionService,
-    OrderService orderService)
+    OrderService orderService,
+    LocalisationService localisationService)
     implements BotConfiguration {}
