@@ -1,7 +1,6 @@
 package ru.dankoy.kafkamessageconsumer.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -19,7 +18,6 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -47,11 +45,14 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @Configuration
 public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig {
 
-  public final String coubSubscriptions;
+  public final String coubCommunitySubscriptions;
+  public final String coubTagSubscriptions;
 
   public KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig(
-      @Value("${application.kafka.topic.coub-subscriptions}") String coubSubscriptions) {
-    this.coubSubscriptions = coubSubscriptions;
+      @Value("${application.kafka.topic.coub-com-subs}") String coubCommunitySubscriptions,
+      @Value("${application.kafka.topic.coub-tag-subs}") String coubTagSubscriptions) {
+    this.coubCommunitySubscriptions = coubCommunitySubscriptions;
+    this.coubTagSubscriptions = coubTagSubscriptions;
   }
 
   @Bean
@@ -87,7 +88,6 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
 
     // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
-    //    props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 3_000);
 
     var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CoubMessage>(props);
     kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
@@ -98,7 +98,7 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
   @Bean
   public ConcurrentTaskExecutor concurrentTaskExecutor() {
     var executor = new SimpleAsyncTaskExecutor("k-consumer-");
-    executor.setConcurrencyLimit(3);
+    executor.setConcurrencyLimit(4);
     return new ConcurrentTaskExecutor(executor);
   }
 
@@ -124,7 +124,7 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     factory.setBatchListener(true);
 
     // if you have one consumer but two topics or partitions, then set to two, etc.
-    factory.setConcurrency(1);
+    factory.setConcurrency(2);
     factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
     factory
         .getContainerProperties()
@@ -137,28 +137,14 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     return factory;
   }
 
-  /*
-  RecordFilterStrategy for the same container factory works fine
-   */
-
   @Bean
-  public RecordFilterStrategy<String, TagSubscriptionMessage> recordFilterStrategyByCommunity() {
-
-    return r ->
-        Arrays.equals(r.headers().lastHeader("subscription_type").value(), "BY_TAG".getBytes());
+  public NewTopic topicCoubCommunitySubs() {
+    return TopicBuilder.name(coubCommunitySubscriptions).partitions(2).replicas(1).build();
   }
 
   @Bean
-  public RecordFilterStrategy<String, CommunitySubscriptionMessage> recordFilterStrategyByTag() {
-
-    return r ->
-        Arrays.equals(
-            r.headers().lastHeader("subscription_type").value(), "BY_COMMUNITY".getBytes());
-  }
-
-  @Bean
-  public NewTopic topic() {
-    return TopicBuilder.name(coubSubscriptions).partitions(1).replicas(1).build();
+  public NewTopic topicCoubTagSubs() {
+    return TopicBuilder.name(coubTagSubscriptions).partitions(2).replicas(1).build();
   }
 
   @Bean
@@ -197,22 +183,20 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     // If i want to have two listeners that reads the same topic and have filter
     // by type in them. Then these listeners have to be in different groups
     @KafkaListener(
-        topics = "${application.kafka.topic.coub-subscriptions}",
+        topics = "${application.kafka.topic.coub-com-subs}",
         groupId = "${application.kafka.consumers.community-coubs-consumer.group-id}",
         clientIdPrefix = "${application.kafka.consumers.community-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory",
-        filter = "recordFilterStrategyByCommunity")
+        containerFactory = "jsonKafkaListenerContainerFactory")
     public void listenCommunityMessages(@Payload List<CommunitySubscriptionMessage> values) {
       log.info("values, values.size:{}", values.size());
       coubCommunityMessageConsumer.accept(values);
     }
 
     @KafkaListener(
-        topics = "${application.kafka.topic.coub-subscriptions}",
+        topics = "${application.kafka.topic.coub-tag-subs}",
         groupId = "${application.kafka.consumers.tag-coubs-consumer.group-id}",
         clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory",
-        filter = "recordFilterStrategyByTag")
+        containerFactory = "jsonKafkaListenerContainerFactory")
     public void listenTagMessages(@Payload List<TagSubscriptionMessage> values) {
       log.info("values, values.size:{}", values.size());
       coubTagMessageConsumer.accept(values);
