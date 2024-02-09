@@ -9,6 +9,14 @@ your bean with same name makes unresolvable circular dependencies.
 Same with KafkaListenerContainerFactory. Custom bean shall be named different from
 kafkaListenerContainerFactory.
 
+# ConsumerContainerFactory
+
+This factory when bound to listener actually creates separate objects. So you can have one factory
+with concurrency = 2. And bind this factory to two different listeners. That means, for each
+listener spring will create separate instance of container listener with two concurrency = 2. So in
+real two listeners. Could be configured in annotation via concurrency attribute, or in factory via
+setConcurrency method.
+
 # Multithreading consumers
 
 That's not how Apache Kafka works. An idea there is always process records in the same partition in
