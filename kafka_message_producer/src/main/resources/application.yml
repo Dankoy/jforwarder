@@ -1,7 +1,9 @@
 application:
   kafka:
     topic:
-      coub-subscriptions: "coub-subscriptions"
+#      coub-subscriptions: "coub-subscriptions" # one topic for all subs
+      coub-com-subs: "coub-com-subs"
+      coub-tag-subs: "coub-tag-subs"
     producers:
       coubs:
         client-id: "coubs-producer" # custom props configuration in factory
