@@ -1,9 +1,10 @@
 package ru.dankoy.telegrambot.core.service.bot;
 
+import org.telegram.telegrambots.meta.generics.LongPollingBot;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 
-public interface TelegramBot {
+public interface TelegramBot extends LongPollingBot {
 
   void sendMessage(CommunitySubscriptionMessage message);
 

@@ -16,7 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
@@ -30,6 +29,7 @@ import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
+import ru.dankoy.telegrambot.core.service.bot.configuration.BotConfiguration;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
@@ -60,29 +60,33 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private final OrderService orderService;
 
-  public TelegramBotImpl(
-      String botName,
-      String token,
-      List<BotCommand> commands,
-      CommunitySubscriptionService communitySubscriptionService,
-      TelegramChatService telegramChatService,
-      TemplateBuilder templateBuilder,
-      CommunityService communityService,
-      TagSubscriptionService tagSubscriptionService,
-      OrderService orderService) {
-    super(token);
-    this.botName = botName;
-    this.communitySubscriptionService = communitySubscriptionService;
-    this.telegramChatService = telegramChatService;
-    this.templateBuilder = templateBuilder;
-    this.communityService = communityService;
-    this.tagSubscriptionService = tagSubscriptionService;
-    this.orderService = orderService;
+  public TelegramBotImpl(BotConfiguration botConfiguration) {
+
+    super(botConfiguration.getTelegramBotProperties().getToken());
+
+    this.botName = botConfiguration.getTelegramBotProperties().getName();
+    this.communitySubscriptionService = botConfiguration.getCommunitySubscriptionService();
+    this.telegramChatService = botConfiguration.getTelegramChatService();
+    this.templateBuilder = botConfiguration.getTemplateBuilder();
+    this.communityService = botConfiguration.getCommunityService();
+    this.tagSubscriptionService = botConfiguration.getTagSubscriptionService();
+    this.orderService = botConfiguration.getOrderService();
 
     try {
-      this.execute(new SetMyCommands(commands, new BotCommandScopeDefault(), "en"));
+      // todo: check with different commands
+      this.execute(
+          new SetMyCommands(
+              botConfiguration.getCommandsHolder().getCommands(),
+              new BotCommandScopeDefault(),
+              "en"));
+      this.execute(
+          new SetMyCommands(
+              botConfiguration.getCommandsHolder().getCommands(),
+              new BotCommandScopeDefault(),
+              "en"));
     } catch (TelegramApiException e) {
       log.error(e.getMessage());
+      throw new BotException("Exception while bot initialization", e);
     }
   }
 
