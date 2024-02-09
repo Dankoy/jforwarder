@@ -2,15 +2,12 @@ application:
   bot:
     name: ${TELEGRAM_BOT_NAME:name}
     token: ${TELEGRAM_BOT_API_TOKEN:name}
-  templates:
-    dir: "/freemarker/templates"
-
 
 spring:
   application:
     name: telegram-bot
   freemarker:
-    template-loader-path: "/freemarker/templates/"
+    template-loader-path: "classpath:/freemarker/templates"
   devtools:
     restart:
       enabled: false
