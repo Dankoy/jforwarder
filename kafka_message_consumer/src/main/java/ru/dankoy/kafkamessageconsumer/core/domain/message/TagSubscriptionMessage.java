@@ -1,27 +1,24 @@
 package ru.dankoy.kafkamessageconsumer.core.domain.message;
 
-
-import ru.dankoy.kafkamessageconsumer.core.domain.communitysubscription.Chat;
-import ru.dankoy.kafkamessageconsumer.core.domain.coub.Coub;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Order;
 import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Scope;
 import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Tag;
 import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Type;
 
-public record TagSubscriptionMessage(
-    long id,
-    Tag tag,
+@Getter
+@SuperBuilder
+@ToString(callSuper = true)
+@NoArgsConstructor
+public final class TagSubscriptionMessage extends CoubMessage {
+  private Tag tag;
 
-    Chat chat,
+  private Order order;
 
-    Order order,
+  private Scope scope;
 
-    Scope scope,
-
-    Type type,
-    Coub coub,
-
-    String lastPermalink
-) {
-
+  private Type type;
 }

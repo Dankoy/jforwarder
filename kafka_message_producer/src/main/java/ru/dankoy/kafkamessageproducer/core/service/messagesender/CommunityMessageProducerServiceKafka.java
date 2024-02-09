@@ -7,12 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CommunityMessageProducerServiceKafka implements CommunityMessageProducerService {
 
-  private final KafkaTemplate<String, CommunitySubscriptionMessage> kafkaTemplate;
+  private final KafkaTemplate<String, CoubMessage> kafkaTemplate;
 
   private final String topic;
 
@@ -25,27 +26,28 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
     try {
       log.info("message: {}", communitySubscriptionMessage);
 
-      ProducerRecord<String, CommunitySubscriptionMessage> producerRecord =
+      ProducerRecord<String, CoubMessage> producerRecord =
           new ProducerRecord<>(topic, communitySubscriptionMessage);
 
-      producerRecord.headers()
+      producerRecord
+          .headers()
           .add("subscription_type", "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8));
 
-      kafkaTemplate.send(producerRecord)
+      kafkaTemplate
+          .send(producerRecord)
           .whenComplete(
               (result, ex) -> {
                 if (ex == null) {
                   log.info(
                       "message id: {} was sent, offset: {}",
-                      communitySubscriptionMessage.id(),
-                      result.getRecordMetadata().offset()
-                  );
+                      communitySubscriptionMessage.getId(),
+                      result.getRecordMetadata().offset());
                   // if kafka accepted - send update last permalink in db for subscription
                   sendAck.accept(communitySubscriptionMessage);
                   // update registry
                   sendAckToRegistry.accept(communitySubscriptionMessage);
                 } else {
-                  log.error("message id:{} was not sent", communitySubscriptionMessage.id(), ex);
+                  log.error("message id:{} was not sent", communitySubscriptionMessage.getId(), ex);
                 }
               });
     } catch (Exception ex) {

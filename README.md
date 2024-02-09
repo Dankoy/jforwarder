@@ -51,7 +51,7 @@ published after last sent coub to chat.
 
 ## Stack
 
-1. Spring boot 3.1.1
+1. Spring boot 3.2.2
 2. PostgreSQL
 3. Flyway
 4. Spring Cloud Netflix Eureka
@@ -63,7 +63,7 @@ published after last sent coub to chat.
 10. Zipkin reporter brave
 11. Zipkin
 12. Docker compose
-13. Telegrambots 6.7.0
+13. Telegrambots 6.9.7.0
 
 ## Monitoring stack
 
@@ -100,14 +100,6 @@ Variable **JAR_VERSION** is used only when building through command line docker 
 docker build
 
 **JAR_VERSION** in has to be equal the project version in **build.gradle** file in root folder
-
-#### Build using docker compose gradle plugin
-
-Builds every microservice
-
-```shell
-./gradlew composeBuild
-```
 
 #### Build using docker compose command line
 

@@ -6,11 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.kafkamessageproducer.core.domain.coub.Coub;
-
 
 @EqualsAndHashCode
 @Getter
@@ -26,7 +24,5 @@ public class Subscription {
 
   private String lastPermalink;
 
-  @Setter
-  private List<Coub> coubs = new ArrayList<>();
-
+  private final List<Coub> coubs = new ArrayList<>();
 }

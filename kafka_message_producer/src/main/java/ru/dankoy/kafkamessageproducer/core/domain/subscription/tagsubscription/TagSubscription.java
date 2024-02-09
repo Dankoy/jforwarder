@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,5 +23,4 @@ public class TagSubscription extends Subscription {
   private Scope scope;
 
   private Type type;
-
 }
