@@ -1,8 +1,6 @@
 package ru.dankoy.telegrambot.core.service.bot.configuration;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import ru.dankoy.telegrambot.config.TelegramBotProperties;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
