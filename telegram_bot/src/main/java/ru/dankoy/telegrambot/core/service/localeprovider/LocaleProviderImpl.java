@@ -8,7 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class LocaleProviderImpl implements LocaleProvider {
 
   @Override
-  public Locale getLocaleFromMessage(Message message) {
+  public Locale getLocale(Message message) {
     return Locale.forLanguageTag(message.getFrom().getLanguageCode());
+  }
+
+  @Override
+  public Locale getLocale(String locale) {
+    return Locale.forLanguageTag(locale);
   }
 }
