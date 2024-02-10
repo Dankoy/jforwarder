@@ -1,4 +1,4 @@
-FROM  gradle:8.6.0-jdk17
+FROM  gradle:8.6.0-jdk21
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
 LABEL authors="turtality"

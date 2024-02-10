@@ -64,6 +64,7 @@ published after last sent coub to chat.
 11. Zipkin
 12. Docker compose
 13. Telegrambots 6.9.7.0
+14. Java 21
 
 ## Monitoring stack
 
