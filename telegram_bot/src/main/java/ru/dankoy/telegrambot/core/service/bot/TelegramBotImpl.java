@@ -585,7 +585,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("tagName", tagName);
-    templateData.put("orderName", orderValue);
+    templateData.put("orderValue", orderValue);
     templateData.put("url", coubUrl);
     var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
 

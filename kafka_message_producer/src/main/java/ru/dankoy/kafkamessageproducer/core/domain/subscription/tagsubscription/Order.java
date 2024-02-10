@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,5 +16,5 @@ public class Order {
   private long id;
 
   private String name;
-
+  private String value;
 }
