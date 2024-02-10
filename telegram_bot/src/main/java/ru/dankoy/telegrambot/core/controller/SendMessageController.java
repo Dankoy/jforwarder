@@ -1,5 +1,6 @@
 package ru.dankoy.telegrambot.core.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,7 +15,7 @@ public class SendMessageController {
   private final TelegramBot telegramBot;
 
   @PostMapping("/api/v1/send_message")
-  public void sendMessage(@RequestBody SendMessageDto dto) {
+  public void sendMessage(@Valid @RequestBody SendMessageDto dto) {
 
     var fromDto = SendMessageDto.fromDTO(dto);
 
