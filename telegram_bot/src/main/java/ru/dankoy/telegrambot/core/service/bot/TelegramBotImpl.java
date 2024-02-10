@@ -682,6 +682,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     }
   }
 
+  @Override
+  public void sendMessage(SendMessage sendMessage) {
+    send(sendMessage);
+  }
+
   private SendMessage createReply(Message inputMessage) {
 
     var sendMessage = new SendMessage();
