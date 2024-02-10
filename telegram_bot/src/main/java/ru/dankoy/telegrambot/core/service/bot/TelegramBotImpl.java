@@ -272,8 +272,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               localeProvider.getLocale(inputMessage)));
       send(message);
     } catch (NotFoundException e) {
-      // todo: localization
-      message.setText(e.getMessage());
+      message.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
       send(message);
       send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     } catch (BotException e) {
@@ -388,7 +391,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       send(message);
     } catch (NotFoundException e) {
-      message.setText(e.getMessage());
+      message.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
       send(message);
       send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
     } catch (BotException e) {

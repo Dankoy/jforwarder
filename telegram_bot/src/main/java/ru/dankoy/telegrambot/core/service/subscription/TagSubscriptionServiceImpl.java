@@ -10,6 +10,7 @@ import ru.dankoy.telegrambot.core.domain.tagsubscription.Scope;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Type;
+import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubTagsSearcherService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
@@ -42,6 +43,8 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
         optionalTagOrder.orElseThrow(
             () ->
                 new NotFoundException(
+                    ExceptionObjectType.ORDER,
+                    orderValue,
                     String.format(
                         "Order '%s' not found. Validate tag order and try again", orderValue)));
 
@@ -88,6 +91,8 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
       } else {
         throw new NotFoundException(
+            ExceptionObjectType.TAG,
+            tagName,
             String.format("Tag '%s' not found. Validate tag name and try again.", tagName));
       }
     }
