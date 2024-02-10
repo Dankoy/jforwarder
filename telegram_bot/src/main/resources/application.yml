@@ -2,18 +2,22 @@ application:
   bot:
     name: ${TELEGRAM_BOT_NAME:name}
     token: ${TELEGRAM_BOT_API_TOKEN:name}
-  templates:
-    dir: "/freemarker/templates"
-
+    default-locale: "en"
+    locales:
+      - "en"
+      - "ru"
 
 spring:
   application:
     name: telegram-bot
   freemarker:
-    template-loader-path: "/freemarker/templates/"
+    template-loader-path: "classpath:/freemarker/templates"
   devtools:
     restart:
       enabled: false
+  messages:
+    basename: "i18n/appmessages"
+    encoding: "UTF-8"
 
 server:
   port: 8084

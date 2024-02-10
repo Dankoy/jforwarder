@@ -8,6 +8,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.Section;
+import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
@@ -35,6 +36,8 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
         optionalCommunity.orElseThrow(
             () ->
                 new NotFoundException(
+                    ExceptionObjectType.COMMUNITY,
+                    communityName,
                     String.format("Community with name '%s' not found", communityName)));
 
     // 2. find section
@@ -45,6 +48,8 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
         optionalSection.orElseThrow(
             () ->
                 new NotFoundException(
+                    ExceptionObjectType.SECTION,
+                    sectionName,
                     String.format("Section with name '%s' not found", sectionName)));
 
     var subscription =

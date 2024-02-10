@@ -1,14 +1,14 @@
 package ru.dankoy.telegrambot.core.service.template;
 
+import java.util.Locale;
 import java.util.Map;
 
 public interface TemplateBuilder {
 
-  String NETBOX_TEMPLATE_DIR = "/templates/netbox";
-
   String writeTemplate(Map<String, Object> templateData, String templateName);
 
-  String loadTemplateFromString(String templateName, String templateString, Map<String,
-      Object> templateData);
+  String writeTemplate(Map<String, Object> templateData, String templateName, Locale locale);
 
+  String loadTemplateFromString(
+      String templateName, String templateString, Map<String, Object> templateData);
 }

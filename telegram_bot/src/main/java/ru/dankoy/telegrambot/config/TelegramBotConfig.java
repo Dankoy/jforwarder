@@ -1,23 +1,25 @@
 package ru.dankoy.telegrambot.config;
 
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
+import ru.dankoy.telegrambot.config.configuration.BotConfigurationImpl;
+import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
+import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
+import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
-import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.MySubscriptionsCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.TagOrdersCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
+import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
+import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
@@ -27,57 +29,74 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @RequiredArgsConstructor
 public class TelegramBotConfig {
 
-
   @Bean
-  TelegramBotsApi telegramBotsApi(TelegramBotImpl telegramBotImpl) throws TelegramApiException {
+  public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
 
     var api = new TelegramBotsApi(DefaultBotSession.class);
 
-    api.registerBot(telegramBotImpl);
+    api.registerBot(telegramBot);
 
     return api;
   }
 
   @Bean
-  TelegramBotImpl telegramBot(
-      TelegramBotProperties properties,
+  public BotConfiguration botConfiguration(
+      FullBotProperties properties,
       CommandsHolder commandsHolder,
       CommunitySubscriptionService communitySubscriptionService,
       TelegramChatService telegramChatService,
       TemplateBuilder templateBuilder,
       CommunityService communityService,
       TagSubscriptionService tagSubscriptionService,
-      OrderService orderService
-  ) {
+      OrderService orderService,
+      LocalisationService localisationService,
+      LocaleProvider localeProvider) {
 
-    return new TelegramBotImpl(
-        properties.getName(),
-        properties.getToken(),
-        commandsHolder.getCommands(),
-        communitySubscriptionService,
-        telegramChatService,
-        templateBuilder,
-        communityService,
-        tagSubscriptionService,
-        orderService
-    );
+    return BotConfigurationImpl.builder()
+        .fullBotProperties(properties)
+        .commandsHolder(commandsHolder)
+        .communitySubscriptionService(communitySubscriptionService)
+        .telegramChatService(telegramChatService)
+        .templateBuilder(templateBuilder)
+        .communityService(communityService)
+        .tagSubscriptionService(tagSubscriptionService)
+        .orderService(orderService)
+        .localisationService(localisationService)
+        .localeProvider(localeProvider)
+        .build();
   }
 
+  @Bean
+  public TelegramBot telegramBot(BotConfiguration botConfiguration) {
+
+    return new TelegramBotImpl(botConfiguration);
+  }
 
   @Bean
-  CommandsHolder commandsHolder() {
+  public List<BotCommandsFactory> botCommandsFactories(
+      LocaleConfig localeConfig, LocalisationService localisationService) {
+
+    List<BotCommandsFactory> factories = new ArrayList<>();
+
+    for (Locale locale : localeConfig.getLocales()) {
+      factories.add(new BotCommandsFactoryImpl(localisationService, locale));
+    }
+
+    return factories;
+  }
+
+  @Bean
+  public CommandsHolder commandsHolder(List<BotCommandsFactory> botCommandsFactories) {
 
     var commandsHolder = new CommandsHolder();
-    commandsHolder.addCommand(new MySubscriptionsCommand());
-    commandsHolder.addCommand(new StartCommand());
-    commandsHolder.addCommand(new HelpCommand());
-    commandsHolder.addCommand(new SubscribeCommand());
-    commandsHolder.addCommand(new UnsubscribeCommand());
-    commandsHolder.addCommand(new CommunitiesCommand());
-    commandsHolder.addCommand(new TagOrdersCommand());
+
+    for (BotCommandsFactory factory : botCommandsFactories) {
+
+      var commands = factory.allKnownCommands();
+
+      commandsHolder.addCommands(factory.locale(), commands);
+    }
 
     return commandsHolder;
   }
-
-
 }
