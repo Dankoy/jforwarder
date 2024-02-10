@@ -5,7 +5,9 @@ import feign.FeignException.NotFound;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +18,11 @@ import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
+import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
 import ru.dankoy.telegrambot.core.domain.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
@@ -28,7 +33,6 @@ import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
-import ru.dankoy.telegrambot.core.service.bot.configuration.BotConfiguration;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
@@ -64,9 +68,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   public TelegramBotImpl(BotConfiguration botConfiguration) {
 
-    super(botConfiguration.telegramBotProperties().getToken());
+    super(botConfiguration.fullBotProperties().getToken());
 
-    this.botName = botConfiguration.telegramBotProperties().getName();
+    this.botName = botConfiguration.fullBotProperties().getName();
     this.communitySubscriptionService = botConfiguration.communitySubscriptionService();
     this.telegramChatService = botConfiguration.telegramChatService();
     this.templateBuilder = botConfiguration.templateBuilder();
@@ -76,9 +80,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     this.localisationService = botConfiguration.localisationService();
 
     try {
-      var setMyCommands = new SetMyCommands();
-      setMyCommands.setCommands(botConfiguration.commandsHolder().getCommands());
-      this.execute(setMyCommands);
+
+      registerCommands(botConfiguration);
+
     } catch (TelegramApiException e) {
       log.error(e.getMessage());
       throw new BotException("Exception while bot initialization", e);
@@ -617,5 +621,27 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void throwSubscriptionException(String command) {
 
     throw new BotException(getSubscriptionCommandHelp(command));
+  }
+
+  private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
+
+    for (Entry<Locale, List<BotCommand>> entry :
+        botConfiguration.commandsHolder().getCommands().entrySet()) {
+
+      if (entry.getKey().equals(botConfiguration.fullBotProperties().getDefaultLocale())) {
+
+        var setMyCommands = new SetMyCommands();
+        setMyCommands.setScope(new BotCommandScopeDefault());
+        setMyCommands.setCommands(entry.getValue());
+
+        this.execute(setMyCommands);
+      } else {
+        var setMyCommands =
+            new SetMyCommands(
+                entry.getValue(), new BotCommandScopeDefault(), entry.getKey().getLanguage());
+
+        this.execute(setMyCommands);
+      }
+    }
   }
 }
