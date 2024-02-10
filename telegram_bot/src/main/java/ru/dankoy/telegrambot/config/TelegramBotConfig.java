@@ -18,6 +18,7 @@ import ru.dankoy.telegrambot.core.service.bot.TelegramBotImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
+import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
@@ -48,7 +49,8 @@ public class TelegramBotConfig {
       CommunityService communityService,
       TagSubscriptionService tagSubscriptionService,
       OrderService orderService,
-      LocalisationService localisationService) {
+      LocalisationService localisationService,
+      LocaleProvider localeProvider) {
 
     return BotConfigurationImpl.builder()
         .fullBotProperties(properties)
@@ -60,6 +62,7 @@ public class TelegramBotConfig {
         .tagSubscriptionService(tagSubscriptionService)
         .orderService(orderService)
         .localisationService(localisationService)
+        .localeProvider(localeProvider)
         .build();
   }
 

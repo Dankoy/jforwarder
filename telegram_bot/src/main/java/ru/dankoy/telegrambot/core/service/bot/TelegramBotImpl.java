@@ -35,6 +35,7 @@ import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
+import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
@@ -66,6 +67,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private final LocalisationService localisationService;
 
+  private final LocaleProvider localeProvider;
+
   public TelegramBotImpl(BotConfiguration botConfiguration) {
 
     super(botConfiguration.fullBotProperties().getToken());
@@ -78,6 +81,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     this.tagSubscriptionService = botConfiguration.tagSubscriptionService();
     this.orderService = botConfiguration.orderService();
     this.localisationService = botConfiguration.localisationService();
+    this.localeProvider = botConfiguration.localeProvider();
 
     try {
 
@@ -155,13 +159,17 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       log.info("Found chat - {}", tChat.getId());
 
       if (!found.isActive()) {
-        sendMessage.setText("Chat is not active. Please, first run /start command.");
+        sendMessage.setText(
+            localisationService.getLocalizedMessage(
+                "chatNotActive", null, localeProvider.getLocale(message)));
         send(sendMessage);
       }
 
     } catch (NotFound e) {
       log.warn("Chat not found - {}", tChat.getId());
-      sendMessage.setText("Please, first run /start command.");
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              "chatNotFound", null, localeProvider.getLocale(message)));
       send(sendMessage);
       throw new IllegalStateException("Accessed subscribe command without start");
     }
@@ -217,7 +225,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     SendMessage message = new SendMessage();
     message.setChatId(inputMessage.getChat().getId());
     message.setText(
-        "Now you can subscribe to coub.com communities or/and tags and receive updates directly in chat");
+        localisationService.getLocalizedMessage(
+            "startFinish", null, localeProvider.getLocale(inputMessage)));
 
     send(message);
   }
@@ -248,15 +257,22 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               communityName, sectionName, inputMessage.getChat().getId());
 
       message.setText(
-          String.format(
-              "Subscribed to %s %s", s.getCommunity().getName(), s.getSection().getName()));
+          localisationService.getLocalizedMessage(
+              "subscriptionCompleted",
+              new Object[] {s.getCommunity().getName(), s.getSection().getName()},
+              localeProvider.getLocale(inputMessage)));
+
       send(message);
 
     } catch (Conflict e) {
       message.setText(
-          String.format("You are already subscribed to '%s - %s'", communityName, sectionName));
+          localisationService.getLocalizedMessage(
+              "alreadySubscribed",
+              new Object[] {communityName, sectionName},
+              localeProvider.getLocale(inputMessage)));
       send(message);
     } catch (NotFoundException e) {
+      // todo: localization
       message.setText(e.getMessage());
       send(message);
       send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
@@ -277,7 +293,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       communitySubscriptionService.unsubscribe(
           communityName, sectionName, inputMessage.getChat().getId());
 
-      message.setText(String.format("Unsubscribed from %s %s", communityName, sectionName));
+      message.setText(
+          localisationService.getLocalizedMessage(
+              "unsubscriptionCompleted",
+              new Object[] {communityName, sectionName},
+              localeProvider.getLocale(inputMessage)));
       send(message);
 
     } catch (BotException e) {
@@ -288,10 +308,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void subscribeUtils(Message inputMessage) {
 
     // find route by first word after command
-    var text = inputMessage.getText();
 
     try {
-      Map<String, String> command = parseCommandTagMultipleWords(text);
+      Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
 
       // route
       if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD).equals(SubscriptionType.TAG.getType())) {
@@ -314,10 +333,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void unsubscribeUtils(Message inputMessage) {
 
     // find route by first word after command
-    var text = inputMessage.getText();
 
     try {
-      Map<String, String> command = parseCommandTagMultipleWords(text);
+      Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
 
       // route
       if (command
@@ -355,12 +373,19 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               tagName, orderValue, "all", "", inputMessage.getChat().getId());
 
       message.setText(
-          String.format("Subscribed to %s %s", s.getTag().getTitle(), s.getOrder().getValue()));
+          localisationService.getLocalizedMessage(
+              "subscriptionCompleted",
+              new Object[] {s.getTag().getTitle(), s.getOrder().getValue()},
+              localeProvider.getLocale(inputMessage)));
       send(message);
 
     } catch (Conflict e) {
       message.setText(
-          String.format("You are already subscribed to '%s - %s'", tagName, orderValue));
+          localisationService.getLocalizedMessage(
+              "alreadySubscribed",
+              new Object[] {tagName, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
       send(message);
     } catch (NotFoundException e) {
       message.setText(e.getMessage());
@@ -384,7 +409,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       tagSubscriptionService.unsubscribe(
           tagName, orderValue, "all", "", inputMessage.getChat().getId());
 
-      message.setText(String.format("Unsubscribed from %s %s", tagName, orderValue));
+      message.setText(
+          localisationService.getLocalizedMessage(
+              "unsubscriptionCompleted",
+              new Object[] {tagName, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
       send(message);
 
     } catch (BotException e) {
@@ -441,11 +471,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     }
   }
 
-  private Map<String, String> parseCommandTagMultipleWords(String messageText) {
+  private Map<String, String> parseCommandTagMultipleWords(Message inputMessage) {
 
     Map<String, String> result = new HashMap<>();
 
-    String[] command = messageText.split(" ");
+    String[] command = inputMessage.getText().split(" ");
 
     if (command.length < 4) {
       log.error("Expected valid command but got - {}", Arrays.asList(command));
@@ -458,9 +488,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       log.error(
           "Expected one of {}, but got {}", Arrays.asList(SubscriptionType.values()), command[1]);
       throw new BotException(
-          String.format(
-              "Subscription type have to be one of '%s'",
-              Arrays.asList(SubscriptionType.values()).toString().toLowerCase()));
+          localisationService.getLocalizedMessage(
+              "illegalBotCommand",
+              new Object[] {Arrays.asList(SubscriptionType.values()).toString().toLowerCase()},
+              localeProvider.getLocale(inputMessage)));
     }
 
     // Get all words after 0 and last element and concat in one string
@@ -602,6 +633,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   }
 
   private SendMessage buildSubscriptionHelpMessage(Message message, String command) {
+
+    // todo: localisation
 
     return SendMessage.builder()
         .chatId(message.getChatId())
