@@ -1,6 +1,6 @@
-package ru.dankoy.telegrambot.core.service.bot.configuration;
+package ru.dankoy.telegrambot.config.configuration;
 
-import ru.dankoy.telegrambot.config.TelegramBotProperties;
+import ru.dankoy.telegrambot.config.FullBotProperties;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
@@ -12,7 +12,7 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 public interface BotConfiguration {
 
-  TelegramBotProperties telegramBotProperties();
+  FullBotProperties fullBotProperties();
 
   CommunitySubscriptionService communitySubscriptionService();
 
