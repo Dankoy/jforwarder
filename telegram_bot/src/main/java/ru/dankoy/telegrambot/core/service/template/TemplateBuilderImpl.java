@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ import ru.dankoy.telegrambot.core.exceptions.BotException;
 @Getter
 @RequiredArgsConstructor
 public class TemplateBuilderImpl implements TemplateBuilder {
+
+  private static final String EXCEPTION_MESSAGE = "Couldn't process template '%s'";
 
   private final Configuration configuration;
 
@@ -54,7 +57,32 @@ public class TemplateBuilderImpl implements TemplateBuilder {
 
     } catch (Exception e) {
 
-      throw new BotException(String.format("Couldn't process template '%s'", templateName), e);
+      throw new BotException(String.format(EXCEPTION_MESSAGE, templateName), e);
+    }
+  }
+
+  /**
+   * Заполнение шаблона локализованными данными
+   *
+   * @param templateData данные для заполнения шаблона в формате {@code Map<String, Object>}
+   * @param templateName имя шаблона
+   * @param locale локаль
+   * @return заполненный шаблон в виде строки
+   */
+  @Override
+  public String writeTemplate(
+      Map<String, Object> templateData, String templateName, Locale locale) {
+
+    try (Writer stream = new StringWriter()) {
+
+      Template template = configuration.getTemplate(templateName, locale);
+
+      template.process(templateData, stream);
+      return stream.toString();
+
+    } catch (Exception e) {
+
+      throw new BotException(String.format(EXCEPTION_MESSAGE, templateName), e);
     }
   }
 
@@ -78,7 +106,7 @@ public class TemplateBuilderImpl implements TemplateBuilder {
 
     } catch (Exception e) {
 
-      throw new BotException(String.format("Couldn't process template '%s'", templateName), e);
+      throw new BotException(String.format(EXCEPTION_MESSAGE, templateName), e);
     }
   }
 }
