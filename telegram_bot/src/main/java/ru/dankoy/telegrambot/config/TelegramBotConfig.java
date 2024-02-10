@@ -1,23 +1,21 @@
 package ru.dankoy.telegrambot.config;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
+import ru.dankoy.telegrambot.config.configuration.BotConfigurationImpl;
+import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
+import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
-import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.MySubscriptionsCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.TagOrdersCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
-import ru.dankoy.telegrambot.core.service.bot.configuration.BotConfiguration;
-import ru.dankoy.telegrambot.core.service.bot.configuration.BotConfigurationImpl;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
@@ -42,7 +40,7 @@ public class TelegramBotConfig {
 
   @Bean
   public BotConfiguration botConfiguration(
-      TelegramBotProperties properties,
+      FullBotProperties properties,
       CommandsHolder commandsHolder,
       CommunitySubscriptionService communitySubscriptionService,
       TelegramChatService telegramChatService,
@@ -53,7 +51,7 @@ public class TelegramBotConfig {
       LocalisationService localisationService) {
 
     return BotConfigurationImpl.builder()
-        .telegramBotProperties(properties)
+        .fullBotProperties(properties)
         .commandsHolder(commandsHolder)
         .communitySubscriptionService(communitySubscriptionService)
         .telegramChatService(telegramChatService)
@@ -72,16 +70,29 @@ public class TelegramBotConfig {
   }
 
   @Bean
-  public CommandsHolder commandsHolder() {
+  public List<BotCommandsFactory> botCommandsFactories(
+      LocaleConfig localeConfig, LocalisationService localisationService) {
+
+    List<BotCommandsFactory> factories = new ArrayList<>();
+
+    for (Locale locale : localeConfig.getLocales()) {
+      factories.add(new BotCommandsFactoryImpl(localisationService, locale));
+    }
+
+    return factories;
+  }
+
+  @Bean
+  public CommandsHolder commandsHolder(List<BotCommandsFactory> botCommandsFactories) {
 
     var commandsHolder = new CommandsHolder();
-    commandsHolder.addCommand(new MySubscriptionsCommand());
-    commandsHolder.addCommand(new StartCommand());
-    commandsHolder.addCommand(new HelpCommand());
-    commandsHolder.addCommand(new SubscribeCommand());
-    commandsHolder.addCommand(new UnsubscribeCommand());
-    commandsHolder.addCommand(new CommunitiesCommand());
-    commandsHolder.addCommand(new TagOrdersCommand());
+
+    for (BotCommandsFactory factory : botCommandsFactories) {
+
+      var commands = factory.allKnownCommands();
+
+      commandsHolder.addCommands(factory.locale(), commands);
+    }
 
     return commandsHolder;
   }
