@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -18,5 +17,4 @@ public class Order {
 
   private String name;
   private String value;
-
 }
