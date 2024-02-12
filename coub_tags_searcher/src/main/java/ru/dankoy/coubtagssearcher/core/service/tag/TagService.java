@@ -1,4 +1,4 @@
-package ru.dankoy.coubtagssearcher.core.service;
+package ru.dankoy.coubtagssearcher.core.service.tag;
 
 import ru.dankoy.coubtagssearcher.core.domain.Tag;
 

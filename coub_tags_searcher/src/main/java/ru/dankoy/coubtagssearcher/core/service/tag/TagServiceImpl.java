@@ -1,4 +1,4 @@
-package ru.dankoy.coubtagssearcher.core.service;
+package ru.dankoy.coubtagssearcher.core.service.tag;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.coubtagssearcher.core.domain.Tag;
 import ru.dankoy.coubtagssearcher.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.coubtagssearcher.core.feign.CoubSmartSearchFeign;
-
+import ru.dankoy.coubtagssearcher.core.service.Utils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,16 +24,15 @@ public class TagServiceImpl implements TagService {
 
     while (page <= maxPage) {
 
-      var optionalFoundTag = wrapper.getData().stream()
-          .filter(tag -> tag.getTitle().equals(title))
-          .findFirst();
+      var optionalFoundTag =
+          wrapper.getData().stream().filter(tag -> tag.getTitle().equals(title)).findFirst();
 
       log.info("Found coubs: {}", wrapper);
 
       if (optionalFoundTag.isEmpty()) {
         log.info("On page '{}' tag '{}' not found", page, title);
         page++;
-        sleep(3_000);
+        Utils.sleep(3_000);
 
         wrapper = coubSmartSearchFeign.getTags(title, page);
       } else {
@@ -41,22 +40,8 @@ public class TagServiceImpl implements TagService {
         log.info("Found tag: {}", foundTag);
         return foundTag;
       }
-
     }
 
-    throw new ResourceNotFoundException(
-        String.format("Couldn't find tag with title '%s'", title));
-
-  }
-
-  private void sleep(long millis) {
-
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while trying to get coubs", e);
-    }
-
+    throw new ResourceNotFoundException(String.format("Couldn't find tag with title '%s'", title));
   }
 }
