@@ -13,7 +13,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        docker-file: [ "coub_tags_searcher", 
+        docker-file: [ "coub_smart_searcher",
                       "kafka_message_consumer", 
                       "kafka_message_producer",
                        "spring_eureka_registry", 
