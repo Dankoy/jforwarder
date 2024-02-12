@@ -1,6 +1,6 @@
 spring:
   application:
-    name: coub-tags-searcher
+    name: coub-smart-searcher
 
 coub:
   connector:
