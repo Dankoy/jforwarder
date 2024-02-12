@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.coubtagssearcher.core.dto.TagDTO;
-import ru.dankoy.coubtagssearcher.core.service.TagService;
+import ru.dankoy.coubtagssearcher.core.service.tag.TagService;
 
 @RequiredArgsConstructor
 @RestController

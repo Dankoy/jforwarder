@@ -5,7 +5,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.coubtagssearcher.core.domain.coubcom.ChannelsWrapper;
-import ru.dankoy.coubtagssearcher.core.domain.coubcom.TagsWrapper;
 
 @Cacheable(cacheNames = "coubs-feign-cache", cacheManager = "caffeineCacheManager")
 @FeignClient(name = "coub-search", url = "${coub.connector.gatewayApiUrl}api/v2/search")
