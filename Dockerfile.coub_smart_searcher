@@ -8,14 +8,14 @@ ENV TZ ${TZ}
 
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
-ENV ENV_PATH_TO_JAR=coub_tags_searcher/build/libs/coub_tags_searcher-$JAR_VERSION.jar
+ENV ENV_PATH_TO_JAR=coub_smart_searcher/build/libs/coub_smart_searcher-$JAR_VERSION.jar
 
 RUN echo "$TZ" > /etc/timezone
 
 WORKDIR /app
 COPY ./buildSrc ./buildSrc
-COPY ./coub_tags_searcher/src ./coub_tags_searcher/src
-COPY ./coub_tags_searcher/build.gradle ./coub_tags_searcher/
+COPY ./coub_smart_searcher/src ./coub_smart_searcher/src
+COPY ./coub_smart_searcher/build.gradle ./coub_smart_searcher/
 COPY ./build.gradle ./
 COPY ./settings.gradle ./
 

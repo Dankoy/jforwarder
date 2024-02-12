@@ -8,7 +8,7 @@ plugins {
     id 'loki-conventions'
 }
 
-group = 'ru.dankoy.coubtagssearcher'
+group = 'ru.dankoy.coubsmartsearcher'
 // version comes from root project
 
 dependencies {
