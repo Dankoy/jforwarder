@@ -5,5 +5,4 @@ import ru.dankoy.coubtagssearcher.core.domain.Channel;
 public interface ChannelService {
 
   Channel findChannelByTitle(String title);
-
 }

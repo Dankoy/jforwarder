@@ -5,5 +5,4 @@ import ru.dankoy.coubtagssearcher.core.domain.Tag;
 public interface TagService {
 
   Tag findTagByTitle(String title);
-
 }

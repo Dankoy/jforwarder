@@ -48,8 +48,7 @@ public class ChannelServiceImpl implements ChannelService {
       }
     }
 
-    throw new ResourceNotFoundException(String.format("Couldn't find channel with title '%s'", title));
+    throw new ResourceNotFoundException(
+        String.format("Couldn't find channel with title '%s'", title));
   }
-
-
 }

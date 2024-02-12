@@ -10,9 +10,9 @@ import ru.dankoy.coubtagssearcher.core.domain.coubcom.TagsWrapper;
 @FeignClient(name = "coubs", url = "${coub.connector.gatewayApiUrl}api/v2/smart_search/")
 public interface CoubSmartSearchFeign {
 
-
-  @GetMapping(value = "/tags", params = {"search_query", "page"})
-  TagsWrapper getTags(@RequestParam("search_query") String searchQuery,
-      @RequestParam("page") int page);
-
+  @GetMapping(
+      value = "/tags",
+      params = {"search_query", "page"})
+  TagsWrapper getTags(
+      @RequestParam("search_query") String searchQuery, @RequestParam("page") int page);
 }

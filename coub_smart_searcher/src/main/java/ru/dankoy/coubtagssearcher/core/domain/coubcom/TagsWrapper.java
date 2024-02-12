@@ -1,6 +1,5 @@
 package ru.dankoy.coubtagssearcher.core.domain.coubcom;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
@@ -17,5 +16,4 @@ public class TagsWrapper {
 
   private List<Tag> data = new ArrayList<>();
   private Meta meta;
-
 }

@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-
 @EqualsAndHashCode
 @Data
 @ToString
@@ -20,5 +19,4 @@ public class Meta {
 
   @JsonProperty("total_pages")
   private long totalPages;
-
 }

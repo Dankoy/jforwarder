@@ -13,5 +13,4 @@ public class CoubTagsSearcherApp {
   public static void main(String[] args) {
     SpringApplication.run(CoubTagsSearcherApp.class, args);
   }
-
 }

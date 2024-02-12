@@ -1,6 +1,5 @@
 package ru.dankoy.coubtagssearcher.core.domain;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -17,5 +16,4 @@ import lombok.ToString;
 public class Tag {
 
   private String title;
-
 }
