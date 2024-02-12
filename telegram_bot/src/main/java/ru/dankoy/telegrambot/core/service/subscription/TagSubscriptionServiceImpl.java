@@ -12,7 +12,7 @@ import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Type;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
-import ru.dankoy.telegrambot.core.service.coubtags.CoubTagsSearcherService;
+import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.tag.TagService;
 
@@ -20,7 +20,7 @@ import ru.dankoy.telegrambot.core.service.tag.TagService;
 @Service
 public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
-  private final CoubTagsSearcherService coubTagsSearcherService;
+  private final CoubSmartSearcherService coubSmartSearcherService;
 
   private final TagService tagService;
 
@@ -68,7 +68,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
     } else {
 
-      var optionalTagFromApi = coubTagsSearcherService.findByTitle(tagName);
+      var optionalTagFromApi = coubSmartSearcherService.findTagByTitle(tagName);
 
       if (optionalTagFromApi.isPresent()) {
 
