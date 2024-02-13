@@ -7,7 +7,6 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.OrderRepository;
 
-
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -15,21 +14,11 @@ public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
 
   @Override
-  public Order getByName(String name) {
-    var optional = orderRepository.findByName(name);
+  public Order getByValueAndType(String value, String subscriptionType) {
+    var optional = orderRepository.findByValueAndSubscriptionType(value, subscriptionType);
 
     return optional.orElseThrow(
-        () -> new ResourceNotFoundException(String.format("Tag order not found - %s", name))
-    );
-  }
-
-  @Override
-  public Order getByValue(String value) {
-    var optional = orderRepository.findByValue(value);
-
-    return optional.orElseThrow(
-        () -> new ResourceNotFoundException(String.format("Tag order not found - %s", value))
-    );
+        () -> new ResourceNotFoundException(String.format("Order not found - %s", value)));
   }
 
   @Override
