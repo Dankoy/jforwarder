@@ -1,5 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag;
-
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,8 +18,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag_orders")
-public class Order {
+@Table(name = "tag_types")
+public class Type {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +28,5 @@ public class Order {
 
   @Column(name = "name")
   private String name;
-
-  @Column(name = "value")
-  private String value;
 
 }

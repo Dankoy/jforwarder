@@ -3,7 +3,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Order;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.OrderRepository;
 

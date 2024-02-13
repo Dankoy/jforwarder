@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

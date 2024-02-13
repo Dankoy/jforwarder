@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.TagSub;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Scope;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Order;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Scope;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Type;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Type;
 
 /**
  * @deprecated in favor for inherited classes

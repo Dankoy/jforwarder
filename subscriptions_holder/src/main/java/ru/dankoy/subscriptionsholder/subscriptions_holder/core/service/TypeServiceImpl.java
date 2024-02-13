@@ -2,7 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Type;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Type;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TypeRepository;
 
