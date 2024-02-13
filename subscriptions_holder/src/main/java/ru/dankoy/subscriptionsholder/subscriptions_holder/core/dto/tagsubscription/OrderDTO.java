@@ -36,7 +36,8 @@ public class OrderDTO {
     return new Order(
         dto.getId(),
         dto.getName(),
-        dto.getValue()
+        dto.getValue(),
+        null
     );
 
   }
