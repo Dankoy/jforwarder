@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum SubscriptionType {
   COMMUNITY("community"),
-  TAG("tag");
+  TAG("tag"),
+  CHANNEL("channel");
 
   private final String type;
 

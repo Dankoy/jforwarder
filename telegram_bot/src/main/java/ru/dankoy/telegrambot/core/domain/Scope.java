@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.core.domain.tagsubscription;
+package ru.dankoy.telegrambot.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

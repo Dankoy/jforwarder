@@ -29,7 +29,7 @@ import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
+import ru.dankoy.telegrambot.core.domain.Order;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;

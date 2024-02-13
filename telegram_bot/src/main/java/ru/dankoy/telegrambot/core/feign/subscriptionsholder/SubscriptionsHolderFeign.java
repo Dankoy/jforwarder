@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.dankoy.telegrambot.core.domain.Order;
+import ru.dankoy.telegrambot.core.domain.channel.Channel;
+import ru.dankoy.telegrambot.core.domain.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
 
@@ -76,11 +78,34 @@ public interface SubscriptionsHolderFeign {
   Tag createTag(@RequestBody Tag tag);
 
   // tag orders
-  @GetMapping(path = "/api/v1/tag_orders")
-  List<Order> getAllTagOrders();
+  @GetMapping(path = "/api/v1/orders")
+  List<Order> getAllOrders();
 
   @GetMapping(
-      path = "/api/v1/tag_orders",
-      params = {"value"})
-  Order getOrderByValue(@RequestParam String value);
+      path = "/api/v1/orders",
+      params = {"value", "subscriptionType"})
+  Order getOrderByValueAndType(@RequestParam String value, @RequestParam String subscriptionType);
+
+  // channels
+
+  @GetMapping(
+      path = "/api/v1/channels",
+      params = {"permalink"})
+  Channel getChannelByPermalink(@RequestParam("permalink") String permalink);
+
+  @PostMapping(path = "/api/v1/channels")
+  Channel createChannel(@RequestBody Channel channel);
+
+  // channel subscriptions
+  @GetMapping(
+      path = "/api/v1/channel_subscriptions",
+      params = {"telegramChatId"})
+  List<ChannelSubscription> getAllChannelSubscriptionsByChatId(
+      @RequestParam("telegramChatId") long telegramChatId);
+
+  @PostMapping(path = "/api/v1/channel_subscriptions")
+  ChannelSubscription subscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
+
+  @DeleteMapping(path = "/api/v1/channel_subscriptions")
+  void unsubscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
 }

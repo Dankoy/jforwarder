@@ -1,5 +1,4 @@
-package ru.dankoy.telegrambot.core.domain.tagsubscription;
-
+package ru.dankoy.telegrambot.core.domain.channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,18 +14,16 @@ import ru.dankoy.telegrambot.core.domain.Type;
 import ru.dankoy.telegrambot.core.domain.coub.Coub;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 
-
 @Getter
 @ToString
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TagSubscription {
-
+public class ChannelSubscription {
 
   private long id;
 
-  private Tag tag;
+  private Channel channel;
 
   private Chat chat;
 
@@ -38,7 +35,5 @@ public class TagSubscription {
 
   private String lastPermalink;
 
-  @Setter
-  private List<Coub> coubs = new ArrayList<>();
-
+  @Setter private List<Coub> coubs = new ArrayList<>();
 }

@@ -16,6 +16,6 @@ public interface CoubSmartSearcherFeign {
 
   @GetMapping(
       path = "/api/v1/channels",
-      params = {"title"})
-  Channel searchChannelByTitle(@RequestParam("title") String title);
+      params = {"permalink"})
+  Channel searchChannelByPermalink(@RequestParam("permalink") String permalink);
 }

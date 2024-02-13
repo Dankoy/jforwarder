@@ -8,5 +8,5 @@ public interface CoubSmartSearcherService {
 
   Optional<Tag> findTagByTitle(String title);
 
-  Optional<Channel> findByChannelTitle(String title);
+  Optional<Channel> findByChannelPermalink(String permalink);
 }

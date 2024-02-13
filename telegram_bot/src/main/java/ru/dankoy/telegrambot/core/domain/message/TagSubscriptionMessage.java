@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Scope;
+import ru.dankoy.telegrambot.core.domain.Order;
+import ru.dankoy.telegrambot.core.domain.Scope;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Type;
+import ru.dankoy.telegrambot.core.domain.Type;
 
 @Getter
 @SuperBuilder

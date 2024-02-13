@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dankoy.telegrambot.core.domain.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.subscription.Chat;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Scope;
+import ru.dankoy.telegrambot.core.domain.Order;
+import ru.dankoy.telegrambot.core.domain.Scope;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
 import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Type;
+import ru.dankoy.telegrambot.core.domain.Type;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
@@ -37,7 +38,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
     // 1. Find tag order
 
-    var optionalTagOrder = orderService.findByValue(orderValue);
+    var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.TAG);
 
     var order =
         optionalTagOrder.orElseThrow(

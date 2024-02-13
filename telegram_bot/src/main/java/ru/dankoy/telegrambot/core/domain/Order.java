@@ -1,4 +1,5 @@
-package ru.dankoy.telegrambot.core.domain.tagsubscription;
+package ru.dankoy.telegrambot.core.domain;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,15 +12,15 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class Type {
+public class Order {
 
   private long id;
 
   private String name;
 
+  private String value;
 
-  public Type(String name) {
-    this.name = name;
+  public Order(String value) {
+    this.value = value;
   }
 }

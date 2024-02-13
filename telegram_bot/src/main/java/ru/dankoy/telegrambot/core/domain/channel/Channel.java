@@ -16,8 +16,9 @@ public class Channel {
   private long id;
 
   private String title;
+  private String permalink;
 
-  public Channel(String title) {
-    this.title = title;
+  public Channel(String permalink) {
+    this.permalink = permalink;
   }
 }

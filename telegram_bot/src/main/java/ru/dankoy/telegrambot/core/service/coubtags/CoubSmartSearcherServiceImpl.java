@@ -27,11 +27,11 @@ public class CoubSmartSearcherServiceImpl implements CoubSmartSearcherService {
   }
 
   @Override
-  public Optional<Channel> findByChannelTitle(String title) {
+  public Optional<Channel> findByChannelPermalink(String permalink) {
 
     try {
 
-      return Optional.of(coubSmartSearcherFeign.searchChannelByTitle(title));
+      return Optional.of(coubSmartSearcherFeign.searchChannelByPermalink(permalink));
 
     } catch (NotFound e) {
       return Optional.empty();
