@@ -1,4 +1,4 @@
-package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription;
+package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
