@@ -18,26 +18,28 @@ public class ChannelServiceImpl implements ChannelService {
   private final CoubSearchFeign searchFeign;
 
   @Override
-  public Channel findChannelByTitle(String title) {
+  public Channel findChannelByTitle(String permalink) {
 
     int page = 1;
     long maxPage = Integer.MAX_VALUE;
 
     while (page <= maxPage) {
 
-      var wrapper = searchFeign.getChannels(title, page, PER_PAGE);
+      var wrapper = searchFeign.getChannels(permalink, page, PER_PAGE);
       maxPage = wrapper.getTotalPages();
+
+      log.info("wrapper {}", wrapper);
 
       var optionalFoundChannel =
           wrapper.getChannels().stream()
-              .filter(channel -> channel.getTitle().equals(title))
+              .filter(channel -> channel.getPermalink().equals(permalink))
               .findFirst();
 
       log.info("Found channel: {}", optionalFoundChannel);
 
       if (optionalFoundChannel.isEmpty()) {
 
-        log.info("On page '{}' channel '{}' not found", page, title);
+        log.info("On page '{}' channel '{}' not found", page, permalink);
         page++;
         Utils.sleep(3_000);
 
@@ -49,6 +51,6 @@ public class ChannelServiceImpl implements ChannelService {
     }
 
     throw new ResourceNotFoundException(
-        String.format("Couldn't find channel with title '%s'", title));
+        String.format("Couldn't find channel with permalink '%s'", permalink));
   }
 }

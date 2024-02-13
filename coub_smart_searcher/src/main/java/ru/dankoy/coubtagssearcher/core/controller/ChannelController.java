@@ -17,10 +17,10 @@ public class ChannelController {
 
   @GetMapping(
       value = "/api/v1/channels",
-      params = {"title"})
-  public ChannelDTO findChannelByTitle(@Valid @NotEmpty @NotNull String title) {
+      params = {"permalink"})
+  public ChannelDTO findChannelByTitle(@Valid @NotEmpty @NotNull String permalink) {
 
-    var chanel = channelService.findChannelByTitle(title);
+    var chanel = channelService.findChannelByTitle(permalink);
 
     return ChannelDTO.toDTO(chanel);
   }
