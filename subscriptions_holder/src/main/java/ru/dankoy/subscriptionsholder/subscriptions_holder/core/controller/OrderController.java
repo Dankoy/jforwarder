@@ -11,11 +11,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.OrderServ
 
 @RequiredArgsConstructor
 @RestController
-public class TagOrderController {
+public class OrderController {
 
   private final OrderService orderService;
 
-  @GetMapping(value = "/api/v1/tag_orders")
+  @GetMapping(value = "/api/v1/orders")
   public @Valid List<OrderDTO> getAll() {
 
     var found = orderService.getAll();
@@ -24,11 +24,12 @@ public class TagOrderController {
   }
 
   @GetMapping(
-      value = "/api/v1/tag_orders",
-      params = {"value"})
-  public @Valid OrderDTO getByValue(@RequestParam String value) {
+      value = "/api/v1/orders",
+      params = {"value", "subscriptionType"})
+  public @Valid OrderDTO getByValueAndSubscriptionType(
+      @RequestParam String value, @RequestParam String subscriptionType) {
 
-    var found = orderService.getByValue(value);
+    var found = orderService.getByValueAndType(value, subscriptionType);
 
     return OrderDTO.toDTO(found);
   }
