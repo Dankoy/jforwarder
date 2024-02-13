@@ -22,6 +22,14 @@ public class ChannelServiceImpl implements ChannelService {
         () -> new ResourceNotFoundException(String.format("Channel not found - '%s'", title)));
   }
 
+  @Override
+  public Channel getByPermalink(String title) {
+    var optional = channelRepository.getByPermalink(title);
+
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Channel not found - '%s'", title)));
+  }
+
   @Transactional
   @Override
   public Channel create(Channel tag) {
@@ -54,9 +62,19 @@ public class ChannelServiceImpl implements ChannelService {
   }
 
   @Override
+  @Transactional
   public void deleteByTitle(String title) {
 
     var optional = channelRepository.getByTitle(title);
+
+    optional.ifPresent(channelRepository::delete);
+  }
+
+  @Override
+  @Transactional
+  public void deleteByPermalink(String permalink) {
+
+    var optional = channelRepository.getByPermalink(permalink);
 
     optional.ifPresent(channelRepository::delete);
   }

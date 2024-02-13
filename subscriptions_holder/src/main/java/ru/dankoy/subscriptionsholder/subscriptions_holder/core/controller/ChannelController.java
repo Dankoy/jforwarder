@@ -21,10 +21,10 @@ public class ChannelController {
 
   @GetMapping(
       value = "/api/v1/channels",
-      params = {"title"})
-  public ChannelDTO getByTitle(@RequestParam("title") String title) {
+      params = {"permalink"})
+  public ChannelDTO getByTitle(@RequestParam("permalink") String permalink) {
 
-    var found = channelService.getByTitle(title);
+    var found = channelService.getByPermalink(permalink);
 
     return ChannelDTO.toDTO(found);
   }
@@ -39,9 +39,9 @@ public class ChannelController {
     return ChannelDTO.toDTO(created);
   }
 
-  @DeleteMapping(value = "/api/v1/channels/{title}")
-  public void delete(@PathVariable("title") String title) {
+  @DeleteMapping(value = "/api/v1/channels/{permalink}")
+  public void delete(@PathVariable("permalink") String permalink) {
 
-    channelService.deleteByTitle(title);
+    channelService.deleteByTitle(permalink);
   }
 }
