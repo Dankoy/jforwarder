@@ -12,23 +12,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ChannelSubRepository extends JpaRepository<ChannelSub, Long> {
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
   @Override
   Page<ChannelSub> findAll(Pageable pageable);
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
   Page<ChannelSub> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
   List<ChannelSub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  List<ChannelSub> getAllByChatChatIdAndChannelTitle(
-      @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
-
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  Optional<ChannelSub> getByChatChatIdAndChannelTitleAndOrderValue(
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
+  Optional<ChannelSub> getByChatChatIdAndChannelPermalinkAndOrderValue(
       @Param("externalChatId") long externalChatId,
-      @Param("tagTitle") String tagTitle,
+      @Param("channelPermalink") String channelPermalink,
       @Param("orderValue") String orderValue);
 }

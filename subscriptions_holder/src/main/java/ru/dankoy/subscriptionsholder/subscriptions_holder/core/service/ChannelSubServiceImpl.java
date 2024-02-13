@@ -39,9 +39,9 @@ public class ChannelSubServiceImpl implements ChannelSubService {
 
     // check existence
     var optional =
-        channelSubRepository.getByChatChatIdAndChannelTitleAndOrderValue(
+        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
             channelSub.getChat().getChatId(),
-            channelSub.getChannel().getTitle(),
+            channelSub.getChannel().getPermalink(),
             channelSub.getOrder().getValue());
 
     // if exists throw exception
@@ -53,7 +53,7 @@ public class ChannelSubServiceImpl implements ChannelSubService {
         });
 
     // Throws ResourceNotFoundException
-    var channel = channelService.getByTitle(channelSub.getChannel().getTitle());
+    var channel = channelService.getByPermalink(channelSub.getChannel().getPermalink());
     var scope = scopeService.getByName(channelSub.getScope().getName());
     var type = typeService.getByName(channelSub.getType().getName());
     var order =
@@ -104,9 +104,9 @@ public class ChannelSubServiceImpl implements ChannelSubService {
   public void deleteSubscription(ChannelSub channelSub) {
 
     var optional =
-        channelSubRepository.getByChatChatIdAndChannelTitleAndOrderValue(
+        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
             channelSub.getChat().getChatId(),
-            channelSub.getChannel().getTitle(),
+            channelSub.getChannel().getPermalink(),
             channelSub.getOrder().getValue());
 
     optional.ifPresent(channelSubRepository::delete);
