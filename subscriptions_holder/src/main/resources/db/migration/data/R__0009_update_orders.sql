@@ -1,51 +1,36 @@
--- insert for tag
+-- update current
+update orders
+set subscription_type_id = subscription_types.id
+from subscription_types
+where type = 'tag';
+
+-- -- insert for channel
+with select_order_type as (select id
+                           from subscription_types
+                           where type = 'channel')
 insert
-into order_subscription_type(order_id, subscription_type_id)
-values ((select id from orders where id = 1),
-        (select id from subscription_types where type = 'tag'));
+into orders (name,
+             value,
+             subscription_type_id)
+select 'likes_count',
+       'most_liked',
+       select_order_type.id
+from select_order_type;
 
+with select_order_type as (select id from subscription_types where type = 'channel')
 insert
-into order_subscription_type(order_id, subscription_type_id)
-values ((select id from orders where id = 2),
-        (select id from subscription_types where type = 'tag'));
+into orders(name, value, subscription_type_id)
+select 'newest', 'most_recent', select_order_type.id
+from select_order_type;
 
+with select_order_type as (select id from subscription_types where type = 'channel')
 insert
-into order_subscription_type(order_id, subscription_type_id)
-values ((select id from orders where id = 3),
-        (select id from subscription_types where type = 'tag'));
+into orders(name, value, subscription_type_id)
+select 'views_count', 'most_viewed', select_order_type.id
+from select_order_type;
 
+with select_order_type as (select id from subscription_types where type = 'channel')
 insert
-into order_subscription_type(order_id, subscription_type_id)
-values ((select id from orders where id = 4),
-        (select id from subscription_types where type = 'tag'));
-
-
--- insert for channel
-with select_order_type as (select id from subscription_types where type = 'channel'),
-     new_order
-         as (insert into orders (name, value) values ('likes_count', 'most_liked') returning id)
-insert
-into order_subscription_type(order_id, subscription_type_id)
-select new_order.id, select_order_type.id from select_order_type, new_order;
-
-with select_order_type as (select id from subscription_types where type = 'channel'),
-     new_order
-         as (insert into orders (name, value) values ('newest', 'most_recent') returning id)
-insert
-into order_subscription_type(order_id, subscription_type_id)
-select new_order.id, select_order_type.id from select_order_type, new_order;
-
-with select_order_type as (select id from subscription_types where type = 'channel'),
-     new_order
-         as (insert into orders (name, value) values ('views_count', 'most_viewed') returning id)
-insert
-into order_subscription_type(order_id, subscription_type_id)
-select new_order.id, select_order_type.id from select_order_type, new_order;
-
-with select_order_type as (select id from subscription_types where type = 'channel'),
-     new_order
-         as (insert into orders (name, value) values ('oldest', 'oldest') returning id)
-insert
-into order_subscription_type(order_id, subscription_type_id)
-select new_order.id, select_order_type.id from select_order_type, new_order;
-
+into orders(name, value, subscription_type_id)
+select 'oldest', 'oldest', select_order_type.id
+from select_order_type;
