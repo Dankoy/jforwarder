@@ -1,4 +1,4 @@
-insert into order_types(type)
+insert into subscription_types(type)
 values ('community'),
        ('tag'),
        ('channel');
