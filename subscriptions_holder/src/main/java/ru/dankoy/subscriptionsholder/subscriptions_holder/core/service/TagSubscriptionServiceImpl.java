@@ -59,7 +59,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     var tag = tagService.getByTitle(tagSubscription.getTag().getTitle());
     var scope = scopeService.getByName(tagSubscription.getScope().getName());
     var type = typeService.getByName(tagSubscription.getType().getName());
-    var order = orderService.getByName(tagSubscription.getOrder().getName());
+//    var order = orderService.getByName(tagSubscription.getOrder().getName());
 
     // todo: do i even need to save chat when creating subscription?
 
@@ -74,7 +74,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
           0,
           tag,
           chat,
-          order,
+          null,
           scope,
           type,
           null
@@ -90,7 +90,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
           0,
           tag,
           createdChat,
-          order,
+          null,
           scope,
           type,
           null
