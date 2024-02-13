@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.Chat;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Chat;
 
 @EqualsAndHashCode
 @Getter

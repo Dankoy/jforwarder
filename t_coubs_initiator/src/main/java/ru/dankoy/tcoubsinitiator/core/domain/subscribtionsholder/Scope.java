@@ -1,4 +1,4 @@
-package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription;
+package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

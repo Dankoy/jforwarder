@@ -6,6 +6,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Order;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Scope;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Type;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 
 @EqualsAndHashCode(callSuper = true)
