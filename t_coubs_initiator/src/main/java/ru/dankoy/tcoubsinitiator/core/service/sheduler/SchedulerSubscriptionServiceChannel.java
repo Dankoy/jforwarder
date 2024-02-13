@@ -10,27 +10,27 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.channelsubscription.ChannelSubscription;
+import ru.dankoy.tcoubsinitiator.core.service.channelsubscription.ChannelSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
-import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerTagSubscriptionService;
-import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerChannelSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SchedulerSubscriptionServiceTag {
+public class SchedulerSubscriptionServiceChannel {
 
   private static final int FIRST_PAGE = 0;
   private static final int PAGE_SIZE = 3;
 
-  private final TagSubscriptionService tagSubscriptionService;
-  private final MessageProducerTagSubscriptionService messageProducerTagSubscriptionService;
+  private final ChannelSubscriptionService channelSubscriptionService;
+  private final MessageProducerChannelSubscriptionService messageProducerChannelSubscriptionService;
   private final CoubFinderService coubFinderService;
   private final FilterByRegistryService filter;
 
-  @Scheduled(initialDelay = 90_000, fixedRate = 6_000_000) // 100 mins
+  @Scheduled(initialDelay = 120_000, fixedRate = 6_000_000) // 100 mins
   public void scheduledOperation() {
 
     int page = FIRST_PAGE;
@@ -42,20 +42,21 @@ public class SchedulerSubscriptionServiceTag {
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<TagSubscription> tagSubscriptionsPage =
-          tagSubscriptionService.getAllSubscriptionsWithActiveChats(pageable);
+      Page<ChannelSubscription> allSubscriptionsWithActiveChats =
+          channelSubscriptionService.getAllSubscriptionsWithActiveChats(pageable);
 
-      totalPages = tagSubscriptionsPage.getTotalPages() - 1;
+      totalPages = allSubscriptionsWithActiveChats.getTotalPages() - 1;
 
-      log.info("TagSubscriptions page - {}", tagSubscriptionsPage);
-      log.info("TagSubscriptions - {}", tagSubscriptionsPage.getContent());
+      log.info("TagSubscriptions page - {}", allSubscriptionsWithActiveChats);
+      log.info("TagSubscriptions - {}", allSubscriptionsWithActiveChats.getContent());
 
       // поиск кубов из апи с last_permalink
-      for (var subscription : tagSubscriptionsPage) {
+      for (var subscription : allSubscriptionsWithActiveChats) {
 
         log.info("Working with subscription - '{}'", subscription);
 
-        List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForTagSubscription(subscription);
+        List<Coub> coubsToSend =
+            coubFinderService.findUnsentCoubsForChannelSubscription(subscription);
 
         // reverse coubs
         Collections.reverse(coubsToSend);
@@ -63,23 +64,25 @@ public class SchedulerSubscriptionServiceTag {
         subscription.addCoubs(coubsToSend);
       }
 
-      filter.filterByRegistry(tagSubscriptionsPage.getContent());
+      filter.filterByRegistry(allSubscriptionsWithActiveChats.getContent());
 
       // remove subscriptions without coubs
 
-      var toSend = tagSubscriptionsPage.stream().filter(s -> !s.getCoubs().isEmpty()).toList();
+      var toSend =
+          allSubscriptionsWithActiveChats.stream().filter(s -> !s.getCoubs().isEmpty()).toList();
 
       // send to message producer service
 
       log.info("Coubs to send for all subscriptions - {}", toSend);
 
       if (!toSend.isEmpty()) {
-        messageProducerTagSubscriptionService.sendTagSubscriptionsData(toSend);
+        messageProducerChannelSubscriptionService.sendChannelSubscriptionsData(toSend);
       }
 
       log.info("Page {} of {} is done", page, totalPages);
       log.info(
-          "Amount of tag subscriptions processed: {}", tagSubscriptionsPage.getContent().size());
+          "Amount of tag subscriptions processed: {}",
+          allSubscriptionsWithActiveChats.getContent().size());
 
       page++;
 

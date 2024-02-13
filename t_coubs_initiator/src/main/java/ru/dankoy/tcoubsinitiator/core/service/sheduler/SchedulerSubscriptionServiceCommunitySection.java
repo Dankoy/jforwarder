@@ -2,7 +2,6 @@ package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
 // по заданному времени лезет в апи куба, проверяет свои подписки и создает сообщения
 
-
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerCommunitySubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 @Slf4j
 @Service
@@ -27,9 +27,9 @@ public class SchedulerSubscriptionServiceCommunitySection {
   private static final int FIRST_PAGE = 0;
   private static final int PAGE_SIZE = 3;
 
-
   private final SubscriptionService subscriptionService;
-  private final MessageProducerCommunitySubscriptionService messageProducerCommunitySubscriptionService;
+  private final MessageProducerCommunitySubscriptionService
+      messageProducerCommunitySubscriptionService;
   private final CoubFinderService coubFinderService;
   private final FilterByRegistryService filter;
 
@@ -45,8 +45,8 @@ public class SchedulerSubscriptionServiceCommunitySection {
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<CommunitySubscription> communitySubscriptionsPage = subscriptionService.getAllSubscriptionsWithActiveChats(
-          pageable);
+      Page<CommunitySubscription> communitySubscriptionsPage =
+          subscriptionService.getAllSubscriptionsWithActiveChats(pageable);
 
       totalPages = communitySubscriptionsPage.getTotalPages() - 1;
 
@@ -58,25 +58,23 @@ public class SchedulerSubscriptionServiceCommunitySection {
 
         log.info("Working with subscription - '{}'", subscription);
 
-        List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForCommunitySubscription(
-            subscription);
+        List<Coub> coubsToSend =
+            coubFinderService.findUnsentCoubsForCommunitySubscription(subscription);
 
         // reverse coubs
         Collections.reverse(coubsToSend);
 
         subscription.addCoubs(coubsToSend);
-
       }
 
       filter.filterByRegistry(communitySubscriptionsPage.getContent());
 
       // remove subscriptions without coubs
 
-      var toSend = communitySubscriptionsPage.stream()
-          .filter(s -> !s.getCoubs().isEmpty())
-          .toList();
+      var toSend =
+          communitySubscriptionsPage.stream().filter(s -> !s.getCoubs().isEmpty()).toList();
 
-      //send to message producer service
+      // send to message producer service
 
       log.info("Coubs to send for all subscriptions - {}", toSend);
 
@@ -85,26 +83,13 @@ public class SchedulerSubscriptionServiceCommunitySection {
       }
 
       log.info("Page {} of {} is done", page, totalPages);
-      log.info("Amount of community subscriptions processed: {}",
+      log.info(
+          "Amount of community subscriptions processed: {}",
           communitySubscriptionsPage.getContent().size());
 
       page++;
 
-      sleep(5_000);
-
+      Utils.sleep(5_000);
     }
-
   }
-
-  private void sleep(long millis) {
-
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while trying to get coubs", e);
-    }
-
-  }
-
 }

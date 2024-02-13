@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.service.coubfinder;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -10,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.channelsubscription.ChannelSubscription;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
 import ru.dankoy.tcoubsinitiator.core.service.coub.CoubService;
@@ -18,7 +18,6 @@ import ru.dankoy.tcoubsinitiator.core.service.coub.CoubService;
  * Sorts coubs by published date. So the coubs it returns are not the same as on site. Moved to
  * {@link CoubFinderServiceWithoutSorting} for better workflow without shadow logic
  */
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -41,12 +40,12 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     long page = FIRST_PAGE;
     int perPage = PER_PAGE;
 
-    var wrapper = coubService.getCoubsWrapperForCommunityAndSection(
-        communitySubscription.getCommunity().getName(),
-        communitySubscription.getSection().getName(),
-        page,
-        perPage
-    );
+    var wrapper =
+        coubService.getCoubsWrapperForCommunityAndSection(
+            communitySubscription.getCommunity().getName(),
+            communitySubscription.getSection().getName(),
+            page,
+            perPage);
 
     List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
 
@@ -57,7 +56,6 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
       return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-
     }
 
     while (page <= totalPages) {
@@ -65,9 +63,8 @@ public class CoubFinderServiceImpl implements CoubFinderService {
       allCoubs.addAll(wrapper.getCoubs());
       allCoubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
 
-      Optional<Coub> optionalLastCoubOnPage = allCoubs.stream()
-          .filter(c -> c.getPermalink().equals(lastPermalink))
-          .findFirst();
+      Optional<Coub> optionalLastCoubOnPage =
+          allCoubs.stream().filter(c -> c.getPermalink().equals(lastPermalink)).findFirst();
 
       if (optionalLastCoubOnPage.isEmpty()) {
 
@@ -82,12 +79,12 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
         sleep(3_000);
 
-        wrapper = coubService.getCoubsWrapperForCommunityAndSection(
-            communitySubscription.getCommunity().getName(),
-            communitySubscription.getSection().getName(),
-            page,
-            perPage
-        );
+        wrapper =
+            coubService.getCoubsWrapperForCommunityAndSection(
+                communitySubscription.getCommunity().getName(),
+                communitySubscription.getSection().getName(),
+                page,
+                perPage);
 
       } else {
 
@@ -101,10 +98,7 @@ public class CoubFinderServiceImpl implements CoubFinderService {
         log.debug("Coubs to send - {}", allCoubs);
 
         return allCoubs;
-
       }
-
-
     }
 
     return firstSetOfCoubs;
@@ -117,14 +111,14 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     long page = FIRST_PAGE;
     int perPage = PER_PAGE;
 
-    var wrapper = coubService.getCoubsWrapperForTag(
-        tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName(),
-        tagSubscription.getType().getName(),
-        tagSubscription.getScope().getName(),
-        page,
-        perPage
-    );
+    var wrapper =
+        coubService.getCoubsWrapperForTag(
+            tagSubscription.getTag().getTitle(),
+            tagSubscription.getOrder().getName(),
+            tagSubscription.getType().getName(),
+            tagSubscription.getScope().getName(),
+            page,
+            perPage);
 
     long totalPages = wrapper.getTotalPages();
     List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
@@ -134,7 +128,6 @@ public class CoubFinderServiceImpl implements CoubFinderService {
     if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
       return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-
     }
 
     while (page <= totalPages) {
@@ -142,9 +135,8 @@ public class CoubFinderServiceImpl implements CoubFinderService {
       allCoubs.addAll(wrapper.getCoubs());
       allCoubs.sort((coub1, coub2) -> coub2.getPublishedAt().compareTo(coub1.getPublishedAt()));
 
-      Optional<Coub> optionalLastCoubOnPage = allCoubs.stream()
-          .filter(c -> c.getPermalink().equals(lastPermalink))
-          .findFirst();
+      Optional<Coub> optionalLastCoubOnPage =
+          allCoubs.stream().filter(c -> c.getPermalink().equals(lastPermalink)).findFirst();
 
       if (optionalLastCoubOnPage.isEmpty()) {
 
@@ -159,14 +151,14 @@ public class CoubFinderServiceImpl implements CoubFinderService {
 
         sleep(5_000);
 
-        wrapper = coubService.getCoubsWrapperForTag(
-            tagSubscription.getTag().getTitle(),
-            tagSubscription.getOrder().getName(),
-            tagSubscription.getType().getName(),
-            tagSubscription.getScope().getName(),
-            page,
-            perPage
-        );
+        wrapper =
+            coubService.getCoubsWrapperForTag(
+                tagSubscription.getTag().getTitle(),
+                tagSubscription.getOrder().getName(),
+                tagSubscription.getType().getName(),
+                tagSubscription.getScope().getName(),
+                page,
+                perPage);
 
       } else {
 
@@ -180,21 +172,21 @@ public class CoubFinderServiceImpl implements CoubFinderService {
         log.debug("Coubs to send - {}", allCoubs);
 
         return allCoubs;
-
       }
-
-
     }
 
     return firstSetOfCoubs;
   }
 
+  @Override
+  public List<Coub> findUnsentCoubsForChannelSubscription(ChannelSubscription channelSubscription) {
+    throw new UnsupportedOperationException();
+  }
 
   private void deleteOlderCoubs(List<Coub> coubs, Coub lastCoub) {
 
     coubs.remove(lastCoub);
     coubs.removeIf(c -> c.getPublishedAt().isBefore(lastCoub.getPublishedAt()));
-
   }
 
   private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
@@ -210,6 +202,5 @@ public class CoubFinderServiceImpl implements CoubFinderService {
       Thread.currentThread().interrupt();
       throw new RuntimeException("Interrupted while trying to get coubs", e);
     }
-
   }
 }
