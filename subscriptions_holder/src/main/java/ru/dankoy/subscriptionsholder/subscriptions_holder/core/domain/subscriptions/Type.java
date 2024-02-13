@@ -18,7 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag_types")
+@Table(name = "types")
 public class Type {
 
   @Id

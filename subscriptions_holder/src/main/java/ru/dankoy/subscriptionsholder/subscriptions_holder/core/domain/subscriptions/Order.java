@@ -19,7 +19,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag_orders")
+@Table(name = "orders")
 public class Order {
 
   @Id

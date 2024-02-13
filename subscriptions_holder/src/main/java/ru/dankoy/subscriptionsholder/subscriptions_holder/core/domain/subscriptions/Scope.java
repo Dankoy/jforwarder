@@ -18,7 +18,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tag_scopes")
+@Table(name = "scopes")
 public class Scope {
 
   @Id
