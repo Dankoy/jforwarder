@@ -5,9 +5,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface OrderService {
 
-  Order getByName(String name);
-
-  Order getByValue(String value);
+  Order getByValueAndType(String value, String subscriptionType);
 
   List<Order> getAll();
 }
