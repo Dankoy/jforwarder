@@ -1,5 +1,4 @@
-package ru.dankoy.kafkamessageconsumer.core.domain.communitysubscription;
-
+package ru.dankoy.kafkamessageconsumer.core.domain.subscription.channelsubscription;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -12,9 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Section {
+public class Channel {
 
   private long id;
-  private String name;
 
+  private String title;
+
+  private String permalink;
 }

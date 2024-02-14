@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription;
+package ru.dankoy.kafkamessageconsumer.core.domain.subscription.communitysubscription;
 
 
 import lombok.AllArgsConstructor;
@@ -7,15 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@EqualsAndHashCode
 @Getter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+public class Community {
 
   private long id;
-
-  private String title;
+  private long externalId;
+  private String name;
 
 }

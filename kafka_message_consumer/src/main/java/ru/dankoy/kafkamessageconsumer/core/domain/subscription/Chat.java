@@ -1,20 +1,21 @@
-package ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription;
+package ru.dankoy.kafkamessageconsumer.core.domain.subscription;
+
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@Data
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Scope {
+public class Chat {
 
   private long id;
-
-  private String name;
+  private long chatId;
+  private String username;
 
 }
