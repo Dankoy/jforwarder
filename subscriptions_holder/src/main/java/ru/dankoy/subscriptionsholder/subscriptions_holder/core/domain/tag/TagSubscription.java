@@ -23,9 +23,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
 
 /**
- * @deprecated in favor for inherited classes
- * {@link
- * TagSub}
+ * @deprecated in favor for inherited classes {@link TagSub}
  */
 @Deprecated(since = "2024-01-28")
 @NamedEntityGraph(

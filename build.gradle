@@ -38,7 +38,7 @@ spotless {
         toggleOffOn()
         googleJavaFormat('1.19.2')
                 .reflowLongStrings()
-                .formatJavadoc(false)
+                .formatJavadoc(true)
                 .reorderImports(false)
                 .groupArtifact('com.google.googlejavaformat:google-java-format')
         removeUnusedImports()

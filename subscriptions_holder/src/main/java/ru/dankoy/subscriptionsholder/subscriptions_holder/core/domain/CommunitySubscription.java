@@ -20,9 +20,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
 /**
- * @deprecated in favor for inherited classes
- * {@link
- * CommunitySub}
+ * @deprecated in favor for inherited classes {@link CommunitySub}
  */
 @Deprecated(since = "2024-01-28")
 @NamedEntityGraph(
