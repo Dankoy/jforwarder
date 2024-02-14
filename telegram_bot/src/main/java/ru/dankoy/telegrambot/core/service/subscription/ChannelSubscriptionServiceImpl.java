@@ -47,6 +47,8 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
                     String.format(
                         "Order '%s' not found. Validate order and try again", orderValue)));
 
+    order.setSubscriptionType(SubscriptionType.CHANNEL);
+
     // 2. find tag in db
     var optionalChannelByPermalink = channelService.findChannelByPermalink(channelPermalink);
 

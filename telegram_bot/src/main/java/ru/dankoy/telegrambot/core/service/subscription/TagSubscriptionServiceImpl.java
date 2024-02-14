@@ -48,6 +48,8 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
                     String.format(
                         "Order '%s' not found. Validate tag order and try again", orderValue)));
 
+    order.setSubscriptionType(SubscriptionType.TAG);
+
     // 2. find tag in db
     var optionalTagFromDb = tagService.findTagByTitle(tagName);
 

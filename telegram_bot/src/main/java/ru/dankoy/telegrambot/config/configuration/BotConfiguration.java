@@ -7,6 +7,7 @@ import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
+import ru.dankoy.telegrambot.core.service.subscription.ChannelSubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
@@ -24,6 +25,7 @@ public interface BotConfiguration {
   CommunityService communityService();
 
   TagSubscriptionService tagSubscriptionService();
+  ChannelSubscriptionService channelSubscriptionService();
 
   OrderService orderService();
 

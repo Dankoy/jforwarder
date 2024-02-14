@@ -12,6 +12,13 @@
           ${tagSubscription?counter}: ${tagSubscription.tag.title} ${tagSubscription.order.value}
         </#list>
     </#if>
+
+    <#if channelSubscriptions?has_content>
+  Channel subscriptions
+        <#list channelSubscriptions as channelSubscription>
+            ${channelSubscription?counter}: ${channelSubscription.channel.title} ${channelSubscription.order.value}
+        </#list>
+    </#if>
 <#else>
   You are not subscribed to anything. Check /subscribe command examples.
 </#if>

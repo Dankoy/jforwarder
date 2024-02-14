@@ -29,6 +29,7 @@ import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
@@ -39,6 +40,7 @@ import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
+import ru.dankoy.telegrambot.core.service.subscription.ChannelSubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
@@ -64,6 +66,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private final TagSubscriptionService tagSubscriptionService;
 
+  private final ChannelSubscriptionService channelSubscriptionService;
+
   private final OrderService orderService;
 
   private final LocalisationService localisationService;
@@ -80,6 +84,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     this.templateBuilder = botConfiguration.templateBuilder();
     this.communityService = botConfiguration.communityService();
     this.tagSubscriptionService = botConfiguration.tagSubscriptionService();
+    this.channelSubscriptionService = botConfiguration.channelSubscriptionService();
     this.orderService = botConfiguration.orderService();
     this.localisationService = botConfiguration.localisationService();
     this.localeProvider = botConfiguration.localeProvider();
@@ -181,12 +186,15 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     List<CommunitySubscription> subs =
         communitySubscriptionService.getSubscriptionsByChatId(chatId);
     List<TagSubscription> tagSubs = tagSubscriptionService.getSubscriptionsByChatId(chatId);
+    List<ChannelSubscription> channelSubs =
+        channelSubscriptionService.getSubscriptionsByChatId(chatId);
 
     var sendMessage = createReply(inputMessage);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("communitySubscriptions", subs);
     templateData.put("tagSubscriptions", tagSubs);
+    templateData.put("channelSubscriptions", channelSubs);
 
     var text =
         templateBuilder.writeTemplate(
@@ -325,6 +333,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
           .equals(SubscriptionType.COMMUNITY.getType())) {
         subscribeToCommunity(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        subscribeByChannel(command, inputMessage);
       }
     } catch (BotException e) {
       var sendMessage = createReply(inputMessage);
@@ -350,6 +362,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
           .equals(SubscriptionType.TAG.getType())) {
         unsubscribeFromTag(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        unsubscribeFromChannel(command, inputMessage);
       }
 
     } catch (BotException e) {
@@ -417,6 +433,72 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           localisationService.getLocalizedMessage(
               "unsubscriptionCompleted",
               new Object[] {tagName, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+    }
+  }
+
+  private void subscribeByChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      var s =
+          channelSubscriptionService.subscribe(
+              channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              "subscriptionCompleted",
+              new Object[] {s.getChannel().getPermalink(), s.getOrder().getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+
+    } catch (Conflict e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              "alreadySubscribed",
+              new Object[] {channelPermalink, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+    } catch (NotFoundException e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+    } catch (BotException e) {
+      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+    }
+  }
+
+  private void unsubscribeFromChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      channelSubscriptionService.unsubscribe(
+          channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              "unsubscriptionCompleted",
+              new Object[] {channelPermalink, orderValue},
               localeProvider.getLocale(inputMessage)));
 
       send(sendMessage);

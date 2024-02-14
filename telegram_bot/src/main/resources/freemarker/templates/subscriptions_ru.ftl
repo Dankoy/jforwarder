@@ -12,6 +12,13 @@
           ${tagSubscription?counter}: ${tagSubscription.tag.title} ${tagSubscription.order.value}
         </#list>
     </#if>
+
+    <#if channelSubscriptions?has_content>
+  Подписки на каналы
+        <#list channelSubscriptions as channelSubscription>
+            ${channelSubscription?counter}: ${channelSubscription.channel.title} ${channelSubscription.order.value}
+        </#list>
+    </#if>
 <#else>
   Подписок нет. Посмотри на примеры /subscribe команды.
 </#if>
