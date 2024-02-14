@@ -25,5 +25,5 @@ public interface BotCommandsFactory {
 
   BotCommand unsubscribeCommand();
 
-  BotCommand ordersCommand();
+  BotCommand tagOrdersCommand();
 }
