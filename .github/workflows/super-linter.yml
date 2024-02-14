@@ -39,6 +39,7 @@ jobs:
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_JAVA: false # make true someday
+          VALIDATE_SQLFLUFF: false
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
