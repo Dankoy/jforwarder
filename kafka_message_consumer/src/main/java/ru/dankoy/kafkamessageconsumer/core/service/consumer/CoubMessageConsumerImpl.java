@@ -22,7 +22,7 @@ public class CoubMessageConsumerImpl implements CoubMessageConsumer {
         log.info("Message sent");
       }
     } catch (Exception e) {
-      log.error("Message not sent: {}", e.getMessage());
+      log.error("Message not sent with error: {}", e.getMessage());
       throw new KafkaConsumerException("Message could not be sent", e);
     }
   }

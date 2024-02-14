@@ -18,10 +18,13 @@ import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.ContainerProperties.AckMode;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.util.backoff.FixedBackOff;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
@@ -136,6 +139,9 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     factory
         .getContainerProperties()
         .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+
+    factory.getContainerProperties().setAckMode(AckMode.BATCH);
+    factory.setCommonErrorHandler(new DefaultErrorHandler(new FixedBackOff(1000L, 5L)));
 
     // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
     // somehow these settings make consumer consume messages every 15 seconds
