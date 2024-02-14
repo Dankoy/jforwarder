@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.core.domain.subscription;
+package ru.dankoy.telegrambot.core.domain.subscription.community;
 
 
 import java.util.Set;

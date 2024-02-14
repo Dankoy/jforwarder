@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.channel.Channel;
-import ru.dankoy.telegrambot.core.domain.channel.ChannelSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @RequiredArgsConstructor

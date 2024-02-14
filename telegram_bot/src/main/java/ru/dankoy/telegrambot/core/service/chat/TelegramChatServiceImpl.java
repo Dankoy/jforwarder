@@ -2,7 +2,7 @@ package ru.dankoy.telegrambot.core.service.chat;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
+import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @RequiredArgsConstructor

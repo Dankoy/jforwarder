@@ -1,7 +1,7 @@
 package ru.dankoy.telegrambot.core.service.chat;
 
 
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
+import ru.dankoy.telegrambot.core.domain.Chat;
 
 public interface TelegramChatService {
 

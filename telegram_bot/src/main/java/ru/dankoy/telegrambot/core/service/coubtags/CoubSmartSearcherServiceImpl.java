@@ -4,8 +4,8 @@ import feign.FeignException.NotFound;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.channel.Channel;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.feign.coubtagsfinder.CoubSmartSearcherFeign;
 
 @RequiredArgsConstructor

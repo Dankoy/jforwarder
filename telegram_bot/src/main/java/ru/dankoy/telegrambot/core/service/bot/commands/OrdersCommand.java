@@ -4,9 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 
 @Slf4j
-public class TagOrdersCommand extends BotCommand {
+public class OrdersCommand extends BotCommand {
 
-  public TagOrdersCommand(String command, String description) {
+  public OrdersCommand(String command, String description) {
     super(command, description);
   }
 }

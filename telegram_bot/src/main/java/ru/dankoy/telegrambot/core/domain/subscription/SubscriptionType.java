@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.core.domain;
+package ru.dankoy.telegrambot.core.domain.subscription;
 
 
 import lombok.Getter;

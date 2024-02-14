@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.core.domain.tagsubscription;
+package ru.dankoy.telegrambot.core.domain.subscription.community;
 
 
 import lombok.AllArgsConstructor;
@@ -7,19 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@EqualsAndHashCode
 @Getter
 @ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tag {
+public class Section {
 
   private long id;
+  private String name;
 
-  private String title;
-
-  public Tag(String title) {
-    this.title = title;
+  public Section(String name) {
+    this.name = name;
   }
 
 }

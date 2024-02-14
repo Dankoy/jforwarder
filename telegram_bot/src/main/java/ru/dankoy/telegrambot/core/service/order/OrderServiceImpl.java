@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.Order;
-import ru.dankoy.telegrambot.core.domain.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.Order;
+import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @RequiredArgsConstructor
@@ -17,6 +17,11 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<Order> findAll() {
     return subscriptionsHolderFeign.getAllOrders();
+  }
+
+  @Override
+  public List<Order> findAllByType(SubscriptionType subscriptionType) {
+    return subscriptionsHolderFeign.getOrdersByType(subscriptionType.getType());
   }
 
   @Override

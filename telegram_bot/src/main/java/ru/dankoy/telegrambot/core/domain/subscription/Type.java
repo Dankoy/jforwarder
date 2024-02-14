@@ -1,24 +1,25 @@
 package ru.dankoy.telegrambot.core.domain.subscription;
 
-
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
 @ToString
-@EqualsAndHashCode
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Section {
+
+public class Type {
 
   private long id;
+
   private String name;
 
-  public Section(String name) {
+
+  public Type(String name) {
     this.name = name;
   }
-
 }

@@ -1,4 +1,4 @@
-Доступные порядки для тегов:
+Доступные порядки:
 <#list orders as order>
   *${order?counter}*: ${order.value}
 </#list>

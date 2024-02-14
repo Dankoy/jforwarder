@@ -1,2 +1,2 @@
-community #${communityName} #${sectionName}
+#community #${communityName} #${sectionName}
 ${url}

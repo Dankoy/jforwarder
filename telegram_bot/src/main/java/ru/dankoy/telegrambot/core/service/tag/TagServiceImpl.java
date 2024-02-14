@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Tag;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @RequiredArgsConstructor

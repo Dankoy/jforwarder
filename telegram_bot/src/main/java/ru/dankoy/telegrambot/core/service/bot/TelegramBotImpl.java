@@ -23,14 +23,15 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
-import ru.dankoy.telegrambot.core.domain.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
-import ru.dankoy.telegrambot.core.domain.subscription.Community;
-import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.telegrambot.core.domain.Order;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.Order;
+import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
@@ -139,7 +140,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
       communities(inputMessage);
     } else if (messageText.equals("/tag_orders") || messageText.equals(tagOrdersFromGroup)) {
-      tagOrders(inputMessage);
+      orders(inputMessage);
     } else {
       help(inputMessage);
     }
@@ -442,7 +443,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     send(sendMessage);
   }
 
-  private void tagOrders(Message inputMessage) {
+  private void orders(Message inputMessage) {
+
+    //todo: make dependent on command
 
     var sendMessage = createReply(inputMessage);
     sendMessage.setParseMode(ParseMode.MARKDOWN);
@@ -457,7 +460,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     var text =
         templateBuilder.writeTemplate(
-            templateData, "tag_orders.ftl", localeProvider.getLocale(inputMessage));
+            templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
 
     sendMessage.setText(text);
 
@@ -621,6 +624,59 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
     }
+  }
+
+  @Override
+  public void sendMessage(ChannelSubscriptionMessage message) {
+
+    var sendMessage = new SendMessage();
+
+    var channelTitle = message.getChannel().getTitle();
+    var orderValue = message.getOrder().getValue();
+    var coubUrl = message.getCoub().getUrl();
+    var chatId = message.getChat().getChatId();
+
+    sendMessage.setChatId(chatId);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("channelTitle", channelTitle);
+    templateData.put("orderValue", orderValue);
+    templateData.put("url", coubUrl);
+    var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
+
+    sendMessage.setText(text);
+
+    try {
+
+      log.info(
+          "Sent message to chat '{}' for channel subscription '{}' {}",
+          message.getChat().getChatId(),
+          message.getId(),
+          message.getChannel().getPermalink());
+
+      execute(sendMessage);
+
+      log.info(
+          "Message sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found = telegramChatService.getChatById(chatId);
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
+        }
+      }
+    } catch (TelegramApiException e) {
+      log.error("Error sending message - {}", e.getMessage());
+    }
+
   }
 
   private String escapeMetaCharacters(String inputString) {

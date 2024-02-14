@@ -1,7 +1,7 @@
 package ru.dankoy.telegrambot.core.service.subscription;
 
 import java.util.List;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 
 public interface TagSubscriptionService {
 

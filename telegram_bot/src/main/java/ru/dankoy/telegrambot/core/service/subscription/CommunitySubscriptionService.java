@@ -1,7 +1,7 @@
 package ru.dankoy.telegrambot.core.service.subscription;
 
 import java.util.List;
-import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
 
 public interface CommunitySubscriptionService {
 

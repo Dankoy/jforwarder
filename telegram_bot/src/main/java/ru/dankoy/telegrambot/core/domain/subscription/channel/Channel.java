@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.core.domain.channel;
+package ru.dankoy.telegrambot.core.domain.subscription.channel;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

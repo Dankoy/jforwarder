@@ -1,20 +1,21 @@
-package ru.dankoy.telegrambot.core.domain.message;
+package ru.dankoy.telegrambot.core.domain.subscription.channel;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.Scope;
-import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
+import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
 import ru.dankoy.telegrambot.core.domain.subscription.Type;
 
 @Getter
-@SuperBuilder
-@ToString(callSuper = true)
+@ToString
 @NoArgsConstructor
-public final class TagSubscriptionMessage extends CoubMessage {
-  private Tag tag;
+@AllArgsConstructor
+public class ChannelSubscription extends Subscription {
+
+  private Channel channel;
 
   private Order order;
 
