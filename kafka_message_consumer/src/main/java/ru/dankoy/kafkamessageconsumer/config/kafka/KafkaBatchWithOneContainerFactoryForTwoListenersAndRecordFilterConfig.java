@@ -52,212 +52,211 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @Configuration
 public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig {
 
-  public final String coubCommunitySubscriptions;
-  public final String coubTagSubscriptions;
-  public final String coubChannelSubscriptions;
+    public final String coubCommunitySubscriptions;
+    public final String coubTagSubscriptions;
+    public final String coubChannelSubscriptions;
 
-  public KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig(
-      @Value("${application.kafka.topic.coub-com-subs}") String coubCommunitySubscriptions,
-      @Value("${application.kafka.topic.coub-tag-subs}") String coubTagSubscriptions,
-      @Value("${application.kafka.topic.coub-channel-subs}") String coubChannelSubscriptions) {
-    this.coubCommunitySubscriptions = coubCommunitySubscriptions;
-    this.coubTagSubscriptions = coubTagSubscriptions;
-    this.coubChannelSubscriptions = coubChannelSubscriptions;
-  }
-
-  @Bean
-  public ObjectMapper objectMapper() {
-    return JacksonUtils.enhancedObjectMapper();
-  }
-
-  // This bean name should be different than consumerFactory.
-  @Bean
-  public ConsumerFactory<String, CoubMessage> consumerFactoryCoubMessage(
-      KafkaProperties kafkaProperties, SslBundles sslBundles, ObjectMapper mapper) {
-
-    var props = kafkaProperties.buildProducerProperties(sslBundles);
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-    props.put(
-        JsonDeserializer.TYPE_MAPPINGS,
-        "ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage:"
-            + "ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage, "
-            + "ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage:"
-            + "ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage, "
-            + "ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage:"
-            + "ru.dankoy.kafkamessageconsumer.core.domain.message.ChannelSubscriptionMessage"); // allow
-    // type
-    // for
-    // kafka
-    //    props.put(JsonDeserializer.TRUSTED_PACKAGES,
-    //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
-
-    // max amount of messages got by one poll
-    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3);
-
-    // polling interval. how many seconds consumer can work with pack of messages
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20_000);
-
-    // before he hits new poll
-    props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
-
-    var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CoubMessage>(props);
-    kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
-
-    return kafkaProducerConsumer;
-  }
-
-  @Bean
-  public ConcurrentTaskExecutor concurrentTaskExecutor() {
-    var executor = new SimpleAsyncTaskExecutor("k-consumer-");
-    // should be more or equals to sum of all concurrent listeners
-    executor.setConcurrencyLimit(6);
-    return new ConcurrentTaskExecutor(executor);
-  }
-
-  // Kafka can filter by object type but NOT with batch mode.
-
-  // If you want to filter messages by type using filter strategy,
-  // you should either create multiple KafkaListenerContainerFactory
-  // or create filter strategy and use them in kafka listener annotation
-  /*
-  RecordFilterStrategy for the same container factory works fine
-   */
-
-  // The bean name should be different from kafkaListenerContainerFactory
-  // Because spring then think that he tries to make circular dependency
-  @Bean
-  public KafkaListenerContainerFactory<?> jsonKafkaListenerContainerFactory(
-      ConsumerFactory<String, CoubMessage> consumerFactoryCoubMessage) {
-
-    // this all applied only for spring boot starter
-
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, CoubMessage>();
-    factory.setConsumerFactory(consumerFactoryCoubMessage);
-    factory.setBatchListener(true);
-
-    // if you have one consumer but two topics or partitions, then set to two, etc.
-    factory.setConcurrency(2);
-    factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
-    factory
-        .getContainerProperties()
-        .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
-
-    factory.getContainerProperties().setAckMode(AckMode.BATCH);
-    factory.setCommonErrorHandler(errorHandler());
-
-    // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
-    // somehow these settings make consumer consume messages every 15 seconds
-
-    factory.getContainerProperties().setListenerTaskExecutor(concurrentTaskExecutor());
-    return factory;
-  }
-
-  @Bean
-  public DefaultErrorHandler errorHandler() {
-    BackOff fixedBackOff = new FixedBackOff(1000L, 5);
-    DefaultErrorHandler errorHandler =
-        new DefaultErrorHandler(
-            (consumerRecord, e) -> {
-              // logic to execute when all the retry attemps are exhausted
-            },
-            fixedBackOff);
-    errorHandler.addRetryableExceptions(SocketTimeoutException.class);
-    errorHandler.addNotRetryableExceptions(NullPointerException.class);
-    errorHandler.addNotRetryableExceptions(NotFound.class);
-    return errorHandler;
-  }
-
-  @Bean
-  public NewTopic topicCoubCommunitySubs() {
-    return TopicBuilder.name(coubCommunitySubscriptions).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public NewTopic topicCoubTagSubs() {
-    return TopicBuilder.name(coubTagSubscriptions).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public NewTopic topicCoubChannelSubs() {
-    return TopicBuilder.name(coubChannelSubscriptions).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public KafkaClientSubscription communitySubscriptionMessageConsumer(
-      CoubMessageConsumer coubCommunityMessageConsumer,
-      CoubMessageConsumer coubTagMessageConsumer,
-      CoubMessageConsumer coubChannelMessageConsumer) {
-    return new KafkaClientSubscription(
-        coubCommunityMessageConsumer, coubTagMessageConsumer, coubChannelMessageConsumer);
-  }
-
-  @Bean
-  public CoubMessageConsumer coubCommunityMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendCommunityMessage);
-  }
-
-  @Bean
-  public CoubMessageConsumer coubTagMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendTagMessage);
-  }
-
-  @Bean
-  public CoubMessageConsumer coubChannelMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendChannelMessage);
-  }
-
-  // one listener but multiple handlers
-
-  public static class KafkaClientSubscription {
-
-    private static final String LOG_MESSAGE = "values, values.size:{}";
-
-    private final CoubMessageConsumer coubCommunityMessageConsumer;
-    private final CoubMessageConsumer coubTagMessageConsumer;
-    private final CoubMessageConsumer coubChannelMessageConsumer;
-
-    public KafkaClientSubscription(
-        CoubMessageConsumer coubCommunityMessageConsumer,
-        CoubMessageConsumer coubTagMessageConsumer,
-        CoubMessageConsumer coubChannelMessageConsumer) {
-      this.coubCommunityMessageConsumer = coubCommunityMessageConsumer;
-      this.coubTagMessageConsumer = coubTagMessageConsumer;
-      this.coubChannelMessageConsumer = coubChannelMessageConsumer;
+    public KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig(
+            @Value("${application.kafka.topic.coub-com-subs}") String coubCommunitySubscriptions,
+            @Value("${application.kafka.topic.coub-tag-subs}") String coubTagSubscriptions,
+            @Value("${application.kafka.topic.coub-channel-subs}")
+                    String coubChannelSubscriptions) {
+        this.coubCommunitySubscriptions = coubCommunitySubscriptions;
+        this.coubTagSubscriptions = coubTagSubscriptions;
+        this.coubChannelSubscriptions = coubChannelSubscriptions;
     }
 
-    // Every listener in same group can listen its partition
-    // If there are 1 partition and two listeners, then one listener won't work
-    // If i want to have two listeners that reads the same topic and have filter
-    // by type in them. Then these listeners have to be in different groups
-    @KafkaListener(
-        topics = "${application.kafka.topic.coub-com-subs}",
-        groupId = "${application.kafka.consumers.community-coubs-consumer.group-id}",
-        clientIdPrefix = "${application.kafka.consumers.community-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
-    public void listenCommunityMessages(@Payload List<CommunitySubscriptionMessage> values) {
-      log.info(LOG_MESSAGE, values.size());
-      coubCommunityMessageConsumer.accept(values);
+    @Bean
+    public ObjectMapper objectMapper() {
+        return JacksonUtils.enhancedObjectMapper();
     }
 
-    @KafkaListener(
-        topics = "${application.kafka.topic.coub-tag-subs}",
-        groupId = "${application.kafka.consumers.tag-coubs-consumer.group-id}",
-        clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
-    public void listenTagMessages(@Payload List<TagSubscriptionMessage> values) {
-      log.info(LOG_MESSAGE, values.size());
-      coubTagMessageConsumer.accept(values);
+    // This bean name should be different than consumerFactory.
+    @Bean
+    public ConsumerFactory<String, CoubMessage> consumerFactoryCoubMessage(
+            KafkaProperties kafkaProperties, SslBundles sslBundles, ObjectMapper mapper) {
+
+        var props = kafkaProperties.buildProducerProperties(sslBundles);
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        props.put(
+                JsonDeserializer.TYPE_MAPPINGS,
+                "ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage,"
+                    + " ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage,"
+                    + " ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage:"
+                    + "ru.dankoy.kafkamessageconsumer.core.domain.message.ChannelSubscriptionMessage"); // allow
+        // type
+        // for
+        // kafka
+        //    props.put(JsonDeserializer.TRUSTED_PACKAGES,
+        //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
+
+        // max amount of messages got by one poll
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3);
+
+        // polling interval. how many seconds consumer can work with pack of messages
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20_000);
+
+        // before he hits new poll
+        props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
+
+        var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CoubMessage>(props);
+        kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
+
+        return kafkaProducerConsumer;
     }
 
-    @KafkaListener(
-        topics = "${application.kafka.topic.coub-channel-subs}",
-        groupId = "${application.kafka.consumers.channel-coubs-consumer.group-id}",
-        clientIdPrefix = "${application.kafka.consumers.channel-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
-    public void listenChannelMessages(@Payload List<ChannelSubscriptionMessage> values) {
-      log.info(LOG_MESSAGE, values.size());
-      coubChannelMessageConsumer.accept(values);
+    @Bean
+    public ConcurrentTaskExecutor concurrentTaskExecutor() {
+        var executor = new SimpleAsyncTaskExecutor("k-consumer-");
+        // should be more or equals to sum of all concurrent listeners
+        executor.setConcurrencyLimit(6);
+        return new ConcurrentTaskExecutor(executor);
     }
-  }
+
+    // Kafka can filter by object type but NOT with batch mode.
+
+    // If you want to filter messages by type using filter strategy,
+    // you should either create multiple KafkaListenerContainerFactory
+    // or create filter strategy and use them in kafka listener annotation
+    /*
+    RecordFilterStrategy for the same container factory works fine
+     */
+
+    // The bean name should be different from kafkaListenerContainerFactory
+    // Because spring then think that he tries to make circular dependency
+    @Bean
+    public KafkaListenerContainerFactory<?> jsonKafkaListenerContainerFactory(
+            ConsumerFactory<String, CoubMessage> consumerFactoryCoubMessage) {
+
+        // this all applied only for spring boot starter
+
+        var factory = new ConcurrentKafkaListenerContainerFactory<String, CoubMessage>();
+        factory.setConsumerFactory(consumerFactoryCoubMessage);
+        factory.setBatchListener(true);
+
+        // if you have one consumer but two topics or partitions, then set to two, etc.
+        factory.setConcurrency(2);
+        factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
+        factory.getContainerProperties()
+                .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+
+        factory.getContainerProperties().setAckMode(AckMode.BATCH);
+        factory.setCommonErrorHandler(errorHandler());
+
+        // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
+        // somehow these settings make consumer consume messages every 15 seconds
+
+        factory.getContainerProperties().setListenerTaskExecutor(concurrentTaskExecutor());
+        return factory;
+    }
+
+    @Bean
+    public DefaultErrorHandler errorHandler() {
+        BackOff fixedBackOff = new FixedBackOff(1000L, 5);
+        DefaultErrorHandler errorHandler =
+                new DefaultErrorHandler(
+                        (consumerRecord, e) -> {
+                            // logic to execute when all the retry attemps are exhausted
+                        },
+                        fixedBackOff);
+        errorHandler.addRetryableExceptions(SocketTimeoutException.class);
+        errorHandler.addNotRetryableExceptions(NullPointerException.class);
+        errorHandler.addNotRetryableExceptions(NotFound.class);
+        return errorHandler;
+    }
+
+    @Bean
+    public NewTopic topicCoubCommunitySubs() {
+        return TopicBuilder.name(coubCommunitySubscriptions).partitions(2).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic topicCoubTagSubs() {
+        return TopicBuilder.name(coubTagSubscriptions).partitions(2).replicas(1).build();
+    }
+
+    @Bean
+    public NewTopic topicCoubChannelSubs() {
+        return TopicBuilder.name(coubChannelSubscriptions).partitions(2).replicas(1).build();
+    }
+
+    @Bean
+    public KafkaClientSubscription communitySubscriptionMessageConsumer(
+            CoubMessageConsumer coubCommunityMessageConsumer,
+            CoubMessageConsumer coubTagMessageConsumer,
+            CoubMessageConsumer coubChannelMessageConsumer) {
+        return new KafkaClientSubscription(
+                coubCommunityMessageConsumer, coubTagMessageConsumer, coubChannelMessageConsumer);
+    }
+
+    @Bean
+    public CoubMessageConsumer coubCommunityMessageConsumer(TelegramBotService telegramBotService) {
+        return new CoubMessageConsumerImpl(telegramBotService::sendCommunityMessage);
+    }
+
+    @Bean
+    public CoubMessageConsumer coubTagMessageConsumer(TelegramBotService telegramBotService) {
+        return new CoubMessageConsumerImpl(telegramBotService::sendTagMessage);
+    }
+
+    @Bean
+    public CoubMessageConsumer coubChannelMessageConsumer(TelegramBotService telegramBotService) {
+        return new CoubMessageConsumerImpl(telegramBotService::sendChannelMessage);
+    }
+
+    // one listener but multiple handlers
+
+    public static class KafkaClientSubscription {
+
+        private static final String LOG_MESSAGE = "values, values.size:{}";
+
+        private final CoubMessageConsumer coubCommunityMessageConsumer;
+        private final CoubMessageConsumer coubTagMessageConsumer;
+        private final CoubMessageConsumer coubChannelMessageConsumer;
+
+        public KafkaClientSubscription(
+                CoubMessageConsumer coubCommunityMessageConsumer,
+                CoubMessageConsumer coubTagMessageConsumer,
+                CoubMessageConsumer coubChannelMessageConsumer) {
+            this.coubCommunityMessageConsumer = coubCommunityMessageConsumer;
+            this.coubTagMessageConsumer = coubTagMessageConsumer;
+            this.coubChannelMessageConsumer = coubChannelMessageConsumer;
+        }
+
+        // Every listener in same group can listen its partition
+        // If there are 1 partition and two listeners, then one listener won't work
+        // If i want to have two listeners that reads the same topic and have filter
+        // by type in them. Then these listeners have to be in different groups
+        @KafkaListener(
+                topics = "${application.kafka.topic.coub-com-subs}",
+                groupId = "${application.kafka.consumers.community-coubs-consumer.group-id}",
+                clientIdPrefix =
+                        "${application.kafka.consumers.community-coubs-consumer.client-id}",
+                containerFactory = "jsonKafkaListenerContainerFactory")
+        public void listenCommunityMessages(@Payload List<CommunitySubscriptionMessage> values) {
+            log.info(LOG_MESSAGE, values.size());
+            coubCommunityMessageConsumer.accept(values);
+        }
+
+        @KafkaListener(
+                topics = "${application.kafka.topic.coub-tag-subs}",
+                groupId = "${application.kafka.consumers.tag-coubs-consumer.group-id}",
+                clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer.client-id}",
+                containerFactory = "jsonKafkaListenerContainerFactory")
+        public void listenTagMessages(@Payload List<TagSubscriptionMessage> values) {
+            log.info(LOG_MESSAGE, values.size());
+            coubTagMessageConsumer.accept(values);
+        }
+
+        @KafkaListener(
+                topics = "${application.kafka.topic.coub-channel-subs}",
+                groupId = "${application.kafka.consumers.channel-coubs-consumer.group-id}",
+                clientIdPrefix = "${application.kafka.consumers.channel-coubs-consumer.client-id}",
+                containerFactory = "jsonKafkaListenerContainerFactory")
+        public void listenChannelMessages(@Payload List<ChannelSubscriptionMessage> values) {
+            log.info(LOG_MESSAGE, values.size());
+            coubChannelMessageConsumer.accept(values);
+        }
+    }
 }

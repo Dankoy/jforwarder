@@ -6,6 +6,5 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ScopeRepository extends JpaRepository<Scope, Long> {
 
-  Optional<Scope> findByName(String name);
-
+    Optional<Scope> findByName(String name);
 }

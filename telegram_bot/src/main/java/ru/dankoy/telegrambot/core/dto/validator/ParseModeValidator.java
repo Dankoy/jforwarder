@@ -6,11 +6,12 @@ import java.util.Objects;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 
 public class ParseModeValidator implements ConstraintValidator<ParseModeConstraint, String> {
-  @Override
-  public boolean isValid(String parseMode, ConstraintValidatorContext constraintValidatorContext) {
-    return Objects.nonNull(parseMode)
-        && (parseMode.equals(ParseMode.MARKDOWN)
-            || parseMode.equals(ParseMode.MARKDOWNV2)
-            || parseMode.equals(ParseMode.HTML));
-  }
+    @Override
+    public boolean isValid(
+            String parseMode, ConstraintValidatorContext constraintValidatorContext) {
+        return Objects.nonNull(parseMode)
+                && (parseMode.equals(ParseMode.MARKDOWN)
+                        || parseMode.equals(ParseMode.MARKDOWNV2)
+                        || parseMode.equals(ParseMode.HTML));
+    }
 }

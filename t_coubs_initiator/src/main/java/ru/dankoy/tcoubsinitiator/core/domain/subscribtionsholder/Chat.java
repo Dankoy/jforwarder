@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,8 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Chat {
 
-  private long id;
-  private long chatId;
-  private String username;
-
+    private long id;
+    private long chatId;
+    private String username;
 }

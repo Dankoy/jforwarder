@@ -2,13 +2,13 @@ package ru.dankoy.coubtagssearcher.core.exceptions;
 
 public class SubscriptionHolderException extends RuntimeException {
 
-  public SubscriptionHolderException(String message, Exception ex) {
+    public SubscriptionHolderException(String message, Exception ex) {
 
-    super(message, ex);
-  }
+        super(message, ex);
+    }
 
-  public SubscriptionHolderException(String message) {
+    public SubscriptionHolderException(String message) {
 
-    super(message);
-  }
+        super(message);
+    }
 }

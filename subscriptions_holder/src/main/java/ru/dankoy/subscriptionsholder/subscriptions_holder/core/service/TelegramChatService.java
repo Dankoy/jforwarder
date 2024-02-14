@@ -6,11 +6,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
 public interface TelegramChatService {
 
-  List<Chat> saveAll(List<Chat> chats);
+    List<Chat> saveAll(List<Chat> chats);
 
-  Chat save(Chat chat);
+    Chat save(Chat chat);
 
-  void deleteChats(List<Chat> chats);
+    void deleteChats(List<Chat> chats);
 
-  Optional<Chat> getByTelegramChatId(long chatId);
+    Optional<Chat> getByTelegramChatId(long chatId);
 }

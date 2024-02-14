@@ -12,24 +12,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class TypeCreateDTO {
 
-  private String name;
+    private String name;
 
-  public static TypeCreateDTO toDTO(Type type) {
+    public static TypeCreateDTO toDTO(Type type) {
 
-    return new TypeCreateDTO(
-        type.getName()
-    );
+        return new TypeCreateDTO(type.getName());
+    }
 
-  }
+    public static Type fromDTO(TypeCreateDTO dto) {
 
-  public static Type fromDTO(TypeCreateDTO dto) {
-
-    return new Type(
-        0,
-        dto.getName()
-    );
-
-  }
-
-
+        return new Type(0, dto.getName());
+    }
 }

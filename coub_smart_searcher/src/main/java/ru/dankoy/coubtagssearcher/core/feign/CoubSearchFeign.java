@@ -10,11 +10,11 @@ import ru.dankoy.coubtagssearcher.core.domain.coubcom.ChannelsWrapper;
 @FeignClient(name = "coub-search", url = "${coub.connector.gatewayApiUrl}api/v2/search")
 public interface CoubSearchFeign {
 
-  @GetMapping(
-      value = "/channels",
-      params = {"q", "page", "per_page"})
-  ChannelsWrapper getChannels(
-      @RequestParam("q") String query,
-      @RequestParam("page") int page,
-      @RequestParam("per_page") int perPage);
+    @GetMapping(
+            value = "/channels",
+            params = {"q", "page", "per_page"})
+    ChannelsWrapper getChannels(
+            @RequestParam("q") String query,
+            @RequestParam("page") int page,
+            @RequestParam("per_page") int perPage);
 }

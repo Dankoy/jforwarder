@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,47 +13,42 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.
 @AllArgsConstructor
 public class TagSubscriptionDTO {
 
-  private long id;
+    private long id;
 
-  private TagDTO tag;
+    private TagDTO tag;
 
-  private ChatDTO chat;
+    private ChatDTO chat;
 
-  private OrderDTO order;
+    private OrderDTO order;
 
-  private ScopeDTO scope;
+    private ScopeDTO scope;
 
-  private TypeDTO type;
+    private TypeDTO type;
 
-  private String lastPermalink;
+    private String lastPermalink;
 
+    public static TagSubscriptionDTO toDTO(TagSub tagSubscription) {
 
-  public static TagSubscriptionDTO toDTO(TagSub tagSubscription) {
+        return new TagSubscriptionDTO(
+                tagSubscription.getId(),
+                TagDTO.toDTO(tagSubscription.getTag()),
+                ChatDTO.toDTO(tagSubscription.getChat()),
+                OrderDTO.toDTO(tagSubscription.getOrder()),
+                ScopeDTO.toDTO(tagSubscription.getScope()),
+                TypeDTO.toDTO(tagSubscription.getType()),
+                tagSubscription.getLastPermalink());
+    }
 
-    return new TagSubscriptionDTO(
-        tagSubscription.getId(),
-        TagDTO.toDTO(tagSubscription.getTag()),
-        ChatDTO.toDTO(tagSubscription.getChat()),
-        OrderDTO.toDTO(tagSubscription.getOrder()),
-        ScopeDTO.toDTO(tagSubscription.getScope()),
-        TypeDTO.toDTO(tagSubscription.getType()),
-        tagSubscription.getLastPermalink()
-    );
+    public static TagSub fromDTO(TagSubscriptionDTO dto) {
 
-  }
-
-  public static TagSub fromDTO(TagSubscriptionDTO dto) {
-
-    return TagSub.builder()
-        .id(0)
-        .tag(TagDTO.fromDTO(dto.getTag()))
-        .chat(ChatDTO.fromDTO(dto.getChat()))
-        .order(OrderDTO.fromDTO(dto.getOrder()))
-        .scope(ScopeDTO.fromDTO(dto.getScope()))
-        .type(TypeDTO.fromDTO(dto.getType()))
-        .lastPermalink(dto.getLastPermalink())
-        .build();
-  }
-
-
+        return TagSub.builder()
+                .id(0)
+                .tag(TagDTO.fromDTO(dto.getTag()))
+                .chat(ChatDTO.fromDTO(dto.getChat()))
+                .order(OrderDTO.fromDTO(dto.getOrder()))
+                .scope(ScopeDTO.fromDTO(dto.getScope()))
+                .type(TypeDTO.fromDTO(dto.getType()))
+                .lastPermalink(dto.getLastPermalink())
+                .build();
+    }
 }

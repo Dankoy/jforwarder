@@ -10,20 +10,20 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-  @Override
-  @EntityGraph(value = "order-full")
-  List<Order> findAll();
+    @Override
+    @EntityGraph(value = "order-full")
+    List<Order> findAll();
 
-  @EntityGraph(value = "order-full")
-  List<Order> findAllBySubscriptionTypeType(@Param("subscriptionType") String subscriptionType);
+    @EntityGraph(value = "order-full")
+    List<Order> findAllBySubscriptionTypeType(@Param("subscriptionType") String subscriptionType);
 
-  @Query(
-      """
+    @Query(
+            """
           select o, st from Order o
           join o.subscriptionType st
           where st.type = :subscriptionType
           and o.value = :value
               """)
-  Optional<Order> findByValueAndSubscriptionType(
-      @Param("value") String value, @Param("subscriptionType") String subscriptionType);
+    Optional<Order> findByValueAndSubscriptionType(
+            @Param("value") String value, @Param("subscriptionType") String subscriptionType);
 }

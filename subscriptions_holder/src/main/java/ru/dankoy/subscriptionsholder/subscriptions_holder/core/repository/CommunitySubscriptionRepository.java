@@ -15,67 +15,61 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.CommunityS
  * @deprecated in favor for {@link CommunitySubRepository}
  */
 @Deprecated(since = "2024-01-27")
-public interface CommunitySubscriptionRepository extends
-    JpaRepository<CommunitySubscription, Long> {
+public interface CommunitySubscriptionRepository
+        extends JpaRepository<CommunitySubscription, Long> {
 
+    // todo: Pageable with query returns ArrayList<Object[]> for whatever reason.
+    //  Probably native query fix the problem.
+    //  Decided to use named graphs
+    //  @Query(
+    //      """
+    //          select s, ch, sect, c from CommunitySubscription s
+    //          join s.community c
+    //          join s.chat ch
+    //          join s.section sect
+    //              """
+    //  )
+    //  @EntityGraph(value = "findAllWithActiveChats")
+    @Override
+    @EntityGraph(value = "community-subscription-full", type = EntityGraphType.LOAD)
+    Page<CommunitySubscription> findAll(Pageable pageable);
 
-  // todo: Pageable with query returns ArrayList<Object[]> for whatever reason.
-  //  Probably native query fix the problem.
-  //  Decided to use named graphs
-//  @Query(
-//      """
-//          select s, ch, sect, c from CommunitySubscription s
-//          join s.community c
-//          join s.chat ch
-//          join s.section sect
-//              """
-//  )
-//  @EntityGraph(value = "findAllWithActiveChats")
-  @Override
-  @EntityGraph(value = "community-subscription-full", type = EntityGraphType.LOAD)
-  Page<CommunitySubscription> findAll(Pageable pageable);
+    //  @Query(
+    //      """
+    //          select s, ch, sect, c from CommunitySubscription s
+    //          join s.community c
+    //          join s.chat ch
+    //          join s.section sect
+    //          where ch.active = :active
+    //              """
+    //  )
 
+    @EntityGraph(value = "community-subscription-full", type = EntityGraphType.LOAD)
+    Page<CommunitySubscription> findAllByChatActive(
+            @Param("active") boolean active, Pageable pageable);
 
-  //  @Query(
-//      """
-//          select s, ch, sect, c from CommunitySubscription s
-//          join s.community c
-//          join s.chat ch
-//          join s.section sect
-//          where ch.active = :active
-//              """
-//  )
-
-  @EntityGraph(value = "community-subscription-full", type = EntityGraphType.LOAD)
-  Page<CommunitySubscription> findAllByChatActive(@Param("active") boolean active,
-      Pageable pageable);
-
-  @Query(
-      """
+    @Query(
+            """
           select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
           where c.name = :communityName
-              """
-  )
-  List<CommunitySubscription> getAllByCommunityName(@Param("communityName") String communityName);
+              """)
+    List<CommunitySubscription> getAllByCommunityName(@Param("communityName") String communityName);
 
-
-  @Query(
-      """
+    @Query(
+            """
           select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
           join s.section sect
           where ch.chatId = :telegramChatId
-              """
-  )
-  List<CommunitySubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
+              """)
+    List<CommunitySubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
-
-  @Query(
-      """
+    @Query(
+            """
           select s, ch, sect, c from CommunitySubscription s
           join s.community c
           join s.chat ch
@@ -83,11 +77,9 @@ public interface CommunitySubscriptionRepository extends
           where c.name = :communityName
           and ch.chatId = :externalChatId
           and sect.name = :sectionName
-              """
-  )
-  Optional<CommunitySubscription> getByChatChatIdAndCommunityNameAndSectionName(
-      @Param("externalChatId") long externalChatId,
-      @Param("communityName") String communityName,
-      @Param("sectionName") String sectionName);
-
+              """)
+    Optional<CommunitySubscription> getByChatChatIdAndCommunityNameAndSectionName(
+            @Param("externalChatId") long externalChatId,
+            @Param("communityName") String communityName,
+            @Param("sectionName") String sectionName);
 }

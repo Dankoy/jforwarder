@@ -8,9 +8,9 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription
 
 public interface CoubFinderService {
 
-  List<Coub> findUnsentCoubsForCommunitySubscription(CommunitySubscription communitySubscription);
+    List<Coub> findUnsentCoubsForCommunitySubscription(CommunitySubscription communitySubscription);
 
-  List<Coub> findUnsentCoubsForTagSubscription(TagSubscription tagSubscription);
+    List<Coub> findUnsentCoubsForTagSubscription(TagSubscription tagSubscription);
 
-  List<Coub> findUnsentCoubsForChannelSubscription(ChannelSubscription channelSubscription);
+    List<Coub> findUnsentCoubsForChannelSubscription(ChannelSubscription channelSubscription);
 }

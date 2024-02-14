@@ -11,17 +11,17 @@ import ru.dankoy.telegrambot.config.LocaleConfig;
 @RequiredArgsConstructor
 public class LocalisationServiceImpl implements LocalisationService {
 
-  private final LocaleConfig localeConfig;
+    private final LocaleConfig localeConfig;
 
-  private final MessageSource messageSource;
+    private final MessageSource messageSource;
 
-  @Override
-  public String getLocalizedMessage(String code, Object[] objects, Locale locale) {
-    Objects.requireNonNull(code);
-    if (locale == null) {
-      locale = localeConfig.getDefaultLocale();
+    @Override
+    public String getLocalizedMessage(String code, Object[] objects, Locale locale) {
+        Objects.requireNonNull(code);
+        if (locale == null) {
+            locale = localeConfig.getDefaultLocale();
+        }
+
+        return messageSource.getMessage(code, objects, locale);
     }
-
-    return messageSource.getMessage(code, objects, locale);
-  }
 }

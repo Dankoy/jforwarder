@@ -6,6 +6,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
 
-  Optional<Channel> getByTitle(String title);
-  Optional<Channel> getByPermalink(String permalink);
+    Optional<Channel> getByTitle(String title);
+
+    Optional<Channel> getByPermalink(String permalink);
 }

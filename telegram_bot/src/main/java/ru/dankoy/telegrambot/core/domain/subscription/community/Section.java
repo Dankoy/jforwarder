@@ -1,6 +1,5 @@
 package ru.dankoy.telegrambot.core.domain.subscription.community;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,11 +13,10 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Section {
 
-  private long id;
-  private String name;
+    private long id;
+    private String name;
 
-  public Section(String name) {
-    this.name = name;
-  }
-
+    public Section(String name) {
+        this.name = name;
+    }
 }

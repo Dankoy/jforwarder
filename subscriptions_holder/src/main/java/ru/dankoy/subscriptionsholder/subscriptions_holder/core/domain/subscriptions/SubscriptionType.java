@@ -21,11 +21,11 @@ import lombok.ToString;
 @Table(name = "subscription_types")
 public class SubscriptionType {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false)
-  private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private long id;
 
-  @Column(name = "type")
-  private String type;
+    @Column(name = "type")
+    private String type;
 }

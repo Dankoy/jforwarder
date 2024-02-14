@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,32 +17,31 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TagServic
 @RestController
 public class TagController {
 
-  private final TagService tagService;
+    private final TagService tagService;
 
-  @GetMapping(value = "/api/v1/tags", params = {"title"})
-  public TagDTO getByTitle(@RequestParam("title") String title) {
+    @GetMapping(
+            value = "/api/v1/tags",
+            params = {"title"})
+    public TagDTO getByTitle(@RequestParam("title") String title) {
 
-    var found = tagService.getByTitle(title);
+        var found = tagService.getByTitle(title);
 
-    return TagDTO.toDTO(found);
-  }
+        return TagDTO.toDTO(found);
+    }
 
-  @PostMapping(value = "/api/v1/tags")
-  public TagDTO create(@Valid @RequestBody TagCreateDTO dto) {
+    @PostMapping(value = "/api/v1/tags")
+    public TagDTO create(@Valid @RequestBody TagCreateDTO dto) {
 
-    var tag = TagCreateDTO.fromDTO(dto);
+        var tag = TagCreateDTO.fromDTO(dto);
 
-    var created = tagService.create(tag);
+        var created = tagService.create(tag);
 
-    return TagDTO.toDTO(created);
+        return TagDTO.toDTO(created);
+    }
 
-  }
+    @DeleteMapping(value = "/api/v1/tags/{title}")
+    public void delete(@PathVariable("title") String title) {
 
-  @DeleteMapping(value = "/api/v1/tags/{title}")
-  public void delete(@PathVariable("title") String title) {
-
-    tagService.deleteByTitle(title);
-
-  }
-
+        tagService.deleteByTitle(title);
+    }
 }

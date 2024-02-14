@@ -14,24 +14,25 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 public interface BotConfiguration {
 
-  FullBotProperties fullBotProperties();
+    FullBotProperties fullBotProperties();
 
-  CommunitySubscriptionService communitySubscriptionService();
+    CommunitySubscriptionService communitySubscriptionService();
 
-  TelegramChatService telegramChatService();
+    TelegramChatService telegramChatService();
 
-  TemplateBuilder templateBuilder();
+    TemplateBuilder templateBuilder();
 
-  CommunityService communityService();
+    CommunityService communityService();
 
-  TagSubscriptionService tagSubscriptionService();
-  ChannelSubscriptionService channelSubscriptionService();
+    TagSubscriptionService tagSubscriptionService();
 
-  OrderService orderService();
+    ChannelSubscriptionService channelSubscriptionService();
 
-  CommandsHolder commandsHolder();
+    OrderService orderService();
 
-  LocalisationService localisationService();
+    CommandsHolder commandsHolder();
 
-  LocaleProvider localeProvider();
+    LocalisationService localisationService();
+
+    LocaleProvider localeProvider();
 }

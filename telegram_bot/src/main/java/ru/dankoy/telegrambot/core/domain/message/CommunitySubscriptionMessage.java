@@ -12,6 +12,6 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.Section;
 @ToString(callSuper = true)
 @NoArgsConstructor
 public final class CommunitySubscriptionMessage extends CoubMessage {
-  private Community community;
-  private Section section;
+    private Community community;
+    private Section section;
 }

@@ -18,247 +18,254 @@ import ru.dankoy.tcoubsinitiator.core.service.coub.CoubService;
 @RequiredArgsConstructor
 @Service
 @ConditionalOnProperty(
-    prefix = "coub",
-    name = "sorting",
-    havingValue = "false",
-    matchIfMissing = true)
+        prefix = "coub",
+        name = "sorting",
+        havingValue = "false",
+        matchIfMissing = true)
 public class CoubFinderServiceWithoutSorting implements CoubFinderService {
 
-  private static final long FIRST_PAGE = 1;
-  private static final int PER_PAGE = 10;
-  private static final long MAX_PAGE_TO_TRY = 3;
-  private static final int LIMIT_AMOUNT = 3;
+    private static final long FIRST_PAGE = 1;
+    private static final int PER_PAGE = 10;
+    private static final long MAX_PAGE_TO_TRY = 3;
+    private static final int LIMIT_AMOUNT = 3;
 
-  private final CoubService coubService;
+    private final CoubService coubService;
 
-  // todo: Подумать как обобщить
+    // todo: Подумать как обобщить
 
-  @Override
-  public List<Coub> findUnsentCoubsForCommunitySubscription(
-      CommunitySubscription communitySubscription) {
+    @Override
+    public List<Coub> findUnsentCoubsForCommunitySubscription(
+            CommunitySubscription communitySubscription) {
 
-    List<Coub> allCoubs = new ArrayList<>();
+        List<Coub> allCoubs = new ArrayList<>();
 
-    long page = FIRST_PAGE;
-    int perPage = PER_PAGE;
+        long page = FIRST_PAGE;
+        int perPage = PER_PAGE;
 
-    var wrapper =
-        coubService.getCoubsWrapperForCommunityAndSection(
-            communitySubscription.getCommunity().getName(),
-            communitySubscription.getSection().getName(),
-            page,
-            perPage);
+        var wrapper =
+                coubService.getCoubsWrapperForCommunityAndSection(
+                        communitySubscription.getCommunity().getName(),
+                        communitySubscription.getSection().getName(),
+                        page,
+                        perPage);
 
-    List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
+        List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
 
-    long totalPages = wrapper.getTotalPages();
+        long totalPages = wrapper.getTotalPages();
 
-    var lastPermalink = communitySubscription.getLastPermalink();
+        var lastPermalink = communitySubscription.getLastPermalink();
 
-    if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
+        if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
-      return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-    }
-
-    while (page <= totalPages) {
-
-      allCoubs.addAll(wrapper.getCoubs());
-
-      Optional<Coub> optionalLastCoubOnPage =
-          allCoubs.stream().filter(c -> c.getPermalink().equals(lastPermalink)).findFirst();
-
-      if (optionalLastCoubOnPage.isEmpty()) {
-
-        if (page == MAX_PAGE_TO_TRY) {
-          return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+            return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
         }
 
-        page++;
+        while (page <= totalPages) {
 
-        log.info("Coub with last permalink '{}' not found", lastPermalink);
-        log.info("Trying page: {}", page);
+            allCoubs.addAll(wrapper.getCoubs());
 
-        sleep(3_000);
+            Optional<Coub> optionalLastCoubOnPage =
+                    allCoubs.stream()
+                            .filter(c -> c.getPermalink().equals(lastPermalink))
+                            .findFirst();
 
-        wrapper =
-            coubService.getCoubsWrapperForCommunityAndSection(
-                communitySubscription.getCommunity().getName(),
-                communitySubscription.getSection().getName(),
-                page,
-                perPage);
+            if (optionalLastCoubOnPage.isEmpty()) {
 
-      } else {
+                if (page == MAX_PAGE_TO_TRY) {
+                    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+                }
 
-        log.info("Found coub with lastPermalink in current list");
-        log.info("Trying to find unsent coubs");
+                page++;
 
-        var lastCoub = optionalLastCoubOnPage.get();
+                log.info("Coub with last permalink '{}' not found", lastPermalink);
+                log.info("Trying page: {}", page);
 
-        deleteOlderCoubs(allCoubs, lastCoub);
+                sleep(3_000);
 
-        log.debug("Coubs to send - {}", allCoubs);
+                wrapper =
+                        coubService.getCoubsWrapperForCommunityAndSection(
+                                communitySubscription.getCommunity().getName(),
+                                communitySubscription.getSection().getName(),
+                                page,
+                                perPage);
 
-        return allCoubs;
-      }
-    }
+            } else {
 
-    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-  }
+                log.info("Found coub with lastPermalink in current list");
+                log.info("Trying to find unsent coubs");
 
-  @Override
-  public List<Coub> findUnsentCoubsForTagSubscription(TagSubscription tagSubscription) {
-    List<Coub> allCoubs = new ArrayList<>();
+                var lastCoub = optionalLastCoubOnPage.get();
 
-    long page = FIRST_PAGE;
-    int perPage = PER_PAGE;
+                deleteOlderCoubs(allCoubs, lastCoub);
 
-    var wrapper =
-        coubService.getCoubsWrapperForTag(
-            tagSubscription.getTag().getTitle(),
-            tagSubscription.getOrder().getName(),
-            tagSubscription.getType().getName(),
-            tagSubscription.getScope().getName(),
-            page,
-            perPage);
+                log.debug("Coubs to send - {}", allCoubs);
 
-    long totalPages = wrapper.getTotalPages();
-    List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
-
-    var lastPermalink = tagSubscription.getLastPermalink();
-
-    if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
-
-      return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-    }
-
-    while (page <= totalPages) {
-
-      allCoubs.addAll(wrapper.getCoubs());
-
-      Optional<Coub> optionalLastCoubOnPage =
-          allCoubs.stream().filter(c -> c.getPermalink().equals(lastPermalink)).findFirst();
-
-      if (optionalLastCoubOnPage.isEmpty()) {
-
-        if (page == MAX_PAGE_TO_TRY) {
-          return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+                return allCoubs;
+            }
         }
-
-        page++;
-
-        log.info("Coub with last permalink '{}' not found", lastPermalink);
-        log.info("Trying page: {}", page);
-
-        sleep(5_000);
-
-        wrapper =
-            coubService.getCoubsWrapperForTag(
-                tagSubscription.getTag().getTitle(),
-                tagSubscription.getOrder().getName(),
-                tagSubscription.getType().getName(),
-                tagSubscription.getScope().getName(),
-                page,
-                perPage);
-
-      } else {
-
-        log.info("Found coub with lastPermalink in current list");
-        log.info("Trying to find unsent coubs");
-
-        var lastCoub = optionalLastCoubOnPage.get();
-
-        deleteOlderCoubs(allCoubs, lastCoub);
-
-        log.debug("Coubs to send - {}", allCoubs);
-
-        return allCoubs;
-      }
-    }
-
-    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-  }
-
-  @Override
-  public List<Coub> findUnsentCoubsForChannelSubscription(ChannelSubscription channelSubscription) {
-    List<Coub> allCoubs = new ArrayList<>();
-
-    long page = FIRST_PAGE;
-    long totalPages = Integer.MAX_VALUE;
-
-    List<Coub> firstSetOfCoubs = new ArrayList<>();
-    while (page <= totalPages) {
-
-      var wrapper =
-          coubService.getCoubsWrapperForChannel(
-              channelSubscription.getChannel().getPermalink(),
-              channelSubscription.getOrder().getName(),
-              channelSubscription.getType().getName(),
-              channelSubscription.getScope().getName(),
-              page,
-              PER_PAGE);
-
-      totalPages = wrapper.getTotalPages();
-      firstSetOfCoubs.addAll(wrapper.getCoubs());
-
-      var lastPermalink = channelSubscription.getLastPermalink();
-
-      if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
 
         return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-      }
+    }
 
-      allCoubs.addAll(wrapper.getCoubs());
+    @Override
+    public List<Coub> findUnsentCoubsForTagSubscription(TagSubscription tagSubscription) {
+        List<Coub> allCoubs = new ArrayList<>();
 
-      Optional<Coub> optionalLastCoubOnPage =
-          allCoubs.stream().filter(c -> c.getPermalink().equals(lastPermalink)).findFirst();
+        long page = FIRST_PAGE;
+        int perPage = PER_PAGE;
 
-      if (optionalLastCoubOnPage.isEmpty()) {
+        var wrapper =
+                coubService.getCoubsWrapperForTag(
+                        tagSubscription.getTag().getTitle(),
+                        tagSubscription.getOrder().getName(),
+                        tagSubscription.getType().getName(),
+                        tagSubscription.getScope().getName(),
+                        page,
+                        perPage);
 
-        if (page == MAX_PAGE_TO_TRY) {
-          return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+        long totalPages = wrapper.getTotalPages();
+        List<Coub> firstSetOfCoubs = new ArrayList<>(wrapper.getCoubs());
+
+        var lastPermalink = tagSubscription.getLastPermalink();
+
+        if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
+
+            return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
         }
 
-        page++;
+        while (page <= totalPages) {
 
-        log.info("Coub with last permalink '{}' not found", lastPermalink);
-        log.info("Trying page: {}", page);
+            allCoubs.addAll(wrapper.getCoubs());
 
-        sleep(5_000);
+            Optional<Coub> optionalLastCoubOnPage =
+                    allCoubs.stream()
+                            .filter(c -> c.getPermalink().equals(lastPermalink))
+                            .findFirst();
 
-      } else {
+            if (optionalLastCoubOnPage.isEmpty()) {
 
-        log.info("Found coub with lastPermalink in current list");
-        log.info("Trying to find unsent coubs");
+                if (page == MAX_PAGE_TO_TRY) {
+                    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+                }
 
-        var lastCoub = optionalLastCoubOnPage.get();
+                page++;
 
-        deleteOlderCoubs(allCoubs, lastCoub);
+                log.info("Coub with last permalink '{}' not found", lastPermalink);
+                log.info("Trying page: {}", page);
 
-        log.debug("Coubs to send - {}", allCoubs);
+                sleep(5_000);
 
-        return allCoubs;
-      }
+                wrapper =
+                        coubService.getCoubsWrapperForTag(
+                                tagSubscription.getTag().getTitle(),
+                                tagSubscription.getOrder().getName(),
+                                tagSubscription.getType().getName(),
+                                tagSubscription.getScope().getName(),
+                                page,
+                                perPage);
+
+            } else {
+
+                log.info("Found coub with lastPermalink in current list");
+                log.info("Trying to find unsent coubs");
+
+                var lastCoub = optionalLastCoubOnPage.get();
+
+                deleteOlderCoubs(allCoubs, lastCoub);
+
+                log.debug("Coubs to send - {}", allCoubs);
+
+                return allCoubs;
+            }
+        }
+
+        return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
     }
 
-    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
-  }
+    @Override
+    public List<Coub> findUnsentCoubsForChannelSubscription(
+            ChannelSubscription channelSubscription) {
+        List<Coub> allCoubs = new ArrayList<>();
 
-  private void deleteOlderCoubs(List<Coub> coubs, Coub lastCoub) {
+        long page = FIRST_PAGE;
+        long totalPages = Integer.MAX_VALUE;
 
-    coubs.subList(coubs.indexOf(lastCoub), coubs.size()).clear();
-  }
+        List<Coub> firstSetOfCoubs = new ArrayList<>();
+        while (page <= totalPages) {
 
-  private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
-    return coubs.subList(0, limit);
-  }
+            var wrapper =
+                    coubService.getCoubsWrapperForChannel(
+                            channelSubscription.getChannel().getPermalink(),
+                            channelSubscription.getOrder().getName(),
+                            channelSubscription.getType().getName(),
+                            channelSubscription.getScope().getName(),
+                            page,
+                            PER_PAGE);
 
-  private void sleep(long millis) {
+            totalPages = wrapper.getTotalPages();
+            firstSetOfCoubs.addAll(wrapper.getCoubs());
 
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while trying to get coubs", e);
+            var lastPermalink = channelSubscription.getLastPermalink();
+
+            if (Objects.isNull(lastPermalink) || lastPermalink.isEmpty()) {
+
+                return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+            }
+
+            allCoubs.addAll(wrapper.getCoubs());
+
+            Optional<Coub> optionalLastCoubOnPage =
+                    allCoubs.stream()
+                            .filter(c -> c.getPermalink().equals(lastPermalink))
+                            .findFirst();
+
+            if (optionalLastCoubOnPage.isEmpty()) {
+
+                if (page == MAX_PAGE_TO_TRY) {
+                    return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
+                }
+
+                page++;
+
+                log.info("Coub with last permalink '{}' not found", lastPermalink);
+                log.info("Trying page: {}", page);
+
+                sleep(5_000);
+
+            } else {
+
+                log.info("Found coub with lastPermalink in current list");
+                log.info("Trying to find unsent coubs");
+
+                var lastCoub = optionalLastCoubOnPage.get();
+
+                deleteOlderCoubs(allCoubs, lastCoub);
+
+                log.debug("Coubs to send - {}", allCoubs);
+
+                return allCoubs;
+            }
+        }
+
+        return limitCoubs(firstSetOfCoubs, LIMIT_AMOUNT);
     }
-  }
+
+    private void deleteOlderCoubs(List<Coub> coubs, Coub lastCoub) {
+
+        coubs.subList(coubs.indexOf(lastCoub), coubs.size()).clear();
+    }
+
+    private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
+        return coubs.subList(0, limit);
+    }
+
+    private void sleep(long millis) {
+
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while trying to get coubs", e);
+        }
+    }
 }

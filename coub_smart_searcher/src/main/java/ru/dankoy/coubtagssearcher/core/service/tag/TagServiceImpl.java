@@ -13,35 +13,38 @@ import ru.dankoy.coubtagssearcher.core.service.Utils;
 @Service
 public class TagServiceImpl implements TagService {
 
-  private final CoubSmartSearchFeign coubSmartSearchFeign;
+    private final CoubSmartSearchFeign coubSmartSearchFeign;
 
-  @Override
-  public Tag findTagByTitle(String title) {
+    @Override
+    public Tag findTagByTitle(String title) {
 
-    int page = 1;
-    var wrapper = coubSmartSearchFeign.getTags(title, page);
-    var maxPage = wrapper.getMeta().getTotalPages();
+        int page = 1;
+        var wrapper = coubSmartSearchFeign.getTags(title, page);
+        var maxPage = wrapper.getMeta().getTotalPages();
 
-    while (page <= maxPage) {
+        while (page <= maxPage) {
 
-      var optionalFoundTag =
-          wrapper.getData().stream().filter(tag -> tag.getTitle().equals(title)).findFirst();
+            var optionalFoundTag =
+                    wrapper.getData().stream()
+                            .filter(tag -> tag.getTitle().equals(title))
+                            .findFirst();
 
-      log.info("Found coubs: {}", wrapper);
+            log.info("Found coubs: {}", wrapper);
 
-      if (optionalFoundTag.isEmpty()) {
-        log.info("On page '{}' tag '{}' not found", page, title);
-        page++;
-        Utils.sleep(3_000);
+            if (optionalFoundTag.isEmpty()) {
+                log.info("On page '{}' tag '{}' not found", page, title);
+                page++;
+                Utils.sleep(3_000);
 
-        wrapper = coubSmartSearchFeign.getTags(title, page);
-      } else {
-        var foundTag = optionalFoundTag.get();
-        log.info("Found tag: {}", foundTag);
-        return foundTag;
-      }
+                wrapper = coubSmartSearchFeign.getTags(title, page);
+            } else {
+                var foundTag = optionalFoundTag.get();
+                log.info("Found tag: {}", foundTag);
+                return foundTag;
+            }
+        }
+
+        throw new ResourceNotFoundException(
+                String.format("Couldn't find tag with title '%s'", title));
     }
-
-    throw new ResourceNotFoundException(String.format("Couldn't find tag with title '%s'", title));
-  }
 }

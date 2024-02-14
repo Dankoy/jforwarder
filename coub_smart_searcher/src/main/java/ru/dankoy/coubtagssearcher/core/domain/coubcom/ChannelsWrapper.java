@@ -15,13 +15,13 @@ import ru.dankoy.coubtagssearcher.core.domain.Channel;
 @NoArgsConstructor
 public class ChannelsWrapper {
 
-  private List<Channel> channels = new ArrayList<>();
+    private List<Channel> channels = new ArrayList<>();
 
-  private long page;
+    private long page;
 
-  @JsonProperty("per_page")
-  private long perPage;
+    @JsonProperty("per_page")
+    private long perPage;
 
-  @JsonProperty("total_pages")
-  private long totalPages;
+    @JsonProperty("total_pages")
+    private long totalPages;
 }

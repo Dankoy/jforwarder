@@ -8,6 +8,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage
 @Deprecated(since = "2024-02-14")
 public interface TagMessageProducerService {
 
-  void send(TagSubscriptionMessage communitySubscriptionMessage);
-
+    void send(TagSubscriptionMessage communitySubscriptionMessage);
 }

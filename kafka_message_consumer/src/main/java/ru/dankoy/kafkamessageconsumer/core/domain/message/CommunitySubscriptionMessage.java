@@ -12,6 +12,6 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.communitysubscrip
 @ToString(callSuper = true)
 @NoArgsConstructor
 public final class CommunitySubscriptionMessage extends CoubMessage {
-  private Community community;
-  private Section section;
+    private Community community;
+    private Section section;
 }

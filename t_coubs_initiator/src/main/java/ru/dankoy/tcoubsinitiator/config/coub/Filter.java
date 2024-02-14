@@ -1,5 +1,3 @@
 package ru.dankoy.tcoubsinitiator.config.coub;
 
-public record Filter(long days) {
-
-}
+public record Filter(long days) {}

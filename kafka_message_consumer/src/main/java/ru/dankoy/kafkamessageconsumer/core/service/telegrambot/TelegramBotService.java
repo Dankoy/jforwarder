@@ -4,8 +4,9 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
 
 public interface TelegramBotService {
 
-  void sendCommunityMessage(CoubMessage communitySubscriptionMessage);
+    void sendCommunityMessage(CoubMessage communitySubscriptionMessage);
 
-  void sendTagMessage(CoubMessage tagSubscriptionMessage);
-  void sendChannelMessage(CoubMessage channelSubscriptionMessage);
+    void sendTagMessage(CoubMessage tagSubscriptionMessage);
+
+    void sendChannelMessage(CoubMessage channelSubscriptionMessage);
 }

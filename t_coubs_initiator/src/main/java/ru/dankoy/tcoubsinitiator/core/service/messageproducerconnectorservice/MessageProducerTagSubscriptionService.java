@@ -5,6 +5,5 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription
 
 public interface MessageProducerTagSubscriptionService {
 
-  void sendTagSubscriptionsData(List<TagSubscription> tagSubscriptions);
-
+    void sendTagSubscriptionsData(List<TagSubscription> tagSubscriptions);
 }

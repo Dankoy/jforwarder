@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -20,53 +19,52 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregi
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.SentCoubsRegistryService;
 
-
 @RestController
 @RequiredArgsConstructor
 public class SentCoubsRegistryController {
 
-  private final SentCoubsRegistryService sentCoubsRegistryService;
+    private final SentCoubsRegistryService sentCoubsRegistryService;
 
+    @GetMapping(value = "/api/v1/sent_coubs_registry")
+    public Page<SentCoubsRegistryDTO> getAll(Pageable pageable) {
+        var s = sentCoubsRegistryService.findAll(pageable);
+        return s.map(SentCoubsRegistryDTO::toDTO);
+    }
 
-  @GetMapping(value = "/api/v1/sent_coubs_registry")
-  public Page<SentCoubsRegistryDTO> getAll(Pageable pageable) {
-    var s = sentCoubsRegistryService.findAll(pageable);
-    return s.map(SentCoubsRegistryDTO::toDTO);
-  }
+    @GetMapping(
+            value = "/api/v1/sent_coubs_registry",
+            params = {"subscriptionId"})
+    public Page<SentCoubsRegistryDTO> getAllBySubscriptionId(
+            @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
+            Pageable pageable) {
+        var s = sentCoubsRegistryService.getAllBySubscriptionId(subscriptionId, pageable);
+        return s.map(SentCoubsRegistryDTO::toDTO);
+    }
 
+    @GetMapping(
+            value = "/api/v1/sent_coubs_registry",
+            params = {"subscriptionId", "dateTime"})
+    public Page<SentCoubsRegistryDTO> getAllBySubscriptionIdAndDateTimeAfter(
+            @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
+            Pageable pageable) {
+        var s =
+                sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
+                        subscriptionId, dateTime, pageable);
+        return s.map(SentCoubsRegistryDTO::toDTO);
+    }
 
-  @GetMapping(value = "/api/v1/sent_coubs_registry", params = {"subscriptionId"})
-  public Page<SentCoubsRegistryDTO> getAllBySubscriptionId(
-      @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
-      Pageable pageable) {
-    var s = sentCoubsRegistryService.getAllBySubscriptionId(subscriptionId, pageable);
-    return s.map(SentCoubsRegistryDTO::toDTO);
-  }
+    @PostMapping(value = "/api/v1/sent_coubs_registry")
+    @ResponseStatus(HttpStatus.CREATED)
+    public SentCoubsRegistryCreateDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
+        var fromDto = SentCoubsRegistryCreateDTO.fromDTO(dto);
+        var s = sentCoubsRegistryService.create(fromDto);
+        return SentCoubsRegistryCreateDTO.toDTO(s);
+    }
 
-  @GetMapping(value = "/api/v1/sent_coubs_registry", params = {"subscriptionId", "dateTime"})
-  public Page<SentCoubsRegistryDTO> getAllBySubscriptionIdAndDateTimeAfter(
-      @RequestParam(value = "subscriptionId", required = true) long subscriptionId,
-      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
-      Pageable pageable) {
-    var s = sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(subscriptionId,
-        dateTime,
-        pageable);
-    return s.map(SentCoubsRegistryDTO::toDTO);
-  }
-
-  @PostMapping(value = "/api/v1/sent_coubs_registry")
-  @ResponseStatus(HttpStatus.CREATED)
-  public SentCoubsRegistryCreateDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
-    var fromDto = SentCoubsRegistryCreateDTO.fromDTO(dto);
-    var s = sentCoubsRegistryService.create(fromDto);
-    return SentCoubsRegistryCreateDTO.toDTO(s);
-  }
-
-  @DeleteMapping(value = "/api/v1/sent_coubs_registry/{id}")
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public void delete(@PathVariable(name = "id") long id) {
-    sentCoubsRegistryService.deleteById(id);
-  }
-
-
+    @DeleteMapping(value = "/api/v1/sent_coubs_registry/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void delete(@PathVariable(name = "id") long id) {
+        sentCoubsRegistryService.deleteById(id);
+    }
 }

@@ -9,7 +9,7 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionM
 @Deprecated(since = "2024-02-01")
 public interface CommunitySubscriptionMessageConsumer {
 
-  void accept(List<CommunitySubscriptionMessage> value);
+    void accept(List<CommunitySubscriptionMessage> value);
 
-  void accept(CommunitySubscriptionMessage value);
+    void accept(CommunitySubscriptionMessage value);
 }

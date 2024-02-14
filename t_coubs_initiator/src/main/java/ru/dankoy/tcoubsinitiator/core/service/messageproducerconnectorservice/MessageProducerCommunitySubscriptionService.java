@@ -5,6 +5,5 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscr
 
 public interface MessageProducerCommunitySubscriptionService {
 
-  void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions);
-
+    void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions);
 }

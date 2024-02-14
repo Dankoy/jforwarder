@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,8 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Community {
 
-  private long id;
-  private long externalId;
-  private String name;
-
+    private long id;
+    private long externalId;
+    private String name;
 }

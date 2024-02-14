@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 
-
 @ToString
 @Getter
 @Builder
@@ -18,44 +17,33 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class CommunityDTO {
 
-  private long id;
+    private long id;
 
-  @NotNull
-  private long externalId;
+    @NotNull private long externalId;
 
-  @NotNull
-  private String name;
+    @NotNull private String name;
 
-  @NotNull
-  private Set<SectionDTO> sections;
+    @NotNull private Set<SectionDTO> sections;
 
+    public static CommunityDTO toDTO(Community community) {
 
-  public static CommunityDTO toDTO(Community community) {
+        return builder()
+                .id(community.getId())
+                .externalId(community.getExternalId())
+                .name(community.getName())
+                .sections(
+                        community.getSections().stream()
+                                .map(SectionDTO::toDTO)
+                                .collect(Collectors.toSet()))
+                .build();
+    }
 
-    return builder()
-        .id(community.getId())
-        .externalId(community.getExternalId())
-        .name(community.getName())
-        .sections(
-            community.getSections().stream()
-                .map(SectionDTO::toDTO)
-                .collect(Collectors.toSet())
-        )
-        .build();
+    public static Community fromDTO(CommunityDTO dto) {
 
-  }
-
-  public static Community fromDTO(CommunityDTO dto) {
-
-    return new Community(
-        dto.id,
-        dto.externalId,
-        dto.name,
-        dto.sections.stream()
-            .map(SectionDTO::fromDTO)
-            .collect(Collectors.toSet())
-    );
-
-  }
-
+        return new Community(
+                dto.id,
+                dto.externalId,
+                dto.name,
+                dto.sections.stream().map(SectionDTO::fromDTO).collect(Collectors.toSet()));
+    }
 }

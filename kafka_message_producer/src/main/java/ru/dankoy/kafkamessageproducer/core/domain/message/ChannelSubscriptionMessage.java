@@ -12,11 +12,11 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscripti
 @SuperBuilder
 @ToString(callSuper = true)
 public final class ChannelSubscriptionMessage extends CoubMessage {
-  private Channel channel;
+    private Channel channel;
 
-  private Order order;
+    private Order order;
 
-  private Scope scope;
+    private Scope scope;
 
-  private Type type;
+    private Type type;
 }

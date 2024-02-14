@@ -20,101 +20,104 @@ import ru.dankoy.telegrambot.core.service.tag.TagService;
 @Service
 public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
-  private final CoubSmartSearcherService coubSmartSearcherService;
+    private final CoubSmartSearcherService coubSmartSearcherService;
 
-  private final TagService tagService;
+    private final TagService tagService;
 
-  private final OrderService orderService;
+    private final OrderService orderService;
 
-  @Override
-  public List<TagSubscription> getSubscriptionsByChatId(long chatId) {
-    return tagService.getAllSubscriptionsByChat(chatId);
-  }
+    @Override
+    public List<TagSubscription> getSubscriptionsByChatId(long chatId) {
+        return tagService.getAllSubscriptionsByChat(chatId);
+    }
 
-  @Override
-  public TagSubscription subscribe(
-      String tagName, String orderValue, String scopeName, String typeName, long chatId) {
+    @Override
+    public TagSubscription subscribe(
+            String tagName, String orderValue, String scopeName, String typeName, long chatId) {
 
-    // 1. Find tag order
+        // 1. Find tag order
 
-    var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.TAG);
+        var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.TAG);
 
-    var order =
-        optionalTagOrder.orElseThrow(
-            () ->
-                new NotFoundException(
-                    ExceptionObjectType.ORDER,
-                    orderValue,
-                    String.format(
-                        "Order '%s' not found. Validate tag order and try again", orderValue)));
+        var order =
+                optionalTagOrder.orElseThrow(
+                        () ->
+                                new NotFoundException(
+                                        ExceptionObjectType.ORDER,
+                                        orderValue,
+                                        String.format(
+                                                "Order '%s' not found. Validate tag order and try"
+                                                        + " again",
+                                                orderValue)));
 
-    order.setSubscriptionType(SubscriptionType.TAG);
+        order.setSubscriptionType(SubscriptionType.TAG);
 
-    // 2. find tag in db
-    var optionalTagFromDb = tagService.findTagByTitle(tagName);
+        // 2. find tag in db
+        var optionalTagFromDb = tagService.findTagByTitle(tagName);
 
-    if (optionalTagFromDb.isPresent()) {
-      var tag = optionalTagFromDb.get();
-      var tagSubscription =
-          (TagSubscription)
-              TagSubscription.builder()
-                  .id(0)
-                  .tag(tag)
-                  .chat(new Chat(chatId))
-                  .order(order)
-                  .scope(new Scope(scopeName))
-                  .type(new Type(typeName))
-                  .build();
+        if (optionalTagFromDb.isPresent()) {
+            var tag = optionalTagFromDb.get();
+            var tagSubscription =
+                    (TagSubscription)
+                            TagSubscription.builder()
+                                    .id(0)
+                                    .tag(tag)
+                                    .chat(new Chat(chatId))
+                                    .order(order)
+                                    .scope(new Scope(scopeName))
+                                    .type(new Type(typeName))
+                                    .build();
 
-      return tagService.subscribeByTag(tagSubscription);
+            return tagService.subscribeByTag(tagSubscription);
 
-    } else {
+        } else {
 
-      var optionalTagFromApi = coubSmartSearcherService.findTagByTitle(tagName);
+            var optionalTagFromApi = coubSmartSearcherService.findTagByTitle(tagName);
 
-      if (optionalTagFromApi.isPresent()) {
+            if (optionalTagFromApi.isPresent()) {
 
-        var tag = optionalTagFromApi.get();
+                var tag = optionalTagFromApi.get();
 
-        var created = tagService.create(tag);
+                var created = tagService.create(tag);
+
+                var tagSubscription =
+                        (TagSubscription)
+                                TagSubscription.builder()
+                                        .id(0)
+                                        .tag(created)
+                                        .chat(new Chat(chatId))
+                                        .order(order)
+                                        .scope(new Scope(scopeName))
+                                        .type(new Type(typeName))
+                                        .build();
+
+                return tagService.subscribeByTag(tagSubscription);
+
+            } else {
+                throw new NotFoundException(
+                        ExceptionObjectType.TAG,
+                        tagName,
+                        String.format(
+                                "Tag '%s' not found. Validate tag name and try again.", tagName));
+            }
+        }
+    }
+
+    @Override
+    public void unsubscribe(
+            String tagName, String orderValue, String scopeName, String typeName, long chatId) {
 
         var tagSubscription =
-            (TagSubscription)
-                TagSubscription.builder()
-                    .id(0)
-                    .tag(created)
-                    .chat(new Chat(chatId))
-                    .order(order)
-                    .scope(new Scope(scopeName))
-                    .type(new Type(typeName))
-                    .build();
+                (TagSubscription)
+                        TagSubscription.builder()
+                                .id(0)
+                                .tag(new Tag(tagName))
+                                .chat(new Chat(chatId))
+                                .order(new Order(orderValue))
+                                .scope(new Scope(scopeName))
+                                .type(new Type(typeName))
+                                .build();
 
-        return tagService.subscribeByTag(tagSubscription);
-
-      } else {
-        throw new NotFoundException(
-            ExceptionObjectType.TAG,
-            tagName,
-            String.format("Tag '%s' not found. Validate tag name and try again.", tagName));
-      }
+        tagService.unsubscribeByTag(tagSubscription);
     }
-  }
-
-  @Override
-  public void unsubscribe(
-      String tagName, String orderValue, String scopeName, String typeName, long chatId) {
-
-    var tagSubscription =
-        (TagSubscription)
-            TagSubscription.builder()
-                .id(0)
-                .tag(new Tag(tagName))
-                .chat(new Chat(chatId))
-                .order(new Order(orderValue))
-                .scope(new Scope(scopeName))
-                .type(new Type(typeName))
-                .build();
-
-    tagService.unsubscribeByTag(tagSubscription);
-  }
 }

@@ -9,13 +9,13 @@ import ru.dankoy.tcoubsinitiator.core.feign.messageproducer.MessageProducerFeign
 @RequiredArgsConstructor
 @Service
 public class MessageProducerChannelSubscriptionServiceImpl
-    implements MessageProducerChannelSubscriptionService {
+        implements MessageProducerChannelSubscriptionService {
 
-  private final MessageProducerFeign messageProducerFeign;
+    private final MessageProducerFeign messageProducerFeign;
 
-  @Override
-  public void sendChannelSubscriptionsData(List<ChannelSubscription> channelSubscriptions) {
+    @Override
+    public void sendChannelSubscriptionsData(List<ChannelSubscription> channelSubscriptions) {
 
-    messageProducerFeign.sendChannelSubscriptions(channelSubscriptions);
-  }
+        messageProducerFeign.sendChannelSubscriptions(channelSubscriptions);
+    }
 }

@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,41 +19,38 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramC
 @RestController
 public class ChatController {
 
-  private final TelegramChatService telegramChatService;
+    private final TelegramChatService telegramChatService;
 
+    @GetMapping("/api/v1/telegram_chat/{chatId}")
+    public ChatDTO getChatById(@PathVariable("chatId") long chatId) {
+        var chatOptional = telegramChatService.getByTelegramChatId(chatId);
 
-  @GetMapping("/api/v1/telegram_chat/{chatId}")
-  public ChatDTO getChatById(@PathVariable("chatId") long chatId) {
-    var chatOptional = telegramChatService.getByTelegramChatId(chatId);
+        var chat =
+                chatOptional.orElseThrow(
+                        () ->
+                                new ResourceNotFoundException(
+                                        String.format("Chat not found - %d", chatId)));
 
-    var chat = chatOptional.orElseThrow(
-        () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
+        return ChatDTO.toDTO(chat);
+    }
 
-    return ChatDTO.toDTO(chat);
+    @PostMapping("/api/v1/telegram_chat")
+    public ChatDTO createChat(@RequestBody @Valid ChatCreateDTO chatCreateDTO) {
 
-  }
+        var chat = ChatCreateDTO.fromDTO(chatCreateDTO);
 
+        var saved = telegramChatService.save(chat);
 
-  @PostMapping("/api/v1/telegram_chat")
-  public ChatDTO createChat(@RequestBody @Valid ChatCreateDTO chatCreateDTO) {
+        return ChatDTO.toDTO(saved);
+    }
 
-    var chat = ChatCreateDTO.fromDTO(chatCreateDTO);
+    @PutMapping("/api/v1/telegram_chat")
+    public ChatDTO updateChat(@RequestBody @Valid ChatDTO chatDTO) {
 
-    var saved = telegramChatService.save(chat);
+        var chat = ChatDTO.fromDTO(chatDTO);
 
-    return ChatDTO.toDTO(saved);
+        var saved = telegramChatService.save(chat);
 
-  }
-
-  @PutMapping("/api/v1/telegram_chat")
-  public ChatDTO updateChat(@RequestBody @Valid ChatDTO chatDTO) {
-
-    var chat = ChatDTO.fromDTO(chatDTO);
-
-    var saved = telegramChatService.save(chat);
-
-    return ChatDTO.toDTO(saved);
-
-  }
-
+        return ChatDTO.toDTO(saved);
+    }
 }

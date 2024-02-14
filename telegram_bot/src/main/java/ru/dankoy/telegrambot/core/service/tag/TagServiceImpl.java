@@ -1,6 +1,5 @@
 package ru.dankoy.telegrambot.core.service.tag;
 
-
 import feign.FeignException.NotFound;
 import java.util.List;
 import java.util.Optional;
@@ -14,43 +13,38 @@ import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderF
 @Service
 public class TagServiceImpl implements TagService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+    private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
+    @Override
+    public Optional<Tag> findTagByTitle(String title) {
 
-  @Override
-  public Optional<Tag> findTagByTitle(String title) {
-
-    try {
-      return Optional.of(subscriptionsHolderFeign.getTagByTitle(title));
-    } catch (NotFound e) {
-      return Optional.empty();
+        try {
+            return Optional.of(subscriptionsHolderFeign.getTagByTitle(title));
+        } catch (NotFound e) {
+            return Optional.empty();
+        }
     }
-  }
 
-  @Override
-  public TagSubscription subscribeByTag(TagSubscription tagSubscription) {
+    @Override
+    public TagSubscription subscribeByTag(TagSubscription tagSubscription) {
 
-    return subscriptionsHolderFeign.subscribeByTag(tagSubscription);
+        return subscriptionsHolderFeign.subscribeByTag(tagSubscription);
+    }
 
-  }
+    @Override
+    public void unsubscribeByTag(TagSubscription tagSubscription) {
 
+        subscriptionsHolderFeign.unsubscribeByTag(tagSubscription);
+    }
 
-  @Override
-  public void unsubscribeByTag(TagSubscription tagSubscription) {
+    @Override
+    public List<TagSubscription> getAllSubscriptionsByChat(long chatId) {
 
-    subscriptionsHolderFeign.unsubscribeByTag(tagSubscription);
+        return subscriptionsHolderFeign.getAllTagSubscriptionsByChatId(chatId);
+    }
 
-  }
-
-  @Override
-  public List<TagSubscription> getAllSubscriptionsByChat(long chatId) {
-
-    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatId(chatId);
-  }
-
-  @Override
-  public Tag create(Tag tag) {
-    return subscriptionsHolderFeign.createTag(tag);
-  }
-
+    @Override
+    public Tag create(Tag tag) {
+        return subscriptionsHolderFeign.createTag(tag);
+    }
 }

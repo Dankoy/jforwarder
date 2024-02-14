@@ -4,11 +4,11 @@ import java.util.Locale;
 
 public interface FullBotProperties {
 
-  String getName();
+    String getName();
 
-  String getToken();
+    String getToken();
 
-  Locale getDefaultLocale();
+    Locale getDefaultLocale();
 
-  Locale[] getLocales();
+    Locale[] getLocales();
 }

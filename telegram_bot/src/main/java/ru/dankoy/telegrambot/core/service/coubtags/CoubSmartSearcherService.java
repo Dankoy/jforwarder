@@ -6,7 +6,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 
 public interface CoubSmartSearcherService {
 
-  Optional<Tag> findTagByTitle(String title);
+    Optional<Tag> findTagByTitle(String title);
 
-  Optional<Channel> findByChannelPermalink(String permalink);
+    Optional<Channel> findByChannelPermalink(String permalink);
 }

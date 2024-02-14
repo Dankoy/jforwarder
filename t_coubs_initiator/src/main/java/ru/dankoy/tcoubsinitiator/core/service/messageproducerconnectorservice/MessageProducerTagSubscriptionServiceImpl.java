@@ -8,15 +8,14 @@ import ru.dankoy.tcoubsinitiator.core.feign.messageproducer.MessageProducerFeign
 
 @RequiredArgsConstructor
 @Service
-public class MessageProducerTagSubscriptionServiceImpl implements
-    MessageProducerTagSubscriptionService {
+public class MessageProducerTagSubscriptionServiceImpl
+        implements MessageProducerTagSubscriptionService {
 
-  private final MessageProducerFeign messageProducerFeign;
+    private final MessageProducerFeign messageProducerFeign;
 
-  @Override
-  public void sendTagSubscriptionsData(List<TagSubscription> tagSubscriptions) {
+    @Override
+    public void sendTagSubscriptionsData(List<TagSubscription> tagSubscriptions) {
 
-    messageProducerFeign.sendTagSubscriptions(tagSubscriptions);
-
-  }
+        messageProducerFeign.sendTagSubscriptions(tagSubscriptions);
+    }
 }

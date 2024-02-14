@@ -6,6 +6,5 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TypeRepository extends JpaRepository<Type, Long> {
 
-  Optional<Type> findByName(String name);
-
+    Optional<Type> findByName(String name);
 }

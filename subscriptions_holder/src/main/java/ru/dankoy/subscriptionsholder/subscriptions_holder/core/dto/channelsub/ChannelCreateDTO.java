@@ -14,14 +14,14 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class ChannelCreateDTO {
 
-  @NotNull @NotEmpty private String permalink;
+    @NotNull @NotEmpty private String permalink;
 
-  public static ChannelCreateDTO toDTO(Channel channel) {
-    return new ChannelCreateDTO(channel.getPermalink());
-  }
+    public static ChannelCreateDTO toDTO(Channel channel) {
+        return new ChannelCreateDTO(channel.getPermalink());
+    }
 
-  public static Channel fromDTO(ChannelCreateDTO dto) {
+    public static Channel fromDTO(ChannelCreateDTO dto) {
 
-    return new Channel(0, null, dto.getPermalink());
-  }
+        return new Channel(0, null, dto.getPermalink());
+    }
 }

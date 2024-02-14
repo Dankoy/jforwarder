@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
-
 @ToString
 @Getter
 @Builder
@@ -16,27 +15,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class SectionDTO {
 
-  private long id;
+    private long id;
 
-  @NotNull
-  private String name;
+    @NotNull private String name;
 
-  public static SectionDTO toDTO(Section section) {
+    public static SectionDTO toDTO(Section section) {
 
-    return builder()
-        .id(section.getId())
-        .name(section.getName())
-        .build();
+        return builder().id(section.getId()).name(section.getName()).build();
+    }
 
-  }
+    public static Section fromDTO(SectionDTO dto) {
 
-  public static Section fromDTO(SectionDTO dto) {
-
-    return new Section(
-        dto.id,
-        dto.name
-    );
-
-  }
-
+        return new Section(dto.id, dto.name);
+    }
 }

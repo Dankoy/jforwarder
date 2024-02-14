@@ -19,11 +19,11 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
 @SuperBuilder
 public class TagSubscription extends Subscription {
 
-  private Tag tag;
+    private Tag tag;
 
-  private Order order;
+    private Order order;
 
-  private Scope scope;
+    private Scope scope;
 
-  private Type type;
+    private Type type;
 }

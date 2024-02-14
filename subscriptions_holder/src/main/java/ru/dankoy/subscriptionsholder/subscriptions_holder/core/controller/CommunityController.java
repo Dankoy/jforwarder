@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,50 +19,43 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.Community
 @RestController
 public class CommunityController {
 
-  private final CommunityService communityService;
+    private final CommunityService communityService;
 
+    @GetMapping(path = "/api/v1/communities")
+    public List<CommunityDTO> getAllCommunities() {
 
-  @GetMapping(path = "/api/v1/communities")
-  public List<CommunityDTO> getAllCommunities() {
+        var c = communityService.getAll();
 
-    var c = communityService.getAll();
+        return c.stream().map(CommunityDTO::toDTO).toList();
+    }
 
-    return c.stream().map(CommunityDTO::toDTO).toList();
+    @GetMapping(path = "/api/v1/communities/{name}")
+    public CommunityDTO getCommunitiesByName(@PathVariable(name = "name") String name) {
 
-  }
+        var c = communityService.getByName(name);
 
-  @GetMapping(path = "/api/v1/communities/{name}")
-  public CommunityDTO getCommunitiesByName(@PathVariable(name = "name") String name) {
+        return CommunityDTO.toDTO(c);
+    }
 
-    var c =  communityService.getByName(name);
+    @PostMapping(path = "/api/v1/communities")
+    public CommunityDTO createCommunity(@Valid @RequestBody CommunityCreateDTO communityDTO) {
 
-    return CommunityDTO.toDTO(c);
+        // создает новый community
+        // если community уже существует, то выбрасывается ошибка
 
-  }
+        var community = CommunityCreateDTO.fromDTO(communityDTO);
 
-  @PostMapping(path = "/api/v1/communities")
-  public CommunityDTO createCommunity(@Valid @RequestBody CommunityCreateDTO communityDTO) {
+        var created = communityService.create(community);
 
-    // создает новый community
-    // если community уже существует, то выбрасывается ошибка
+        return CommunityDTO.toDTO(created);
+    }
 
-    var community = CommunityCreateDTO.fromDTO(communityDTO);
+    @DeleteMapping(path = "/api/v1/communities/{communityName}/{sectionName}")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public void deleteCommunity(
+            @PathVariable(name = "communityName") String communityName,
+            @PathVariable(name = "sectionName") String sectionName) {
 
-    var created = communityService.create(community);
-
-    return CommunityDTO.toDTO(created);
-
-  }
-
-  @DeleteMapping(path = "/api/v1/communities/{communityName}/{sectionName}")
-  @ResponseStatus(code = HttpStatus.ACCEPTED)
-  public void deleteCommunity(
-      @PathVariable(name = "communityName") String communityName,
-      @PathVariable(name = "sectionName") String sectionName
-  ) {
-
-    communityService.delete(communityName, sectionName);
-
-  }
-
+        communityService.delete(communityName, sectionName);
+    }
 }

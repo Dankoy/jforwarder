@@ -4,5 +4,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 public interface MessageProducerServiceKafka {
 
-  void send(CoubMessage message);
+    void send(CoubMessage message);
 }

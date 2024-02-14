@@ -12,28 +12,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TagSubRepository extends JpaRepository<TagSub, Long> {
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  @Override
-  Page<TagSub> findAll(Pageable pageable);
+    @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+    @Override
+    Page<TagSub> findAll(Pageable pageable);
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  Page<TagSub> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
+    @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+    Page<TagSub> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
+    @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+    List<TagSub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  List<TagSub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
+    @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+    List<TagSub> getAllByChatChatIdAndTagTitle(
+            @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
 
-
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  List<TagSub> getAllByChatChatIdAndTagTitle(
-      @Param("externalChatId") long externalChatId,
-      @Param("tagTitle") String tagTitle);
-
-
-  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
-  Optional<TagSub> getByChatChatIdAndTagTitleAndOrderValue(
-      @Param("externalChatId") long externalChatId,
-      @Param("tagTitle") String tagTitle,
-      @Param("orderValue") String orderValue);
-
+    @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+    Optional<TagSub> getByChatChatIdAndTagTitleAndOrderValue(
+            @Param("externalChatId") long externalChatId,
+            @Param("tagTitle") String tagTitle,
+            @Param("orderValue") String orderValue);
 }

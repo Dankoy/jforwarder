@@ -5,5 +5,5 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.channelsubscrip
 
 public interface MessageProducerChannelSubscriptionService {
 
-  void sendChannelSubscriptionsData(List<ChannelSubscription> channelSubscriptions);
+    void sendChannelSubscriptionsData(List<ChannelSubscription> channelSubscriptions);
 }

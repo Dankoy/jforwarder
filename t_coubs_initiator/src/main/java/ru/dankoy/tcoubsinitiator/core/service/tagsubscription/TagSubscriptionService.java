@@ -7,7 +7,7 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription
 
 public interface TagSubscriptionService {
 
-  List<TagSubscription> getAllSubscriptions(String tag);
+    List<TagSubscription> getAllSubscriptions(String tag);
 
-  Page<TagSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
+    Page<TagSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
 }

@@ -12,9 +12,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "application.bot")
 public class TelegramBotProperties implements LocaleConfig, BotCredentialsConfig {
 
-  private final String name;
-  private final String token;
+    private final String name;
+    private final String token;
 
-  private final Locale[] locales;
-  private final Locale defaultLocale;
+    private final Locale[] locales;
+    private final Locale defaultLocale;
 }

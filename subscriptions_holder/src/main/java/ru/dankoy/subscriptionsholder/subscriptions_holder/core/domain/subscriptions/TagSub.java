@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,14 +14,14 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
 
-@NamedEntityGraph(name = "tag-subscription-full-inherited",
-    attributeNodes = {
-        @NamedAttributeNode("tag"),
-        @NamedAttributeNode("order"),
-        @NamedAttributeNode("scope"),
-        @NamedAttributeNode("type"),
-    }
-)
+@NamedEntityGraph(
+        name = "tag-subscription-full-inherited",
+        attributeNodes = {
+            @NamedAttributeNode("tag"),
+            @NamedAttributeNode("order"),
+            @NamedAttributeNode("scope"),
+            @NamedAttributeNode("type"),
+        })
 @Getter
 @ToString
 @Data
@@ -33,20 +32,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Table(name = "tag_subs")
 public class TagSub extends Subscription {
 
-  @ManyToOne
-  @JoinColumn(name = "tag_id")
-  private Tag tag;
+    @ManyToOne
+    @JoinColumn(name = "tag_id")
+    private Tag tag;
 
-  @ManyToOne
-  @JoinColumn(name = "order_id")
-  private Order order;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-  @ManyToOne
-  @JoinColumn(name = "scope_id")
-  private Scope scope;
+    @ManyToOne
+    @JoinColumn(name = "scope_id")
+    private Scope scope;
 
-  @ManyToOne
-  @JoinColumn(name = "type_id")
-  private Type type;
-
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private Type type;
 }

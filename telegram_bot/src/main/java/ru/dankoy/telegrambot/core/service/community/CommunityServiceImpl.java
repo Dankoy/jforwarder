@@ -14,19 +14,19 @@ import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderF
 @Service
 public class CommunityServiceImpl implements CommunityService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+    private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
-  @Override
-  public List<Community> getAll() {
-    return subscriptionsHolderFeign.getAllCommunities();
-  }
-
-  @Override
-  public Optional<Community> getByName(String communityName) {
-    try {
-      return Optional.of(subscriptionsHolderFeign.getCommunityByName(communityName));
-    } catch (NotFound e) {
-      return Optional.empty();
+    @Override
+    public List<Community> getAll() {
+        return subscriptionsHolderFeign.getAllCommunities();
     }
-  }
+
+    @Override
+    public Optional<Community> getByName(String communityName) {
+        try {
+            return Optional.of(subscriptionsHolderFeign.getCommunityByName(communityName));
+        } catch (NotFound e) {
+            return Optional.empty();
+        }
+    }
 }

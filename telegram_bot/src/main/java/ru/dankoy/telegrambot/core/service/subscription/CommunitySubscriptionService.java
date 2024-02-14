@@ -5,10 +5,9 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscri
 
 public interface CommunitySubscriptionService {
 
-  List<CommunitySubscription> getSubscriptionsByChatId(long chatId);
+    List<CommunitySubscription> getSubscriptionsByChatId(long chatId);
 
-  CommunitySubscription subscribe(String communityName, String sectionName, long chatId);
+    CommunitySubscription subscribe(String communityName, String sectionName, long chatId);
 
-  void unsubscribe(String communityName, String sectionName, long chatId);
-
+    void unsubscribe(String communityName, String sectionName, long chatId);
 }

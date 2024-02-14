@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-
 @ToString
 @Getter
 @Builder
@@ -15,47 +14,43 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @AllArgsConstructor
 public class ChatCreateDTO {
 
-  private long chatId;
+    private long chatId;
 
-  private String type;
+    private String type;
 
-  private String title;
+    private String title;
 
-  private String firstName;
+    private String firstName;
 
-  private String lastName;
+    private String lastName;
 
-  private String username;
+    private String username;
 
-  private boolean active;
+    private boolean active;
 
-  public static ChatCreateDTO toDTO(Chat chat) {
+    public static ChatCreateDTO toDTO(Chat chat) {
 
-    return builder()
-        .chatId(chat.getChatId())
-        .type(chat.getType())
-        .title(chat.getTitle())
-        .firstName(chat.getFirstName())
-        .lastName(chat.getLastName())
-        .username(chat.getUsername())
-        .active(chat.isActive())
-        .build();
+        return builder()
+                .chatId(chat.getChatId())
+                .type(chat.getType())
+                .title(chat.getTitle())
+                .firstName(chat.getFirstName())
+                .lastName(chat.getLastName())
+                .username(chat.getUsername())
+                .active(chat.isActive())
+                .build();
+    }
 
-  }
+    public static Chat fromDTO(ChatCreateDTO dto) {
 
-  public static Chat fromDTO(ChatCreateDTO dto) {
-
-    return new Chat(
-        0,
-        dto.chatId,
-        dto.type,
-        dto.title,
-        dto.firstName,
-        dto.lastName,
-        dto.username,
-        dto.active
-    );
-
-  }
-
+        return new Chat(
+                0,
+                dto.chatId,
+                dto.type,
+                dto.title,
+                dto.firstName,
+                dto.lastName,
+                dto.username,
+                dto.active);
+    }
 }

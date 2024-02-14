@@ -11,10 +11,10 @@ import ru.dankoy.tcoubsinitiator.core.feign.subscription.SubscriptionFeign;
 @RequiredArgsConstructor
 public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionService {
 
-  private final SubscriptionFeign subscriptionFeign;
+    private final SubscriptionFeign subscriptionFeign;
 
-  @Override
-  public Page<ChannelSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable) {
-    return subscriptionFeign.getAllChannelSubscriptionsWithActiveChats(true, pageable);
-  }
+    @Override
+    public Page<ChannelSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable) {
+        return subscriptionFeign.getAllChannelSubscriptionsWithActiveChats(true, pageable);
+    }
 }

@@ -8,8 +8,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface SectionRepository extends JpaRepository<Section, Long> {
 
-  Optional<Section> getByName(String name);
+    Optional<Section> getByName(String name);
 
-  List<Section> getByNameIsIn(Set<String> names);
-
+    List<Section> getByNameIsIn(Set<String> names);
 }

@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 @Slf4j
 public class StartCommand extends BotCommand {
 
-  public StartCommand(String command, String description) {
-    super(command, description);
-  }
+    public StartCommand(String command, String description) {
+        super(command, description);
+    }
 }

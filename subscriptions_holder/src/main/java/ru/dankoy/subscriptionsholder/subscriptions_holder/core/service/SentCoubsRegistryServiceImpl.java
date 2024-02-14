@@ -13,35 +13,35 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SentCo
 @RequiredArgsConstructor
 public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
 
-  private final SentCoubsRegistryRepository sentCoubsRegistryRepository;
+    private final SentCoubsRegistryRepository sentCoubsRegistryRepository;
 
-  @Override
-  public Page<SentCoubsRegistry> findAll(Pageable pageable) {
-    return sentCoubsRegistryRepository.findAll(pageable);
-  }
+    @Override
+    public Page<SentCoubsRegistry> findAll(Pageable pageable) {
+        return sentCoubsRegistryRepository.findAll(pageable);
+    }
 
-  @Override
-  public Page<SentCoubsRegistry> getAllBySubscriptionId(long subscriptionId, Pageable pageable) {
-    return sentCoubsRegistryRepository.getAllBySubscriptionId(subscriptionId, pageable);
-  }
+    @Override
+    public Page<SentCoubsRegistry> getAllBySubscriptionId(long subscriptionId, Pageable pageable) {
+        return sentCoubsRegistryRepository.getAllBySubscriptionId(subscriptionId, pageable);
+    }
 
-  @Override
-  public Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
-      long subscriptionId, LocalDateTime dateTime, Pageable pageable) {
-    return sentCoubsRegistryRepository.getAllBySubscriptionIdAndDateTimeAfter(subscriptionId,
-        dateTime, pageable);
-  }
+    @Override
+    public Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+            long subscriptionId, LocalDateTime dateTime, Pageable pageable) {
+        return sentCoubsRegistryRepository.getAllBySubscriptionIdAndDateTimeAfter(
+                subscriptionId, dateTime, pageable);
+    }
 
-  @Transactional
-  @Override
-  public SentCoubsRegistry create(SentCoubsRegistry sentCoubsRegistry) {
-    return sentCoubsRegistryRepository.save(sentCoubsRegistry);
-  }
+    @Transactional
+    @Override
+    public SentCoubsRegistry create(SentCoubsRegistry sentCoubsRegistry) {
+        return sentCoubsRegistryRepository.save(sentCoubsRegistry);
+    }
 
-  @Transactional
-  @Override
-  public void deleteById(long id) {
-    var optional = sentCoubsRegistryRepository.getById(id);
-    optional.ifPresent(sentCoubsRegistryRepository::delete);
-  }
+    @Transactional
+    @Override
+    public void deleteById(long id) {
+        var optional = sentCoubsRegistryRepository.getById(id);
+        optional.ifPresent(sentCoubsRegistryRepository::delete);
+    }
 }

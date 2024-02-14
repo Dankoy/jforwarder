@@ -13,15 +13,15 @@ import ru.dankoy.coubtagssearcher.core.service.tag.TagService;
 @RestController
 public class TagController {
 
-  private final TagService tagService;
+    private final TagService tagService;
 
-  @GetMapping(
-      value = "/api/v1/tags",
-      params = {"title"})
-  public TagDTO findTagByTitle(@Valid @NotEmpty @NotNull String title) {
+    @GetMapping(
+            value = "/api/v1/tags",
+            params = {"title"})
+    public TagDTO findTagByTitle(@Valid @NotEmpty @NotNull String title) {
 
-    var tag = tagService.findTagByTitle(title);
+        var tag = tagService.findTagByTitle(title);
 
-    return TagDTO.toDTO(tag);
-  }
+        return TagDTO.toDTO(tag);
+    }
 }

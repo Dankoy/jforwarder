@@ -4,11 +4,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TagService {
 
-  Tag getByTitle(String title);
+    Tag getByTitle(String title);
 
-  Tag create(Tag tag);
+    Tag create(Tag tag);
 
-  Tag modify(Tag tag);
+    Tag modify(Tag tag);
 
-  void deleteByTitle(String title);
+    void deleteByTitle(String title);
 }

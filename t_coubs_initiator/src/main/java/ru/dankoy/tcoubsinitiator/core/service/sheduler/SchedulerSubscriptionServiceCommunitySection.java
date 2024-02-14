@@ -24,72 +24,74 @@ import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 @RequiredArgsConstructor
 public class SchedulerSubscriptionServiceCommunitySection {
 
-  private static final int FIRST_PAGE = 0;
-  private static final int PAGE_SIZE = 3;
+    private static final int FIRST_PAGE = 0;
+    private static final int PAGE_SIZE = 3;
 
-  private final SubscriptionService subscriptionService;
-  private final MessageProducerCommunitySubscriptionService
-      messageProducerCommunitySubscriptionService;
-  private final CoubFinderService coubFinderService;
-  private final FilterByRegistryService filter;
+    private final SubscriptionService subscriptionService;
+    private final MessageProducerCommunitySubscriptionService
+            messageProducerCommunitySubscriptionService;
+    private final CoubFinderService coubFinderService;
+    private final FilterByRegistryService filter;
 
-  @Scheduled(initialDelay = 30_000, fixedRate = 6_000_000) // 100 mins
-  public void scheduledOperation() {
+    @Scheduled(initialDelay = 30_000, fixedRate = 6_000_000) // 100 mins
+    public void scheduledOperation() {
 
-    int page = FIRST_PAGE;
-    int totalPages = Integer.MAX_VALUE;
+        int page = FIRST_PAGE;
+        int totalPages = Integer.MAX_VALUE;
 
-    // iterate by pages
-    while (page <= totalPages) {
+        // iterate by pages
+        while (page <= totalPages) {
 
-      var sort = Sort.by("id").ascending();
-      var pageable = PageRequest.of(page, PAGE_SIZE, sort);
+            var sort = Sort.by("id").ascending();
+            var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<CommunitySubscription> communitySubscriptionsPage =
-          subscriptionService.getAllSubscriptionsWithActiveChats(pageable);
+            Page<CommunitySubscription> communitySubscriptionsPage =
+                    subscriptionService.getAllSubscriptionsWithActiveChats(pageable);
 
-      totalPages = communitySubscriptionsPage.getTotalPages() - 1;
+            totalPages = communitySubscriptionsPage.getTotalPages() - 1;
 
-      log.info("CommunitySubscriptions page - {}", communitySubscriptionsPage);
-      log.info("CommunitySubscriptions - {}", communitySubscriptionsPage.getContent());
+            log.info("CommunitySubscriptions page - {}", communitySubscriptionsPage);
+            log.info("CommunitySubscriptions - {}", communitySubscriptionsPage.getContent());
 
-      // поиск кубов из апи с last_permalink
-      for (var subscription : communitySubscriptionsPage) {
+            // поиск кубов из апи с last_permalink
+            for (var subscription : communitySubscriptionsPage) {
 
-        log.info("Working with subscription - '{}'", subscription);
+                log.info("Working with subscription - '{}'", subscription);
 
-        List<Coub> coubsToSend =
-            coubFinderService.findUnsentCoubsForCommunitySubscription(subscription);
+                List<Coub> coubsToSend =
+                        coubFinderService.findUnsentCoubsForCommunitySubscription(subscription);
 
-        // reverse coubs
-        Collections.reverse(coubsToSend);
+                // reverse coubs
+                Collections.reverse(coubsToSend);
 
-        subscription.addCoubs(coubsToSend);
-      }
+                subscription.addCoubs(coubsToSend);
+            }
 
-      filter.filterByRegistry(communitySubscriptionsPage.getContent());
+            filter.filterByRegistry(communitySubscriptionsPage.getContent());
 
-      // remove subscriptions without coubs
+            // remove subscriptions without coubs
 
-      var toSend =
-          communitySubscriptionsPage.stream().filter(s -> !s.getCoubs().isEmpty()).toList();
+            var toSend =
+                    communitySubscriptionsPage.stream()
+                            .filter(s -> !s.getCoubs().isEmpty())
+                            .toList();
 
-      // send to message producer service
+            // send to message producer service
 
-      log.info("Coubs to send for all subscriptions - {}", toSend);
+            log.info("Coubs to send for all subscriptions - {}", toSend);
 
-      if (!toSend.isEmpty()) {
-        messageProducerCommunitySubscriptionService.sendCommunitySubscriptionsData(toSend);
-      }
+            if (!toSend.isEmpty()) {
+                messageProducerCommunitySubscriptionService.sendCommunitySubscriptionsData(toSend);
+            }
 
-      log.info("Page {} of {} is done", page, totalPages);
-      log.info(
-          "Amount of community subscriptions processed: {}",
-          communitySubscriptionsPage.getContent().size());
+            log.info("Page {} of {} is done", page, totalPages);
+            log.info(
+                    "Amount of community subscriptions processed: {}",
+                    communitySubscriptionsPage.getContent().size());
 
-      page++;
+            page++;
 
-      Utils.sleep(5_000);
+            Utils.sleep(5_000);
+        }
     }
-  }
 }

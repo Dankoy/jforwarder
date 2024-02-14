@@ -18,11 +18,11 @@ import ru.dankoy.kafkamessageproducer.core.domain.coub.Coub;
 @SuperBuilder
 public class Subscription {
 
-  private long id;
+    private long id;
 
-  private Chat chat;
+    private Chat chat;
 
-  private String lastPermalink;
+    private String lastPermalink;
 
-  private final List<Coub> coubs = new ArrayList<>();
+    private final List<Coub> coubs = new ArrayList<>();
 }

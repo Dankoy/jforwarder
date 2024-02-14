@@ -17,14 +17,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-
-@NamedEntityGraph(name = "subscription-full",
-    attributeNodes = {
-        @NamedAttributeNode("id"),
-        @NamedAttributeNode("chat"),
-        @NamedAttributeNode("lastPermalink")
-    }
-)
+@NamedEntityGraph(
+        name = "subscription-full",
+        attributeNodes = {
+            @NamedAttributeNode("id"),
+            @NamedAttributeNode("chat"),
+            @NamedAttributeNode("lastPermalink")
+        })
 @Table(name = "subscriptions")
 @Data
 @SuperBuilder
@@ -33,17 +32,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Subscription {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false)
-  private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private long id;
 
-  @ManyToOne
-  @JoinColumn(name = "chat_id")
-  private Chat chat;
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
-
-  @Column(name = "last_permalink")
-  private String lastPermalink;
-
+    @Column(name = "last_permalink")
+    private String lastPermalink;
 }

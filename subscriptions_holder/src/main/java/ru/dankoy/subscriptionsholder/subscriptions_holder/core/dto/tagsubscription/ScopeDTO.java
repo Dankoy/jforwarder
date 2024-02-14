@@ -12,27 +12,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class ScopeDTO {
 
-  private long id;
+    private long id;
 
-  private String name;
+    private String name;
 
-  public static ScopeDTO toDTO(Scope scope) {
+    public static ScopeDTO toDTO(Scope scope) {
 
-    return new ScopeDTO(
-        scope.getId(),
-        scope.getName()
-    );
+        return new ScopeDTO(scope.getId(), scope.getName());
+    }
 
-  }
+    public static Scope fromDTO(ScopeDTO dto) {
 
-  public static Scope fromDTO(ScopeDTO dto) {
-
-    return new Scope(
-        dto.getId(),
-        dto.getName()
-    );
-
-  }
-
-
+        return new Scope(dto.getId(), dto.getName());
+    }
 }

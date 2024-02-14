@@ -9,11 +9,11 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilderImpl;
 @Configuration
 public class TemplateBuilderConfig {
 
-  @Bean
-  public TemplateBuilder templateBuilder(FreeMarkerConfigurer freeMarkerConfigurer) {
+    @Bean
+    public TemplateBuilder templateBuilder(FreeMarkerConfigurer freeMarkerConfigurer) {
 
-    freeMarkerConfigurer.getConfiguration().setLocalizedLookup(true);
+        freeMarkerConfigurer.getConfiguration().setLocalizedLookup(true);
 
-    return new TemplateBuilderImpl(freeMarkerConfigurer);
-  }
+        return new TemplateBuilderImpl(freeMarkerConfigurer);
+    }
 }

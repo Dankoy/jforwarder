@@ -7,15 +7,14 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry.S
 
 public interface SentCoubsRegistryService {
 
-  Page<SentCoubsRegistry> findAll(Pageable pageable);
+    Page<SentCoubsRegistry> findAll(Pageable pageable);
 
-  Page<SentCoubsRegistry> getAllBySubscriptionId(long subscriptionId, Pageable pageable);
+    Page<SentCoubsRegistry> getAllBySubscriptionId(long subscriptionId, Pageable pageable);
 
-  Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(long subscriptionId,
-      LocalDateTime dateTime, Pageable pageable);
+    Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+            long subscriptionId, LocalDateTime dateTime, Pageable pageable);
 
-  SentCoubsRegistry create(SentCoubsRegistry sentCoubsRegistry);
+    SentCoubsRegistry create(SentCoubsRegistry sentCoubsRegistry);
 
-  void deleteById(long id);
-
+    void deleteById(long id);
 }

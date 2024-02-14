@@ -1,6 +1,5 @@
 package ru.dankoy.telegrambot.core.domain.subscription.community;
 
-
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -15,14 +14,13 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Community {
 
-  private long id;
-  private long externalId;
-  private String name;
+    private long id;
+    private long externalId;
+    private String name;
 
-  private Set<Section> sections;
+    private Set<Section> sections;
 
-  public Community(String name) {
-    this.name = name;
-  }
-
+    public Community(String name) {
+        this.name = name;
+    }
 }

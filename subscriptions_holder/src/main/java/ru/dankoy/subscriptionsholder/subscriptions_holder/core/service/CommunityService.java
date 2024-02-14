@@ -7,19 +7,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface CommunityService {
 
-  List<Community> getAll();
+    List<Community> getAll();
 
-  Community getByName(String name);
+    Community getByName(String name);
 
-  Community getByNameAndSectionName(String name, String sectionName);
+    Community getByNameAndSectionName(String name, String sectionName);
 
-  Community getByNameAndSectionIn(String name, Set<Section> sections);
+    Community getByNameAndSectionIn(String name, Set<Section> sections);
 
-  Community create(Community community);
+    Community create(Community community);
 
-  Community update(Community community);
+    Community update(Community community);
 
-  void delete(String name, String sectionName);
+    void delete(String name, String sectionName);
 
-  void delete(String name);
+    void delete(String name);
 }

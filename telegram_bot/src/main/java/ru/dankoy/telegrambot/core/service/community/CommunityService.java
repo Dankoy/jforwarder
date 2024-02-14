@@ -6,7 +6,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
 
 public interface CommunityService {
 
-  List<Community> getAll();
+    List<Community> getAll();
 
-  Optional<Community> getByName(String communityName);
+    Optional<Community> getByName(String communityName);
 }

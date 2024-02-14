@@ -12,9 +12,9 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = ChannelSubscriptionTypeValidator.class)
 public @interface ChannelSubscriptionTypeConstraint {
 
-  String message() default "{sendmessage.parseMode}";
+    String message() default "{sendmessage.parseMode}";
 
-  Class<?>[] groups() default {};
+    Class<?>[] groups() default {};
 
-  Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default {};
 }

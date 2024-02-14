@@ -11,23 +11,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.OrderR
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-  private final OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-  @Override
-  public Order getByValueAndType(String value, String subscriptionType) {
-    var optional = orderRepository.findByValueAndSubscriptionType(value, subscriptionType);
+    @Override
+    public Order getByValueAndType(String value, String subscriptionType) {
+        var optional = orderRepository.findByValueAndSubscriptionType(value, subscriptionType);
 
-    return optional.orElseThrow(
-        () -> new ResourceNotFoundException(String.format("Order not found - %s", value)));
-  }
+        return optional.orElseThrow(
+                () -> new ResourceNotFoundException(String.format("Order not found - %s", value)));
+    }
 
-  @Override
-  public List<Order> getAll() {
-    return orderRepository.findAll();
-  }
+    @Override
+    public List<Order> getAll() {
+        return orderRepository.findAll();
+    }
 
-  @Override
-  public List<Order> getAllBySubscriptionType(String subscriptionType) {
-    return orderRepository.findAllBySubscriptionTypeType(subscriptionType);
-  }
+    @Override
+    public List<Order> getAllBySubscriptionType(String subscriptionType) {
+        return orderRepository.findAllBySubscriptionTypeType(subscriptionType);
+    }
 }

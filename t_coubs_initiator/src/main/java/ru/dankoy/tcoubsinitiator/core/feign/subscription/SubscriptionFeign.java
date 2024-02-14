@@ -14,33 +14,33 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription
 @FeignClient(contextId = "subscriptions", name = "subscriptions-holder")
 public interface SubscriptionFeign {
 
-  @GetMapping(path = "/api/v1/community_subscriptions/{communityName}")
-  List<CommunitySubscription> getSubscriptionsByCommunityName(
-      @PathVariable(value = "communityName") String communityName);
+    @GetMapping(path = "/api/v1/community_subscriptions/{communityName}")
+    List<CommunitySubscription> getSubscriptionsByCommunityName(
+            @PathVariable(value = "communityName") String communityName);
 
-  @GetMapping(
-      path = "/api/v1/community_subscriptions",
-      params = {"page", "size", "sort"})
-  Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
+    @GetMapping(
+            path = "/api/v1/community_subscriptions",
+            params = {"page", "size", "sort"})
+    Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
 
-  @GetMapping(
-      path = "/api/v1/community_subscriptions",
-      params = {"active", "page", "size", "sort"})
-  Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+    @GetMapping(
+            path = "/api/v1/community_subscriptions",
+            params = {"active", "page", "size", "sort"})
+    Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(
+            @RequestParam boolean active, Pageable pageable);
 
-  @GetMapping(path = "/api/v1/tag_subscriptions/{tag}")
-  List<TagSubscription> getSubscriptionsByTagTitle(@PathVariable(value = "tag") String tag);
+    @GetMapping(path = "/api/v1/tag_subscriptions/{tag}")
+    List<TagSubscription> getSubscriptionsByTagTitle(@PathVariable(value = "tag") String tag);
 
-  @GetMapping(
-      path = "/api/v1/tag_subscriptions",
-      params = {"active", "page", "size", "sort"})
-  Page<TagSubscription> getAllTagSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+    @GetMapping(
+            path = "/api/v1/tag_subscriptions",
+            params = {"active", "page", "size", "sort"})
+    Page<TagSubscription> getAllTagSubscriptionsWithActiveChats(
+            @RequestParam boolean active, Pageable pageable);
 
-  @GetMapping(
-      path = "/api/v1/channel_subscriptions",
-      params = {"active", "page", "size", "sort"})
-  Page<ChannelSubscription> getAllChannelSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+    @GetMapping(
+            path = "/api/v1/channel_subscriptions",
+            params = {"active", "page", "size", "sort"})
+    Page<ChannelSubscription> getAllChannelSubscriptionsWithActiveChats(
+            @RequestParam boolean active, Pageable pageable);
 }

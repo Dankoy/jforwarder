@@ -7,23 +7,23 @@ import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 
 public interface BotCommandsFactory {
 
-  LocalisationService localisationService();
+    LocalisationService localisationService();
 
-  Locale locale();
+    Locale locale();
 
-  List<BotCommand> allKnownCommands();
+    List<BotCommand> allKnownCommands();
 
-  BotCommand communitiesCommand();
+    BotCommand communitiesCommand();
 
-  BotCommand helpCommand();
+    BotCommand helpCommand();
 
-  BotCommand mySubscriptionsCommand();
+    BotCommand mySubscriptionsCommand();
 
-  BotCommand startCommand();
+    BotCommand startCommand();
 
-  BotCommand subscribeCommand();
+    BotCommand subscribeCommand();
 
-  BotCommand unsubscribeCommand();
+    BotCommand unsubscribeCommand();
 
-  BotCommand tagOrdersCommand();
+    BotCommand tagOrdersCommand();
 }

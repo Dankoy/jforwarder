@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 
-
 @ToString
 @Getter
 @Builder
@@ -17,24 +16,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class SubscriptionCreateDTO {
 
-  @Valid
-  @Min(1)
-  private long id;
+    @Valid
+    @Min(1)
+    private long id;
 
-  public static SubscriptionCreateDTO toDTO(Subscription subscription) {
+    public static SubscriptionCreateDTO toDTO(Subscription subscription) {
 
-    return SubscriptionCreateDTO.builder()
-        .id(subscription.getId())
-        .build();
+        return SubscriptionCreateDTO.builder().id(subscription.getId()).build();
+    }
 
-  }
+    public static Subscription fromDTO(SubscriptionCreateDTO dto) {
 
-  public static Subscription fromDTO(SubscriptionCreateDTO dto) {
-
-    return Subscription.builder()
-        .id(dto.getId())
-        .build();
-
-  }
-
+        return Subscription.builder().id(dto.getId()).build();
+    }
 }

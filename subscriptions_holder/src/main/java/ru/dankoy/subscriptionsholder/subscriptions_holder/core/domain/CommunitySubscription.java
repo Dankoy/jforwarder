@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,11 +25,13 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
  * CommunitySub}
  */
 @Deprecated(since = "2024-01-28")
-@NamedEntityGraph(name = "community-subscription-full",
-    attributeNodes = {@NamedAttributeNode("community"),
-        @NamedAttributeNode("section"),
-        @NamedAttributeNode("chat")}
-)
+@NamedEntityGraph(
+        name = "community-subscription-full",
+        attributeNodes = {
+            @NamedAttributeNode("community"),
+            @NamedAttributeNode("section"),
+            @NamedAttributeNode("chat")
+        })
 @Getter
 @ToString
 @Data
@@ -40,25 +41,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Table(name = "community_subscriptions")
 public class CommunitySubscription {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false)
-  private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private long id;
 
-  @ManyToOne
-  @JoinColumn(name = "community_id")
-  private Community community;
+    @ManyToOne
+    @JoinColumn(name = "community_id")
+    private Community community;
 
-  @ManyToOne
-  @JoinColumn(name = "section_id")
-  private Section section;
+    @ManyToOne
+    @JoinColumn(name = "section_id")
+    private Section section;
 
-  @ManyToOne
-  @JoinColumn(name = "chat_id")
-  private Chat chat;
+    @ManyToOne
+    @JoinColumn(name = "chat_id")
+    private Chat chat;
 
-
-  @Column(name = "last_permalink")
-  private String lastPermalink;
-
+    @Column(name = "last_permalink")
+    private String lastPermalink;
 }

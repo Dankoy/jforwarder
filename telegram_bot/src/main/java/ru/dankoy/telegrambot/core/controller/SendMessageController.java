@@ -12,13 +12,13 @@ import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 @RestController
 public class SendMessageController {
 
-  private final TelegramBot telegramBot;
+    private final TelegramBot telegramBot;
 
-  @PostMapping("/api/v1/send_message")
-  public void sendMessage(@Valid @RequestBody SendMessageDto dto) {
+    @PostMapping("/api/v1/send_message")
+    public void sendMessage(@Valid @RequestBody SendMessageDto dto) {
 
-    var fromDto = SendMessageDto.fromDTO(dto);
+        var fromDto = SendMessageDto.fromDTO(dto);
 
-    fromDto.forEach(telegramBot::sendMessage);
-  }
+        fromDto.forEach(telegramBot::sendMessage);
+    }
 }

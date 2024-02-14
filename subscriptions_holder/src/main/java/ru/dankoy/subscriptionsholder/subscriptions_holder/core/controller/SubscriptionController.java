@@ -14,16 +14,16 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.Subscript
 @RestController
 public class SubscriptionController {
 
-  private final SubscriptionService subscriptionService;
+    private final SubscriptionService subscriptionService;
 
-  @PutMapping("/api/v1/subscriptions")
-  @ResponseStatus(HttpStatus.ACCEPTED)
-  public SubscriptionUpdatePermalinkDTO updatePermalink(
-      @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
+    @PutMapping("/api/v1/subscriptions")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public SubscriptionUpdatePermalinkDTO updatePermalink(
+            @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
 
-    var ts = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
-    var sub = subscriptionService.updatePermalink(ts);
+        var ts = SubscriptionUpdatePermalinkDTO.fromDTO(dto);
+        var sub = subscriptionService.updatePermalink(ts);
 
-    return SubscriptionUpdatePermalinkDTO.toDTO(sub);
-  }
+        return SubscriptionUpdatePermalinkDTO.toDTO(sub);
+    }
 }

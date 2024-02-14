@@ -1,6 +1,5 @@
 package ru.dankoy.telegrambot.core.domain;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,21 +14,17 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Chat {
 
-  private long id;
-  private long chatId;
-  private String type;
-  private String title;
-  private String firstName;
-  private String lastName;
-  private String username;
+    private long id;
+    private long chatId;
+    private String type;
+    private String title;
+    private String firstName;
+    private String lastName;
+    private String username;
 
-  @Setter
-  private boolean active;
+    @Setter private boolean active;
 
-
-  public Chat(long chatId) {
-    this.chatId = chatId;
-  }
-
-
+    public Chat(long chatId) {
+        this.chatId = chatId;
+    }
 }

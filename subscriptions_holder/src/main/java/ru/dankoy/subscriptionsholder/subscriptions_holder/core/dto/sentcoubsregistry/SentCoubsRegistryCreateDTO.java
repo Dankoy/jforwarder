@@ -18,38 +18,27 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry.S
 @AllArgsConstructor
 public class SentCoubsRegistryCreateDTO {
 
-  @Valid
-  @NotNull
-  private SubscriptionCreateDTO subscription;
+    @Valid @NotNull private SubscriptionCreateDTO subscription;
 
-  @Valid
-  @NotEmpty
-  private String coubPermalink;
+    @Valid @NotEmpty private String coubPermalink;
 
-  @Valid
-  @NotNull
-  private LocalDateTime dateTime;
+    @Valid @NotNull private LocalDateTime dateTime;
 
+    public static SentCoubsRegistryCreateDTO toDTO(SentCoubsRegistry sentCoubsRegistry) {
 
-  public static SentCoubsRegistryCreateDTO toDTO(SentCoubsRegistry sentCoubsRegistry) {
+        return SentCoubsRegistryCreateDTO.builder()
+                .subscription(SubscriptionCreateDTO.toDTO(sentCoubsRegistry.getSubscription()))
+                .coubPermalink(sentCoubsRegistry.getCoubPermalink())
+                .dateTime(sentCoubsRegistry.getDateTime())
+                .build();
+    }
 
-    return SentCoubsRegistryCreateDTO.builder()
-        .subscription(SubscriptionCreateDTO.toDTO(sentCoubsRegistry.getSubscription()))
-        .coubPermalink(sentCoubsRegistry.getCoubPermalink())
-        .dateTime(sentCoubsRegistry.getDateTime())
-        .build();
+    public static SentCoubsRegistry fromDTO(SentCoubsRegistryCreateDTO dto) {
 
-  }
-
-  public static SentCoubsRegistry fromDTO(SentCoubsRegistryCreateDTO dto) {
-
-    return new SentCoubsRegistry(
-        0,
-        SubscriptionCreateDTO.fromDTO(dto.getSubscription()),
-        dto.getCoubPermalink(),
-        dto.getDateTime()
-    );
-
-  }
-
+        return new SentCoubsRegistry(
+                0,
+                SubscriptionCreateDTO.fromDTO(dto.getSubscription()),
+                dto.getCoubPermalink(),
+                dto.getDateTime());
+    }
 }

@@ -16,19 +16,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class OrderCreateDTO {
 
-  @NotEmpty private String value;
+    @NotEmpty private String value;
 
-  @Valid @NotNull private SubscriptionTypeCreateDTO subscriptionType;
+    @Valid @NotNull private SubscriptionTypeCreateDTO subscriptionType;
 
-  public static OrderCreateDTO toDTO(Order order) {
+    public static OrderCreateDTO toDTO(Order order) {
 
-    return new OrderCreateDTO(
-        order.getValue(), new SubscriptionTypeCreateDTO(order.getSubscriptionType().getType()));
-  }
+        return new OrderCreateDTO(
+                order.getValue(),
+                new SubscriptionTypeCreateDTO(order.getSubscriptionType().getType()));
+    }
 
-  public static Order fromDTO(OrderCreateDTO dto) {
+    public static Order fromDTO(OrderCreateDTO dto) {
 
-    return new Order(
-        0, null, dto.getValue(), new SubscriptionType(0, dto.getSubscriptionType().getType()));
-  }
+        return new Order(
+                0,
+                null,
+                dto.getValue(),
+                new SubscriptionType(0, dto.getSubscriptionType().getType()));
+    }
 }

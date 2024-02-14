@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -18,13 +17,11 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Su
 @AllArgsConstructor
 public class TagSubscription extends Subscription {
 
-  private Tag tag;
+    private Tag tag;
 
-  private Order order;
+    private Order order;
 
-  private Scope scope;
+    private Scope scope;
 
-  private Type type;
-
-
+    private Type type;
 }

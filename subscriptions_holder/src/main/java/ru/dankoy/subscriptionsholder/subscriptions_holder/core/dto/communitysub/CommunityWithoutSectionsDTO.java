@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 
-
 @ToString
 @Getter
 @Builder
@@ -17,34 +16,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class CommunityWithoutSectionsDTO {
 
-  private long id;
+    private long id;
 
-  @NotNull
-  private long externalId;
+    @NotNull private long externalId;
 
-  @NotNull
-  private String name;
+    @NotNull private String name;
 
+    public static CommunityWithoutSectionsDTO toDTO(Community community) {
 
-  public static CommunityWithoutSectionsDTO toDTO(Community community) {
+        return builder()
+                .id(community.getId())
+                .externalId(community.getExternalId())
+                .name(community.getName())
+                .build();
+    }
 
-    return builder()
-        .id(community.getId())
-        .externalId(community.getExternalId())
-        .name(community.getName())
-        .build();
+    public static Community fromDTO(CommunityWithoutSectionsDTO dto) {
 
-  }
-
-  public static Community fromDTO(CommunityWithoutSectionsDTO dto) {
-
-    return new Community(
-        dto.id,
-        dto.externalId,
-        dto.name,
-        new HashSet<>()
-    );
-
-  }
-
+        return new Community(dto.id, dto.externalId, dto.name, new HashSet<>());
+    }
 }

@@ -15,14 +15,14 @@ import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.channel.Channel;
 
 @NamedEntityGraph(
-    name = "channel-subscription-full-inherited",
-    includeAllAttributes = true,
-    attributeNodes = {
-      @NamedAttributeNode("channel"),
-      @NamedAttributeNode("order"),
-      @NamedAttributeNode("scope"),
-      @NamedAttributeNode("type"),
-    })
+        name = "channel-subscription-full-inherited",
+        includeAllAttributes = true,
+        attributeNodes = {
+            @NamedAttributeNode("channel"),
+            @NamedAttributeNode("order"),
+            @NamedAttributeNode("scope"),
+            @NamedAttributeNode("type"),
+        })
 @Getter
 @ToString(callSuper = true)
 @Data
@@ -33,19 +33,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Table(name = "channel_subs")
 public class ChannelSub extends Subscription {
 
-  @ManyToOne
-  @JoinColumn(name = "channel_id")
-  private Channel channel;
+    @ManyToOne
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
 
-  @ManyToOne
-  @JoinColumn(name = "order_id")
-  private Order order;
+    @ManyToOne
+    @JoinColumn(name = "order_id")
+    private Order order;
 
-  @ManyToOne
-  @JoinColumn(name = "scope_id")
-  private Scope scope;
+    @ManyToOne
+    @JoinColumn(name = "scope_id")
+    private Scope scope;
 
-  @ManyToOne
-  @JoinColumn(name = "type_id")
-  private Type type;
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private Type type;
 }

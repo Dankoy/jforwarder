@@ -14,11 +14,11 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.channelsubscripti
 @ToString(callSuper = true)
 @NoArgsConstructor
 public final class ChannelSubscriptionMessage extends CoubMessage {
-  private Channel channel;
+    private Channel channel;
 
-  private Order order;
+    private Order order;
 
-  private Scope scope;
+    private Scope scope;
 
-  private Type type;
+    private Type type;
 }

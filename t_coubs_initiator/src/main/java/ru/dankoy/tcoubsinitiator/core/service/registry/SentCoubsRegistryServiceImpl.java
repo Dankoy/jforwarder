@@ -15,36 +15,36 @@ import ru.dankoy.tcoubsinitiator.core.feign.registry.SentCoubsRegisrtyFeign;
 @RequiredArgsConstructor
 public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
 
-  private static final int FIRST_PAGE = 0;
-  private static final int PER_PAGE = 10;
+    private static final int FIRST_PAGE = 0;
+    private static final int PER_PAGE = 10;
 
-  private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
+    private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
 
-  @Override
-  public Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
-      long subscriptionId, LocalDateTime dateTime) {
+    @Override
+    public Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+            long subscriptionId, LocalDateTime dateTime) {
 
-    Set<SentCoubsRegistry> sentCoubsRegistries = new HashSet<>();
+        Set<SentCoubsRegistry> sentCoubsRegistries = new HashSet<>();
 
-    int currentPage = FIRST_PAGE;
-    var totalPages = Integer.MAX_VALUE;
+        int currentPage = FIRST_PAGE;
+        var totalPages = Integer.MAX_VALUE;
 
-    var sort = Sort.by("id").ascending();
-    var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
+        var sort = Sort.by("id").ascending();
+        var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
-    while (currentPage <= totalPages) {
+        while (currentPage <= totalPages) {
 
-      Page<SentCoubsRegistry> page =
-          sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
-              subscriptionId, dateTime, pageable);
+            Page<SentCoubsRegistry> page =
+                    sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
+                            subscriptionId, dateTime, pageable);
 
-      totalPages = page.getTotalPages() - 1;
+            totalPages = page.getTotalPages() - 1;
 
-      sentCoubsRegistries.addAll(page.getContent());
+            sentCoubsRegistries.addAll(page.getContent());
 
-      currentPage++;
+            currentPage++;
+        }
+
+        return sentCoubsRegistries;
     }
-
-    return sentCoubsRegistries;
-  }
 }

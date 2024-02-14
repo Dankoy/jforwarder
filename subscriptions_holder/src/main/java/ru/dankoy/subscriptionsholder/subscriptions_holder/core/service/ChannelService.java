@@ -4,13 +4,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ChannelService {
 
-  Channel getByTitle(String title);
-  Channel getByPermalink(String permalink);
+    Channel getByTitle(String title);
 
-  Channel create(Channel tag);
+    Channel getByPermalink(String permalink);
 
-  Channel modify(Channel tag);
+    Channel create(Channel tag);
 
-  void deleteByTitle(String title);
-  void deleteByPermalink(String title);
+    Channel modify(Channel tag);
+
+    void deleteByTitle(String title);
+
+    void deleteByPermalink(String title);
 }

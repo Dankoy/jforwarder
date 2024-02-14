@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.coub;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @ToString
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
@@ -20,16 +18,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class Coub implements Permalink {
 
-  private long id;
+    private long id;
 
-  private String title;
+    private String title;
 
-  private String permalink;
+    private String permalink;
 
-  @Setter
-  private String url;
+    @Setter private String url;
 
-  @JsonProperty("published_at")
-  private LocalDateTime publishedAt;
-
+    @JsonProperty("published_at")
+    private LocalDateTime publishedAt;
 }

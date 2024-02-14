@@ -4,7 +4,7 @@ import java.util.Locale;
 
 public interface LocaleConfig extends FullBotProperties {
 
-  Locale getDefaultLocale();
+    Locale getDefaultLocale();
 
-  Locale[] getLocales();
+    Locale[] getLocales();
 }
