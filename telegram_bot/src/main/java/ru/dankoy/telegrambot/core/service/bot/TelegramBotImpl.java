@@ -49,6 +49,11 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
 
+  private static final String TEMPLATE_SUBSCRIPTION_SUCCESS = "subscriptionCompleted";
+  private static final String TEMPLATE_UNSUBSCRIBE_SUCCESS = "unsubscriptionCompleted";
+  private static final String TEMPLATE_SUBSCRIPTION_EXISTS = "alreadySubscribed";
+  private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
+
   private static final String COMMAND_FIRST_FIELD = "first";
   private static final String COMMAND_SECOND_FIELD = "second";
   private static final String COMMAND_SUBSCRIPTION_TYPE_FIELD = "subscription_type";
@@ -270,7 +275,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "subscriptionCompleted",
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
               new Object[] {s.getCommunity().getName(), s.getSection().getName()},
               localeProvider.getLocale(inputMessage)));
 
@@ -279,7 +284,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (Conflict e) {
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "alreadySubscribed",
+              TEMPLATE_SUBSCRIPTION_EXISTS,
               new Object[] {communityName, sectionName},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
@@ -290,9 +295,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {e.getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -309,13 +314,13 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "unsubscriptionCompleted",
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
               new Object[] {communityName, sectionName},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
 
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -391,7 +396,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "subscriptionCompleted",
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
               new Object[] {s.getTag().getTitle(), s.getOrder().getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
@@ -399,7 +404,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (Conflict e) {
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "alreadySubscribed",
+              TEMPLATE_SUBSCRIPTION_EXISTS,
               new Object[] {tagName, orderValue},
               localeProvider.getLocale(inputMessage)));
 
@@ -411,9 +416,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {e.getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -431,14 +436,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "unsubscriptionCompleted",
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
               new Object[] {tagName, orderValue},
               localeProvider.getLocale(inputMessage)));
 
       send(sendMessage);
 
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -457,7 +462,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "subscriptionCompleted",
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
               new Object[] {s.getChannel().getPermalink(), s.getOrder().getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
@@ -465,7 +470,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (Conflict e) {
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "alreadySubscribed",
+              TEMPLATE_SUBSCRIPTION_EXISTS,
               new Object[] {channelPermalink, orderValue},
               localeProvider.getLocale(inputMessage)));
 
@@ -477,9 +482,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {e.getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -497,14 +502,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "unsubscriptionCompleted",
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
               new Object[] {channelPermalink, orderValue},
               localeProvider.getLocale(inputMessage)));
 
       send(sendMessage);
 
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -578,7 +583,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     if (command.length < 4) {
       log.error("Expected valid command but got - {}", Arrays.asList(command));
-      throwSubscriptionException(inputMessage, command[0]);
+      throwSubscriptionException(inputMessage, command[0], TEMPLATE_SUBSCRIPTION_EXCEPTION);
     }
 
     checkSubscriptionTypeInCommand(inputMessage, command);
@@ -602,7 +607,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     if (command.length != 2) {
       log.error("Expected valid command but got - {}", Arrays.asList(command));
-      throwSubscriptionException(inputMessage, command[0]);
+      throwSubscriptionException(inputMessage, command[0], "orders_exception.ftl");
     }
 
     checkSubscriptionTypeInCommand(inputMessage, command);
@@ -805,27 +810,26 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     return inputString;
   }
 
-  private SendMessage buildSubscriptionHelpMessage(Message message, String command) {
+  private SendMessage buildHelpMessage(Message message, String command, String helpType) {
 
     return SendMessage.builder()
         .chatId(message.getChatId())
-        .text(getSubscriptionCommandHelp(message, command))
+        .text(getCommandHelp(message, command, helpType))
         .parseMode(ParseMode.MARKDOWN)
         .build();
   }
 
-  private String getSubscriptionCommandHelp(Message message, String command) {
+  private String getCommandHelp(Message message, String command, String helpType) {
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put(COMMAND, command);
 
-    return templateBuilder.writeTemplate(
-        templateData, "subscription_exception.ftl", localeProvider.getLocale(message));
+    return templateBuilder.writeTemplate(templateData, helpType, localeProvider.getLocale(message));
   }
 
-  private void throwSubscriptionException(Message message, String command) {
+  private void throwSubscriptionException(Message message, String command, String helpType) {
 
-    throw new BotException(getSubscriptionCommandHelp(message, command));
+    throw new BotException(getCommandHelp(message, command, helpType));
   }
 
   private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
