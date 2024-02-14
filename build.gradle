@@ -1,6 +1,10 @@
 // custom configuration and dependencies are moved to buildSrc
 // dependabot probably wont work with such configuration
 
+plugins {
+    id 'spotless-conventions'
+}
+
 ext {
     set("PROJECT_VERSION", "1.1.0")
 }
@@ -25,5 +29,23 @@ tasks.register('printVersion') {
     }
 }
 
+spotless {
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        toggleOffOn()
+        googleJavaFormat('1.19.2')
+                .aosp()
+                .reflowLongStrings()
+                .formatJavadoc(false)
+                .reorderImports(false)
+                .groupArtifact('com.google.googlejavaformat:google-java-format')
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
 
 
