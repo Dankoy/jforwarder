@@ -105,13 +105,16 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   public void unsubscribe(
       String tagName, String orderValue, String scopeName, String typeName, long chatId) {
 
+    var order = new Order(orderValue);
+    order.setSubscriptionType(SubscriptionType.TAG);
+
     var tagSubscription =
         (TagSubscription)
             TagSubscription.builder()
                 .id(0)
                 .tag(new Tag(tagName))
                 .chat(new Chat(chatId))
-                .order(new Order(orderValue))
+                .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))
                 .build();

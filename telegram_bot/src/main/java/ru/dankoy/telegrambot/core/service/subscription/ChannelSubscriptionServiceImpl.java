@@ -105,13 +105,16 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
   public void unsubscribe(
       String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
 
+    var order = new Order(orderValue);
+    order.setSubscriptionType(SubscriptionType.CHANNEL);
+
     var channelSubscription =
         (ChannelSubscription)
             ChannelSubscription.builder()
                 .id(0)
                 .channel(new Channel(channelPermalink))
                 .chat(new Chat(chatId))
-                .order(new Order(orderValue))
+                .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))
                 .build();
