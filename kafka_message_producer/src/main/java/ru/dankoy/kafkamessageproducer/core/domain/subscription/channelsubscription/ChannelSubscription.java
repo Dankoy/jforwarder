@@ -10,7 +10,6 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Scope;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Tag;
 
 @Getter
 @ToString
