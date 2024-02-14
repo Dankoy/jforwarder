@@ -9,6 +9,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 
+/**
+ * @deprecated in favor {@link MessageProducerServiceKafka}
+ */
+@Deprecated(since = "2024-02-14")
 @Slf4j
 @RequiredArgsConstructor
 public class TagMessageProducerServiceKafka implements TagMessageProducerService {

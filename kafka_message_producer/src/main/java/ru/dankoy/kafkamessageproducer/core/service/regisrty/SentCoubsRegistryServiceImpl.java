@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.feign.subscriptionsholder.subscription.SubscriptionFeign;
@@ -17,25 +18,32 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegisrtyService {
 
   private final MessageConverter messageConverter;
 
+//  @Override
+//  public SentCoubsRegistry create(CommunitySubscriptionMessage communitySubscriptionMessage) {
+//
+//    var subscription = messageConverter.convertToRegistry(communitySubscriptionMessage);
+//
+//    return subscriptionFeign.createRegistryEntry(subscription);
+//
+//  }
+//
+//  @Override
+//  public SentCoubsRegistry create(TagSubscriptionMessage tagSubscriptionMessage) {
+//
+//    var subscription = messageConverter.convertToRegistry(tagSubscriptionMessage);
+//    return subscriptionFeign.createRegistryEntry(subscription);
+//  }
+//
+//  @Override
+//  public SentCoubsRegistry create(ChannelSubscriptionMessage channelSubscriptionMessage) {
+//    var subscription = messageConverter.convertToRegistry(channelSubscriptionMessage);
+//    return subscriptionFeign.createRegistryEntry(subscription);
+//  }
+
   @Override
-  public SentCoubsRegistry create(CommunitySubscriptionMessage communitySubscriptionMessage) {
-
-    var subscription = messageConverter.convertToRegistry(communitySubscriptionMessage);
-
+  public SentCoubsRegistry create(CoubMessage coubMessage) {
+    var subscription = messageConverter.convertToRegistry(coubMessage);
     return subscriptionFeign.createRegistryEntry(subscription);
-
   }
 
-  @Override
-  public SentCoubsRegistry create(TagSubscriptionMessage tagSubscriptionMessage) {
-
-    var subscription = messageConverter.convertToRegistry(tagSubscriptionMessage);
-    return subscriptionFeign.createRegistryEntry(subscription);
-  }
-
-  @Override
-  public SentCoubsRegistry create(ChannelSubscriptionMessage channelSubscriptionMessage) {
-    var subscription = messageConverter.convertToRegistry(channelSubscriptionMessage);
-    return subscriptionFeign.createRegistryEntry(subscription);
-  }
 }

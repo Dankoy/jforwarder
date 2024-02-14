@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.controller;
 
-
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerService;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
 
 @Slf4j
 @RestController
@@ -22,7 +21,7 @@ public class CommunitySubscriptionController {
 
   private final MessageConverter converter;
 
-  private final CommunityMessageProducerService producerService;
+  private final MessageProducerServiceKafka communityMessageProducerServiceKafka;
 
   @PostMapping("/api/v1/subscriptions")
   @ResponseStatus(HttpStatus.ACCEPTED)
@@ -30,13 +29,12 @@ public class CommunitySubscriptionController {
 
     log.info("{}", communitySubscriptions);
 
-    List<CommunitySubscriptionMessage> converted = communitySubscriptions.stream()
-        .map(converter::convert)
-        .flatMap(Collection::stream)
-        .toList();
+    List<CommunitySubscriptionMessage> converted =
+        communitySubscriptions.stream()
+            .map(converter::convert)
+            .flatMap(Collection::stream)
+            .toList();
 
-    converted.forEach(producerService::send);
-
+    converted.forEach(communityMessageProducerServiceKafka::send);
   }
-
 }
