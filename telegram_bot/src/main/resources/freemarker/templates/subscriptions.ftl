@@ -1,4 +1,4 @@
-<#if communitySubscriptions?has_content || tagSubscriptions?has_content>
+<#if communitySubscriptions?has_content || tagSubscriptions?has_content || channelSubscriptions?has_content>
     <#if communitySubscriptions?has_content>
     Community subscriptions:
         <#list communitySubscriptions as communitySubscription>
