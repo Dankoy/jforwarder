@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.commands.DeleteMyCommands;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -96,6 +97,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     try {
 
+      unregisterCommands(botConfiguration);
       registerCommands(botConfiguration);
 
     } catch (TelegramApiException e) {
@@ -851,6 +853,25 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
         this.execute(setMyCommands);
       }
+    }
+  }
+
+  private void unregisterCommands(BotConfiguration botConfiguration) throws TelegramApiException {
+
+    // delete for default locale (without locale)
+
+    var deleteMyCommands = new DeleteMyCommands();
+    deleteMyCommands.setScope(new BotCommandScopeDefault());
+    this.execute(deleteMyCommands);
+
+    // then delete for every knows locale
+    for (Entry<Locale, List<BotCommand>> entry :
+        botConfiguration.commandsHolder().getCommands().entrySet()) {
+
+      deleteMyCommands =
+          new DeleteMyCommands(new BotCommandScopeDefault(), entry.getKey().getLanguage());
+
+      this.execute(deleteMyCommands);
     }
   }
 
