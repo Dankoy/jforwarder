@@ -11,10 +11,11 @@ Commands references:
 3) /unsubscribe {subscription_type} {field1} {field2}
     Available {subscription_type}: ${subscription_types?lower_case}.
     Contents of field1 and field2 depend on subscription_type. Please refer to example below.
-    To see available tag orders run /tag_orders command
+    To see available tag orders run /orders command
     To see available communities run /communities command
 
-4) /tag_orders - shows available orders for tag subscriptions
+4) /orders - shows available orders for tag subscriptions
+    {field1} - один из ${subscription_types?lower_case}
 
 5) /communities - shows available communities and sections for community subscriptions
 

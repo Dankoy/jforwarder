@@ -121,7 +121,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var subscribeCommunityFromGroup = "/subscribe" + getGroupChatBotName();
     var unsubscribeCommunityFromGroup = "/unsubscribe" + getGroupChatBotName();
     var communitiesFromGroup = "/communities" + getGroupChatBotName();
-    var tagOrdersFromGroup = "/tag_orders" + getGroupChatBotName();
+    var tagOrdersFromGroup = "/orders" + getGroupChatBotName();
 
     if (messageText.equals("/my_subscriptions") || messageText.equals(subsFromGroup)) {
       mySubscriptions(inputMessage);
@@ -139,7 +139,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       unsubscribeUtils(inputMessage);
     } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
       communities(inputMessage);
-    } else if (messageText.equals("/tag_orders") || messageText.equals(tagOrdersFromGroup)) {
+    } else if (messageText.startsWith("/orders") || messageText.equals(tagOrdersFromGroup)) {
       orders(inputMessage);
     } else {
       help(inputMessage);
@@ -445,26 +445,35 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private void orders(Message inputMessage) {
 
-    //todo: make dependent on command
+    try {
 
-    var sendMessage = createReply(inputMessage);
-    sendMessage.setParseMode(ParseMode.MARKDOWN);
-    List<Order> orders = orderService.findAll();
+      Map<String, SubscriptionType> command = parseOrderCommandMultipleWords(inputMessage);
 
-    // escape special chars in order names
-    var updated =
-        orders.stream().map(order -> new Order(escapeMetaCharacters(order.getValue()))).toList();
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      List<Order> orders = orderService.findAllByType(command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD));
 
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put("orders", updated);
+      // escape special chars in order names
+      var updated =
+          orders.stream().map(order -> new Order(escapeMetaCharacters(order.getValue()))).toList();
 
-    var text =
-        templateBuilder.writeTemplate(
-            templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
+      Map<String, Object> templateData = new HashMap<>();
+      templateData.put("orders", updated);
 
-    sendMessage.setText(text);
+      var text =
+          templateBuilder.writeTemplate(
+              templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
 
-    send(sendMessage);
+      sendMessage.setText(text);
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setText(e.getMessage());
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      send(sendMessage);
+    }
   }
 
   private void send(SendMessage sendMessage) {
@@ -490,6 +499,38 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       throwSubscriptionException(inputMessage, command[0]);
     }
 
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    // Get all words after 0 and last element and concat in one string
+    var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
+
+    result.put(COMMAND, command[0]);
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
+    result.put(COMMAND_FIRST_FIELD, s);
+    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
+
+    return result;
+  }
+
+  private Map<String, SubscriptionType> parseOrderCommandMultipleWords(Message inputMessage) {
+
+    Map<String, SubscriptionType> result = new HashMap<>();
+
+    String[] command = inputMessage.getText().split(" ");
+
+    if (command.length != 2) {
+      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      throwSubscriptionException(inputMessage, command[0]);
+    }
+
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, SubscriptionType.valueOf(command[1].toUpperCase()));
+
+    return result;
+  }
+
+  private void checkSubscriptionTypeInCommand(Message inputMessage, String[] command) {
     try {
       SubscriptionType.valueOf(command[1].toUpperCase());
     } catch (IllegalArgumentException e) {
@@ -501,16 +542,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {Arrays.asList(SubscriptionType.values()).toString().toLowerCase()},
               localeProvider.getLocale(inputMessage)));
     }
-
-    // Get all words after 0 and last element and concat in one string
-    var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
-
-    result.put(COMMAND, command[0]);
-    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
-    result.put(COMMAND_FIRST_FIELD, s);
-    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
-
-    return result;
   }
 
   @Override
@@ -676,7 +707,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
     }
-
   }
 
   private String escapeMetaCharacters(String inputString) {
