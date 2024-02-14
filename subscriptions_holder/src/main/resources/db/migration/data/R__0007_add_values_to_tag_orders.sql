@@ -1,31 +1,31 @@
 update
-    tag_orders
+    orders
 set value = 'popular'
 where id =
       (select id
-       from tag_orders
-       where tag_orders."name" = 'newest_popular');
+       from orders
+       where orders."name" = 'newest_popular');
 
 update
-    tag_orders
+    orders
 set value = 'top'
 where id =
       (select id
-       from tag_orders
-       where tag_orders."name" = 'likes_count');
+       from orders
+       where orders."name" = 'likes_count');
 
 update
-    tag_orders
+    orders
 set value = 'views_count'
 where id =
       (select id
-       from tag_orders
-       where tag_orders."name" = 'views_count');
+       from orders
+       where orders."name" = 'views_count');
 
 update
-    tag_orders
+    orders
 set value = 'fresh'
 where id =
       (select id
-       from tag_orders
-       where tag_orders."name" = 'newest');
+       from orders
+       where orders."name" = 'newest');

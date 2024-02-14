@@ -1,10 +1,11 @@
+-- applied after 5.0
 -- update current
 update orders
 set subscription_type_id = subscription_types.id
 from subscription_types
 where type = 'tag';
 
--- -- insert for channel
+-- insert for channel
 with select_order_type as (select id
                            from subscription_types
                            where type = 'channel')

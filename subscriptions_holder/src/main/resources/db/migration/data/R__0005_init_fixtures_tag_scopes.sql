@@ -1,2 +1,4 @@
-insert into tag_scopes(NAME)
-values ('all');
+-- after 5.0 migration
+insert into scopes(NAME)
+values ('all')
+on conflict do nothing;
