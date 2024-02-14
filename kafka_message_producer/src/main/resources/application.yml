@@ -4,6 +4,7 @@ application:
 #      coub-subscriptions: "coub-subscriptions" # one topic for all subs
       coub-com-subs: "coub-com-sub"
       coub-tag-subs: "coub-tag-sub"
+      coub-channel-subs: "coub-channel-sub"
     producers:
       coubs:
         client-id: "coubs-producer" # custom props configuration in factory

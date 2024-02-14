@@ -17,6 +17,8 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.ChannelMessageProducerService;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.ChannelMessageProducerServiceKafka;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerService;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerServiceKafka;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
@@ -30,14 +32,17 @@ public class KafkaTwoTopicsOneFactoryConfig {
 
   private final String coubCommunityTopicName;
   private final String coubTagTopicName;
+  private final String coubChannelTopicName;
   private final String communityProducerClientId;
 
   public KafkaTwoTopicsOneFactoryConfig(
       @Value("${application.kafka.topic.coub-com-subs}") String coubCommunityTopicName,
       @Value("${application.kafka.topic.coub-tag-subs}") String coubTagTopicName,
+      @Value("${application.kafka.topic.coub-channel-subs}") String coubChannelTopicName,
       @Value("${application.kafka.producers.coubs.client-id}") String coubsProducerClientId) {
     this.coubCommunityTopicName = coubCommunityTopicName;
     this.coubTagTopicName = coubTagTopicName;
+    this.coubChannelTopicName = coubChannelTopicName;
     this.communityProducerClientId = coubsProducerClientId;
   }
 
@@ -83,6 +88,11 @@ public class KafkaTwoTopicsOneFactoryConfig {
   }
 
   @Bean
+  public NewTopic topicCoubChannelMessage() {
+    return TopicBuilder.name(coubChannelTopicName).partitions(2).replicas(1).build();
+  }
+
+  @Bean
   public CommunityMessageProducerService communityMessageProducerService(
       NewTopic topicCoubCommunityMessage,
       KafkaTemplate<String, CoubMessage> kafkaTemplate,
@@ -104,6 +114,19 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new TagMessageProducerServiceKafka(
         kafkaTemplate,
         topicCoubTagMessage.name(),
+        subscriptionService::updatePermalink,
+        sentCoubsRegisrtyService::create);
+  }
+
+  @Bean
+  public ChannelMessageProducerService channelMessageProducerService(
+      NewTopic topicCoubChannelMessage,
+      KafkaTemplate<String, CoubMessage> kafkaTemplate,
+      SubscriptionService subscriptionService,
+      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+    return new ChannelMessageProducerServiceKafka(
+        kafkaTemplate,
+        topicCoubChannelMessage.name(),
         subscriptionService::updatePermalink,
         sentCoubsRegisrtyService::create);
   }

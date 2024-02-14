@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
+package ru.dankoy.kafkamessageproducer.core.domain.subscription;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,10 +11,10 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+public class Scope {
 
   private long id;
 
   private String name;
-  private String value;
+
 }

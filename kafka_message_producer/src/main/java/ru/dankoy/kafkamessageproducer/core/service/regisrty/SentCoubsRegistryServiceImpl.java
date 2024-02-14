@@ -2,6 +2,7 @@ package ru.dankoy.kafkamessageproducer.core.service.regisrty;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
@@ -29,6 +30,12 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegisrtyService {
   public SentCoubsRegistry create(TagSubscriptionMessage tagSubscriptionMessage) {
 
     var subscription = messageConverter.convertToRegistry(tagSubscriptionMessage);
+    return subscriptionFeign.createRegistryEntry(subscription);
+  }
+
+  @Override
+  public SentCoubsRegistry create(ChannelSubscriptionMessage channelSubscriptionMessage) {
+    var subscription = messageConverter.convertToRegistry(channelSubscriptionMessage);
     return subscriptionFeign.createRegistryEntry(subscription);
   }
 }

@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
+package ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,6 +10,7 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Scope;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Tag;
 
 @Getter
 @ToString
@@ -17,9 +18,9 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class TagSubscription extends Subscription {
+public class ChannelSubscription extends Subscription {
 
-  private Tag tag;
+  private Channel channel;
 
   private Order order;
 

@@ -5,14 +5,14 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Scope;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Tag;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.Channel;
 
 @Getter
 @SuperBuilder
 @ToString(callSuper = true)
-public final class TagSubscriptionMessage extends CoubMessage {
-  private Tag tag;
+public final class ChannelSubscriptionMessage extends CoubMessage {
+  private Channel channel;
 
   private Order order;
 
