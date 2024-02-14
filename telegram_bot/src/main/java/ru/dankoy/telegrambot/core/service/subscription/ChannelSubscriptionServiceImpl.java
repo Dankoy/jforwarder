@@ -1,16 +1,15 @@
 package ru.dankoy.telegrambot.core.service.subscription;
 
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.Scope;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.subscription.Type;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
-import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.channel.ChannelService;
@@ -54,15 +53,15 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
     if (optionalChannelByPermalink.isPresent()) {
       var channel = optionalChannelByPermalink.get();
       var channelSubscription =
-          new ChannelSubscription(
-              0,
-              channel,
-              new Chat(chatId),
-              order,
-              new Scope(scopeName),
-              new Type(typeName),
-              null,
-              new ArrayList<>());
+          (ChannelSubscription)
+              ChannelSubscription.builder()
+                  .id(0)
+                  .channel(channel)
+                  .chat(new Chat(chatId))
+                  .order(order)
+                  .scope(new Scope(scopeName))
+                  .type(new Type(typeName))
+                  .build();
 
       return channelService.subscribeByChannel(channelSubscription);
 
@@ -78,15 +77,15 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
         var created = channelService.create(channel);
 
         var channelSubscription =
-            new ChannelSubscription(
-                0,
-                new Channel(created.getPermalink()),
-                new Chat(chatId),
-                order,
-                new Scope(scopeName),
-                new Type(typeName),
-                null,
-                new ArrayList<>());
+            (ChannelSubscription)
+                ChannelSubscription.builder()
+                    .id(0)
+                    .channel(new Channel(created.getPermalink()))
+                    .chat(new Chat(chatId))
+                    .order(order)
+                    .scope(new Scope(scopeName))
+                    .type(new Type(typeName))
+                    .build();
 
         return channelService.subscribeByChannel(channelSubscription);
 
@@ -105,15 +104,15 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
       String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
 
     var channelSubscription =
-        new ChannelSubscription(
-            0,
-            new Channel(channelPermalink),
-            new Chat(chatId),
-            new Order(orderValue),
-            new Scope(scopeName),
-            new Type(typeName),
-            null,
-            new ArrayList<>());
+        (ChannelSubscription)
+            ChannelSubscription.builder()
+                .id(0)
+                .channel(new Channel(channelPermalink))
+                .chat(new Chat(chatId))
+                .order(new Order(orderValue))
+                .scope(new Scope(scopeName))
+                .type(new Type(typeName))
+                .build();
 
     channelService.unsubscribeByChannel(channelSubscription);
   }

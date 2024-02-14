@@ -1,16 +1,15 @@
 package ru.dankoy.telegrambot.core.service.subscription;
 
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.Scope;
+import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.Type;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
-import ru.dankoy.telegrambot.core.domain.subscription.Type;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
@@ -55,15 +54,15 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     if (optionalTagFromDb.isPresent()) {
       var tag = optionalTagFromDb.get();
       var tagSubscription =
-          new TagSubscription(
-              0,
-              tag,
-              new Chat(chatId),
-              order,
-              new Scope(scopeName),
-              new Type(typeName),
-              null,
-              new ArrayList<>());
+          (TagSubscription)
+              TagSubscription.builder()
+                  .id(0)
+                  .tag(tag)
+                  .chat(new Chat(chatId))
+                  .order(order)
+                  .scope(new Scope(scopeName))
+                  .type(new Type(typeName))
+                  .build();
 
       return tagService.subscribeByTag(tagSubscription);
 
@@ -78,15 +77,15 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
         var created = tagService.create(tag);
 
         var tagSubscription =
-            new TagSubscription(
-                0,
-                new Tag(created.getTitle()),
-                new Chat(chatId),
-                order,
-                new Scope(scopeName),
-                new Type(typeName),
-                null,
-                new ArrayList<>());
+            (TagSubscription)
+                TagSubscription.builder()
+                    .id(0)
+                    .tag(created)
+                    .chat(new Chat(chatId))
+                    .order(order)
+                    .scope(new Scope(scopeName))
+                    .type(new Type(typeName))
+                    .build();
 
         return tagService.subscribeByTag(tagSubscription);
 
@@ -104,15 +103,15 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
       String tagName, String orderValue, String scopeName, String typeName, long chatId) {
 
     var tagSubscription =
-        new TagSubscription(
-            0,
-            new Tag(tagName),
-            new Chat(chatId),
-            new Order(orderValue),
-            new Scope(scopeName),
-            new Type(typeName),
-            null,
-            new ArrayList<>());
+        (TagSubscription)
+            TagSubscription.builder()
+                .id(0)
+                .tag(new Tag(tagName))
+                .chat(new Chat(chatId))
+                .order(new Order(orderValue))
+                .scope(new Scope(scopeName))
+                .type(new Type(typeName))
+                .build();
 
     tagService.unsubscribeByTag(tagSubscription);
   }
