@@ -104,7 +104,8 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
   @Bean
   public ConcurrentTaskExecutor concurrentTaskExecutor() {
     var executor = new SimpleAsyncTaskExecutor("k-consumer-");
-    executor.setConcurrencyLimit(4);
+    // should be more or equals to sum of all concurrent listeners
+    executor.setConcurrencyLimit(6);
     return new ConcurrentTaskExecutor(executor);
   }
 
