@@ -25,4 +25,9 @@ public class OrderServiceImpl implements OrderService {
   public List<Order> getAll() {
     return orderRepository.findAll();
   }
+
+  @Override
+  public List<Order> getAllBySubscriptionType(String subscriptionType) {
+    return orderRepository.findAllBySubscriptionTypeType(subscriptionType);
+  }
 }

@@ -14,6 +14,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   @EntityGraph(value = "order-full")
   List<Order> findAll();
 
+  @EntityGraph(value = "order-full")
+  List<Order> findAllBySubscriptionTypeType(@Param("subscriptionType") String subscriptionType);
+
   @Query(
       """
           select o, st from Order o

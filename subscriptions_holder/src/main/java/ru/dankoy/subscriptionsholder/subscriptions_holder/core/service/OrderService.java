@@ -8,4 +8,6 @@ public interface OrderService {
   Order getByValueAndType(String value, String subscriptionType);
 
   List<Order> getAll();
+
+  List<Order> getAllBySubscriptionType(String subscriptionType);
 }

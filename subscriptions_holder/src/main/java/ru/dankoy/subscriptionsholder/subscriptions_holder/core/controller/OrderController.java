@@ -25,6 +25,16 @@ public class OrderController {
 
   @GetMapping(
       value = "/api/v1/orders",
+      params = {"subscriptionType"})
+  public @Valid List<OrderDTO> getAll(@RequestParam String subscriptionType) {
+
+    var found = orderService.getAllBySubscriptionType(subscriptionType);
+
+    return found.stream().map(OrderDTO::toDTO).toList();
+  }
+
+  @GetMapping(
+      value = "/api/v1/orders",
       params = {"value", "subscriptionType"})
   public @Valid OrderDTO getByValueAndSubscriptionType(
       @RequestParam String value, @RequestParam String subscriptionType) {
