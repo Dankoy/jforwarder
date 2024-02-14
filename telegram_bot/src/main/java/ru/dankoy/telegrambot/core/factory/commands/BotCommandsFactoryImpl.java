@@ -25,7 +25,7 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
             mySubscriptionsCommand(),
             startCommand(),
             subscribeCommand(),
-            tagOrdersCommand(),
+            ordersCommand(),
             unsubscribeCommand())
         .toList();
   }
@@ -91,11 +91,11 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
   }
 
   @Override
-  public BotCommand tagOrdersCommand() {
+  public BotCommand ordersCommand() {
 
     var command = localisationService.getLocalizedMessage("ordersCommand", null, locale);
     var description =
-        localisationService.getLocalizedMessage("tagOrdersCommandDescription", null, locale);
+        localisationService.getLocalizedMessage("ordersCommandDescription", null, locale);
 
     return new OrdersCommand(command, description);
   }
