@@ -18,22 +18,22 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.
 @AllArgsConstructor
 public class SubscriptionDTO {
 
-    @Valid
-    @Min(1)
-    private long id;
+  @Valid
+  @Min(1)
+  private long id;
 
-    @Valid @NotNull private ChatDTO chat;
+  @Valid @NotNull private ChatDTO chat;
 
-    public static SubscriptionDTO toDTO(Subscription subscription) {
+  public static SubscriptionDTO toDTO(Subscription subscription) {
 
-        return SubscriptionDTO.builder()
-                .id(subscription.getId())
-                .chat(ChatDTO.toDTO(subscription.getChat()))
-                .build();
-    }
+    return SubscriptionDTO.builder()
+        .id(subscription.getId())
+        .chat(ChatDTO.toDTO(subscription.getChat()))
+        .build();
+  }
 
-    public static Subscription fromDTO(SubscriptionDTO dto) {
+  public static Subscription fromDTO(SubscriptionDTO dto) {
 
-        return Subscription.builder().id(dto.getId()).chat(ChatDTO.fromDTO(dto.getChat())).build();
-    }
+    return Subscription.builder().id(dto.getId()).chat(ChatDTO.fromDTO(dto.getChat())).build();
+  }
 }

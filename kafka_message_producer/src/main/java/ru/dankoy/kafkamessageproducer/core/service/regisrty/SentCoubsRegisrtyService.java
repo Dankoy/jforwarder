@@ -5,14 +5,14 @@ import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
 
 public interface SentCoubsRegisrtyService {
 
-    //  SentCoubsRegistry create(
-    //      CommunitySubscriptionMessage communitySubscriptionMessage);
-    //
-    //  SentCoubsRegistry create(
-    //      TagSubscriptionMessage tagSubscriptionMessage);
-    //
-    //  SentCoubsRegistry create(
-    //      ChannelSubscriptionMessage channelSubscriptionMessage);
+  //  SentCoubsRegistry create(
+  //      CommunitySubscriptionMessage communitySubscriptionMessage);
+  //
+  //  SentCoubsRegistry create(
+  //      TagSubscriptionMessage tagSubscriptionMessage);
+  //
+  //  SentCoubsRegistry create(
+  //      ChannelSubscriptionMessage channelSubscriptionMessage);
 
-    SentCoubsRegistry create(CoubMessage coubMessage);
+  SentCoubsRegistry create(CoubMessage coubMessage);
 }

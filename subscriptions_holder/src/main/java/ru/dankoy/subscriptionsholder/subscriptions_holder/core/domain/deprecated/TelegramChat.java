@@ -16,14 +16,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TelegramChat {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @Column(name = "chat_id")
-    private long chatId;
+  @Column(name = "chat_id")
+  private long chatId;
 
-    @Column(name = "username")
-    private String userName;
+  @Column(name = "username")
+  private String userName;
 }

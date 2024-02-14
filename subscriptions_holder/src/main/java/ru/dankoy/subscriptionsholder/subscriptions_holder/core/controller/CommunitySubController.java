@@ -21,51 +21,50 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.Community
 @RestController
 public class CommunitySubController {
 
-    private final CommunitySubService communitySubService;
+  private final CommunitySubService communitySubService;
 
-    @GetMapping(value = "/api/v1/community_subscriptions")
-    public Page<CommunitySubDTO> getAll(Pageable pageable) {
-        var s = communitySubService.findAll(pageable);
-        return s.map(CommunitySubDTO::toDTO);
-    }
+  @GetMapping(value = "/api/v1/community_subscriptions")
+  public Page<CommunitySubDTO> getAll(Pageable pageable) {
+    var s = communitySubService.findAll(pageable);
+    return s.map(CommunitySubDTO::toDTO);
+  }
 
-    @GetMapping(
-            value = "/api/v1/community_subscriptions",
-            params = {"active"})
-    public Page<CommunitySubDTO> getAllWithActiveChats(
-            @RequestParam(value = "active", defaultValue = "true") boolean active,
-            Pageable pageable) {
+  @GetMapping(
+      value = "/api/v1/community_subscriptions",
+      params = {"active"})
+  public Page<CommunitySubDTO> getAllWithActiveChats(
+      @RequestParam(value = "active", defaultValue = "true") boolean active, Pageable pageable) {
 
-        var s = communitySubService.findAllByChatActive(active, pageable);
+    var s = communitySubService.findAllByChatActive(active, pageable);
 
-        return s.map(CommunitySubDTO::toDTO);
-    }
+    return s.map(CommunitySubDTO::toDTO);
+  }
 
-    @GetMapping(
-            value = "/api/v1/community_subscriptions",
-            params = {"telegramChatId"})
-    public List<CommunitySubDTO> getAllByTelegramChatId(
-            @RequestParam(value = "telegramChatId") long telegramChatId) {
-        var s = communitySubService.getAllByChatChatId(telegramChatId);
-        return s.stream().map(CommunitySubDTO::toDTO).toList();
-    }
+  @GetMapping(
+      value = "/api/v1/community_subscriptions",
+      params = {"telegramChatId"})
+  public List<CommunitySubDTO> getAllByTelegramChatId(
+      @RequestParam(value = "telegramChatId") long telegramChatId) {
+    var s = communitySubService.getAllByChatChatId(telegramChatId);
+    return s.stream().map(CommunitySubDTO::toDTO).toList();
+  }
 
-    @PostMapping(path = "/api/v1/community_subscriptions")
-    public CommunitySubDTO subscribeChatToCommunity(@Valid @RequestBody CommunitySubCreateDTO dto) {
+  @PostMapping(path = "/api/v1/community_subscriptions")
+  public CommunitySubDTO subscribeChatToCommunity(@Valid @RequestBody CommunitySubCreateDTO dto) {
 
-        var subscription = CommunitySubCreateDTO.fromDTO(dto);
+    var subscription = CommunitySubCreateDTO.fromDTO(dto);
 
-        var s = communitySubService.subscribeChatToCommunity(subscription);
+    var s = communitySubService.subscribeChatToCommunity(subscription);
 
-        return CommunitySubDTO.toDTO(s);
-    }
+    return CommunitySubDTO.toDTO(s);
+  }
 
-    @DeleteMapping(path = "/api/v1/community_subscriptions")
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public void unsubscribeChat(@Valid @RequestBody CommunitySubCreateDTO dto) {
+  @DeleteMapping(path = "/api/v1/community_subscriptions")
+  @ResponseStatus(code = HttpStatus.ACCEPTED)
+  public void unsubscribeChat(@Valid @RequestBody CommunitySubCreateDTO dto) {
 
-        var subscription = CommunitySubCreateDTO.fromDTO(dto);
+    var subscription = CommunitySubCreateDTO.fromDTO(dto);
 
-        communitySubService.unsubscribeChatFromCommunity(subscription);
-    }
+    communitySubService.unsubscribeChatFromCommunity(subscription);
+  }
 }

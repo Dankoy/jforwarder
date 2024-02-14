@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Chat {
 
-    private long id;
-    private long chatId;
-    private String username;
+  private long id;
+  private long chatId;
+  private String username;
 }

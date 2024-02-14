@@ -12,25 +12,24 @@ import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderF
 @Service
 public class OrderServiceImpl implements OrderService {
 
-    private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
-    @Override
-    public List<Order> findAll() {
-        return subscriptionsHolderFeign.getAllOrders();
-    }
+  @Override
+  public List<Order> findAll() {
+    return subscriptionsHolderFeign.getAllOrders();
+  }
 
-    @Override
-    public List<Order> findAllByType(SubscriptionType subscriptionType) {
-        return subscriptionsHolderFeign.getOrdersByType(subscriptionType.getType());
-    }
+  @Override
+  public List<Order> findAllByType(SubscriptionType subscriptionType) {
+    return subscriptionsHolderFeign.getOrdersByType(subscriptionType.getType());
+  }
 
-    @Override
-    public Optional<Order> findByValue(String value, SubscriptionType type) {
-        try {
-            return Optional.of(
-                    subscriptionsHolderFeign.getOrderByValueAndType(value, type.getType()));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+  @Override
+  public Optional<Order> findByValue(String value, SubscriptionType type) {
+    try {
+      return Optional.of(subscriptionsHolderFeign.getOrderByValueAndType(value, type.getType()));
+    } catch (Exception e) {
+      return Optional.empty();
     }
+  }
 }

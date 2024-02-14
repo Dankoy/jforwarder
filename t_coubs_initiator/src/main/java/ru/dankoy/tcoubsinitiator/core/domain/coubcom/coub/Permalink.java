@@ -2,7 +2,7 @@ package ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub;
 
 public interface Permalink {
 
-    String getPermalink();
+  String getPermalink();
 
-    void setUrl(String url);
+  void setUrl(String url);
 }

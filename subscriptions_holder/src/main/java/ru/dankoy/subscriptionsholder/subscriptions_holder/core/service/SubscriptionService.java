@@ -4,7 +4,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface SubscriptionService {
 
-    Subscription findById(long id);
+  Subscription findById(long id);
 
-    Subscription updatePermalink(Subscription subscription);
+  Subscription updatePermalink(Subscription subscription);
 }

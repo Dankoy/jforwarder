@@ -8,12 +8,12 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
 @FeignClient(name = "telegram-bot")
 public interface TelegramBotFeign {
 
-    @PostMapping(path = "/api/v1/community_message")
-    void sendCoubCommunityMessage(@RequestBody CoubMessage communitySubscriptionMessage);
+  @PostMapping(path = "/api/v1/community_message")
+  void sendCoubCommunityMessage(@RequestBody CoubMessage communitySubscriptionMessage);
 
-    @PostMapping(path = "/api/v1/tag_message")
-    void sendCoubTagMessage(@RequestBody CoubMessage tagSubscriptionMessage);
+  @PostMapping(path = "/api/v1/tag_message")
+  void sendCoubTagMessage(@RequestBody CoubMessage tagSubscriptionMessage);
 
-    @PostMapping(path = "/api/v1/channel_message")
-    void sendCoubChannelMessage(@RequestBody CoubMessage channelSubscriptionMessage);
+  @PostMapping(path = "/api/v1/channel_message")
+  void sendCoubChannelMessage(@RequestBody CoubMessage channelSubscriptionMessage);
 }

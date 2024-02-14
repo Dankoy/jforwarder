@@ -5,5 +5,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 public interface KafkaTemplateCoubMessage {
 
-    void send(ProducerRecord<String, CoubMessage> producerRecord);
+  void send(ProducerRecord<String, CoubMessage> producerRecord);
 }

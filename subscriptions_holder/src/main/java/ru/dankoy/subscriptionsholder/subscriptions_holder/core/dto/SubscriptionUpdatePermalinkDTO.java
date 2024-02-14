@@ -14,18 +14,18 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class SubscriptionUpdatePermalinkDTO {
 
-    @Min(1)
-    private long id;
+  @Min(1)
+  private long id;
 
-    @NotEmpty private String lastPermalink;
+  @NotEmpty private String lastPermalink;
 
-    public static SubscriptionUpdatePermalinkDTO toDTO(Subscription subs) {
+  public static SubscriptionUpdatePermalinkDTO toDTO(Subscription subs) {
 
-        return new SubscriptionUpdatePermalinkDTO(subs.getId(), subs.getLastPermalink());
-    }
+    return new SubscriptionUpdatePermalinkDTO(subs.getId(), subs.getLastPermalink());
+  }
 
-    public static Subscription fromDTO(SubscriptionUpdatePermalinkDTO dto) {
+  public static Subscription fromDTO(SubscriptionUpdatePermalinkDTO dto) {
 
-        return Subscription.builder().id(dto.getId()).lastPermalink(dto.getLastPermalink()).build();
-    }
+    return Subscription.builder().id(dto.getId()).lastPermalink(dto.getLastPermalink()).build();
+  }
 }

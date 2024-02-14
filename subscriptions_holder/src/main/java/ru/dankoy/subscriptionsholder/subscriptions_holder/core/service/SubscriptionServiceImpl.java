@@ -11,25 +11,23 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Subscr
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private final SubscriptionRepository subscriptionRepository;
+  private final SubscriptionRepository subscriptionRepository;
 
-    @Override
-    public Subscription findById(long id) {
+  @Override
+  public Subscription findById(long id) {
 
-        var optional = subscriptionRepository.findById(id);
+    var optional = subscriptionRepository.findById(id);
 
-        return optional.orElseThrow(
-                () ->
-                        new ResourceNotFoundException(
-                                String.format("Subscription not found: %s", id)));
-    }
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Subscription not found: %s", id)));
+  }
 
-    @Transactional
-    @Override
-    public Subscription updatePermalink(Subscription subscription) {
+  @Transactional
+  @Override
+  public Subscription updatePermalink(Subscription subscription) {
 
-        var sub = findById(subscription.getId());
-        sub.setLastPermalink(subscription.getLastPermalink());
-        return subscriptionRepository.save(sub);
-    }
+    var sub = findById(subscription.getId());
+    sub.setLastPermalink(subscription.getLastPermalink());
+    return subscriptionRepository.save(sub);
+  }
 }

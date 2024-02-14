@@ -50,874 +50,842 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
 
-    private static final String TEMPLATE_SUBSCRIPTION_SUCCESS = "subscriptionCompleted";
-    private static final String TEMPLATE_UNSUBSCRIBE_SUCCESS = "unsubscriptionCompleted";
-    private static final String TEMPLATE_SUBSCRIPTION_EXISTS = "alreadySubscribed";
-    private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
+  private static final String TEMPLATE_SUBSCRIPTION_SUCCESS = "subscriptionCompleted";
+  private static final String TEMPLATE_UNSUBSCRIBE_SUCCESS = "unsubscriptionCompleted";
+  private static final String TEMPLATE_SUBSCRIPTION_EXISTS = "alreadySubscribed";
+  private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
 
-    private static final String COMMAND_FIRST_FIELD = "first";
-    private static final String COMMAND_SECOND_FIELD = "second";
-    private static final String COMMAND_SUBSCRIPTION_TYPE_FIELD = "subscription_type";
-    private static final String COMMAND = "command";
+  private static final String COMMAND_FIRST_FIELD = "first";
+  private static final String COMMAND_SECOND_FIELD = "second";
+  private static final String COMMAND_SUBSCRIPTION_TYPE_FIELD = "subscription_type";
+  private static final String COMMAND = "command";
 
-    private final String botName;
+  private final String botName;
 
-    private final CommunitySubscriptionService communitySubscriptionService;
+  private final CommunitySubscriptionService communitySubscriptionService;
 
-    private final TelegramChatService telegramChatService;
+  private final TelegramChatService telegramChatService;
 
-    private final TemplateBuilder templateBuilder;
+  private final TemplateBuilder templateBuilder;
 
-    private final CommunityService communityService;
+  private final CommunityService communityService;
 
-    private final TagSubscriptionService tagSubscriptionService;
+  private final TagSubscriptionService tagSubscriptionService;
 
-    private final ChannelSubscriptionService channelSubscriptionService;
+  private final ChannelSubscriptionService channelSubscriptionService;
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    private final LocalisationService localisationService;
+  private final LocalisationService localisationService;
 
-    private final LocaleProvider localeProvider;
+  private final LocaleProvider localeProvider;
 
-    public TelegramBotImpl(BotConfiguration botConfiguration) {
+  public TelegramBotImpl(BotConfiguration botConfiguration) {
 
-        super(botConfiguration.fullBotProperties().getToken());
+    super(botConfiguration.fullBotProperties().getToken());
 
-        this.botName = botConfiguration.fullBotProperties().getName();
-        this.communitySubscriptionService = botConfiguration.communitySubscriptionService();
-        this.telegramChatService = botConfiguration.telegramChatService();
-        this.templateBuilder = botConfiguration.templateBuilder();
-        this.communityService = botConfiguration.communityService();
-        this.tagSubscriptionService = botConfiguration.tagSubscriptionService();
-        this.channelSubscriptionService = botConfiguration.channelSubscriptionService();
-        this.orderService = botConfiguration.orderService();
-        this.localisationService = botConfiguration.localisationService();
-        this.localeProvider = botConfiguration.localeProvider();
+    this.botName = botConfiguration.fullBotProperties().getName();
+    this.communitySubscriptionService = botConfiguration.communitySubscriptionService();
+    this.telegramChatService = botConfiguration.telegramChatService();
+    this.templateBuilder = botConfiguration.templateBuilder();
+    this.communityService = botConfiguration.communityService();
+    this.tagSubscriptionService = botConfiguration.tagSubscriptionService();
+    this.channelSubscriptionService = botConfiguration.channelSubscriptionService();
+    this.orderService = botConfiguration.orderService();
+    this.localisationService = botConfiguration.localisationService();
+    this.localeProvider = botConfiguration.localeProvider();
 
-        try {
+    try {
 
-            unregisterCommands(botConfiguration);
-            registerCommands(botConfiguration);
+      unregisterCommands(botConfiguration);
+      registerCommands(botConfiguration);
 
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage());
-            throw new BotException("Exception while bot initialization", e);
-        }
+    } catch (TelegramApiException e) {
+      log.error(e.getMessage());
+      throw new BotException("Exception while bot initialization", e);
     }
+  }
 
-    @Override
-    public void onUpdateReceived(Update update) {
+  @Override
+  public void onUpdateReceived(Update update) {
 
-        if (update.hasMessage()) {
+    if (update.hasMessage()) {
 
-            Message message = update.getMessage();
+      Message message = update.getMessage();
 
-            if (update.getMessage().hasText()) {
-                log.info(
-                        "Received message from '{}' with text '{}'",
-                        message.getChat().getId(),
-                        message.getText());
-                botAnswerUtils(message);
-            }
-        }
+      if (update.getMessage().hasText()) {
+        log.info(
+            "Received message from '{}' with text '{}'",
+            message.getChat().getId(),
+            message.getText());
+        botAnswerUtils(message);
+      }
     }
+  }
 
-    private void botAnswerUtils(Message inputMessage) {
+  private void botAnswerUtils(Message inputMessage) {
 
-        var messageText = inputMessage.getText();
+    var messageText = inputMessage.getText();
 
-        var startFromGroup = "/start" + getGroupChatBotName();
-        var subsFromGroup = "/my_subscriptions" + getGroupChatBotName();
-        var helpFromGroup = "/help" + getGroupChatBotName();
-        var subscribeCommunityFromGroup = "/subscribe" + getGroupChatBotName();
-        var unsubscribeCommunityFromGroup = "/unsubscribe" + getGroupChatBotName();
-        var communitiesFromGroup = "/communities" + getGroupChatBotName();
-        var tagOrdersFromGroup = "/orders" + getGroupChatBotName();
+    var startFromGroup = "/start" + getGroupChatBotName();
+    var subsFromGroup = "/my_subscriptions" + getGroupChatBotName();
+    var helpFromGroup = "/help" + getGroupChatBotName();
+    var subscribeCommunityFromGroup = "/subscribe" + getGroupChatBotName();
+    var unsubscribeCommunityFromGroup = "/unsubscribe" + getGroupChatBotName();
+    var communitiesFromGroup = "/communities" + getGroupChatBotName();
+    var tagOrdersFromGroup = "/orders" + getGroupChatBotName();
 
-        if (messageText.equals("/my_subscriptions") || messageText.equals(subsFromGroup)) {
-            mySubscriptions(inputMessage);
-        } else if (messageText.equals("/start") || messageText.equals(startFromGroup)) {
-            start(inputMessage);
-        } else if (messageText.equals("/help") || messageText.equals(helpFromGroup)) {
-            help(inputMessage);
-        } else if (messageText.startsWith("/subscribe")
-                || messageText.startsWith(subscribeCommunityFromGroup)) {
-            checkChatStatus(inputMessage);
-            subscribeUtils(inputMessage);
-        } else if (messageText.startsWith("/unsubscribe")
-                || messageText.startsWith(unsubscribeCommunityFromGroup)) {
-            checkChatStatus(inputMessage);
-            unsubscribeUtils(inputMessage);
-        } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
-            communities(inputMessage);
-        } else if (messageText.startsWith("/orders") || messageText.equals(tagOrdersFromGroup)) {
-            orders(inputMessage);
-        } else {
-            help(inputMessage);
-        }
+    if (messageText.equals("/my_subscriptions") || messageText.equals(subsFromGroup)) {
+      mySubscriptions(inputMessage);
+    } else if (messageText.equals("/start") || messageText.equals(startFromGroup)) {
+      start(inputMessage);
+    } else if (messageText.equals("/help") || messageText.equals(helpFromGroup)) {
+      help(inputMessage);
+    } else if (messageText.startsWith("/subscribe")
+        || messageText.startsWith(subscribeCommunityFromGroup)) {
+      checkChatStatus(inputMessage);
+      subscribeUtils(inputMessage);
+    } else if (messageText.startsWith("/unsubscribe")
+        || messageText.startsWith(unsubscribeCommunityFromGroup)) {
+      checkChatStatus(inputMessage);
+      unsubscribeUtils(inputMessage);
+    } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
+      communities(inputMessage);
+    } else if (messageText.startsWith("/orders") || messageText.equals(tagOrdersFromGroup)) {
+      orders(inputMessage);
+    } else {
+      help(inputMessage);
     }
+  }
 
-    private void checkChatStatus(Message message) {
+  private void checkChatStatus(Message message) {
 
-        var sendMessage = createReply(message);
+    var sendMessage = createReply(message);
 
-        var tChat = message.getChat();
+    var tChat = message.getChat();
 
-        log.info("Check chat status - {}", tChat.getId());
-        try {
-            var found = telegramChatService.getChatById(tChat.getId());
-            log.info("Found chat - {}", tChat.getId());
+    log.info("Check chat status - {}", tChat.getId());
+    try {
+      var found = telegramChatService.getChatById(tChat.getId());
+      log.info("Found chat - {}", tChat.getId());
 
-            if (!found.isActive()) {
-                sendMessage.setText(
-                        localisationService.getLocalizedMessage(
-                                "chatNotActive", null, localeProvider.getLocale(message)));
-                send(sendMessage);
-            }
-
-        } catch (NotFound e) {
-            log.warn("Chat not found - {}", tChat.getId());
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            "chatNotFound", null, localeProvider.getLocale(message)));
-            send(sendMessage);
-            throw new IllegalStateException("Accessed subscribe command without start");
-        }
-    }
-
-    private void mySubscriptions(Message inputMessage) {
-
-        long chatId = inputMessage.getChat().getId();
-
-        List<CommunitySubscription> subs =
-                communitySubscriptionService.getSubscriptionsByChatId(chatId);
-        List<TagSubscription> tagSubs = tagSubscriptionService.getSubscriptionsByChatId(chatId);
-        List<ChannelSubscription> channelSubs =
-                channelSubscriptionService.getSubscriptionsByChatId(chatId);
-
-        var sendMessage = createReply(inputMessage);
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("communitySubscriptions", subs);
-        templateData.put("tagSubscriptions", tagSubs);
-        templateData.put("channelSubscriptions", channelSubs);
-
-        var text =
-                templateBuilder.writeTemplate(
-                        templateData, "subscriptions.ftl", localeProvider.getLocale(inputMessage));
-        sendMessage.setText(text);
-
-        send(sendMessage);
-    }
-
-    // create chat in db
-    private void start(Message inputMessage) {
-
-        var tChat = inputMessage.getChat();
-
-        try {
-
-            var found = telegramChatService.getChatById(inputMessage.getChatId());
-            log.info("chat - {}", found);
-            found.setActive(true);
-            telegramChatService.update(found);
-
-        } catch (NotFound e) {
-
-            var newChat =
-                    new Chat(
-                            0,
-                            tChat.getId(),
-                            tChat.getType(),
-                            tChat.getTitle(),
-                            tChat.getFirstName(),
-                            tChat.getLastName(),
-                            tChat.getUserName(),
-                            true);
-            log.info("New chat to create - {}", newChat);
-            telegramChatService.createChat(newChat);
-        }
-
-        var sendMessage = createReply(inputMessage);
+      if (!found.isActive()) {
         sendMessage.setText(
-                localisationService.getLocalizedMessage(
-                        "startFinish", null, localeProvider.getLocale(inputMessage)));
-
+            localisationService.getLocalizedMessage(
+                "chatNotActive", null, localeProvider.getLocale(message)));
         send(sendMessage);
+      }
+
+    } catch (NotFound e) {
+      log.warn("Chat not found - {}", tChat.getId());
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              "chatNotFound", null, localeProvider.getLocale(message)));
+      send(sendMessage);
+      throw new IllegalStateException("Accessed subscribe command without start");
+    }
+  }
+
+  private void mySubscriptions(Message inputMessage) {
+
+    long chatId = inputMessage.getChat().getId();
+
+    List<CommunitySubscription> subs =
+        communitySubscriptionService.getSubscriptionsByChatId(chatId);
+    List<TagSubscription> tagSubs = tagSubscriptionService.getSubscriptionsByChatId(chatId);
+    List<ChannelSubscription> channelSubs =
+        channelSubscriptionService.getSubscriptionsByChatId(chatId);
+
+    var sendMessage = createReply(inputMessage);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("communitySubscriptions", subs);
+    templateData.put("tagSubscriptions", tagSubs);
+    templateData.put("channelSubscriptions", channelSubs);
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, "subscriptions.ftl", localeProvider.getLocale(inputMessage));
+    sendMessage.setText(text);
+
+    send(sendMessage);
+  }
+
+  // create chat in db
+  private void start(Message inputMessage) {
+
+    var tChat = inputMessage.getChat();
+
+    try {
+
+      var found = telegramChatService.getChatById(inputMessage.getChatId());
+      log.info("chat - {}", found);
+      found.setActive(true);
+      telegramChatService.update(found);
+
+    } catch (NotFound e) {
+
+      var newChat =
+          new Chat(
+              0,
+              tChat.getId(),
+              tChat.getType(),
+              tChat.getTitle(),
+              tChat.getFirstName(),
+              tChat.getLastName(),
+              tChat.getUserName(),
+              true);
+      log.info("New chat to create - {}", newChat);
+      telegramChatService.createChat(newChat);
     }
 
-    private void help(Message inputMessage) {
+    var sendMessage = createReply(inputMessage);
+    sendMessage.setText(
+        localisationService.getLocalizedMessage(
+            "startFinish", null, localeProvider.getLocale(inputMessage)));
 
-        var sendMessage = createReply(inputMessage);
+    send(sendMessage);
+  }
 
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("subscription_types", Arrays.toString(SubscriptionType.values()));
+  private void help(Message inputMessage) {
 
-        var text =
-                templateBuilder.writeTemplate(
-                        templateData, "help.ftl", localeProvider.getLocale(inputMessage));
-        sendMessage.setText(text);
+    var sendMessage = createReply(inputMessage);
 
-        send(sendMessage);
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("subscription_types", Arrays.toString(SubscriptionType.values()));
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, "help.ftl", localeProvider.getLocale(inputMessage));
+    sendMessage.setText(text);
+
+    send(sendMessage);
+  }
+
+  private void subscribeToCommunity(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var communityName = command.get(COMMAND_FIRST_FIELD);
+    var sectionName = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      var s =
+          communitySubscriptionService.subscribe(
+              communityName, sectionName, inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
+              new Object[] {s.getCommunity().getName(), s.getSection().getName()},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+
+    } catch (Conflict e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_EXISTS,
+              new Object[] {communityName, sectionName},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+    } catch (NotFoundException e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void unsubscribeFromCommunity(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var communityName = command.get(COMMAND_FIRST_FIELD);
+    var sectionName = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+      communitySubscriptionService.unsubscribe(
+          communityName, sectionName, inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
+              new Object[] {communityName, sectionName},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void subscribeUtils(Message inputMessage) {
+
+    // find route by first word after command
+
+    try {
+      Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
+
+      // route
+      if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD).equals(SubscriptionType.TAG.getType())) {
+        subscribeByTag(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.COMMUNITY.getType())) {
+        subscribeToCommunity(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        subscribeByChannel(command, inputMessage);
+      }
+    } catch (BotException e) {
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setText(e.getMessage());
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      send(sendMessage);
+    }
+  }
+
+  private void unsubscribeUtils(Message inputMessage) {
+
+    // find route by first word after command
+
+    try {
+      Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
+
+      // route
+      if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.COMMUNITY.getType())) {
+        unsubscribeFromCommunity(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.TAG.getType())) {
+        unsubscribeFromTag(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        unsubscribeFromChannel(command, inputMessage);
+      }
+
+    } catch (BotException e) {
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setText(e.getMessage());
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      send(sendMessage);
+    }
+  }
+
+  private void subscribeByTag(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var tagName = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      var s =
+          tagSubscriptionService.subscribe(
+              tagName, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
+              new Object[] {s.getTag().getTitle(), s.getOrder().getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+
+    } catch (Conflict e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_EXISTS,
+              new Object[] {tagName, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+    } catch (NotFoundException e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void unsubscribeFromTag(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var tagName = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      tagSubscriptionService.unsubscribe(
+          tagName, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
+              new Object[] {tagName, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void subscribeByChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      var s =
+          channelSubscriptionService.subscribe(
+              channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
+              new Object[] {s.getChannel().getPermalink(), s.getOrder().getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+
+    } catch (Conflict e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_EXISTS,
+              new Object[] {channelPermalink, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+    } catch (NotFoundException e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void unsubscribeFromChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      channelSubscriptionService.unsubscribe(
+          channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
+              new Object[] {channelPermalink, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void communities(Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+    sendMessage.setParseMode(ParseMode.MARKDOWN);
+    List<Community> communities = communityService.getAll();
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("communities", communities);
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, "communities.ftl", localeProvider.getLocale(inputMessage));
+    sendMessage.setText(text);
+
+    send(sendMessage);
+  }
+
+  private void orders(Message inputMessage) {
+
+    try {
+
+      Map<String, SubscriptionType> command = parseOrderCommandMultipleWords(inputMessage);
+
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      List<Order> orders = orderService.findAllByType(command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD));
+
+      // escape special chars in order names
+      var updated =
+          orders.stream().map(order -> new Order(escapeMetaCharacters(order.getValue()))).toList();
+
+      Map<String, Object> templateData = new HashMap<>();
+      templateData.put("orders", updated);
+
+      var text =
+          templateBuilder.writeTemplate(
+              templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
+
+      sendMessage.setText(text);
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setText(e.getMessage());
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      send(sendMessage);
+    }
+  }
+
+  private void send(SendMessage sendMessage) {
+    try {
+      execute(sendMessage);
+      log.info(
+          "Reply sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+    } catch (TelegramApiException e) {
+      log.error(e.getMessage());
+    }
+  }
+
+  private Map<String, String> parseCommandTagMultipleWords(Message inputMessage) {
+
+    Map<String, String> result = new HashMap<>();
+
+    String[] command = inputMessage.getText().split(" ");
+
+    if (command.length < 4) {
+      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      throwSubscriptionException(inputMessage, command[0], TEMPLATE_SUBSCRIPTION_EXCEPTION);
     }
 
-    private void subscribeToCommunity(Map<String, String> command, Message inputMessage) {
+    checkSubscriptionTypeInCommand(inputMessage, command);
 
-        var sendMessage = createReply(inputMessage);
+    // Get all words after 0 and last element and concat in one string
+    var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
 
-        var communityName = command.get(COMMAND_FIRST_FIELD);
-        var sectionName = command.get(COMMAND_SECOND_FIELD);
+    result.put(COMMAND, command[0]);
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
+    result.put(COMMAND_FIRST_FIELD, s);
+    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
 
-        try {
+    return result;
+  }
 
-            var s =
-                    communitySubscriptionService.subscribe(
-                            communityName, sectionName, inputMessage.getChat().getId());
+  private Map<String, SubscriptionType> parseOrderCommandMultipleWords(Message inputMessage) {
 
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_SUCCESS,
-                            new Object[] {s.getCommunity().getName(), s.getSection().getName()},
-                            localeProvider.getLocale(inputMessage)));
+    Map<String, SubscriptionType> result = new HashMap<>();
 
-            send(sendMessage);
+    String[] command = inputMessage.getText().split(" ");
 
-        } catch (Conflict e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_EXISTS,
-                            new Object[] {communityName, sectionName},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
-        } catch (NotFoundException e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            e.getExceptionObjectType().getType(),
-                            new Object[] {e.getValue()},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    if (command.length != 2) {
+      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      throwSubscriptionException(inputMessage, command[0], "orders_exception.ftl");
+    }
+
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, SubscriptionType.valueOf(command[1].toUpperCase()));
+
+    return result;
+  }
+
+  private void checkSubscriptionTypeInCommand(Message inputMessage, String[] command) {
+    try {
+      SubscriptionType.valueOf(command[1].toUpperCase());
+    } catch (IllegalArgumentException e) {
+      log.error(
+          "Expected one of {}, but got {}", Arrays.asList(SubscriptionType.values()), command[1]);
+      throw new BotException(
+          localisationService.getLocalizedMessage(
+              "illegalBotCommand",
+              new Object[] {Arrays.asList(SubscriptionType.values()).toString().toLowerCase()},
+              localeProvider.getLocale(inputMessage)));
+    }
+  }
+
+  @Override
+  public String getBotUsername() {
+    return botName;
+  }
+
+  private String getGroupChatBotName() {
+    return "@" + botName;
+  }
+
+  @Override
+  public void sendMessage(CommunitySubscriptionMessage message) {
+
+    var communityName = message.getCommunity().getName();
+    var sectionName = message.getSection().getName();
+    var coubUrl = message.getCoub().getUrl();
+    var chatId = message.getChat().getChatId();
+
+    var sendMessage = new SendMessage();
+    sendMessage.setChatId(chatId);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("communityName", communityName);
+    templateData.put("sectionName", sectionName);
+    templateData.put("url", coubUrl);
+    var text = templateBuilder.writeTemplate(templateData, "community_subscription_message.ftl");
+
+    sendMessage.setText(text);
+
+    try {
+
+      log.info(
+          "Sent message to chat '{}' for subscription '{}' {} {}",
+          message.getChat(),
+          message.getId(),
+          message.getCommunity().getName(),
+          message.getSection().getName());
+
+      execute(sendMessage);
+
+      log.info(
+          "Message sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found = telegramChatService.getChatById(chatId);
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
         }
+      }
+    } catch (TelegramApiException e) {
+      log.error("Error sending message - {}", e.getMessage());
     }
+  }
 
-    private void unsubscribeFromCommunity(Map<String, String> command, Message inputMessage) {
+  @Override
+  public void sendMessage(TagSubscriptionMessage message) {
 
-        var sendMessage = createReply(inputMessage);
+    var sendMessage = new SendMessage();
 
-        var communityName = command.get(COMMAND_FIRST_FIELD);
-        var sectionName = command.get(COMMAND_SECOND_FIELD);
+    var tagName = message.getTag().getTitle();
+    var orderValue = message.getOrder().getValue();
+    var coubUrl = message.getCoub().getUrl();
+    var chatId = message.getChat().getChatId();
 
-        try {
-            communitySubscriptionService.unsubscribe(
-                    communityName, sectionName, inputMessage.getChat().getId());
+    sendMessage.setChatId(chatId);
 
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_UNSUBSCRIBE_SUCCESS,
-                            new Object[] {communityName, sectionName},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("tagName", tagName);
+    templateData.put("orderValue", orderValue);
+    templateData.put("url", coubUrl);
+    var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
 
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    sendMessage.setText(text);
+
+    try {
+
+      log.info(
+          "Sent message to chat '{}' for tag subscription '{}' {}",
+          message.getChat().getChatId(),
+          message.getId(),
+          message.getTag().getTitle());
+
+      execute(sendMessage);
+
+      log.info(
+          "Message sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found = telegramChatService.getChatById(chatId);
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
         }
+      }
+    } catch (TelegramApiException e) {
+      log.error("Error sending message - {}", e.getMessage());
     }
+  }
 
-    private void subscribeUtils(Message inputMessage) {
+  @Override
+  public void sendMessage(ChannelSubscriptionMessage message) {
 
-        // find route by first word after command
+    var sendMessage = new SendMessage();
 
-        try {
-            Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
+    var channelTitle = message.getChannel().getTitle();
+    var orderValue = message.getOrder().getValue();
+    var coubUrl = message.getCoub().getUrl();
+    var chatId = message.getChat().getChatId();
 
-            // route
-            if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.TAG.getType())) {
-                subscribeByTag(command, inputMessage);
-            } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.COMMUNITY.getType())) {
-                subscribeToCommunity(command, inputMessage);
-            } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.CHANNEL.getType())) {
-                subscribeByChannel(command, inputMessage);
-            }
-        } catch (BotException e) {
-            var sendMessage = createReply(inputMessage);
-            sendMessage.setText(e.getMessage());
-            sendMessage.setParseMode(ParseMode.MARKDOWN);
-            send(sendMessage);
+    sendMessage.setChatId(chatId);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("channelTitle", channelTitle);
+    templateData.put("orderValue", orderValue);
+    templateData.put("url", coubUrl);
+    var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
+
+    sendMessage.setText(text);
+
+    try {
+
+      log.info(
+          "Sent message to chat '{}' for channel subscription '{}' {}",
+          message.getChat().getChatId(),
+          message.getId(),
+          message.getChannel().getPermalink());
+
+      execute(sendMessage);
+
+      log.info(
+          "Message sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found = telegramChatService.getChatById(chatId);
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
         }
+      }
+    } catch (TelegramApiException e) {
+      log.error("Error sending message - {}", e.getMessage());
     }
+  }
 
-    private void unsubscribeUtils(Message inputMessage) {
+  private String escapeMetaCharacters(String inputString) {
+    final String[] metaCharacters = {
+      "\\", "^", "$", "{", "}", "[", "]", "(", ")", ".", "*", "+", "?", "|", "<", ">", "-", "&",
+      "%", "_"
+    };
 
-        // find route by first word after command
-
-        try {
-            Map<String, String> command = parseCommandTagMultipleWords(inputMessage);
-
-            // route
-            if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.COMMUNITY.getType())) {
-                unsubscribeFromCommunity(command, inputMessage);
-            } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.TAG.getType())) {
-                unsubscribeFromTag(command, inputMessage);
-            } else if (command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
-                    .equals(SubscriptionType.CHANNEL.getType())) {
-                unsubscribeFromChannel(command, inputMessage);
-            }
-
-        } catch (BotException e) {
-            var sendMessage = createReply(inputMessage);
-            sendMessage.setText(e.getMessage());
-            sendMessage.setParseMode(ParseMode.MARKDOWN);
-            send(sendMessage);
-        }
+    for (String metaCharacter : metaCharacters) {
+      if (inputString.contains(metaCharacter)) {
+        inputString = inputString.replace(metaCharacter, "\\" + metaCharacter);
+      }
     }
+    return inputString;
+  }
 
-    private void subscribeByTag(Map<String, String> command, Message inputMessage) {
+  private SendMessage buildHelpMessage(Message message, String command, String helpType) {
 
-        var sendMessage = createReply(inputMessage);
+    return SendMessage.builder()
+        .chatId(message.getChatId())
+        .text(getCommandHelp(message, command, helpType))
+        .parseMode(ParseMode.MARKDOWN)
+        .build();
+  }
 
-        var tagName = command.get(COMMAND_FIRST_FIELD);
-        var orderValue = command.get(COMMAND_SECOND_FIELD);
+  private String getCommandHelp(Message message, String command, String helpType) {
 
-        try {
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put(COMMAND, command);
 
-            var s =
-                    tagSubscriptionService.subscribe(
-                            tagName, orderValue, "all", "", inputMessage.getChat().getId());
+    return templateBuilder.writeTemplate(templateData, helpType, localeProvider.getLocale(message));
+  }
 
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_SUCCESS,
-                            new Object[] {s.getTag().getTitle(), s.getOrder().getValue()},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
+  private void throwSubscriptionException(Message message, String command, String helpType) {
 
-        } catch (Conflict e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_EXISTS,
-                            new Object[] {tagName, orderValue},
-                            localeProvider.getLocale(inputMessage)));
+    throw new BotException(getCommandHelp(message, command, helpType));
+  }
 
-            send(sendMessage);
-        } catch (NotFoundException e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            e.getExceptionObjectType().getType(),
-                            new Object[] {e.getValue()},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        }
+  private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
+
+    for (Entry<Locale, List<BotCommand>> entry :
+        botConfiguration.commandsHolder().getCommands().entrySet()) {
+
+      if (entry.getKey().equals(botConfiguration.fullBotProperties().getDefaultLocale())) {
+
+        var setMyCommands = new SetMyCommands();
+        setMyCommands.setScope(new BotCommandScopeDefault());
+        setMyCommands.setCommands(entry.getValue());
+
+        this.execute(setMyCommands);
+      } else {
+        var setMyCommands =
+            new SetMyCommands(
+                entry.getValue(), new BotCommandScopeDefault(), entry.getKey().getLanguage());
+
+        this.execute(setMyCommands);
+      }
     }
+  }
 
-    private void unsubscribeFromTag(Map<String, String> command, Message inputMessage) {
+  private void unregisterCommands(BotConfiguration botConfiguration) throws TelegramApiException {
 
-        var sendMessage = createReply(inputMessage);
+    // delete for default locale (without locale)
 
-        var tagName = command.get(COMMAND_FIRST_FIELD);
-        var orderValue = command.get(COMMAND_SECOND_FIELD);
+    var deleteMyCommands = new DeleteMyCommands();
+    deleteMyCommands.setScope(new BotCommandScopeDefault());
+    this.execute(deleteMyCommands);
 
-        try {
+    // then delete for every knows locale
+    for (Entry<Locale, List<BotCommand>> entry :
+        botConfiguration.commandsHolder().getCommands().entrySet()) {
 
-            tagSubscriptionService.unsubscribe(
-                    tagName, orderValue, "all", "", inputMessage.getChat().getId());
+      deleteMyCommands =
+          new DeleteMyCommands(new BotCommandScopeDefault(), entry.getKey().getLanguage());
 
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_UNSUBSCRIBE_SUCCESS,
-                            new Object[] {tagName, orderValue},
-                            localeProvider.getLocale(inputMessage)));
-
-            send(sendMessage);
-
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        }
+      this.execute(deleteMyCommands);
     }
+  }
 
-    private void subscribeByChannel(Map<String, String> command, Message inputMessage) {
+  @Override
+  public void sendMessage(SendMessage sendMessage) {
+    send(sendMessage);
+  }
 
-        var sendMessage = createReply(inputMessage);
+  private SendMessage createReply(Message inputMessage) {
 
-        var channelPermalink = command.get(COMMAND_FIRST_FIELD);
-        var orderValue = command.get(COMMAND_SECOND_FIELD);
+    var sendMessage = new SendMessage();
+    sendMessage.setChatId(inputMessage.getChat().getId());
+    sendMessage.setReplyToMessageId(inputMessage.getMessageId());
 
-        try {
-
-            var s =
-                    channelSubscriptionService.subscribe(
-                            channelPermalink,
-                            orderValue,
-                            "all",
-                            "",
-                            inputMessage.getChat().getId());
-
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_SUCCESS,
-                            new Object[] {s.getChannel().getPermalink(), s.getOrder().getValue()},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
-
-        } catch (Conflict e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_SUBSCRIPTION_EXISTS,
-                            new Object[] {channelPermalink, orderValue},
-                            localeProvider.getLocale(inputMessage)));
-
-            send(sendMessage);
-        } catch (NotFoundException e) {
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            e.getExceptionObjectType().getType(),
-                            new Object[] {e.getValue()},
-                            localeProvider.getLocale(inputMessage)));
-            send(sendMessage);
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        }
-    }
-
-    private void unsubscribeFromChannel(Map<String, String> command, Message inputMessage) {
-
-        var sendMessage = createReply(inputMessage);
-
-        var channelPermalink = command.get(COMMAND_FIRST_FIELD);
-        var orderValue = command.get(COMMAND_SECOND_FIELD);
-
-        try {
-
-            channelSubscriptionService.unsubscribe(
-                    channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
-
-            sendMessage.setText(
-                    localisationService.getLocalizedMessage(
-                            TEMPLATE_UNSUBSCRIBE_SUCCESS,
-                            new Object[] {channelPermalink, orderValue},
-                            localeProvider.getLocale(inputMessage)));
-
-            send(sendMessage);
-
-        } catch (BotException e) {
-            send(
-                    buildHelpMessage(
-                            inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
-        }
-    }
-
-    private void communities(Message inputMessage) {
-
-        var sendMessage = createReply(inputMessage);
-        sendMessage.setParseMode(ParseMode.MARKDOWN);
-        List<Community> communities = communityService.getAll();
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("communities", communities);
-
-        var text =
-                templateBuilder.writeTemplate(
-                        templateData, "communities.ftl", localeProvider.getLocale(inputMessage));
-        sendMessage.setText(text);
-
-        send(sendMessage);
-    }
-
-    private void orders(Message inputMessage) {
-
-        try {
-
-            Map<String, SubscriptionType> command = parseOrderCommandMultipleWords(inputMessage);
-
-            var sendMessage = createReply(inputMessage);
-            sendMessage.setParseMode(ParseMode.MARKDOWN);
-            List<Order> orders =
-                    orderService.findAllByType(command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD));
-
-            // escape special chars in order names
-            var updated =
-                    orders.stream()
-                            .map(order -> new Order(escapeMetaCharacters(order.getValue())))
-                            .toList();
-
-            Map<String, Object> templateData = new HashMap<>();
-            templateData.put("orders", updated);
-
-            var text =
-                    templateBuilder.writeTemplate(
-                            templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
-
-            sendMessage.setText(text);
-
-            send(sendMessage);
-
-        } catch (BotException e) {
-            var sendMessage = createReply(inputMessage);
-            sendMessage.setText(e.getMessage());
-            sendMessage.setParseMode(ParseMode.MARKDOWN);
-            send(sendMessage);
-        }
-    }
-
-    private void send(SendMessage sendMessage) {
-        try {
-            execute(sendMessage);
-            log.info(
-                    "Reply sent to '{}' with message '{}'",
-                    sendMessage.getChatId(),
-                    StringUtils.normalizeSpace(sendMessage.getText()));
-        } catch (TelegramApiException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    private Map<String, String> parseCommandTagMultipleWords(Message inputMessage) {
-
-        Map<String, String> result = new HashMap<>();
-
-        String[] command = inputMessage.getText().split(" ");
-
-        if (command.length < 4) {
-            log.error("Expected valid command but got - {}", Arrays.asList(command));
-            throwSubscriptionException(inputMessage, command[0], TEMPLATE_SUBSCRIPTION_EXCEPTION);
-        }
-
-        checkSubscriptionTypeInCommand(inputMessage, command);
-
-        // Get all words after 0 and last element and concat in one string
-        var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
-
-        result.put(COMMAND, command[0]);
-        result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
-        result.put(COMMAND_FIRST_FIELD, s);
-        result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
-
-        return result;
-    }
-
-    private Map<String, SubscriptionType> parseOrderCommandMultipleWords(Message inputMessage) {
-
-        Map<String, SubscriptionType> result = new HashMap<>();
-
-        String[] command = inputMessage.getText().split(" ");
-
-        if (command.length != 2) {
-            log.error("Expected valid command but got - {}", Arrays.asList(command));
-            throwSubscriptionException(inputMessage, command[0], "orders_exception.ftl");
-        }
-
-        checkSubscriptionTypeInCommand(inputMessage, command);
-
-        result.put(
-                COMMAND_SUBSCRIPTION_TYPE_FIELD,
-                SubscriptionType.valueOf(command[1].toUpperCase()));
-
-        return result;
-    }
-
-    private void checkSubscriptionTypeInCommand(Message inputMessage, String[] command) {
-        try {
-            SubscriptionType.valueOf(command[1].toUpperCase());
-        } catch (IllegalArgumentException e) {
-            log.error(
-                    "Expected one of {}, but got {}",
-                    Arrays.asList(SubscriptionType.values()),
-                    command[1]);
-            throw new BotException(
-                    localisationService.getLocalizedMessage(
-                            "illegalBotCommand",
-                            new Object[] {
-                                Arrays.asList(SubscriptionType.values()).toString().toLowerCase()
-                            },
-                            localeProvider.getLocale(inputMessage)));
-        }
-    }
-
-    @Override
-    public String getBotUsername() {
-        return botName;
-    }
-
-    private String getGroupChatBotName() {
-        return "@" + botName;
-    }
-
-    @Override
-    public void sendMessage(CommunitySubscriptionMessage message) {
-
-        var communityName = message.getCommunity().getName();
-        var sectionName = message.getSection().getName();
-        var coubUrl = message.getCoub().getUrl();
-        var chatId = message.getChat().getChatId();
-
-        var sendMessage = new SendMessage();
-        sendMessage.setChatId(chatId);
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("communityName", communityName);
-        templateData.put("sectionName", sectionName);
-        templateData.put("url", coubUrl);
-        var text =
-                templateBuilder.writeTemplate(templateData, "community_subscription_message.ftl");
-
-        sendMessage.setText(text);
-
-        try {
-
-            log.info(
-                    "Sent message to chat '{}' for subscription '{}' {} {}",
-                    message.getChat(),
-                    message.getId(),
-                    message.getCommunity().getName(),
-                    message.getSection().getName());
-
-            execute(sendMessage);
-
-            log.info(
-                    "Message sent to '{}' with message '{}'",
-                    sendMessage.getChatId(),
-                    StringUtils.normalizeSpace(sendMessage.getText()));
-
-        } catch (TelegramApiRequestException e) {
-            if (e.getErrorCode() == 403) {
-
-                log.warn("User blocked bot. Make it not active");
-
-                var found = telegramChatService.getChatById(chatId);
-
-                if (found.isActive()) {
-                    found.setActive(false);
-                    telegramChatService.update(found);
-                }
-            }
-        } catch (TelegramApiException e) {
-            log.error("Error sending message - {}", e.getMessage());
-        }
-    }
-
-    @Override
-    public void sendMessage(TagSubscriptionMessage message) {
-
-        var sendMessage = new SendMessage();
-
-        var tagName = message.getTag().getTitle();
-        var orderValue = message.getOrder().getValue();
-        var coubUrl = message.getCoub().getUrl();
-        var chatId = message.getChat().getChatId();
-
-        sendMessage.setChatId(chatId);
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("tagName", tagName);
-        templateData.put("orderValue", orderValue);
-        templateData.put("url", coubUrl);
-        var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
-
-        sendMessage.setText(text);
-
-        try {
-
-            log.info(
-                    "Sent message to chat '{}' for tag subscription '{}' {}",
-                    message.getChat().getChatId(),
-                    message.getId(),
-                    message.getTag().getTitle());
-
-            execute(sendMessage);
-
-            log.info(
-                    "Message sent to '{}' with message '{}'",
-                    sendMessage.getChatId(),
-                    StringUtils.normalizeSpace(sendMessage.getText()));
-
-        } catch (TelegramApiRequestException e) {
-            if (e.getErrorCode() == 403) {
-
-                log.warn("User blocked bot. Make it not active");
-
-                var found = telegramChatService.getChatById(chatId);
-
-                if (found.isActive()) {
-                    found.setActive(false);
-                    telegramChatService.update(found);
-                }
-            }
-        } catch (TelegramApiException e) {
-            log.error("Error sending message - {}", e.getMessage());
-        }
-    }
-
-    @Override
-    public void sendMessage(ChannelSubscriptionMessage message) {
-
-        var sendMessage = new SendMessage();
-
-        var channelTitle = message.getChannel().getTitle();
-        var orderValue = message.getOrder().getValue();
-        var coubUrl = message.getCoub().getUrl();
-        var chatId = message.getChat().getChatId();
-
-        sendMessage.setChatId(chatId);
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put("channelTitle", channelTitle);
-        templateData.put("orderValue", orderValue);
-        templateData.put("url", coubUrl);
-        var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
-
-        sendMessage.setText(text);
-
-        try {
-
-            log.info(
-                    "Sent message to chat '{}' for channel subscription '{}' {}",
-                    message.getChat().getChatId(),
-                    message.getId(),
-                    message.getChannel().getPermalink());
-
-            execute(sendMessage);
-
-            log.info(
-                    "Message sent to '{}' with message '{}'",
-                    sendMessage.getChatId(),
-                    StringUtils.normalizeSpace(sendMessage.getText()));
-
-        } catch (TelegramApiRequestException e) {
-            if (e.getErrorCode() == 403) {
-
-                log.warn("User blocked bot. Make it not active");
-
-                var found = telegramChatService.getChatById(chatId);
-
-                if (found.isActive()) {
-                    found.setActive(false);
-                    telegramChatService.update(found);
-                }
-            }
-        } catch (TelegramApiException e) {
-            log.error("Error sending message - {}", e.getMessage());
-        }
-    }
-
-    private String escapeMetaCharacters(String inputString) {
-        final String[] metaCharacters = {
-            "\\", "^", "$", "{", "}", "[", "]", "(", ")", ".", "*", "+", "?", "|", "<", ">", "-",
-            "&", "%", "_"
-        };
-
-        for (String metaCharacter : metaCharacters) {
-            if (inputString.contains(metaCharacter)) {
-                inputString = inputString.replace(metaCharacter, "\\" + metaCharacter);
-            }
-        }
-        return inputString;
-    }
-
-    private SendMessage buildHelpMessage(Message message, String command, String helpType) {
-
-        return SendMessage.builder()
-                .chatId(message.getChatId())
-                .text(getCommandHelp(message, command, helpType))
-                .parseMode(ParseMode.MARKDOWN)
-                .build();
-    }
-
-    private String getCommandHelp(Message message, String command, String helpType) {
-
-        Map<String, Object> templateData = new HashMap<>();
-        templateData.put(COMMAND, command);
-
-        return templateBuilder.writeTemplate(
-                templateData, helpType, localeProvider.getLocale(message));
-    }
-
-    private void throwSubscriptionException(Message message, String command, String helpType) {
-
-        throw new BotException(getCommandHelp(message, command, helpType));
-    }
-
-    private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
-
-        for (Entry<Locale, List<BotCommand>> entry :
-                botConfiguration.commandsHolder().getCommands().entrySet()) {
-
-            if (entry.getKey().equals(botConfiguration.fullBotProperties().getDefaultLocale())) {
-
-                var setMyCommands = new SetMyCommands();
-                setMyCommands.setScope(new BotCommandScopeDefault());
-                setMyCommands.setCommands(entry.getValue());
-
-                this.execute(setMyCommands);
-            } else {
-                var setMyCommands =
-                        new SetMyCommands(
-                                entry.getValue(),
-                                new BotCommandScopeDefault(),
-                                entry.getKey().getLanguage());
-
-                this.execute(setMyCommands);
-            }
-        }
-    }
-
-    private void unregisterCommands(BotConfiguration botConfiguration) throws TelegramApiException {
-
-        // delete for default locale (without locale)
-
-        var deleteMyCommands = new DeleteMyCommands();
-        deleteMyCommands.setScope(new BotCommandScopeDefault());
-        this.execute(deleteMyCommands);
-
-        // then delete for every knows locale
-        for (Entry<Locale, List<BotCommand>> entry :
-                botConfiguration.commandsHolder().getCommands().entrySet()) {
-
-            deleteMyCommands =
-                    new DeleteMyCommands(
-                            new BotCommandScopeDefault(), entry.getKey().getLanguage());
-
-            this.execute(deleteMyCommands);
-        }
-    }
-
-    @Override
-    public void sendMessage(SendMessage sendMessage) {
-        send(sendMessage);
-    }
-
-    private SendMessage createReply(Message inputMessage) {
-
-        var sendMessage = new SendMessage();
-        sendMessage.setChatId(inputMessage.getChat().getId());
-        sendMessage.setReplyToMessageId(inputMessage.getMessageId());
-
-        return sendMessage;
-    }
+    return sendMessage;
+  }
 }

@@ -8,5 +8,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMes
 @Deprecated(since = "2024-02-14")
 public interface ChannelMessageProducerService {
 
-    void send(ChannelSubscriptionMessage channelSubscriptionMessage);
+  void send(ChannelSubscriptionMessage channelSubscriptionMessage);
 }

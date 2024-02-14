@@ -13,27 +13,27 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Component
 public class FilterActiveSubscriptionsAspect {
 
-    @Around(
-            value =
-                    "@annotation(ru.dankoy.subscriptionsholder.subscriptions_holder.core.aspects.FilterActiveSubscriptions))")
-    public List<Community> filter(ProceedingJoinPoint joinPoint) throws Throwable {
+  @Around(
+      value =
+          "@annotation(ru.dankoy.subscriptionsholder.subscriptions_holder.core.aspects.FilterActiveSubscriptions))")
+  public List<Community> filter(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        var logger = getLogger(joinPoint);
+    var logger = getLogger(joinPoint);
 
-        var res = (List<Community>) joinPoint.proceed();
+    var res = (List<Community>) joinPoint.proceed();
 
-        var filtered =
-                res.stream()
-                        //        .filter(c -> !c.getChats().isEmpty())
-                        .toList();
+    var filtered =
+        res.stream()
+            //        .filter(c -> !c.getChats().isEmpty())
+            .toList();
 
-        logger.info("Filtered communities - {}", filtered);
+    logger.info("Filtered communities - {}", filtered);
 
-        return filtered;
-    }
+    return filtered;
+  }
 
-    private Logger getLogger(ProceedingJoinPoint joinPoint) {
+  private Logger getLogger(ProceedingJoinPoint joinPoint) {
 
-        return LoggerFactory.getLogger(joinPoint.getTarget().getClass());
-    }
+    return LoggerFactory.getLogger(joinPoint.getTarget().getClass());
+  }
 }

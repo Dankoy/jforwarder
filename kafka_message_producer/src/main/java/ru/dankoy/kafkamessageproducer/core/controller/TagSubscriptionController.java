@@ -19,22 +19,19 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducer
 @RequiredArgsConstructor
 public class TagSubscriptionController {
 
-    private final MessageConverter converter;
+  private final MessageConverter converter;
 
-    private final MessageProducerServiceKafka tagMessageProducerServiceKafka;
+  private final MessageProducerServiceKafka tagMessageProducerServiceKafka;
 
-    @PostMapping("/api/v1/tag_subscriptions")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void produceMessages(@RequestBody List<TagSubscription> tagSubscriptions) {
+  @PostMapping("/api/v1/tag_subscriptions")
+  @ResponseStatus(HttpStatus.ACCEPTED)
+  public void produceMessages(@RequestBody List<TagSubscription> tagSubscriptions) {
 
-        log.info("{}", tagSubscriptions);
+    log.info("{}", tagSubscriptions);
 
-        List<TagSubscriptionMessage> converted =
-                tagSubscriptions.stream()
-                        .map(converter::convert)
-                        .flatMap(Collection::stream)
-                        .toList();
+    List<TagSubscriptionMessage> converted =
+        tagSubscriptions.stream().map(converter::convert).flatMap(Collection::stream).toList();
 
-        converted.forEach(tagMessageProducerServiceKafka::send);
-    }
+    converted.forEach(tagMessageProducerServiceKafka::send);
+  }
 }

@@ -12,29 +12,29 @@ import ru.dankoy.telegrambot.core.feign.coubtagsfinder.CoubSmartSearcherFeign;
 @Service
 public class CoubSmartSearcherServiceImpl implements CoubSmartSearcherService {
 
-    private final CoubSmartSearcherFeign coubSmartSearcherFeign;
+  private final CoubSmartSearcherFeign coubSmartSearcherFeign;
 
-    @Override
-    public Optional<Tag> findTagByTitle(String title) {
+  @Override
+  public Optional<Tag> findTagByTitle(String title) {
 
-        try {
+    try {
 
-            return Optional.of(coubSmartSearcherFeign.searchTagByTitle(title));
+      return Optional.of(coubSmartSearcherFeign.searchTagByTitle(title));
 
-        } catch (NotFound e) {
-            return Optional.empty();
-        }
+    } catch (NotFound e) {
+      return Optional.empty();
     }
+  }
 
-    @Override
-    public Optional<Channel> findByChannelPermalink(String permalink) {
+  @Override
+  public Optional<Channel> findByChannelPermalink(String permalink) {
 
-        try {
+    try {
 
-            return Optional.of(coubSmartSearcherFeign.searchChannelByPermalink(permalink));
+      return Optional.of(coubSmartSearcherFeign.searchChannelByPermalink(permalink));
 
-        } catch (NotFound e) {
-            return Optional.empty();
-        }
+    } catch (NotFound e) {
+      return Optional.empty();
     }
+  }
 }

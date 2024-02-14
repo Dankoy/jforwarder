@@ -14,21 +14,21 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @RequiredArgsConstructor
 public class TagSubscriptionMessageConsumerBotSender implements TagSubscriptionMessageConsumer {
 
-    private final TelegramBotService telegramBotService;
+  private final TelegramBotService telegramBotService;
 
-    @Override
-    public void accept(List<TagSubscriptionMessage> values) {
-        for (var value : values) {
-            log.info("Sending message: {}", value);
-            telegramBotService.sendTagMessage(value);
-            log.info("Message sent");
-        }
+  @Override
+  public void accept(List<TagSubscriptionMessage> values) {
+    for (var value : values) {
+      log.info("Sending message: {}", value);
+      telegramBotService.sendTagMessage(value);
+      log.info("Message sent");
     }
+  }
 
-    @Override
-    public void accept(TagSubscriptionMessage value) {
-        log.info("Sending message: {}", value);
-        telegramBotService.sendTagMessage(value);
-        log.info("Message sent");
-    }
+  @Override
+  public void accept(TagSubscriptionMessage value) {
+    log.info("Sending message: {}", value);
+    telegramBotService.sendTagMessage(value);
+    log.info("Message sent");
+  }
 }

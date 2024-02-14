@@ -21,28 +21,28 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Section {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Section section)) {
-            return false;
-        }
-
-        return name.equals(section.name);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Section section)) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
-        return name.hashCode();
-    }
+    return name.equals(section.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
+  }
 }

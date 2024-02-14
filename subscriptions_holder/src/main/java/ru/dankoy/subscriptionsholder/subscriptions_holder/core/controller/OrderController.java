@@ -13,34 +13,34 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.OrderServ
 @RestController
 public class OrderController {
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    @GetMapping(value = "/api/v1/orders")
-    public @Valid List<OrderDTO> getAll() {
+  @GetMapping(value = "/api/v1/orders")
+  public @Valid List<OrderDTO> getAll() {
 
-        var found = orderService.getAll();
+    var found = orderService.getAll();
 
-        return found.stream().map(OrderDTO::toDTO).toList();
-    }
+    return found.stream().map(OrderDTO::toDTO).toList();
+  }
 
-    @GetMapping(
-            value = "/api/v1/orders",
-            params = {"subscriptionType"})
-    public @Valid List<OrderDTO> getAll(@RequestParam String subscriptionType) {
+  @GetMapping(
+      value = "/api/v1/orders",
+      params = {"subscriptionType"})
+  public @Valid List<OrderDTO> getAll(@RequestParam String subscriptionType) {
 
-        var found = orderService.getAllBySubscriptionType(subscriptionType);
+    var found = orderService.getAllBySubscriptionType(subscriptionType);
 
-        return found.stream().map(OrderDTO::toDTO).toList();
-    }
+    return found.stream().map(OrderDTO::toDTO).toList();
+  }
 
-    @GetMapping(
-            value = "/api/v1/orders",
-            params = {"value", "subscriptionType"})
-    public @Valid OrderDTO getByValueAndSubscriptionType(
-            @RequestParam String value, @RequestParam String subscriptionType) {
+  @GetMapping(
+      value = "/api/v1/orders",
+      params = {"value", "subscriptionType"})
+  public @Valid OrderDTO getByValueAndSubscriptionType(
+      @RequestParam String value, @RequestParam String subscriptionType) {
 
-        var found = orderService.getByValueAndType(value, subscriptionType);
+    var found = orderService.getByValueAndType(value, subscriptionType);
 
-        return OrderDTO.toDTO(found);
-    }
+    return OrderDTO.toDTO(found);
+  }
 }

@@ -19,8 +19,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
 @NamedEntityGraph(
-        name = "sections-entity-graph",
-        attributeNodes = {@NamedAttributeNode("sections")})
+    name = "sections-entity-graph",
+    attributeNodes = {@NamedAttributeNode("sections")})
 @Entity
 @Table(name = "communities")
 @Data
@@ -28,26 +28,26 @@ import org.hibernate.annotations.BatchSize;
 @NoArgsConstructor
 public class Community {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @Column(name = "external_id")
-    private long externalId;
+  @Column(name = "external_id")
+  private long externalId;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @BatchSize(size = 10) // not necessary if entity graph is used
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "community_section",
-            joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "section_id", referencedColumnName = "id"))
-    private Set<Section> sections; // entity graph
+  @BatchSize(size = 10) // not necessary if entity graph is used
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "community_section",
+      joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
+      inverseJoinColumns = @JoinColumn(name = "section_id", referencedColumnName = "id"))
+  private Set<Section> sections; // entity graph
 
-    public Community(String name) {
-        this.name = name;
-    }
+  public Community(String name) {
+    this.name = name;
+  }
 }

@@ -6,6 +6,6 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCo
 
 public interface SentCoubsRegistryService {
 
-    Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
-            long subscriptionId, LocalDateTime dateTime);
+  Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+      long subscriptionId, LocalDateTime dateTime);
 }

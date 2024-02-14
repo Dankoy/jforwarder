@@ -10,7 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 public class TCoubsInitiatorApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(TCoubsInitiatorApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(TCoubsInitiatorApplication.class, args);
+  }
 }

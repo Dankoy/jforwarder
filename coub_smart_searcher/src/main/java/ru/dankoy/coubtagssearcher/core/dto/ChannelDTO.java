@@ -11,15 +11,15 @@ import ru.dankoy.coubtagssearcher.core.domain.Channel;
 @AllArgsConstructor
 public class ChannelDTO {
 
-    @NotEmpty private String title;
+  @NotEmpty private String title;
 
-    @NotEmpty private String permalink;
+  @NotEmpty private String permalink;
 
-    public static ChannelDTO toDTO(Channel channel) {
-        return new ChannelDTO(channel.getTitle(), channel.getPermalink());
-    }
+  public static ChannelDTO toDTO(Channel channel) {
+    return new ChannelDTO(channel.getTitle(), channel.getPermalink());
+  }
 
-    public static Channel fromDTO(ChannelDTO dto) {
-        return new Channel(dto.title, dto.permalink);
-    }
+  public static Channel fromDTO(ChannelDTO dto) {
+    return new Channel(dto.title, dto.permalink);
+  }
 }

@@ -7,7 +7,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface SectionService {
 
-    Optional<Section> getSectionByName(String name);
+  Optional<Section> getSectionByName(String name);
 
-    List<Section> getBySectionNames(Set<Section> sections);
+  List<Section> getBySectionNames(Set<Section> sections);
 }

@@ -10,9 +10,9 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionFeign {
 
-    @PutMapping(path = "/api/v1/subscriptions")
-    Subscription updateSubscriptionPermalink(@RequestBody Subscription subscription);
+  @PutMapping(path = "/api/v1/subscriptions")
+  Subscription updateSubscriptionPermalink(@RequestBody Subscription subscription);
 
-    @PostMapping(path = "/api/v1/sent_coubs_registry")
-    SentCoubsRegistry createRegistryEntry(@RequestBody SentCoubsRegistry sentCoubsRegistry);
+  @PostMapping(path = "/api/v1/sent_coubs_registry")
+  SentCoubsRegistry createRegistryEntry(@RequestBody SentCoubsRegistry sentCoubsRegistry);
 }

@@ -4,5 +4,5 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TypeService {
 
-    Type getByName(String name);
+  Type getByName(String name);
 }

@@ -17,38 +17,38 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscripti
 @AllArgsConstructor
 public class ChannelSubscriptionCreateDTO {
 
-    @Valid @NotNull private ChannelCreateDTO channel;
+  @Valid @NotNull private ChannelCreateDTO channel;
 
-    @Valid @NotNull private ChatCreateDTO chat;
+  @Valid @NotNull private ChatCreateDTO chat;
 
-    @Valid @NotNull private OrderCreateDTO order;
+  @Valid @NotNull private OrderCreateDTO order;
 
-    @Valid @NotNull private ScopeCreateDTO scope;
+  @Valid @NotNull private ScopeCreateDTO scope;
 
-    @Valid @NotNull private TypeCreateDTO type;
+  @Valid @NotNull private TypeCreateDTO type;
 
-    private String lastPermalink;
+  private String lastPermalink;
 
-    public static ChannelSubscriptionCreateDTO toDTO(ChannelSub channelSub) {
+  public static ChannelSubscriptionCreateDTO toDTO(ChannelSub channelSub) {
 
-        return new ChannelSubscriptionCreateDTO(
-                ChannelCreateDTO.toDTO(channelSub.getChannel()),
-                ChatCreateDTO.toDTO(channelSub.getChat()),
-                OrderCreateDTO.toDTO(channelSub.getOrder()),
-                ScopeCreateDTO.toDTO(channelSub.getScope()),
-                TypeCreateDTO.toDTO(channelSub.getType()),
-                channelSub.getLastPermalink());
-    }
+    return new ChannelSubscriptionCreateDTO(
+        ChannelCreateDTO.toDTO(channelSub.getChannel()),
+        ChatCreateDTO.toDTO(channelSub.getChat()),
+        OrderCreateDTO.toDTO(channelSub.getOrder()),
+        ScopeCreateDTO.toDTO(channelSub.getScope()),
+        TypeCreateDTO.toDTO(channelSub.getType()),
+        channelSub.getLastPermalink());
+  }
 
-    public static ChannelSub fromDTO(ChannelSubscriptionCreateDTO dto) {
-        return ChannelSub.builder()
-                .id(0)
-                .channel(ChannelCreateDTO.fromDTO(dto.getChannel()))
-                .chat(ChatCreateDTO.fromDTO(dto.getChat()))
-                .order(OrderCreateDTO.fromDTO(dto.getOrder()))
-                .scope(ScopeCreateDTO.fromDTO(dto.getScope()))
-                .type(TypeCreateDTO.fromDTO(dto.getType()))
-                .lastPermalink(dto.getLastPermalink())
-                .build();
-    }
+  public static ChannelSub fromDTO(ChannelSubscriptionCreateDTO dto) {
+    return ChannelSub.builder()
+        .id(0)
+        .channel(ChannelCreateDTO.fromDTO(dto.getChannel()))
+        .chat(ChatCreateDTO.fromDTO(dto.getChat()))
+        .order(OrderCreateDTO.fromDTO(dto.getOrder()))
+        .scope(ScopeCreateDTO.fromDTO(dto.getScope()))
+        .type(TypeCreateDTO.fromDTO(dto.getType()))
+        .lastPermalink(dto.getLastPermalink())
+        .build();
+  }
 }

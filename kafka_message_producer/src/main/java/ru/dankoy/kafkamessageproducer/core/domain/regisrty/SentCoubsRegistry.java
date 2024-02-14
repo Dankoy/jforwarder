@@ -17,11 +17,11 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 @Builder
 public class SentCoubsRegistry {
 
-    private long id;
+  private long id;
 
-    private Subscription subscription;
+  private Subscription subscription;
 
-    private String coubPermalink;
+  private String coubPermalink;
 
-    private LocalDateTime dateTime;
+  private LocalDateTime dateTime;
 }

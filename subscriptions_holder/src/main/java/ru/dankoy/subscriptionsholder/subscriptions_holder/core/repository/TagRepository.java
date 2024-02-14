@@ -6,5 +6,5 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-    Optional<Tag> getByTitle(String title);
+  Optional<Tag> getByTitle(String title);
 }

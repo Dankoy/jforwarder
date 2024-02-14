@@ -14,6 +14,6 @@ import ru.dankoy.coubtagssearcher.core.domain.Tag;
 @NoArgsConstructor
 public class TagsWrapper {
 
-    private List<Tag> data = new ArrayList<>();
-    private Meta meta;
+  private List<Tag> data = new ArrayList<>();
+  private Meta meta;
 }

@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 @Slf4j
 public class UnsubscribeCommand extends BotCommand {
 
-    public UnsubscribeCommand(String command, String description) {
-        super(command, description);
-    }
+  public UnsubscribeCommand(String command, String description) {
+    super(command, description);
+  }
 }

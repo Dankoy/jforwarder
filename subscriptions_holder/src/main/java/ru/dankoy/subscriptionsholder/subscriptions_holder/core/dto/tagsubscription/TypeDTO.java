@@ -12,17 +12,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class TypeDTO {
 
-    private long id;
+  private long id;
 
-    private String name;
+  private String name;
 
-    public static TypeDTO toDTO(Type type) {
+  public static TypeDTO toDTO(Type type) {
 
-        return new TypeDTO(type.getId(), type.getName());
-    }
+    return new TypeDTO(type.getId(), type.getName());
+  }
 
-    public static Type fromDTO(TypeDTO dto) {
+  public static Type fromDTO(TypeDTO dto) {
 
-        return new Type(dto.getId(), dto.getName());
-    }
+    return new Type(dto.getId(), dto.getName());
+  }
 }

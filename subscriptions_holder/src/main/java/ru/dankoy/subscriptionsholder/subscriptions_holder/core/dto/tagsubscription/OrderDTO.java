@@ -13,19 +13,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class OrderDTO {
 
-    private long id;
+  private long id;
 
-    @NotEmpty private String name;
+  @NotEmpty private String name;
 
-    @NotEmpty private String value;
+  @NotEmpty private String value;
 
-    public static OrderDTO toDTO(Order order) {
+  public static OrderDTO toDTO(Order order) {
 
-        return new OrderDTO(order.getId(), order.getName(), order.getValue());
-    }
+    return new OrderDTO(order.getId(), order.getName(), order.getValue());
+  }
 
-    public static Order fromDTO(OrderDTO dto) {
+  public static Order fromDTO(OrderDTO dto) {
 
-        return new Order(dto.getId(), dto.getName(), dto.getValue(), null);
-    }
+    return new Order(dto.getId(), dto.getName(), dto.getValue(), null);
+  }
 }

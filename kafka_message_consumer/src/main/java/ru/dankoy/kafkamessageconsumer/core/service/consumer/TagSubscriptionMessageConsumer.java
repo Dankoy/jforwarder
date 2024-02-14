@@ -9,7 +9,7 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage
 @Deprecated(since = "2024-02-01")
 public interface TagSubscriptionMessageConsumer {
 
-    void accept(List<TagSubscriptionMessage> values);
+  void accept(List<TagSubscriptionMessage> values);
 
-    void accept(TagSubscriptionMessage value);
+  void accept(TagSubscriptionMessage value);
 }

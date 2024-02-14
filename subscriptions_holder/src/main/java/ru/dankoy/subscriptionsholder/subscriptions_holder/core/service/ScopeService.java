@@ -4,5 +4,5 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ScopeService {
 
-    Scope getByName(String name);
+  Scope getByName(String name);
 }

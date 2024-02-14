@@ -13,14 +13,14 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class TagCreateDTO {
 
-    @NotEmpty private String title;
+  @NotEmpty private String title;
 
-    public static TagCreateDTO toDTO(Tag tag) {
-        return new TagCreateDTO(tag.getTitle());
-    }
+  public static TagCreateDTO toDTO(Tag tag) {
+    return new TagCreateDTO(tag.getTitle());
+  }
 
-    public static Tag fromDTO(TagCreateDTO dto) {
+  public static Tag fromDTO(TagCreateDTO dto) {
 
-        return new Tag(0, dto.getTitle());
-    }
+    return new Tag(0, dto.getTitle());
+  }
 }

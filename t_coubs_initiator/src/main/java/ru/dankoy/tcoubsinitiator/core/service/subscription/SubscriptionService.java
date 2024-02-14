@@ -6,7 +6,7 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscr
 
 public interface SubscriptionService {
 
-    Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
+  Page<CommunitySubscription> getAllSubscriptions(Pageable pageable);
 
-    Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
+  Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
 }

@@ -12,74 +12,70 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Channe
 @Service
 public class ChannelServiceImpl implements ChannelService {
 
-    private final ChannelRepository channelRepository;
+  private final ChannelRepository channelRepository;
 
-    @Override
-    public Channel getByTitle(String title) {
-        var optional = channelRepository.getByTitle(title);
+  @Override
+  public Channel getByTitle(String title) {
+    var optional = channelRepository.getByTitle(title);
 
-        return optional.orElseThrow(
-                () ->
-                        new ResourceNotFoundException(
-                                String.format("Channel not found - '%s'", title)));
-    }
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Channel not found - '%s'", title)));
+  }
 
-    @Override
-    public Channel getByPermalink(String title) {
-        var optional = channelRepository.getByPermalink(title);
+  @Override
+  public Channel getByPermalink(String title) {
+    var optional = channelRepository.getByPermalink(title);
 
-        return optional.orElseThrow(
-                () ->
-                        new ResourceNotFoundException(
-                                String.format("Channel not found - '%s'", title)));
-    }
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Channel not found - '%s'", title)));
+  }
 
-    @Transactional
-    @Override
-    public Channel create(Channel tag) {
+  @Transactional
+  @Override
+  public Channel create(Channel tag) {
 
-        var optional = channelRepository.getByTitle(tag.getTitle());
+    var optional = channelRepository.getByTitle(tag.getTitle());
 
-        optional.ifPresent(
-                t -> {
-                    throw new ResourceConflictException(
-                            String.format("Channel already exists - '%s'", t.getTitle()));
-                });
+    optional.ifPresent(
+        t -> {
+          throw new ResourceConflictException(
+              String.format("Channel already exists - '%s'", t.getTitle()));
+        });
 
-        return channelRepository.save(tag);
-    }
+    return channelRepository.save(tag);
+  }
 
-    @Transactional
-    @Override
-    public Channel modify(Channel tag) {
+  @Transactional
+  @Override
+  public Channel modify(Channel tag) {
 
-        var optional = channelRepository.getByTitle(tag.getTitle());
+    var optional = channelRepository.getByTitle(tag.getTitle());
 
-        optional.ifPresentOrElse(
-                t -> channelRepository.save(tag),
-                () -> {
-                    throw new ResourceNotFoundException(
-                            String.format("Channel not found - '%s'", tag.getTitle()));
-                });
+    optional.ifPresentOrElse(
+        t -> channelRepository.save(tag),
+        () -> {
+          throw new ResourceNotFoundException(
+              String.format("Channel not found - '%s'", tag.getTitle()));
+        });
 
-        return channelRepository.save(tag);
-    }
+    return channelRepository.save(tag);
+  }
 
-    @Override
-    @Transactional
-    public void deleteByTitle(String title) {
+  @Override
+  @Transactional
+  public void deleteByTitle(String title) {
 
-        var optional = channelRepository.getByTitle(title);
+    var optional = channelRepository.getByTitle(title);
 
-        optional.ifPresent(channelRepository::delete);
-    }
+    optional.ifPresent(channelRepository::delete);
+  }
 
-    @Override
-    @Transactional
-    public void deleteByPermalink(String permalink) {
+  @Override
+  @Transactional
+  public void deleteByPermalink(String permalink) {
 
-        var optional = channelRepository.getByPermalink(permalink);
+    var optional = channelRepository.getByPermalink(permalink);
 
-        optional.ifPresent(channelRepository::delete);
-    }
+    optional.ifPresent(channelRepository::delete);
+  }
 }

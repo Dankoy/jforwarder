@@ -13,13 +13,13 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.T
 
 public interface MessageConverter {
 
-    List<CommunitySubscriptionMessage> convert(CommunitySubscription communitySubscription);
+  List<CommunitySubscriptionMessage> convert(CommunitySubscription communitySubscription);
 
-    List<TagSubscriptionMessage> convert(TagSubscription tagSubscription);
+  List<TagSubscriptionMessage> convert(TagSubscription tagSubscription);
 
-    List<ChannelSubscriptionMessage> convert(ChannelSubscription channelSubscription);
+  List<ChannelSubscriptionMessage> convert(ChannelSubscription channelSubscription);
 
-    SentCoubsRegistry convertToRegistry(CoubMessage message);
+  SentCoubsRegistry convertToRegistry(CoubMessage message);
 
-    Subscription convert(CoubMessage message);
+  Subscription convert(CoubMessage message);
 }

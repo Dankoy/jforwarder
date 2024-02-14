@@ -10,28 +10,27 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 @RequiredArgsConstructor
 public class MessageProducerServiceKafkaImpl implements MessageProducerServiceKafka {
 
-    private final String topic;
+  private final String topic;
 
-    private final KafkaTemplateCoubMessage kafkaTemplateCoubMessage;
+  private final KafkaTemplateCoubMessage kafkaTemplateCoubMessage;
 
-    private final Consumer<ProducerRecord<String, CoubMessage>> recordConsumer;
+  private final Consumer<ProducerRecord<String, CoubMessage>> recordConsumer;
 
-    @Override
-    public void send(CoubMessage message) {
+  @Override
+  public void send(CoubMessage message) {
 
-        try {
+    try {
 
-            log.info("message: {}", message);
+      log.info("message: {}", message);
 
-            ProducerRecord<String, CoubMessage> producerRecord =
-                    new ProducerRecord<>(topic, message);
+      ProducerRecord<String, CoubMessage> producerRecord = new ProducerRecord<>(topic, message);
 
-            recordConsumer.accept(producerRecord);
+      recordConsumer.accept(producerRecord);
 
-            kafkaTemplateCoubMessage.send(producerRecord);
+      kafkaTemplateCoubMessage.send(producerRecord);
 
-        } catch (Exception e) {
-            log.error("send error, value:{}", message, e);
-        }
+    } catch (Exception e) {
+      log.error("send error, value:{}", message, e);
     }
+  }
 }

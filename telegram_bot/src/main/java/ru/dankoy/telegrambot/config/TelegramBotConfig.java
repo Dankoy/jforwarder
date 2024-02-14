@@ -30,76 +30,76 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @RequiredArgsConstructor
 public class TelegramBotConfig {
 
-    @Bean
-    public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
+  @Bean
+  public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
 
-        var api = new TelegramBotsApi(DefaultBotSession.class);
+    var api = new TelegramBotsApi(DefaultBotSession.class);
 
-        api.registerBot(telegramBot);
+    api.registerBot(telegramBot);
 
-        return api;
+    return api;
+  }
+
+  @Bean
+  public BotConfiguration botConfiguration(
+      FullBotProperties properties,
+      CommandsHolder commandsHolder,
+      CommunitySubscriptionService communitySubscriptionService,
+      TelegramChatService telegramChatService,
+      TemplateBuilder templateBuilder,
+      CommunityService communityService,
+      TagSubscriptionService tagSubscriptionService,
+      OrderService orderService,
+      LocalisationService localisationService,
+      LocaleProvider localeProvider,
+      ChannelSubscriptionService channelSubscriptionService) {
+
+    return BotConfigurationImpl.builder()
+        .fullBotProperties(properties)
+        .commandsHolder(commandsHolder)
+        .communitySubscriptionService(communitySubscriptionService)
+        .telegramChatService(telegramChatService)
+        .templateBuilder(templateBuilder)
+        .communityService(communityService)
+        .tagSubscriptionService(tagSubscriptionService)
+        .orderService(orderService)
+        .localisationService(localisationService)
+        .localeProvider(localeProvider)
+        .channelSubscriptionService(channelSubscriptionService)
+        .build();
+  }
+
+  @Bean
+  public TelegramBot telegramBot(BotConfiguration botConfiguration) {
+
+    return new TelegramBotImpl(botConfiguration);
+  }
+
+  @Bean
+  public List<BotCommandsFactory> botCommandsFactories(
+      LocaleConfig localeConfig, LocalisationService localisationService) {
+
+    List<BotCommandsFactory> factories = new ArrayList<>();
+
+    for (Locale locale : localeConfig.getLocales()) {
+      factories.add(new BotCommandsFactoryImpl(localisationService, locale));
     }
 
-    @Bean
-    public BotConfiguration botConfiguration(
-            FullBotProperties properties,
-            CommandsHolder commandsHolder,
-            CommunitySubscriptionService communitySubscriptionService,
-            TelegramChatService telegramChatService,
-            TemplateBuilder templateBuilder,
-            CommunityService communityService,
-            TagSubscriptionService tagSubscriptionService,
-            OrderService orderService,
-            LocalisationService localisationService,
-            LocaleProvider localeProvider,
-            ChannelSubscriptionService channelSubscriptionService) {
+    return factories;
+  }
 
-        return BotConfigurationImpl.builder()
-                .fullBotProperties(properties)
-                .commandsHolder(commandsHolder)
-                .communitySubscriptionService(communitySubscriptionService)
-                .telegramChatService(telegramChatService)
-                .templateBuilder(templateBuilder)
-                .communityService(communityService)
-                .tagSubscriptionService(tagSubscriptionService)
-                .orderService(orderService)
-                .localisationService(localisationService)
-                .localeProvider(localeProvider)
-                .channelSubscriptionService(channelSubscriptionService)
-                .build();
+  @Bean
+  public CommandsHolder commandsHolder(List<BotCommandsFactory> botCommandsFactories) {
+
+    var commandsHolder = new CommandsHolder();
+
+    for (BotCommandsFactory factory : botCommandsFactories) {
+
+      var commands = factory.allKnownCommands();
+
+      commandsHolder.addCommands(factory.locale(), commands);
     }
 
-    @Bean
-    public TelegramBot telegramBot(BotConfiguration botConfiguration) {
-
-        return new TelegramBotImpl(botConfiguration);
-    }
-
-    @Bean
-    public List<BotCommandsFactory> botCommandsFactories(
-            LocaleConfig localeConfig, LocalisationService localisationService) {
-
-        List<BotCommandsFactory> factories = new ArrayList<>();
-
-        for (Locale locale : localeConfig.getLocales()) {
-            factories.add(new BotCommandsFactoryImpl(localisationService, locale));
-        }
-
-        return factories;
-    }
-
-    @Bean
-    public CommandsHolder commandsHolder(List<BotCommandsFactory> botCommandsFactories) {
-
-        var commandsHolder = new CommandsHolder();
-
-        for (BotCommandsFactory factory : botCommandsFactories) {
-
-            var commands = factory.allKnownCommands();
-
-            commandsHolder.addCommands(factory.locale(), commands);
-        }
-
-        return commandsHolder;
-    }
+    return commandsHolder;
+  }
 }

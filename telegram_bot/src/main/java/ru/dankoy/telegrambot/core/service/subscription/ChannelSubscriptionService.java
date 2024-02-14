@@ -5,19 +5,11 @@ import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscriptio
 
 public interface ChannelSubscriptionService {
 
-    List<ChannelSubscription> getSubscriptionsByChatId(long chatId);
+  List<ChannelSubscription> getSubscriptionsByChatId(long chatId);
 
-    ChannelSubscription subscribe(
-            String channelPermalink,
-            String orderValue,
-            String scopeName,
-            String typeName,
-            long chatId);
+  ChannelSubscription subscribe(
+      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId);
 
-    void unsubscribe(
-            String channelPermalink,
-            String orderValue,
-            String scopeName,
-            String typeName,
-            long chatId);
+  void unsubscribe(
+      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId);
 }

@@ -13,11 +13,11 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Type {
 
-    private long id;
+  private long id;
 
-    private String name;
+  private String name;
 
-    public Type(String name) {
-        this.name = name;
-    }
+  public Type(String name) {
+    this.name = name;
+  }
 }

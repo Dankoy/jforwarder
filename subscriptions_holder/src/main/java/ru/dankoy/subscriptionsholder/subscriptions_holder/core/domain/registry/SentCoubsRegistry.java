@@ -17,13 +17,13 @@ import lombok.NoArgsConstructor;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 
 @NamedEntityGraph(
-        name = "sent-coubs-registry-full",
-        includeAllAttributes = true,
-        attributeNodes = {
-            @NamedAttributeNode("subscription"),
-            @NamedAttributeNode("coubPermalink"),
-            @NamedAttributeNode("dateTime")
-        })
+    name = "sent-coubs-registry-full",
+    includeAllAttributes = true,
+    attributeNodes = {
+      @NamedAttributeNode("subscription"),
+      @NamedAttributeNode("coubPermalink"),
+      @NamedAttributeNode("dateTime")
+    })
 @Table(name = "sent_coubs_registry")
 @Entity
 @Data
@@ -31,18 +31,18 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @NoArgsConstructor
 public class SentCoubsRegistry {
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+  @Id
+  @Column(name = "id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "subscription_id")
-    private Subscription subscription;
+  @ManyToOne
+  @JoinColumn(name = "subscription_id")
+  private Subscription subscription;
 
-    @Column(name = "coub_permalink")
-    private String coubPermalink;
+  @Column(name = "coub_permalink")
+  private String coubPermalink;
 
-    @Column(name = "date_time")
-    private LocalDateTime dateTime;
+  @Column(name = "date_time")
+  private LocalDateTime dateTime;
 }

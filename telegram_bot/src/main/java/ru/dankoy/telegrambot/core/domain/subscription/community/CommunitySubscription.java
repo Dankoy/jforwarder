@@ -16,6 +16,6 @@ import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
 @SuperBuilder
 public class CommunitySubscription extends Subscription {
 
-    private Community community;
-    private Section section;
+  private Community community;
+  private Section section;
 }

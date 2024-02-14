@@ -17,42 +17,37 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Override
-    public ResponseEntity<Object> handleHttpMessageNotReadable(
-            HttpMessageNotReadableException ex,
-            @NonNull HttpHeaders headers,
-            @NonNull HttpStatusCode status,
-            @NonNull WebRequest request) {
+  @Override
+  public ResponseEntity<Object> handleHttpMessageNotReadable(
+      HttpMessageNotReadableException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
 
-        List<String> details = new ArrayList<>();
-        details.add(ex.getMessage());
+    List<String> details = new ArrayList<>();
+    details.add(ex.getMessage());
 
-        ApiError err =
-                new ApiError(
-                        LocalDateTime.now(),
-                        HttpStatus.BAD_REQUEST,
-                        "Message not readable",
-                        details);
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Message not readable", details);
 
-        return ResponseEntityBuilder.build(err);
-    }
+    return ResponseEntityBuilder.build(err);
+  }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex,
-            @NonNull HttpHeaders headers,
-            @NonNull HttpStatusCode status,
-            @NonNull WebRequest request) {
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException ex,
+      @NonNull HttpHeaders headers,
+      @NonNull HttpStatusCode status,
+      @NonNull WebRequest request) {
 
-        List<String> details =
-                ex.getBindingResult().getFieldErrors().stream()
-                        .map(error -> error.getObjectName() + " : " + error.getDefaultMessage())
-                        .toList();
+    List<String> details =
+        ex.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getObjectName() + " : " + error.getDefaultMessage())
+            .toList();
 
-        ApiError err =
-                new ApiError(
-                        LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Validation Errors", details);
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Validation Errors", details);
 
-        return ResponseEntityBuilder.build(err);
-    }
+    return ResponseEntityBuilder.build(err);
+  }
 }

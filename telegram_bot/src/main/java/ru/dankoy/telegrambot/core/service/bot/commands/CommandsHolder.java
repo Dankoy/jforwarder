@@ -11,29 +11,29 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 @Getter
 public class CommandsHolder {
 
-    private final Map<Locale, List<BotCommand>> commands = new HashMap<>();
+  private final Map<Locale, List<BotCommand>> commands = new HashMap<>();
 
-    public void addCommand(Locale locale, BotCommand botCommand) {
+  public void addCommand(Locale locale, BotCommand botCommand) {
 
-        if (commands.containsKey(locale)) {
+    if (commands.containsKey(locale)) {
 
-            commands.get(locale).add(botCommand);
+      commands.get(locale).add(botCommand);
 
-        } else {
-            List<BotCommand> commandList = new ArrayList<>();
-            commandList.add(botCommand);
-            commands.put(locale, commandList);
-        }
+    } else {
+      List<BotCommand> commandList = new ArrayList<>();
+      commandList.add(botCommand);
+      commands.put(locale, commandList);
     }
+  }
 
-    public void addCommands(Locale locale, List<BotCommand> botCommands) {
+  public void addCommands(Locale locale, List<BotCommand> botCommands) {
 
-        if (commands.containsKey(locale)) {
+    if (commands.containsKey(locale)) {
 
-            commands.get(locale).addAll(botCommands);
+      commands.get(locale).addAll(botCommands);
 
-        } else {
-            commands.put(locale, botCommands);
-        }
+    } else {
+      commands.put(locale, botCommands);
     }
+  }
 }

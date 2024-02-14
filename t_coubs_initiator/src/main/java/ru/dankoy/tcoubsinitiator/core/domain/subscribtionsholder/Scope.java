@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Scope {
 
-    private long id;
+  private long id;
 
-    private String name;
+  private String name;
 }

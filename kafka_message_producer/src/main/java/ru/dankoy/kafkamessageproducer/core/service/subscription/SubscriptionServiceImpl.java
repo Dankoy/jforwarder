@@ -11,14 +11,14 @@ import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {
 
-    private final SubscriptionFeign subscriptionFeign;
+  private final SubscriptionFeign subscriptionFeign;
 
-    private final MessageConverter messageConverter;
+  private final MessageConverter messageConverter;
 
-    @Override
-    public Subscription updatePermalink(CoubMessage coubMessage) {
+  @Override
+  public Subscription updatePermalink(CoubMessage coubMessage) {
 
-        var subscription = messageConverter.convert(coubMessage);
-        return subscriptionFeign.updateSubscriptionPermalink(subscription);
-    }
+    var subscription = messageConverter.convert(coubMessage);
+    return subscriptionFeign.updateSubscriptionPermalink(subscription);
+  }
 }

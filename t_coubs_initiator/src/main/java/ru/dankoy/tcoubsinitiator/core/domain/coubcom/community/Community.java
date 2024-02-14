@@ -12,9 +12,9 @@ import lombok.Setter;
 @Getter
 public final class Community {
 
-    private long id;
+  private long id;
 
-    private String title;
+  private String title;
 
-    @Setter private String url;
+  @Setter private String url;
 }

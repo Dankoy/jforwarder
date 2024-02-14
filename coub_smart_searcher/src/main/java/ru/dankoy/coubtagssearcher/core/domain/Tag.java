@@ -15,5 +15,5 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Tag {
 
-    private String title;
+  private String title;
 }

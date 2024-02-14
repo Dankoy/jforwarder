@@ -15,13 +15,13 @@ import org.hibernate.annotations.BatchSize;
 // @Embeddable
 public class CommunityTelegramChatPK implements Serializable {
 
-    @BatchSize(size = 3)
-    @ManyToOne
-    @JoinColumn(name = "community_id")
-    private Community community;
+  @BatchSize(size = 3)
+  @ManyToOne
+  @JoinColumn(name = "community_id")
+  private Community community;
 
-    @BatchSize(size = 3)
-    @ManyToOne
-    @JoinColumn(name = "telegram_chat_id")
-    private TelegramChat telegramChat;
+  @BatchSize(size = 3)
+  @ManyToOne
+  @JoinColumn(name = "telegram_chat_id")
+  private TelegramChat telegramChat;
 }

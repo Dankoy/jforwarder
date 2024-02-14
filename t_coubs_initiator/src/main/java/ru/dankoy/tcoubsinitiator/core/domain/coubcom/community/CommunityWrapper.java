@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommunityWrapper {
 
-    private List<Community> communities;
+  private List<Community> communities;
 }

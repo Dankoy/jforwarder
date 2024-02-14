@@ -8,11 +8,11 @@ import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 
 public interface TelegramBot extends LongPollingBot {
 
-    void sendMessage(CommunitySubscriptionMessage message);
+  void sendMessage(CommunitySubscriptionMessage message);
 
-    void sendMessage(TagSubscriptionMessage message);
+  void sendMessage(TagSubscriptionMessage message);
 
-    void sendMessage(ChannelSubscriptionMessage message);
+  void sendMessage(ChannelSubscriptionMessage message);
 
-    void sendMessage(SendMessage sendMessage);
+  void sendMessage(SendMessage sendMessage);
 }

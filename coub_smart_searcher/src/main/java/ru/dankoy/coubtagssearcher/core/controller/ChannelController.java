@@ -13,15 +13,15 @@ import ru.dankoy.coubtagssearcher.core.service.channel.ChannelService;
 @RestController
 public class ChannelController {
 
-    private final ChannelService channelService;
+  private final ChannelService channelService;
 
-    @GetMapping(
-            value = "/api/v1/channels",
-            params = {"permalink"})
-    public ChannelDTO findChannelByTitle(@Valid @NotEmpty @NotNull String permalink) {
+  @GetMapping(
+      value = "/api/v1/channels",
+      params = {"permalink"})
+  public ChannelDTO findChannelByTitle(@Valid @NotEmpty @NotNull String permalink) {
 
-        var chanel = channelService.findChannelByTitle(permalink);
+    var chanel = channelService.findChannelByTitle(permalink);
 
-        return ChannelDTO.toDTO(chanel);
-    }
+    return ChannelDTO.toDTO(chanel);
+  }
 }

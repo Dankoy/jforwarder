@@ -16,15 +16,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class CommunitySubCreateCommunityDTO {
 
-    @NotEmpty private String name;
+  @NotEmpty private String name;
 
-    public static CommunitySubCreateCommunityDTO toDTO(Community community) {
+  public static CommunitySubCreateCommunityDTO toDTO(Community community) {
 
-        return builder().name(community.getName()).build();
-    }
+    return builder().name(community.getName()).build();
+  }
 
-    public static Community fromDTO(CommunitySubCreateCommunityDTO dto) {
+  public static Community fromDTO(CommunitySubCreateCommunityDTO dto) {
 
-        return new Community(0, 0, dto.name, new HashSet<>());
-    }
+    return new Community(0, 0, dto.name, new HashSet<>());
+  }
 }

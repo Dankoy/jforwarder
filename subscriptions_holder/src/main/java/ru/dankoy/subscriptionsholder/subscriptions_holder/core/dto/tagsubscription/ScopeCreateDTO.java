@@ -12,15 +12,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class ScopeCreateDTO {
 
-    private String name;
+  private String name;
 
-    public static ScopeCreateDTO toDTO(Scope scope) {
+  public static ScopeCreateDTO toDTO(Scope scope) {
 
-        return new ScopeCreateDTO(scope.getName());
-    }
+    return new ScopeCreateDTO(scope.getName());
+  }
 
-    public static Scope fromDTO(ScopeCreateDTO dto) {
+  public static Scope fromDTO(ScopeCreateDTO dto) {
 
-        return new Scope(0, dto.getName());
-    }
+    return new Scope(0, dto.getName());
+  }
 }

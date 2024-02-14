@@ -21,96 +21,96 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
 
-    // subscriptions
-    @GetMapping(
-            path = "/api/v1/community_subscriptions",
-            params = {"telegramChatId"})
-    List<CommunitySubscription> getAllSubscriptionsByChatId(
-            @RequestParam("telegramChatId") long telegramChatId);
+  // subscriptions
+  @GetMapping(
+      path = "/api/v1/community_subscriptions",
+      params = {"telegramChatId"})
+  List<CommunitySubscription> getAllSubscriptionsByChatId(
+      @RequestParam("telegramChatId") long telegramChatId);
 
-    @PostMapping(path = "/api/v1/community_subscriptions")
-    CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
+  @PostMapping(path = "/api/v1/community_subscriptions")
+  CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
 
-    @DeleteMapping(path = "/api/v1/community_subscriptions")
-    void unsubscribe(@RequestBody CommunitySubscription communitySubscription);
+  @DeleteMapping(path = "/api/v1/community_subscriptions")
+  void unsubscribe(@RequestBody CommunitySubscription communitySubscription);
 
-    // communities
+  // communities
 
-    @GetMapping(path = "/api/v1/communities/{name}")
-    Community getCommunityByName(@PathVariable("name") String communityName);
+  @GetMapping(path = "/api/v1/communities/{name}")
+  Community getCommunityByName(@PathVariable("name") String communityName);
 
-    // tag subscriptions
-    @GetMapping(
-            path = "/api/v1/tag_subscriptions",
-            params = {"telegramChatId"})
-    List<TagSubscription> getAllTagSubscriptionsByChatId(
-            @RequestParam("telegramChatId") long telegramChatId);
+  // tag subscriptions
+  @GetMapping(
+      path = "/api/v1/tag_subscriptions",
+      params = {"telegramChatId"})
+  List<TagSubscription> getAllTagSubscriptionsByChatId(
+      @RequestParam("telegramChatId") long telegramChatId);
 
-    @PostMapping(path = "/api/v1/tag_subscriptions")
-    TagSubscription subscribeByTag(@RequestBody TagSubscription tagSubscription);
+  @PostMapping(path = "/api/v1/tag_subscriptions")
+  TagSubscription subscribeByTag(@RequestBody TagSubscription tagSubscription);
 
-    @DeleteMapping(path = "/api/v1/tag_subscriptions")
-    void unsubscribeByTag(@RequestBody TagSubscription tagSubscription);
+  @DeleteMapping(path = "/api/v1/tag_subscriptions")
+  void unsubscribeByTag(@RequestBody TagSubscription tagSubscription);
 
-    // chats
-    @GetMapping(
-            path = "/api/v1/telegram_chat/{chatId}",
-            params = {"chatId"})
-    Chat getChatById(@PathVariable("chatId") long chatId);
+  // chats
+  @GetMapping(
+      path = "/api/v1/telegram_chat/{chatId}",
+      params = {"chatId"})
+  Chat getChatById(@PathVariable("chatId") long chatId);
 
-    @PostMapping(path = "/api/v1/telegram_chat")
-    Chat createChat(@RequestBody Chat chat);
+  @PostMapping(path = "/api/v1/telegram_chat")
+  Chat createChat(@RequestBody Chat chat);
 
-    @PutMapping(path = "/api/v1/telegram_chat")
-    Chat updateChat(@RequestBody Chat chat);
+  @PutMapping(path = "/api/v1/telegram_chat")
+  Chat updateChat(@RequestBody Chat chat);
 
-    // communities
-    @GetMapping(path = "/api/v1/communities")
-    List<Community> getAllCommunities();
+  // communities
+  @GetMapping(path = "/api/v1/communities")
+  List<Community> getAllCommunities();
 
-    // tags
-    @GetMapping(
-            path = "/api/v1/tags",
-            params = {"title"})
-    Tag getTagByTitle(@RequestParam("title") String title);
+  // tags
+  @GetMapping(
+      path = "/api/v1/tags",
+      params = {"title"})
+  Tag getTagByTitle(@RequestParam("title") String title);
 
-    @PostMapping(path = "/api/v1/tags")
-    Tag createTag(@RequestBody Tag tag);
+  @PostMapping(path = "/api/v1/tags")
+  Tag createTag(@RequestBody Tag tag);
 
-    // orders
-    @GetMapping(path = "/api/v1/orders")
-    List<Order> getAllOrders();
+  // orders
+  @GetMapping(path = "/api/v1/orders")
+  List<Order> getAllOrders();
 
-    @GetMapping(
-            path = "/api/v1/orders",
-            params = {"subscriptionType"})
-    List<Order> getOrdersByType(@RequestParam String subscriptionType);
+  @GetMapping(
+      path = "/api/v1/orders",
+      params = {"subscriptionType"})
+  List<Order> getOrdersByType(@RequestParam String subscriptionType);
 
-    @GetMapping(
-            path = "/api/v1/orders",
-            params = {"value", "subscriptionType"})
-    Order getOrderByValueAndType(@RequestParam String value, @RequestParam String subscriptionType);
+  @GetMapping(
+      path = "/api/v1/orders",
+      params = {"value", "subscriptionType"})
+  Order getOrderByValueAndType(@RequestParam String value, @RequestParam String subscriptionType);
 
-    // channels
+  // channels
 
-    @GetMapping(
-            path = "/api/v1/channels",
-            params = {"permalink"})
-    Channel getChannelByPermalink(@RequestParam("permalink") String permalink);
+  @GetMapping(
+      path = "/api/v1/channels",
+      params = {"permalink"})
+  Channel getChannelByPermalink(@RequestParam("permalink") String permalink);
 
-    @PostMapping(path = "/api/v1/channels")
-    Channel createChannel(@RequestBody Channel channel);
+  @PostMapping(path = "/api/v1/channels")
+  Channel createChannel(@RequestBody Channel channel);
 
-    // channel subscriptions
-    @GetMapping(
-            path = "/api/v1/channel_subscriptions",
-            params = {"telegramChatId"})
-    List<ChannelSubscription> getAllChannelSubscriptionsByChatId(
-            @RequestParam("telegramChatId") long telegramChatId);
+  // channel subscriptions
+  @GetMapping(
+      path = "/api/v1/channel_subscriptions",
+      params = {"telegramChatId"})
+  List<ChannelSubscription> getAllChannelSubscriptionsByChatId(
+      @RequestParam("telegramChatId") long telegramChatId);
 
-    @PostMapping(path = "/api/v1/channel_subscriptions")
-    ChannelSubscription subscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
+  @PostMapping(path = "/api/v1/channel_subscriptions")
+  ChannelSubscription subscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
 
-    @DeleteMapping(path = "/api/v1/channel_subscriptions")
-    void unsubscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
+  @DeleteMapping(path = "/api/v1/channel_subscriptions")
+  void unsubscribeByChannel(@RequestBody ChannelSubscription channelSubscription);
 }

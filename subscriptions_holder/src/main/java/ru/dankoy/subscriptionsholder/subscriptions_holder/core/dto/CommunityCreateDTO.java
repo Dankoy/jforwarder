@@ -20,33 +20,31 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class CommunityCreateDTO {
 
-    @Min(1)
-    private long externalId;
+  @Min(1)
+  private long externalId;
 
-    @NotEmpty private String name;
+  @NotEmpty private String name;
 
-    @Valid @NotNull private Set<CommunityCreateSectionDTO> sections;
+  @Valid @NotNull private Set<CommunityCreateSectionDTO> sections;
 
-    public static CommunityCreateDTO toDTO(Community community) {
+  public static CommunityCreateDTO toDTO(Community community) {
 
-        return builder()
-                .externalId(community.getExternalId())
-                .name(community.getName())
-                .sections(
-                        community.getSections().stream()
-                                .map(CommunityCreateSectionDTO::toDTO)
-                                .collect(Collectors.toSet()))
-                .build();
-    }
+    return builder()
+        .externalId(community.getExternalId())
+        .name(community.getName())
+        .sections(
+            community.getSections().stream()
+                .map(CommunityCreateSectionDTO::toDTO)
+                .collect(Collectors.toSet()))
+        .build();
+  }
 
-    public static Community fromDTO(CommunityCreateDTO dto) {
+  public static Community fromDTO(CommunityCreateDTO dto) {
 
-        return new Community(
-                0,
-                dto.externalId,
-                dto.name,
-                dto.sections.stream()
-                        .map(CommunityCreateSectionDTO::fromDTO)
-                        .collect(Collectors.toSet()));
-    }
+    return new Community(
+        0,
+        dto.externalId,
+        dto.name,
+        dto.sections.stream().map(CommunityCreateSectionDTO::fromDTO).collect(Collectors.toSet()));
+  }
 }

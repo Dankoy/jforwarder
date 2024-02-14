@@ -13,23 +13,23 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @Slf4j
 @RequiredArgsConstructor
 public class CommunitySubscriptionMessageConsumerBotSender
-        implements CommunitySubscriptionMessageConsumer {
+    implements CommunitySubscriptionMessageConsumer {
 
-    private final TelegramBotService telegramBotService;
+  private final TelegramBotService telegramBotService;
 
-    @Override
-    public void accept(List<CommunitySubscriptionMessage> values) {
-        for (var value : values) {
-            log.info("Sending message: {}", value);
-            telegramBotService.sendCommunityMessage(value);
-            log.info("Message sent");
-        }
+  @Override
+  public void accept(List<CommunitySubscriptionMessage> values) {
+    for (var value : values) {
+      log.info("Sending message: {}", value);
+      telegramBotService.sendCommunityMessage(value);
+      log.info("Message sent");
     }
+  }
 
-    @Override
-    public void accept(CommunitySubscriptionMessage value) {
-        log.info("Sending message: {}", value);
-        telegramBotService.sendCommunityMessage(value);
-        log.info("Message sent");
-    }
+  @Override
+  public void accept(CommunitySubscriptionMessage value) {
+    log.info("Sending message: {}", value);
+    telegramBotService.sendCommunityMessage(value);
+    log.info("Message sent");
+  }
 }

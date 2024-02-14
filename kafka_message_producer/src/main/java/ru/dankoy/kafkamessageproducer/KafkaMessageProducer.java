@@ -12,7 +12,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 public class KafkaMessageProducer {
 
-    public static void main(String[] args) {
-        SpringApplication.run(KafkaMessageProducer.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(KafkaMessageProducer.class, args);
+  }
 }

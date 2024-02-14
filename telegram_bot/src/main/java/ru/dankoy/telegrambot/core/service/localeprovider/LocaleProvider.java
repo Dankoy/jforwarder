@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
  */
 public interface LocaleProvider {
 
-    Locale getLocale(Message message);
+  Locale getLocale(Message message);
 
-    Locale getLocale(String locale);
+  Locale getLocale(String locale);
 }

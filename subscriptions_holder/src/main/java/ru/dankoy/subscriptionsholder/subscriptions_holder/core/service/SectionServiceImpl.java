@@ -13,17 +13,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Sectio
 @Service
 public class SectionServiceImpl implements SectionService {
 
-    private final SectionRepository sectionRepository;
+  private final SectionRepository sectionRepository;
 
-    @Override
-    public Optional<Section> getSectionByName(String name) {
-        return sectionRepository.getByName(name);
-    }
+  @Override
+  public Optional<Section> getSectionByName(String name) {
+    return sectionRepository.getByName(name);
+  }
 
-    @Override
-    public List<Section> getBySectionNames(Set<Section> sections) {
+  @Override
+  public List<Section> getBySectionNames(Set<Section> sections) {
 
-        return sectionRepository.getByNameIsIn(
-                sections.stream().map(Section::getName).collect(Collectors.toSet()));
-    }
+    return sectionRepository.getByNameIsIn(
+        sections.stream().map(Section::getName).collect(Collectors.toSet()));
+  }
 }

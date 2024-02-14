@@ -6,5 +6,5 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.channelsubscrip
 
 public interface ChannelSubscriptionService {
 
-    Page<ChannelSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
+  Page<ChannelSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable);
 }

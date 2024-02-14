@@ -19,35 +19,32 @@ import ru.dankoy.tcoubsinitiator.core.service.registry.SentCoubsRegistryService;
 @RequiredArgsConstructor
 public class FilterByRegistryServiceImpl implements FilterByRegistryService {
 
-    private final SentCoubsRegistryService sentCoubsRegistryService;
-    private final CoubRegistryProperties coubRegistryProperties;
+  private final SentCoubsRegistryService sentCoubsRegistryService;
+  private final CoubRegistryProperties coubRegistryProperties;
 
-    @Override
-    public void filterByRegistry(List<? extends Subscription> subscriptions) {
+  @Override
+  public void filterByRegistry(List<? extends Subscription> subscriptions) {
 
-        for (var sub : subscriptions) {
+    for (var sub : subscriptions) {
 
-            log.info("Filter by registry");
-            // filter subscriptions by registry
-            Set<SentCoubsRegistry> registry =
-                    sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
-                            sub.getId(),
-                            LocalDateTime.now().minusDays(coubRegistryProperties.filterDays()));
-            log.debug("Found registry - {}", registry);
+      log.info("Filter by registry");
+      // filter subscriptions by registry
+      Set<SentCoubsRegistry> registry =
+          sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
+              sub.getId(), LocalDateTime.now().minusDays(coubRegistryProperties.filterDays()));
+      log.debug("Found registry - {}", registry);
 
-            Set<String> registryPermalinks =
-                    registry.stream()
-                            .map(SentCoubsRegistry::getCoubPermalink)
-                            .collect(Collectors.toSet());
+      Set<String> registryPermalinks =
+          registry.stream().map(SentCoubsRegistry::getCoubPermalink).collect(Collectors.toSet());
 
-            List<Coub> filtered =
-                    new ArrayList<>(
-                            sub.getCoubs().stream()
-                                    .filter(c -> !registryPermalinks.contains(c.getPermalink()))
-                                    .toList());
-            sub.setCoubs(filtered);
+      List<Coub> filtered =
+          new ArrayList<>(
+              sub.getCoubs().stream()
+                  .filter(c -> !registryPermalinks.contains(c.getPermalink()))
+                  .toList());
+      sub.setCoubs(filtered);
 
-            log.info("Filtered done");
-        }
+      log.info("Filtered done");
     }
+  }
 }

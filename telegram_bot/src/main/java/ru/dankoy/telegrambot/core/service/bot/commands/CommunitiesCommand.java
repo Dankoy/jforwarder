@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 @Slf4j
 public class CommunitiesCommand extends BotCommand {
 
-    public CommunitiesCommand(String command, String description) {
-        super(command, description);
-    }
+  public CommunitiesCommand(String command, String description) {
+    super(command, description);
+  }
 }

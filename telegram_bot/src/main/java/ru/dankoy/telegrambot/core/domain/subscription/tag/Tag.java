@@ -13,11 +13,11 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Tag {
 
-    private long id;
+  private long id;
 
-    private String title;
+  private String title;
 
-    public Tag(String title) {
-        this.title = title;
-    }
+  public Tag(String title) {
+    this.title = title;
+  }
 }

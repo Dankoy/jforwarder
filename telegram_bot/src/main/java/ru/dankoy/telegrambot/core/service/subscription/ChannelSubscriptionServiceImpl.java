@@ -20,113 +20,102 @@ import ru.dankoy.telegrambot.core.service.order.OrderService;
 @RequiredArgsConstructor
 public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionService {
 
-    private final CoubSmartSearcherService coubSmartSearcherService;
+  private final CoubSmartSearcherService coubSmartSearcherService;
 
-    private final ChannelService channelService;
+  private final ChannelService channelService;
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    @Override
-    public List<ChannelSubscription> getSubscriptionsByChatId(long chatId) {
-        return channelService.getAllSubscriptionsByChat(chatId);
-    }
+  @Override
+  public List<ChannelSubscription> getSubscriptionsByChatId(long chatId) {
+    return channelService.getAllSubscriptionsByChat(chatId);
+  }
 
-    @Override
-    public ChannelSubscription subscribe(
-            String channelPermalink,
-            String orderValue,
-            String scopeName,
-            String typeName,
-            long chatId) {
-        // 1. Find tag order
+  @Override
+  public ChannelSubscription subscribe(
+      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
+    // 1. Find tag order
 
-        var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.CHANNEL);
+    var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.CHANNEL);
 
-        var order =
-                optionalTagOrder.orElseThrow(
-                        () ->
-                                new NotFoundException(
-                                        ExceptionObjectType.ORDER,
-                                        orderValue,
-                                        String.format(
-                                                "Order '%s' not found. Validate order and try"
-                                                        + " again",
-                                                orderValue)));
+    var order =
+        optionalTagOrder.orElseThrow(
+            () ->
+                new NotFoundException(
+                    ExceptionObjectType.ORDER,
+                    orderValue,
+                    String.format(
+                        "Order '%s' not found. Validate order and try" + " again", orderValue)));
 
-        order.setSubscriptionType(SubscriptionType.CHANNEL);
+    order.setSubscriptionType(SubscriptionType.CHANNEL);
 
-        // 2. find tag in db
-        var optionalChannelByPermalink = channelService.findChannelByPermalink(channelPermalink);
+    // 2. find tag in db
+    var optionalChannelByPermalink = channelService.findChannelByPermalink(channelPermalink);
 
-        if (optionalChannelByPermalink.isPresent()) {
-            var channel = optionalChannelByPermalink.get();
-            var channelSubscription =
-                    (ChannelSubscription)
-                            ChannelSubscription.builder()
-                                    .id(0)
-                                    .channel(channel)
-                                    .chat(new Chat(chatId))
-                                    .order(order)
-                                    .scope(new Scope(scopeName))
-                                    .type(new Type(typeName))
-                                    .build();
+    if (optionalChannelByPermalink.isPresent()) {
+      var channel = optionalChannelByPermalink.get();
+      var channelSubscription =
+          (ChannelSubscription)
+              ChannelSubscription.builder()
+                  .id(0)
+                  .channel(channel)
+                  .chat(new Chat(chatId))
+                  .order(order)
+                  .scope(new Scope(scopeName))
+                  .type(new Type(typeName))
+                  .build();
 
-            return channelService.subscribeByChannel(channelSubscription);
+      return channelService.subscribeByChannel(channelSubscription);
 
-        } else {
+    } else {
 
-            var optionalChannelFromApi =
-                    coubSmartSearcherService.findByChannelPermalink(channelPermalink);
+      var optionalChannelFromApi =
+          coubSmartSearcherService.findByChannelPermalink(channelPermalink);
 
-            if (optionalChannelFromApi.isPresent()) {
+      if (optionalChannelFromApi.isPresent()) {
 
-                var channel = optionalChannelFromApi.get();
+        var channel = optionalChannelFromApi.get();
 
-                var created = channelService.create(channel);
-
-                var channelSubscription =
-                        (ChannelSubscription)
-                                ChannelSubscription.builder()
-                                        .id(0)
-                                        .channel(new Channel(created.getPermalink()))
-                                        .chat(new Chat(chatId))
-                                        .order(order)
-                                        .scope(new Scope(scopeName))
-                                        .type(new Type(typeName))
-                                        .build();
-
-                return channelService.subscribeByChannel(channelSubscription);
-
-            } else {
-                throw new NotFoundException(
-                        ExceptionObjectType.CHANNEL,
-                        channelPermalink,
-                        String.format(
-                                "Channel '%s' not found. Validate tag name and try again.",
-                                channelPermalink));
-            }
-        }
-    }
-
-    @Override
-    public void unsubscribe(
-            String channelPermalink,
-            String orderValue,
-            String scopeName,
-            String typeName,
-            long chatId) {
+        var created = channelService.create(channel);
 
         var channelSubscription =
-                (ChannelSubscription)
-                        ChannelSubscription.builder()
-                                .id(0)
-                                .channel(new Channel(channelPermalink))
-                                .chat(new Chat(chatId))
-                                .order(new Order(orderValue))
-                                .scope(new Scope(scopeName))
-                                .type(new Type(typeName))
-                                .build();
+            (ChannelSubscription)
+                ChannelSubscription.builder()
+                    .id(0)
+                    .channel(new Channel(created.getPermalink()))
+                    .chat(new Chat(chatId))
+                    .order(order)
+                    .scope(new Scope(scopeName))
+                    .type(new Type(typeName))
+                    .build();
 
-        channelService.unsubscribeByChannel(channelSubscription);
+        return channelService.subscribeByChannel(channelSubscription);
+
+      } else {
+        throw new NotFoundException(
+            ExceptionObjectType.CHANNEL,
+            channelPermalink,
+            String.format(
+                "Channel '%s' not found. Validate tag name and try again.", channelPermalink));
+      }
     }
+  }
+
+  @Override
+  public void unsubscribe(
+      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
+
+    var channelSubscription =
+        (ChannelSubscription)
+            ChannelSubscription.builder()
+                .id(0)
+                .channel(new Channel(channelPermalink))
+                .chat(new Chat(chatId))
+                .order(new Order(orderValue))
+                .scope(new Scope(scopeName))
+                .type(new Type(typeName))
+                .build();
+
+    channelService.unsubscribeByChannel(channelSubscription);
+  }
 }

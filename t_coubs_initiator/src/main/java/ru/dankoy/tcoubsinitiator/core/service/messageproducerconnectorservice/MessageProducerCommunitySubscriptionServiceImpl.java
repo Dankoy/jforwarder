@@ -9,12 +9,12 @@ import ru.dankoy.tcoubsinitiator.core.feign.messageproducer.MessageProducerFeign
 @Service
 @RequiredArgsConstructor
 public class MessageProducerCommunitySubscriptionServiceImpl
-        implements MessageProducerCommunitySubscriptionService {
+    implements MessageProducerCommunitySubscriptionService {
 
-    private final MessageProducerFeign messageProducerFeign;
+  private final MessageProducerFeign messageProducerFeign;
 
-    public void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions) {
+  public void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions) {
 
-        messageProducerFeign.sendCommunitySubscriptions(communitySubscriptions);
-    }
+    messageProducerFeign.sendCommunitySubscriptions(communitySubscriptions);
+  }
 }

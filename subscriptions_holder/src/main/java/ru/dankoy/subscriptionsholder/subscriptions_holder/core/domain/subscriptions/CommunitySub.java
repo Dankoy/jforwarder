@@ -16,12 +16,12 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
 @NamedEntityGraph(
-        name = "community-subscription-full-inherited",
-        includeAllAttributes = true,
-        attributeNodes = {
-            @NamedAttributeNode("community"),
-            @NamedAttributeNode("section"),
-        })
+    name = "community-subscription-full-inherited",
+    includeAllAttributes = true,
+    attributeNodes = {
+      @NamedAttributeNode("community"),
+      @NamedAttributeNode("section"),
+    })
 @Getter
 @ToString(callSuper = true)
 @Data
@@ -32,11 +32,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Table(name = "community_subs")
 public class CommunitySub extends Subscription {
 
-    @ManyToOne
-    @JoinColumn(name = "community_id")
-    private Community community;
+  @ManyToOne
+  @JoinColumn(name = "community_id")
+  private Community community;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id")
-    private Section section;
+  @ManyToOne
+  @JoinColumn(name = "section_id")
+  private Section section;
 }

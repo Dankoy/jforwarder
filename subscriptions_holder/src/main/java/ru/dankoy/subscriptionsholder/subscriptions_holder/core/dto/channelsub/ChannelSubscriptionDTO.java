@@ -16,42 +16,42 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscripti
 @AllArgsConstructor
 public class ChannelSubscriptionDTO {
 
-    private long id;
+  private long id;
 
-    private ChannelDTO channel;
+  private ChannelDTO channel;
 
-    private ChatDTO chat;
+  private ChatDTO chat;
 
-    private OrderDTO order;
+  private OrderDTO order;
 
-    private ScopeDTO scope;
+  private ScopeDTO scope;
 
-    private TypeDTO type;
+  private TypeDTO type;
 
-    private String lastPermalink;
+  private String lastPermalink;
 
-    public static ChannelSubscriptionDTO toDTO(ChannelSub channelSub) {
+  public static ChannelSubscriptionDTO toDTO(ChannelSub channelSub) {
 
-        return new ChannelSubscriptionDTO(
-                channelSub.getId(),
-                ChannelDTO.toDTO(channelSub.getChannel()),
-                ChatDTO.toDTO(channelSub.getChat()),
-                OrderDTO.toDTO(channelSub.getOrder()),
-                ScopeDTO.toDTO(channelSub.getScope()),
-                TypeDTO.toDTO(channelSub.getType()),
-                channelSub.getLastPermalink());
-    }
+    return new ChannelSubscriptionDTO(
+        channelSub.getId(),
+        ChannelDTO.toDTO(channelSub.getChannel()),
+        ChatDTO.toDTO(channelSub.getChat()),
+        OrderDTO.toDTO(channelSub.getOrder()),
+        ScopeDTO.toDTO(channelSub.getScope()),
+        TypeDTO.toDTO(channelSub.getType()),
+        channelSub.getLastPermalink());
+  }
 
-    public static ChannelSub fromDTO(ChannelSubscriptionDTO dto) {
+  public static ChannelSub fromDTO(ChannelSubscriptionDTO dto) {
 
-        return ChannelSub.builder()
-                .id(0)
-                .channel(ChannelDTO.fromDTO(dto.getChannel()))
-                .chat(ChatDTO.fromDTO(dto.getChat()))
-                .order(OrderDTO.fromDTO(dto.getOrder()))
-                .scope(ScopeDTO.fromDTO(dto.getScope()))
-                .type(TypeDTO.fromDTO(dto.getType()))
-                .lastPermalink(dto.getLastPermalink())
-                .build();
-    }
+    return ChannelSub.builder()
+        .id(0)
+        .channel(ChannelDTO.fromDTO(dto.getChannel()))
+        .chat(ChatDTO.fromDTO(dto.getChat()))
+        .order(OrderDTO.fromDTO(dto.getOrder()))
+        .scope(ScopeDTO.fromDTO(dto.getScope()))
+        .type(TypeDTO.fromDTO(dto.getType()))
+        .lastPermalink(dto.getLastPermalink())
+        .build();
+  }
 }

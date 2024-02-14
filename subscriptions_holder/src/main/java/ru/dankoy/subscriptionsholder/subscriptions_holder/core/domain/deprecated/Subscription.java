@@ -20,8 +20,8 @@ import lombok.ToString;
 // @Table(name = "subscription_chat_permalink")
 public class Subscription {
 
-    @EmbeddedId private CommunityTelegramChatPK communityChat;
+  @EmbeddedId private CommunityTelegramChatPK communityChat;
 
-    @Column(name = "last_permalink")
-    private String lastPermalink;
+  @Column(name = "last_permalink")
+  private String lastPermalink;
 }

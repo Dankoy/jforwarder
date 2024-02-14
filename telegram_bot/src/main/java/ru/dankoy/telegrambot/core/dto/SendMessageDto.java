@@ -11,27 +11,23 @@ import ru.dankoy.telegrambot.core.dto.validator.ParseModeConstraint;
 @RequiredArgsConstructor
 public class SendMessageDto {
 
-    @NotNull(message = "chatIds {jakarta.validation.constraints.NotNull.message}")
-    @NotEmpty(message = "chatIds {jakarta.validation.constraints.NotNull.message}")
-    private final Set<Long> chatIds;
+  @NotNull(message = "chatIds {jakarta.validation.constraints.NotNull.message}")
+  @NotEmpty(message = "chatIds {jakarta.validation.constraints.NotNull.message}")
+  private final Set<Long> chatIds;
 
-    @NotNull(message = "message {jakarta.validation.constraints.NotNull.message}")
-    @NotEmpty(message = "message {jakarta.validation.constraints.NotNull.message}")
-    private final String message;
+  @NotNull(message = "message {jakarta.validation.constraints.NotNull.message}")
+  @NotEmpty(message = "message {jakarta.validation.constraints.NotNull.message}")
+  private final String message;
 
-    @ParseModeConstraint(message = "parseMode is invalid")
-    private final String parseMode;
+  @ParseModeConstraint(message = "parseMode is invalid")
+  private final String parseMode;
 
-    public static Set<SendMessage> fromDTO(SendMessageDto dto) {
+  public static Set<SendMessage> fromDTO(SendMessageDto dto) {
 
-        return dto.chatIds.stream()
-                .map(
-                        id ->
-                                SendMessage.builder()
-                                        .chatId(id)
-                                        .text(dto.message)
-                                        .parseMode(dto.parseMode)
-                                        .build())
-                .collect(Collectors.toSet());
-    }
+    return dto.chatIds.stream()
+        .map(
+            id ->
+                SendMessage.builder().chatId(id).text(dto.message).parseMode(dto.parseMode).build())
+        .collect(Collectors.toSet());
+  }
 }

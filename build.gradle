@@ -37,7 +37,6 @@ spotless {
         }
         toggleOffOn()
         googleJavaFormat('1.19.2')
-                .aosp()
                 .reflowLongStrings()
                 .formatJavadoc(false)
                 .reorderImports(false)

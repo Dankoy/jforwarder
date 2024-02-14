@@ -8,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum SubscriptionType {
-    COMMUNITY("community"),
-    TAG("tag"),
-    CHANNEL("channel");
+  COMMUNITY("community"),
+  TAG("tag"),
+  CHANNEL("channel");
 
-    private final String type;
+  private final String type;
 }

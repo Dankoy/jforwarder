@@ -12,16 +12,16 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class TagDTO {
 
-    private long id;
+  private long id;
 
-    private String title;
+  private String title;
 
-    public static TagDTO toDTO(Tag tag) {
-        return new TagDTO(tag.getId(), tag.getTitle());
-    }
+  public static TagDTO toDTO(Tag tag) {
+    return new TagDTO(tag.getId(), tag.getTitle());
+  }
 
-    public static Tag fromDTO(TagDTO dto) {
+  public static Tag fromDTO(TagDTO dto) {
 
-        return new Tag(dto.getId(), dto.getTitle());
-    }
+    return new Tag(dto.getId(), dto.getTitle());
+  }
 }

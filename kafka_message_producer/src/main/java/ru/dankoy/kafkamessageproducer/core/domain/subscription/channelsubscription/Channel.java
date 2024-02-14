@@ -13,9 +13,9 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Channel {
 
-    private long id;
+  private long id;
 
-    private String title;
+  private String title;
 
-    private String permalink;
+  private String permalink;
 }

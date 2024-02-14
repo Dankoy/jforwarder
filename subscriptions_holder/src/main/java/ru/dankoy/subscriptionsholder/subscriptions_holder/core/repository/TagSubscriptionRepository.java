@@ -17,40 +17,40 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSub
 @Deprecated(since = "2024-01-27")
 public interface TagSubscriptionRepository extends JpaRepository<TagSubscription, Long> {
 
-    // todo: Pageable with query returns ArrayList<Object[]> for whatever reason.
-    //  Probably native query fix the problem.
-    //  Decided to use named graphs
+  // todo: Pageable with query returns ArrayList<Object[]> for whatever reason.
+  //  Probably native query fix the problem.
+  //  Decided to use named graphs
 
-    //  @Query(
-    //      """
-    //          select ts, ch, ord, sco, tg, ty from TagSubscription ts
-    //          join ts.chat ch
-    //          join ts.tag tg
-    //          join ts.order ord
-    //          join ts.scope sco
-    //          join ts.type ty
-    //              """
-    //  )
-    @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
-    @Override
-    Page<TagSubscription> findAll(Pageable pageable);
+  //  @Query(
+  //      """
+  //          select ts, ch, ord, sco, tg, ty from TagSubscription ts
+  //          join ts.chat ch
+  //          join ts.tag tg
+  //          join ts.order ord
+  //          join ts.scope sco
+  //          join ts.type ty
+  //              """
+  //  )
+  @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
+  @Override
+  Page<TagSubscription> findAll(Pageable pageable);
 
-    //  @Query(
-    //      """
-    //          select ts, ch, t, ord, sco, ty from TagSubscription ts
-    //          join ts.chat ch
-    //          join ts.tag t
-    //          join ts.order ord
-    //          join ts.scope sco
-    //          join ts.type ty
-    //          where ch.active = :active
-    //              """
-    //  )
-    @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
-    Page<TagSubscription> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
+  //  @Query(
+  //      """
+  //          select ts, ch, t, ord, sco, ty from TagSubscription ts
+  //          join ts.chat ch
+  //          join ts.tag t
+  //          join ts.order ord
+  //          join ts.scope sco
+  //          join ts.type ty
+  //          where ch.active = :active
+  //              """
+  //  )
+  @EntityGraph(value = "tag-subscription-full", type = EntityGraphType.LOAD)
+  Page<TagSubscription> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
-    @Query(
-            """
+  @Query(
+      """
           select ts, ch, t, ord, sco, ty from TagSubscription ts
           join ts.chat ch
           join ts.tag t
@@ -59,10 +59,10 @@ public interface TagSubscriptionRepository extends JpaRepository<TagSubscription
           join ts.type ty
           where ch.chatId = :telegramChatId
               """)
-    List<TagSubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
+  List<TagSubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
-    @Query(
-            """
+  @Query(
+      """
           select ts, ch, t, ord, sco, ty from TagSubscription ts
           join ts.chat ch
           join ts.tag t
@@ -72,11 +72,11 @@ public interface TagSubscriptionRepository extends JpaRepository<TagSubscription
           where t.title = :tagTitle
           and ch.chatId = :externalChatId
               """)
-    List<TagSubscription> getAllByChatChatIdAndTagTitle(
-            @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
+  List<TagSubscription> getAllByChatChatIdAndTagTitle(
+      @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
 
-    @Query(
-            """
+  @Query(
+      """
           select ts, ch, t, ord, sco, ty from TagSubscription ts
           join ts.chat ch
           join ts.tag t
@@ -87,8 +87,8 @@ public interface TagSubscriptionRepository extends JpaRepository<TagSubscription
           and ch.chatId = :externalChatId
           and ord.name = :orderName
               """)
-    Optional<TagSubscription> getByChatChatIdAndTagTitleAndOrderName(
-            @Param("externalChatId") long externalChatId,
-            @Param("tagTitle") String tagTitle,
-            @Param("orderName") String orderName);
+  Optional<TagSubscription> getByChatChatIdAndTagTitleAndOrderName(
+      @Param("externalChatId") long externalChatId,
+      @Param("tagTitle") String tagTitle,
+      @Param("orderName") String orderName);
 }

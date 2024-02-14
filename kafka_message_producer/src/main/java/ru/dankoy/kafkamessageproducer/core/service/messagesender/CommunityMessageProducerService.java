@@ -8,5 +8,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionM
 @Deprecated(since = "2024-02-14")
 public interface CommunityMessageProducerService {
 
-    void send(CommunitySubscriptionMessage communitySubscriptionMessage);
+  void send(CommunitySubscriptionMessage communitySubscriptionMessage);
 }

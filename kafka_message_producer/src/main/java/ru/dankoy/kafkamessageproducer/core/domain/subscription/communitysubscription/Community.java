@@ -13,7 +13,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Community {
 
-    private long id;
-    private long externalId;
-    private String name;
+  private long id;
+  private long externalId;
+  private String name;
 }

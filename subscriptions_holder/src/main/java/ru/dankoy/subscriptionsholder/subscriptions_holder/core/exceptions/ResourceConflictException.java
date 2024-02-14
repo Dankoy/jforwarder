@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class ResourceConflictException extends SubscriptionHolderException {
 
-    @Serial private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-    public ResourceConflictException(String message) {
-        super(message);
-    }
+  public ResourceConflictException(String message) {
+    super(message);
+  }
 }

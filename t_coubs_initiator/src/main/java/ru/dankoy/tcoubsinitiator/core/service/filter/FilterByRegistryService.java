@@ -5,5 +5,5 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Su
 
 public interface FilterByRegistryService {
 
-    void filterByRegistry(List<? extends Subscription> subscriptions);
+  void filterByRegistry(List<? extends Subscription> subscriptions);
 }

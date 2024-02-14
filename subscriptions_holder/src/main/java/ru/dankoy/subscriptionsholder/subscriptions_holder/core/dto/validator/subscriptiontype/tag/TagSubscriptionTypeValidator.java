@@ -5,9 +5,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Objects;
 
 public class TagSubscriptionTypeValidator
-        implements ConstraintValidator<TagSubscriptionTypeConstraint, String> {
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
-        return Objects.nonNull(value) && (value.equals("tag"));
-    }
+    implements ConstraintValidator<TagSubscriptionTypeConstraint, String> {
+  @Override
+  public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
+    return Objects.nonNull(value) && (value.equals("tag"));
+  }
 }

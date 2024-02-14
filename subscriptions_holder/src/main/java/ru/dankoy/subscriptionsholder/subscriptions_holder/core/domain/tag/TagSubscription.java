@@ -29,14 +29,14 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
  */
 @Deprecated(since = "2024-01-28")
 @NamedEntityGraph(
-        name = "tag-subscription-full",
-        attributeNodes = {
-            @NamedAttributeNode("tag"),
-            @NamedAttributeNode("chat"),
-            @NamedAttributeNode("order"),
-            @NamedAttributeNode("scope"),
-            @NamedAttributeNode("type"),
-        })
+    name = "tag-subscription-full",
+    attributeNodes = {
+      @NamedAttributeNode("tag"),
+      @NamedAttributeNode("chat"),
+      @NamedAttributeNode("order"),
+      @NamedAttributeNode("scope"),
+      @NamedAttributeNode("type"),
+    })
 @Getter
 @ToString
 @Data
@@ -46,31 +46,31 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @Table(name = "tag_subscriptions")
 public class TagSubscription {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "tag_id")
-    private Tag tag;
+  @ManyToOne
+  @JoinColumn(name = "tag_id")
+  private Tag tag;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
+  @ManyToOne
+  @JoinColumn(name = "chat_id")
+  private Chat chat;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+  @ManyToOne
+  @JoinColumn(name = "order_id")
+  private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "scope_id")
-    private Scope scope;
+  @ManyToOne
+  @JoinColumn(name = "scope_id")
+  private Scope scope;
 
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private Type type;
+  @ManyToOne
+  @JoinColumn(name = "type_id")
+  private Type type;
 
-    @Column(name = "last_permalink")
-    private String lastPermalink;
+  @Column(name = "last_permalink")
+  private String lastPermalink;
 }

@@ -15,15 +15,15 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 @Builder
 public record BotConfigurationImpl(
-        FullBotProperties fullBotProperties,
-        CommandsHolder commandsHolder,
-        CommunitySubscriptionService communitySubscriptionService,
-        TelegramChatService telegramChatService,
-        TemplateBuilder templateBuilder,
-        CommunityService communityService,
-        TagSubscriptionService tagSubscriptionService,
-        ChannelSubscriptionService channelSubscriptionService,
-        OrderService orderService,
-        LocalisationService localisationService,
-        LocaleProvider localeProvider)
-        implements BotConfiguration {}
+    FullBotProperties fullBotProperties,
+    CommandsHolder commandsHolder,
+    CommunitySubscriptionService communitySubscriptionService,
+    TelegramChatService telegramChatService,
+    TemplateBuilder templateBuilder,
+    CommunityService communityService,
+    TagSubscriptionService tagSubscriptionService,
+    ChannelSubscriptionService channelSubscriptionService,
+    OrderService orderService,
+    LocalisationService localisationService,
+    LocaleProvider localeProvider)
+    implements BotConfiguration {}

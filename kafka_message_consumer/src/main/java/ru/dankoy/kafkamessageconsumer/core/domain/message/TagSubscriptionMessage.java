@@ -14,11 +14,11 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.tagsubscription.T
 @ToString(callSuper = true)
 @NoArgsConstructor
 public final class TagSubscriptionMessage extends CoubMessage {
-    private Tag tag;
+  private Tag tag;
 
-    private Order order;
+  private Order order;
 
-    private Scope scope;
+  private Scope scope;
 
-    private Type type;
+  private Type type;
 }

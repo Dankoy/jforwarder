@@ -18,26 +18,26 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Chat;
 @AllArgsConstructor
 public class Subscription {
 
-    private long id;
+  private long id;
 
-    private Chat chat;
+  private Chat chat;
 
-    private String lastPermalink;
+  private String lastPermalink;
 
-    @Setter private List<Coub> coubs = new ArrayList<>();
+  @Setter private List<Coub> coubs = new ArrayList<>();
 
-    public void addCoubs(List<Coub> coubsToAdd) {
+  public void addCoubs(List<Coub> coubsToAdd) {
 
-        for (var coub : coubsToAdd) {
+    for (var coub : coubsToAdd) {
 
-            var newCoub =
-                    new Coub(
-                            coub.getId(),
-                            coub.getTitle(),
-                            coub.getPermalink(),
-                            coub.getUrl(),
-                            coub.getPublishedAt());
-            coubs.add(newCoub);
-        }
+      var newCoub =
+          new Coub(
+              coub.getId(),
+              coub.getTitle(),
+              coub.getPermalink(),
+              coub.getUrl(),
+              coub.getPublishedAt());
+      coubs.add(newCoub);
     }
+  }
 }

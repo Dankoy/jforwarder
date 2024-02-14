@@ -7,11 +7,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TagSubService {
 
-    Page<TagSub> getAllByActiveTelegramChats(boolean active, Pageable pageable);
+  Page<TagSub> getAllByActiveTelegramChats(boolean active, Pageable pageable);
 
-    List<TagSub> getAllByTelegramChatId(long telegramChatId);
+  List<TagSub> getAllByTelegramChatId(long telegramChatId);
 
-    TagSub createSubscription(TagSub tagSubscription);
+  TagSub createSubscription(TagSub tagSubscription);
 
-    void deleteSubscription(TagSub tagSubscription);
+  void deleteSubscription(TagSub tagSubscription);
 }

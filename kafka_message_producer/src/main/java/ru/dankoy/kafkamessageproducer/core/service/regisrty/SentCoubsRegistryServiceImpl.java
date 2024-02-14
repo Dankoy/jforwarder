@@ -11,35 +11,35 @@ import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 @RequiredArgsConstructor
 public class SentCoubsRegistryServiceImpl implements SentCoubsRegisrtyService {
 
-    private final SubscriptionFeign subscriptionFeign;
+  private final SubscriptionFeign subscriptionFeign;
 
-    private final MessageConverter messageConverter;
+  private final MessageConverter messageConverter;
 
-    //  @Override
-    //  public SentCoubsRegistry create(CommunitySubscriptionMessage communitySubscriptionMessage) {
-    //
-    //    var subscription = messageConverter.convertToRegistry(communitySubscriptionMessage);
-    //
-    //    return subscriptionFeign.createRegistryEntry(subscription);
-    //
-    //  }
-    //
-    //  @Override
-    //  public SentCoubsRegistry create(TagSubscriptionMessage tagSubscriptionMessage) {
-    //
-    //    var subscription = messageConverter.convertToRegistry(tagSubscriptionMessage);
-    //    return subscriptionFeign.createRegistryEntry(subscription);
-    //  }
-    //
-    //  @Override
-    //  public SentCoubsRegistry create(ChannelSubscriptionMessage channelSubscriptionMessage) {
-    //    var subscription = messageConverter.convertToRegistry(channelSubscriptionMessage);
-    //    return subscriptionFeign.createRegistryEntry(subscription);
-    //  }
+  //  @Override
+  //  public SentCoubsRegistry create(CommunitySubscriptionMessage communitySubscriptionMessage) {
+  //
+  //    var subscription = messageConverter.convertToRegistry(communitySubscriptionMessage);
+  //
+  //    return subscriptionFeign.createRegistryEntry(subscription);
+  //
+  //  }
+  //
+  //  @Override
+  //  public SentCoubsRegistry create(TagSubscriptionMessage tagSubscriptionMessage) {
+  //
+  //    var subscription = messageConverter.convertToRegistry(tagSubscriptionMessage);
+  //    return subscriptionFeign.createRegistryEntry(subscription);
+  //  }
+  //
+  //  @Override
+  //  public SentCoubsRegistry create(ChannelSubscriptionMessage channelSubscriptionMessage) {
+  //    var subscription = messageConverter.convertToRegistry(channelSubscriptionMessage);
+  //    return subscriptionFeign.createRegistryEntry(subscription);
+  //  }
 
-    @Override
-    public SentCoubsRegistry create(CoubMessage coubMessage) {
-        var subscription = messageConverter.convertToRegistry(coubMessage);
-        return subscriptionFeign.createRegistryEntry(subscription);
-    }
+  @Override
+  public SentCoubsRegistry create(CoubMessage coubMessage) {
+    var subscription = messageConverter.convertToRegistry(coubMessage);
+    return subscriptionFeign.createRegistryEntry(subscription);
+  }
 }

@@ -17,31 +17,31 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.ChannelSe
 @RestController
 public class ChannelController {
 
-    private final ChannelService channelService;
+  private final ChannelService channelService;
 
-    @GetMapping(
-            value = "/api/v1/channels",
-            params = {"permalink"})
-    public ChannelDTO getByTitle(@RequestParam("permalink") String permalink) {
+  @GetMapping(
+      value = "/api/v1/channels",
+      params = {"permalink"})
+  public ChannelDTO getByTitle(@RequestParam("permalink") String permalink) {
 
-        var found = channelService.getByPermalink(permalink);
+    var found = channelService.getByPermalink(permalink);
 
-        return ChannelDTO.toDTO(found);
-    }
+    return ChannelDTO.toDTO(found);
+  }
 
-    @PostMapping(value = "/api/v1/channels")
-    public ChannelDTO create(@Valid @RequestBody ChannelCreateDTO dto) {
+  @PostMapping(value = "/api/v1/channels")
+  public ChannelDTO create(@Valid @RequestBody ChannelCreateDTO dto) {
 
-        var tag = ChannelCreateDTO.fromDTO(dto);
+    var tag = ChannelCreateDTO.fromDTO(dto);
 
-        var created = channelService.create(tag);
+    var created = channelService.create(tag);
 
-        return ChannelDTO.toDTO(created);
-    }
+    return ChannelDTO.toDTO(created);
+  }
 
-    @DeleteMapping(value = "/api/v1/channels/{permalink}")
-    public void delete(@PathVariable("permalink") String permalink) {
+  @DeleteMapping(value = "/api/v1/channels/{permalink}")
+  public void delete(@PathVariable("permalink") String permalink) {
 
-        channelService.deleteByTitle(permalink);
-    }
+    channelService.deleteByTitle(permalink);
+  }
 }

@@ -13,8 +13,8 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Order {
 
-    private long id;
+  private long id;
 
-    private String name;
-    private String value;
+  private String name;
+  private String value;
 }

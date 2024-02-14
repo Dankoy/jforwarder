@@ -18,14 +18,14 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class Coub implements Permalink {
 
-    private long id;
+  private long id;
 
-    private String title;
+  private String title;
 
-    private String permalink;
+  private String permalink;
 
-    @Setter private String url;
+  @Setter private String url;
 
-    @JsonProperty("published_at")
-    private LocalDateTime publishedAt;
+  @JsonProperty("published_at")
+  private LocalDateTime publishedAt;
 }

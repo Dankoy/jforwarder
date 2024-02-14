@@ -14,94 +14,89 @@ import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 
 public record BotCommandsFactoryImpl(LocalisationService localisationService, Locale locale)
-        implements BotCommandsFactory {
+    implements BotCommandsFactory {
 
-    @Override
-    public List<BotCommand> allKnownCommands() {
+  @Override
+  public List<BotCommand> allKnownCommands() {
 
-        return Stream.of(
-                        communitiesCommand(),
-                        helpCommand(),
-                        mySubscriptionsCommand(),
-                        startCommand(),
-                        subscribeCommand(),
-                        tagOrdersCommand(),
-                        unsubscribeCommand())
-                .toList();
-    }
+    return Stream.of(
+            communitiesCommand(),
+            helpCommand(),
+            mySubscriptionsCommand(),
+            startCommand(),
+            subscribeCommand(),
+            tagOrdersCommand(),
+            unsubscribeCommand())
+        .toList();
+  }
 
-    @Override
-    public BotCommand communitiesCommand() {
+  @Override
+  public BotCommand communitiesCommand() {
 
-        var command = localisationService.getLocalizedMessage("communitiesCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage(
-                        "communitiesCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("communitiesCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("communitiesCommandDescription", null, locale);
 
-        return new CommunitiesCommand(command, description);
-    }
+    return new CommunitiesCommand(command, description);
+  }
 
-    @Override
-    public BotCommand helpCommand() {
+  @Override
+  public BotCommand helpCommand() {
 
-        var command = localisationService.getLocalizedMessage("helpCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage("helpCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("helpCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("helpCommandDescription", null, locale);
 
-        return new HelpCommand(command, description);
-    }
+    return new HelpCommand(command, description);
+  }
 
-    @Override
-    public BotCommand mySubscriptionsCommand() {
+  @Override
+  public BotCommand mySubscriptionsCommand() {
 
-        var command =
-                localisationService.getLocalizedMessage("mySubscriptionsCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage(
-                        "mySubscriptionsCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("mySubscriptionsCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("mySubscriptionsCommandDescription", null, locale);
 
-        return new MySubscriptionsCommand(command, description);
-    }
+    return new MySubscriptionsCommand(command, description);
+  }
 
-    @Override
-    public BotCommand startCommand() {
+  @Override
+  public BotCommand startCommand() {
 
-        var command = localisationService.getLocalizedMessage("startCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage("startCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("startCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("startCommandDescription", null, locale);
 
-        return new StartCommand(command, description);
-    }
+    return new StartCommand(command, description);
+  }
 
-    @Override
-    public BotCommand subscribeCommand() {
+  @Override
+  public BotCommand subscribeCommand() {
 
-        var command = localisationService.getLocalizedMessage("subscribeCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage(
-                        "subscribeCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("subscribeCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("subscribeCommandDescription", null, locale);
 
-        return new SubscribeCommand(command, description);
-    }
+    return new SubscribeCommand(command, description);
+  }
 
-    @Override
-    public BotCommand unsubscribeCommand() {
+  @Override
+  public BotCommand unsubscribeCommand() {
 
-        var command = localisationService.getLocalizedMessage("unsubscribeCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage(
-                        "unsubscribeCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("unsubscribeCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("unsubscribeCommandDescription", null, locale);
 
-        return new UnsubscribeCommand(command, description);
-    }
+    return new UnsubscribeCommand(command, description);
+  }
 
-    @Override
-    public BotCommand tagOrdersCommand() {
+  @Override
+  public BotCommand tagOrdersCommand() {
 
-        var command = localisationService.getLocalizedMessage("ordersCommand", null, locale);
-        var description =
-                localisationService.getLocalizedMessage("ordersCommandDescription", null, locale);
+    var command = localisationService.getLocalizedMessage("ordersCommand", null, locale);
+    var description =
+        localisationService.getLocalizedMessage("ordersCommandDescription", null, locale);
 
-        return new OrdersCommand(command, description);
-    }
+    return new OrdersCommand(command, description);
+  }
 }

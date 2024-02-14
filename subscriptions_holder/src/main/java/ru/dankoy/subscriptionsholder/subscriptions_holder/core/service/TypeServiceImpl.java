@@ -10,15 +10,13 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TypeRe
 @RequiredArgsConstructor
 public class TypeServiceImpl implements TypeService {
 
-    private final TypeRepository typeRepository;
+  private final TypeRepository typeRepository;
 
-    @Override
-    public Type getByName(String name) {
-        var optional = typeRepository.findByName(name);
+  @Override
+  public Type getByName(String name) {
+    var optional = typeRepository.findByName(name);
 
-        return optional.orElseThrow(
-                () ->
-                        new ResourceNotFoundException(
-                                String.format("Tag type not found - %s", name)));
-    }
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Tag type not found - %s", name)));
+  }
 }

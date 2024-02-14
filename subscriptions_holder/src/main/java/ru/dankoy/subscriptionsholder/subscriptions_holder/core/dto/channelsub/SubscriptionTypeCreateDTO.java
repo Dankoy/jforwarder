@@ -15,15 +15,15 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.validator.sub
 @AllArgsConstructor
 public class SubscriptionTypeCreateDTO {
 
-    @NotNull @NotEmpty @ChannelSubscriptionTypeConstraint private String type;
+  @NotNull @NotEmpty @ChannelSubscriptionTypeConstraint private String type;
 
-    public static SubscriptionTypeCreateDTO toDTO(SubscriptionType type) {
+  public static SubscriptionTypeCreateDTO toDTO(SubscriptionType type) {
 
-        return new SubscriptionTypeCreateDTO(type.getType());
-    }
+    return new SubscriptionTypeCreateDTO(type.getType());
+  }
 
-    public static SubscriptionType fromDTO(SubscriptionTypeCreateDTO dto) {
+  public static SubscriptionType fromDTO(SubscriptionTypeCreateDTO dto) {
 
-        return new SubscriptionType(0, dto.getType());
-    }
+    return new SubscriptionType(0, dto.getType());
+  }
 }

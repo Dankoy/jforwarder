@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @NamedEntityGraph(
-        name = "order-full",
-        includeAllAttributes = true,
-        attributeNodes = {@NamedAttributeNode("subscriptionType")})
+    name = "order-full",
+    includeAllAttributes = true,
+    attributeNodes = {@NamedAttributeNode("subscriptionType")})
 @Getter
 @ToString
 @Data
@@ -29,18 +29,18 @@ import lombok.ToString;
 @Table(name = "orders")
 public class Order {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false)
+  private long id;
 
-    @Column(name = "name")
-    private String name;
+  @Column(name = "name")
+  private String name;
 
-    @Column(name = "value")
-    private String value;
+  @Column(name = "value")
+  private String value;
 
-    @ManyToOne
-    @JoinColumn(name = "subscription_type_id")
-    private SubscriptionType subscriptionType;
+  @ManyToOne
+  @JoinColumn(name = "subscription_type_id")
+  private SubscriptionType subscriptionType;
 }

@@ -14,46 +14,46 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @AllArgsConstructor
 public class ChatDTO {
 
-    private long id;
+  private long id;
 
-    private long chatId;
+  private long chatId;
 
-    private String type;
+  private String type;
 
-    private String title;
+  private String title;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 
-    private String username;
+  private String username;
 
-    private boolean active;
+  private boolean active;
 
-    public static ChatDTO toDTO(Chat chat) {
+  public static ChatDTO toDTO(Chat chat) {
 
-        return builder()
-                .id(chat.getId())
-                .chatId(chat.getChatId())
-                .type(chat.getType())
-                .title(chat.getTitle())
-                .firstName(chat.getFirstName())
-                .lastName(chat.getLastName())
-                .username(chat.getUsername())
-                .active(chat.isActive())
-                .build();
-    }
+    return builder()
+        .id(chat.getId())
+        .chatId(chat.getChatId())
+        .type(chat.getType())
+        .title(chat.getTitle())
+        .firstName(chat.getFirstName())
+        .lastName(chat.getLastName())
+        .username(chat.getUsername())
+        .active(chat.isActive())
+        .build();
+  }
 
-    public static Chat fromDTO(ChatDTO dto) {
+  public static Chat fromDTO(ChatDTO dto) {
 
-        return new Chat(
-                dto.id,
-                dto.chatId,
-                dto.type,
-                dto.title,
-                dto.firstName,
-                dto.lastName,
-                dto.username,
-                dto.active);
-    }
+    return new Chat(
+        dto.id,
+        dto.chatId,
+        dto.type,
+        dto.title,
+        dto.firstName,
+        dto.lastName,
+        dto.username,
+        dto.active);
+  }
 }

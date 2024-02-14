@@ -7,13 +7,13 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 
 public interface TagService {
 
-    Optional<Tag> findTagByTitle(String title);
+  Optional<Tag> findTagByTitle(String title);
 
-    TagSubscription subscribeByTag(TagSubscription tagSubscription);
+  TagSubscription subscribeByTag(TagSubscription tagSubscription);
 
-    void unsubscribeByTag(TagSubscription tagSubscription);
+  void unsubscribeByTag(TagSubscription tagSubscription);
 
-    List<TagSubscription> getAllSubscriptionsByChat(long chatId);
+  List<TagSubscription> getAllSubscriptionsByChat(long chatId);
 
-    Tag create(Tag tag);
+  Tag create(Tag tag);
 }

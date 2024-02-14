@@ -5,5 +5,5 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 
 public interface SubscriptionService {
 
-    Subscription updatePermalink(CoubMessage coubMessage);
+  Subscription updatePermalink(CoubMessage coubMessage);
 }

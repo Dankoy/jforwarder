@@ -11,13 +11,13 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSub
 @Deprecated(since = "2024-01-27")
 public interface TagSubscriptionService {
 
-    Page<TagSubscription> getAllByActiveTelegramChats(boolean active, Pageable pageable);
+  Page<TagSubscription> getAllByActiveTelegramChats(boolean active, Pageable pageable);
 
-    List<TagSubscription> getAllByTelegramChatId(long telegramChatId);
+  List<TagSubscription> getAllByTelegramChatId(long telegramChatId);
 
-    TagSubscription createSubscription(TagSubscription tagSubscription);
+  TagSubscription createSubscription(TagSubscription tagSubscription);
 
-    void deleteSubscription(TagSubscription tagSubscription);
+  void deleteSubscription(TagSubscription tagSubscription);
 
-    TagSubscription updatePermalink(TagSubscription tagSubscription);
+  TagSubscription updatePermalink(TagSubscription tagSubscription);
 }

@@ -10,8 +10,8 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.Chat;
 @SuperBuilder
 @ToString
 public class CoubMessage {
-    private long id;
-    private Chat chat;
-    private Coub coub;
-    private String lastPermalink;
+  private long id;
+  private Chat chat;
+  private Coub coub;
+  private String lastPermalink;
 }

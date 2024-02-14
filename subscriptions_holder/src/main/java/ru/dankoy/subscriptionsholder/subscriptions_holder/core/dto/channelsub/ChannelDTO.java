@@ -12,17 +12,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @AllArgsConstructor
 public class ChannelDTO {
 
-    private long id;
+  private long id;
 
-    private String title;
-    private String permalink;
+  private String title;
+  private String permalink;
 
-    public static ChannelDTO toDTO(Channel channel) {
-        return new ChannelDTO(channel.getId(), channel.getTitle(), channel.getPermalink());
-    }
+  public static ChannelDTO toDTO(Channel channel) {
+    return new ChannelDTO(channel.getId(), channel.getTitle(), channel.getPermalink());
+  }
 
-    public static Channel fromDTO(ChannelDTO dto) {
+  public static Channel fromDTO(ChannelDTO dto) {
 
-        return new Channel(dto.getId(), dto.getTitle(), dto.getPermalink());
-    }
+    return new Channel(dto.getId(), dto.getTitle(), dto.getPermalink());
+  }
 }

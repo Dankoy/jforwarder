@@ -12,8 +12,8 @@ import ru.dankoy.telegrambot.core.domain.coub.Coub;
 @ToString
 @NoArgsConstructor
 public class CoubMessage {
-    private long id;
-    private Chat chat;
-    private Coub coub;
-    private String lastPermalink;
+  private long id;
+  private Chat chat;
+  private Coub coub;
+  private String lastPermalink;
 }

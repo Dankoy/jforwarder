@@ -12,11 +12,11 @@ import lombok.ToString;
 @NoArgsConstructor
 public class Meta {
 
-    private long page;
+  private long page;
 
-    @JsonProperty("per_page")
-    private long perPage;
+  @JsonProperty("per_page")
+  private long perPage;
 
-    @JsonProperty("total_pages")
-    private long totalPages;
+  @JsonProperty("total_pages")
+  private long totalPages;
 }

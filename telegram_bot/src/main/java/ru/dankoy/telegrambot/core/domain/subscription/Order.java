@@ -14,15 +14,15 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Order {
 
-    private long id;
+  private long id;
 
-    private String name;
+  private String name;
 
-    private String value;
+  private String value;
 
-    @Setter private SubscriptionType subscriptionType;
+  @Setter private SubscriptionType subscriptionType;
 
-    public Order(String value) {
-        this.value = value;
-    }
+  public Order(String value) {
+    this.value = value;
+  }
 }

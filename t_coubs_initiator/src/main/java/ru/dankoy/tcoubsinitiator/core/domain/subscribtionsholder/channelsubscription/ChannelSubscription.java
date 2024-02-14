@@ -17,11 +17,11 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Su
 @AllArgsConstructor
 public class ChannelSubscription extends Subscription {
 
-    private Channel channel;
+  private Channel channel;
 
-    private Order order;
+  private Order order;
 
-    private Scope scope;
+  private Scope scope;
 
-    private Type type;
+  private Type type;
 }

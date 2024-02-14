@@ -14,6 +14,6 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Subscription;
 @AllArgsConstructor
 public class CommunitySubscription extends Subscription {
 
-    private Community community;
-    private Section section;
+  private Community community;
+  private Section section;
 }

@@ -16,101 +16,99 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Channe
 @RequiredArgsConstructor
 public class ChannelSubServiceImpl implements ChannelSubService {
 
-    private final ChannelSubRepository channelSubRepository;
-    private final ChannelService channelService;
-    private final ScopeService scopeService;
-    private final OrderService orderService;
-    private final TypeService typeService;
-    private final TelegramChatService telegramChatService;
+  private final ChannelSubRepository channelSubRepository;
+  private final ChannelService channelService;
+  private final ScopeService scopeService;
+  private final OrderService orderService;
+  private final TypeService typeService;
+  private final TelegramChatService telegramChatService;
 
-    @Override
-    public Page<ChannelSub> getAllByActiveTelegramChats(boolean active, Pageable pageable) {
-        return channelSubRepository.findAllByChatActive(active, pageable);
+  @Override
+  public Page<ChannelSub> getAllByActiveTelegramChats(boolean active, Pageable pageable) {
+    return channelSubRepository.findAllByChatActive(active, pageable);
+  }
+
+  @Override
+  public List<ChannelSub> getAllByTelegramChatId(long telegramChatId) {
+    return channelSubRepository.getAllByChatChatId(telegramChatId);
+  }
+
+  @Transactional
+  @Override
+  public ChannelSub createSubscription(ChannelSub channelSub) {
+
+    // check existence
+    var optional =
+        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
+            channelSub.getChat().getChatId(),
+            channelSub.getChannel().getPermalink(),
+            channelSub.getOrder().getValue());
+
+    // if exists throw exception
+    optional.ifPresent(
+        s -> {
+          throw new ResourceConflictException(
+              String.format(
+                  "Subscription already exists for tag - %s", channelSub.getChannel().getTitle()));
+        });
+
+    // Throws ResourceNotFoundException
+    var channel = channelService.getByPermalink(channelSub.getChannel().getPermalink());
+    var scope = scopeService.getByName(channelSub.getScope().getName());
+    var type = typeService.getByName(channelSub.getType().getName());
+    var order =
+        orderService.getByValueAndType(
+            channelSub.getOrder().getValue(),
+            channelSub.getOrder().getSubscriptionType().getType());
+
+    var optionalChat = telegramChatService.getByTelegramChatId(channelSub.getChat().getChatId());
+
+    if (optionalChat.isPresent()) {
+
+      var chat = optionalChat.get();
+
+      var newTagSubscription =
+          ChannelSub.builder()
+              .id(0)
+              .channel(channel)
+              .chat(chat)
+              .order(order)
+              .scope(scope)
+              .type(type)
+              .lastPermalink(null)
+              .build();
+
+      return channelSubRepository.save(newTagSubscription);
+
+    } else {
+
+      var createdChat = telegramChatService.save(channelSub.getChat());
+
+      var newTagSubscription =
+          ChannelSub.builder()
+              .id(0)
+              .channel(channel)
+              .chat(createdChat)
+              .order(order)
+              .scope(scope)
+              .type(type)
+              .lastPermalink(null)
+              .build();
+
+      return channelSubRepository.save(newTagSubscription);
     }
+  }
 
-    @Override
-    public List<ChannelSub> getAllByTelegramChatId(long telegramChatId) {
-        return channelSubRepository.getAllByChatChatId(telegramChatId);
-    }
+  @Transactional
+  @Override
+  public void deleteSubscription(ChannelSub channelSub) {
 
-    @Transactional
-    @Override
-    public ChannelSub createSubscription(ChannelSub channelSub) {
+    var optional =
+        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
+            channelSub.getChat().getChatId(),
+            channelSub.getChannel().getPermalink(),
+            channelSub.getOrder().getValue());
 
-        // check existence
-        var optional =
-                channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
-                        channelSub.getChat().getChatId(),
-                        channelSub.getChannel().getPermalink(),
-                        channelSub.getOrder().getValue());
-
-        // if exists throw exception
-        optional.ifPresent(
-                s -> {
-                    throw new ResourceConflictException(
-                            String.format(
-                                    "Subscription already exists for tag - %s",
-                                    channelSub.getChannel().getTitle()));
-                });
-
-        // Throws ResourceNotFoundException
-        var channel = channelService.getByPermalink(channelSub.getChannel().getPermalink());
-        var scope = scopeService.getByName(channelSub.getScope().getName());
-        var type = typeService.getByName(channelSub.getType().getName());
-        var order =
-                orderService.getByValueAndType(
-                        channelSub.getOrder().getValue(),
-                        channelSub.getOrder().getSubscriptionType().getType());
-
-        var optionalChat =
-                telegramChatService.getByTelegramChatId(channelSub.getChat().getChatId());
-
-        if (optionalChat.isPresent()) {
-
-            var chat = optionalChat.get();
-
-            var newTagSubscription =
-                    ChannelSub.builder()
-                            .id(0)
-                            .channel(channel)
-                            .chat(chat)
-                            .order(order)
-                            .scope(scope)
-                            .type(type)
-                            .lastPermalink(null)
-                            .build();
-
-            return channelSubRepository.save(newTagSubscription);
-
-        } else {
-
-            var createdChat = telegramChatService.save(channelSub.getChat());
-
-            var newTagSubscription =
-                    ChannelSub.builder()
-                            .id(0)
-                            .channel(channel)
-                            .chat(createdChat)
-                            .order(order)
-                            .scope(scope)
-                            .type(type)
-                            .lastPermalink(null)
-                            .build();
-
-            return channelSubRepository.save(newTagSubscription);
-        }
-    }
-
-    @Transactional
-    @Override
-    public void deleteSubscription(ChannelSub channelSub) {
-
-        var optional =
-                channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
-                        channelSub.getChat().getChatId(),
-                        channelSub.getChannel().getPermalink(),
-                        channelSub.getOrder().getValue());
-
-        optional.ifPresent(channelSubRepository::delete);
-    }
+    optional.ifPresent(channelSubRepository::delete);
+  }
 }

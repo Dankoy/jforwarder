@@ -19,45 +19,45 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.ChannelSu
 @RestController
 public class ChannelSubController {
 
-    private final ChannelSubService channelSubService;
+  private final ChannelSubService channelSubService;
 
-    @GetMapping(
-            value = "/api/v1/channel_subscriptions",
-            params = {"active"})
-    public Page<ChannelSubscriptionDTO> getAllByActiveChat(
-            @RequestParam("active") boolean active, Pageable pageable) {
+  @GetMapping(
+      value = "/api/v1/channel_subscriptions",
+      params = {"active"})
+  public Page<ChannelSubscriptionDTO> getAllByActiveChat(
+      @RequestParam("active") boolean active, Pageable pageable) {
 
-        var subs = channelSubService.getAllByActiveTelegramChats(active, pageable);
+    var subs = channelSubService.getAllByActiveTelegramChats(active, pageable);
 
-        return subs.map(ChannelSubscriptionDTO::toDTO);
-    }
+    return subs.map(ChannelSubscriptionDTO::toDTO);
+  }
 
-    @GetMapping(
-            value = "/api/v1/channel_subscriptions",
-            params = {"telegramChatId"})
-    public List<ChannelSubscriptionDTO> getAllByTelegramChat(
-            @RequestParam("telegramChatId") long telegramChatId) {
+  @GetMapping(
+      value = "/api/v1/channel_subscriptions",
+      params = {"telegramChatId"})
+  public List<ChannelSubscriptionDTO> getAllByTelegramChat(
+      @RequestParam("telegramChatId") long telegramChatId) {
 
-        var subs = channelSubService.getAllByTelegramChatId(telegramChatId);
+    var subs = channelSubService.getAllByTelegramChatId(telegramChatId);
 
-        return subs.stream().map(ChannelSubscriptionDTO::toDTO).toList();
-    }
+    return subs.stream().map(ChannelSubscriptionDTO::toDTO).toList();
+  }
 
-    @PostMapping(value = "/api/v1/channel_subscriptions")
-    public ChannelSubscriptionDTO create(@Valid @RequestBody ChannelSubscriptionCreateDTO dto) {
+  @PostMapping(value = "/api/v1/channel_subscriptions")
+  public ChannelSubscriptionDTO create(@Valid @RequestBody ChannelSubscriptionCreateDTO dto) {
 
-        var ts = ChannelSubscriptionCreateDTO.fromDTO(dto);
+    var ts = ChannelSubscriptionCreateDTO.fromDTO(dto);
 
-        var sub = channelSubService.createSubscription(ts);
+    var sub = channelSubService.createSubscription(ts);
 
-        return ChannelSubscriptionDTO.toDTO(sub);
-    }
+    return ChannelSubscriptionDTO.toDTO(sub);
+  }
 
-    @DeleteMapping(value = "/api/v1/channel_subscriptions")
-    public void delete(@Valid @RequestBody ChannelSubscriptionCreateDTO dto) {
+  @DeleteMapping(value = "/api/v1/channel_subscriptions")
+  public void delete(@Valid @RequestBody ChannelSubscriptionCreateDTO dto) {
 
-        var ts = ChannelSubscriptionCreateDTO.fromDTO(dto);
+    var ts = ChannelSubscriptionCreateDTO.fromDTO(dto);
 
-        channelSubService.deleteSubscription(ts);
-    }
+    channelSubService.deleteSubscription(ts);
+  }
 }

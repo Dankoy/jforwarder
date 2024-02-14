@@ -13,6 +13,6 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Section {
 
-    private long id;
-    private String name;
+  private long id;
+  private String name;
 }

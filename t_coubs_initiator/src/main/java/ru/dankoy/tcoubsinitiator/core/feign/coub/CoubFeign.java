@@ -14,34 +14,34 @@ import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
 @FeignClient(name = "coubs", url = "${coub.connector.gatewayApiUrl}api/v2/")
 public interface CoubFeign {
 
-    @GetMapping(
-            value = "timeline/community/{communityName}/{section}",
-            params = {"page", "per_page"})
-    CoubWrapper getCoubsForCommunityWrapperPageable(
-            @PathVariable(value = "communityName") String community,
-            @PathVariable(value = "section") String section,
-            @RequestParam("page") long page,
-            @RequestParam("per_page") int perPage);
+  @GetMapping(
+      value = "timeline/community/{communityName}/{section}",
+      params = {"page", "per_page"})
+  CoubWrapper getCoubsForCommunityWrapperPageable(
+      @PathVariable(value = "communityName") String community,
+      @PathVariable(value = "section") String section,
+      @RequestParam("page") long page,
+      @RequestParam("per_page") int perPage);
 
-    @GetMapping(
-            value = "timeline/tag/{tag}",
-            params = {"order_by", "type", "scope", "page", "per_page"})
-    CoubWrapper getCoubsForTagWrapperPageable(
-            @PathVariable(value = "tag") String tag,
-            @RequestParam("order_by") String orderBy,
-            @RequestParam("type") String type,
-            @RequestParam("scope") String scope,
-            @RequestParam("page") long page,
-            @RequestParam("per_page") long perPage);
+  @GetMapping(
+      value = "timeline/tag/{tag}",
+      params = {"order_by", "type", "scope", "page", "per_page"})
+  CoubWrapper getCoubsForTagWrapperPageable(
+      @PathVariable(value = "tag") String tag,
+      @RequestParam("order_by") String orderBy,
+      @RequestParam("type") String type,
+      @RequestParam("scope") String scope,
+      @RequestParam("page") long page,
+      @RequestParam("per_page") long perPage);
 
-    @GetMapping(
-            value = "timeline/channel/{permalink}",
-            params = {"permalink", "order_by", "type", "scope", "page", "per_page"})
-    CoubWrapper getCoubsForChannelWrapperPageable(
-            @PathVariable(value = "permalink") @RequestParam("permalink") String permalink,
-            @RequestParam("order_by") String orderBy,
-            @RequestParam("type") String type,
-            @RequestParam("scope") String scope,
-            @RequestParam("page") long page,
-            @RequestParam("per_page") long perPage);
+  @GetMapping(
+      value = "timeline/channel/{permalink}",
+      params = {"permalink", "order_by", "type", "scope", "page", "per_page"})
+  CoubWrapper getCoubsForChannelWrapperPageable(
+      @PathVariable(value = "permalink") @RequestParam("permalink") String permalink,
+      @RequestParam("order_by") String orderBy,
+      @RequestParam("type") String type,
+      @RequestParam("scope") String scope,
+      @RequestParam("page") long page,
+      @RequestParam("per_page") long perPage);
 }

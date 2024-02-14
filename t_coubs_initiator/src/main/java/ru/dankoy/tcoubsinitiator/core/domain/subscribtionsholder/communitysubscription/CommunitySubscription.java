@@ -14,6 +14,6 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Su
 @AllArgsConstructor
 public class CommunitySubscription extends Subscription {
 
-    private Community community;
-    private Section section;
+  private Community community;
+  private Section section;
 }

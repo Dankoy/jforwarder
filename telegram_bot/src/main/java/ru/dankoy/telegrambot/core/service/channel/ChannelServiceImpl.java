@@ -13,38 +13,38 @@ import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderF
 @Service
 public class ChannelServiceImpl implements ChannelService {
 
-    private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
-    @Override
-    public Optional<Channel> findChannelByPermalink(String permalink) {
+  @Override
+  public Optional<Channel> findChannelByPermalink(String permalink) {
 
-        try {
-            return Optional.of(subscriptionsHolderFeign.getChannelByPermalink(permalink));
-        } catch (NotFound e) {
-            return Optional.empty();
-        }
+    try {
+      return Optional.of(subscriptionsHolderFeign.getChannelByPermalink(permalink));
+    } catch (NotFound e) {
+      return Optional.empty();
     }
+  }
 
-    @Override
-    public ChannelSubscription subscribeByChannel(ChannelSubscription channelSubscription) {
+  @Override
+  public ChannelSubscription subscribeByChannel(ChannelSubscription channelSubscription) {
 
-        return subscriptionsHolderFeign.subscribeByChannel(channelSubscription);
-    }
+    return subscriptionsHolderFeign.subscribeByChannel(channelSubscription);
+  }
 
-    @Override
-    public void unsubscribeByChannel(ChannelSubscription channelSubscription) {
+  @Override
+  public void unsubscribeByChannel(ChannelSubscription channelSubscription) {
 
-        subscriptionsHolderFeign.unsubscribeByChannel(channelSubscription);
-    }
+    subscriptionsHolderFeign.unsubscribeByChannel(channelSubscription);
+  }
 
-    @Override
-    public List<ChannelSubscription> getAllSubscriptionsByChat(long chatId) {
+  @Override
+  public List<ChannelSubscription> getAllSubscriptionsByChat(long chatId) {
 
-        return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatId(chatId);
-    }
+    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatId(chatId);
+  }
 
-    @Override
-    public Channel create(Channel channel) {
-        return subscriptionsHolderFeign.createChannel(channel);
-    }
+  @Override
+  public Channel create(Channel channel) {
+    return subscriptionsHolderFeign.createChannel(channel);
+  }
 }
