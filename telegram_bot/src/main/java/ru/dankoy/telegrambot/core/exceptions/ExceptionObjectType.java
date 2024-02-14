@@ -6,6 +6,7 @@ import lombok.Getter;
 public enum ExceptionObjectType {
   TAG("tagException"),
   COMMUNITY("communityException"),
+  CHANNEL("channelException"),
   SECTION("sectionException"),
   ORDER("orderException");
 

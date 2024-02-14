@@ -93,7 +93,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
 
       } else {
         throw new NotFoundException(
-            ExceptionObjectType.TAG,
+            ExceptionObjectType.CHANNEL,
             channelPermalink,
             String.format(
                 "Channel '%s' not found. Validate tag name and try again.", channelPermalink));
