@@ -1,6 +1,8 @@
 package ru.dankoy.kafkamessageconsumer.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.FeignException.NotFound;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -24,6 +26,7 @@ import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.FixedBackOff;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
@@ -141,13 +144,28 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
         .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
 
     factory.getContainerProperties().setAckMode(AckMode.BATCH);
-    factory.setCommonErrorHandler(new DefaultErrorHandler(new FixedBackOff(1000L, 5L)));
+    factory.setCommonErrorHandler(errorHandler());
 
     // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
     // somehow these settings make consumer consume messages every 15 seconds
 
     factory.getContainerProperties().setListenerTaskExecutor(concurrentTaskExecutor());
     return factory;
+  }
+
+  @Bean
+  public DefaultErrorHandler errorHandler() {
+    BackOff fixedBackOff = new FixedBackOff(1000L, 5);
+    DefaultErrorHandler errorHandler =
+        new DefaultErrorHandler(
+            (consumerRecord, e) -> {
+              // logic to execute when all the retry attemps are exhausted
+            },
+            fixedBackOff);
+    errorHandler.addRetryableExceptions(SocketTimeoutException.class);
+    errorHandler.addNotRetryableExceptions(NullPointerException.class);
+    errorHandler.addNotRetryableExceptions(NotFound.class);
+    return errorHandler;
   }
 
   @Bean
