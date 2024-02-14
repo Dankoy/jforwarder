@@ -29,6 +29,8 @@ import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionServ
 @Configuration
 public class KafkaTwoTopicsOneFactoryConfig {
 
+  private static final String HEADER_NAME = "subscription_type";
+
   private final String coubCommunityTopicName;
   private final String coubTagTopicName;
   private final String coubChannelTopicName;
@@ -106,7 +108,7 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubChannelMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add("subscription_type", "BY_CHANNEL".getBytes(StandardCharsets.UTF_8)));
+        r -> r.headers().add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -115,7 +117,7 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubCommunityMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add("subscription_type", "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8)));
+        r -> r.headers().add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -124,7 +126,7 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubTagMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add("subscription_type", "BY_TAG".getBytes(StandardCharsets.UTF_8)));
+        r -> r.headers().add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8)));
   }
 
   //  @Bean
