@@ -9,5 +9,4 @@ public class BotException extends RuntimeException {
   public BotException(String message, Exception e) {
     super(message, e);
   }
-
 }

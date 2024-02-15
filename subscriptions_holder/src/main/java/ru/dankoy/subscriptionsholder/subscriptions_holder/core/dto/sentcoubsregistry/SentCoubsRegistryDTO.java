@@ -24,19 +24,11 @@ public class SentCoubsRegistryDTO {
   @NotNull
   private long id;
 
-  @Valid
-  @NotNull
-  private SubscriptionDTO subscription;
+  @Valid @NotNull private SubscriptionDTO subscription;
 
-  @Valid
-  @NotNull
-  @NotEmpty
-  private String coubPermalink;
+  @Valid @NotNull @NotEmpty private String coubPermalink;
 
-  @Valid
-  @NotNull
-  private LocalDateTime dateTime;
-
+  @Valid @NotNull private LocalDateTime dateTime;
 
   public static SentCoubsRegistryDTO toDTO(SentCoubsRegistry sentCoubsRegistry) {
 
@@ -46,7 +38,6 @@ public class SentCoubsRegistryDTO {
         .coubPermalink(sentCoubsRegistry.getCoubPermalink())
         .dateTime(sentCoubsRegistry.getDateTime())
         .build();
-
   }
 
   public static SentCoubsRegistry fromDTO(SentCoubsRegistryDTO dto) {
@@ -55,9 +46,6 @@ public class SentCoubsRegistryDTO {
         dto.getId(),
         SubscriptionDTO.fromDTO(dto.getSubscription()),
         dto.getCoubPermalink(),
-        dto.getDateTime()
-    );
-
+        dto.getDateTime());
   }
-
 }

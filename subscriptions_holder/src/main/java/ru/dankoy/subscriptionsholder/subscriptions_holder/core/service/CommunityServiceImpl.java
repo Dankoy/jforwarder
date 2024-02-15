@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
-
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -36,7 +35,6 @@ public class CommunityServiceImpl implements CommunityService {
 
     return optional.orElseThrow(
         () -> new ResourceNotFoundException(String.format("Not found - %s", name)));
-
   }
 
   @Override
@@ -45,38 +43,30 @@ public class CommunityServiceImpl implements CommunityService {
 
     return optional.orElseThrow(
         () -> new ResourceNotFoundException(String.format("Not found - %s", name)));
-
   }
 
   @Override
   public Community getByNameAndSectionIn(String name, Set<Section> sections) {
 
-    var sectionNames = sections.stream()
-        .map(Section::getName)
-        .collect(Collectors.toSet());
+    var sectionNames = sections.stream().map(Section::getName).collect(Collectors.toSet());
 
     var optional = communityRepository.getByNameAndSections(name, sectionNames);
 
     return optional.orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format(
-                "Not found community %s with sections '%s'",
-                name,
-                sectionNames)));
+        () ->
+            new ResourceNotFoundException(
+                String.format("Not found community %s with sections '%s'", name, sectionNames)));
   }
 
   @Override
   @Transactional
   public Community create(Community community) {
 
-    var sectionNames = community.getSections().stream()
-        .map(Section::getName)
-        .collect(Collectors.toSet());
+    var sectionNames =
+        community.getSections().stream().map(Section::getName).collect(Collectors.toSet());
 
-    var existingOptional = communityRepository
-        .getByNameAndSections(
-            community.getName(),
-            sectionNames);
+    var existingOptional =
+        communityRepository.getByNameAndSections(community.getName(), sectionNames);
 
     List<Section> foundSections = sectionService.getBySectionNames(community.getSections());
     List<Section> mySections = new ArrayList<>(community.getSections());
@@ -86,23 +76,18 @@ public class CommunityServiceImpl implements CommunityService {
 
     if (!mySections.equals(foundSections)) {
       throw new ResourceNotFoundException(
-          String.format("Expected sections to be found '%s', but got '%s'",
-              mySections.stream()
-                  .map(s -> s.getName() + ", ")
-                  .toList(),
-              foundSections.stream()
-                  .map(s -> s.getName() + ", ")
-                  .toList()
-          )
-      );
+          String.format(
+              "Expected sections to be found '%s', but got '%s'",
+              mySections.stream().map(s -> s.getName() + ", ").toList(),
+              foundSections.stream().map(s -> s.getName() + ", ").toList()));
     }
 
     if (existingOptional.isPresent()) {
       throw new ResourceConflictException(
-          String.format("Already exists - %s and '%s'", community.getName(),
-              community.getSections().stream()
-                  .map(s -> s.getName() + ", ")
-                  .toList()));
+          String.format(
+              "Already exists - %s and '%s'",
+              community.getName(),
+              community.getSections().stream().map(s -> s.getName() + ", ").toList()));
     } else {
 
       Set<Section> foundSectionsSet = new HashSet<>(foundSections);
@@ -110,7 +95,6 @@ public class CommunityServiceImpl implements CommunityService {
       community.setSections(foundSectionsSet);
       return communityRepository.save(community);
     }
-
   }
 
   @Override
@@ -119,7 +103,6 @@ public class CommunityServiceImpl implements CommunityService {
     return communityRepository.save(community);
   }
 
-
   @Override
   @Transactional
   public void delete(String name, String sectionName) {
@@ -127,7 +110,6 @@ public class CommunityServiceImpl implements CommunityService {
     var existingOptional = communityRepository.getByNameAndSectionsName(name, sectionName);
 
     existingOptional.ifPresent(communityRepository::delete);
-
   }
 
   @Override
@@ -137,8 +119,5 @@ public class CommunityServiceImpl implements CommunityService {
     var optional = communityRepository.getByName(name);
 
     optional.ifPresent(communityRepository::delete);
-
   }
-
-
 }

@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,5 +16,4 @@ public class Tag {
   private long id;
 
   private String title;
-
 }

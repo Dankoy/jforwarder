@@ -5,5 +5,4 @@ public interface Permalink {
   String getPermalink();
 
   void setUrl(String url);
-
 }

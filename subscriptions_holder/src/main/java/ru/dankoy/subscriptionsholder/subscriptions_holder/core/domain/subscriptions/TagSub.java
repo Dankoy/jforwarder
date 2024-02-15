@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions;
 
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -13,19 +12,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Scope;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Tag;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Type;
 
-@NamedEntityGraph(name = "tag-subscription-full-inherited",
+@NamedEntityGraph(
+    name = "tag-subscription-full-inherited",
     attributeNodes = {
-        @NamedAttributeNode("tag"),
-        @NamedAttributeNode("order"),
-        @NamedAttributeNode("scope"),
-        @NamedAttributeNode("type"),
-    }
-)
+      @NamedAttributeNode("tag"),
+      @NamedAttributeNode("order"),
+      @NamedAttributeNode("scope"),
+      @NamedAttributeNode("type"),
+    })
 @Getter
 @ToString
 @Data
@@ -51,5 +47,4 @@ public class TagSub extends Subscription {
   @ManyToOne
   @JoinColumn(name = "type_id")
   private Type type;
-
 }

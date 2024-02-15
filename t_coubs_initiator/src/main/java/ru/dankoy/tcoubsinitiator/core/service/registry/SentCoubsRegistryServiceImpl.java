@@ -9,8 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCoubsRegistry;
-import ru.dankoy.tcoubsinitiator.core.feign.subscription.SubscriptionFeign;
-
+import ru.dankoy.tcoubsinitiator.core.feign.registry.SentCoubsRegisrtyFeign;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +18,11 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
   private static final int FIRST_PAGE = 0;
   private static final int PER_PAGE = 10;
 
-  private final SubscriptionFeign sentCoubsRegistryFeign;
+  private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
 
   @Override
-  public Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(long subscriptionId,
-      LocalDateTime dateTime) {
+  public Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+      long subscriptionId, LocalDateTime dateTime) {
 
     Set<SentCoubsRegistry> sentCoubsRegistries = new HashSet<>();
 
@@ -35,8 +34,9 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
 
     while (currentPage <= totalPages) {
 
-      Page<SentCoubsRegistry> page = sentCoubsRegistryFeign.getAllBySubscriptionIdAndDateAfter(
-          subscriptionId, dateTime, pageable);
+      Page<SentCoubsRegistry> page =
+          sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
+              subscriptionId, dateTime, pageable);
 
       totalPages = page.getTotalPages() - 1;
 

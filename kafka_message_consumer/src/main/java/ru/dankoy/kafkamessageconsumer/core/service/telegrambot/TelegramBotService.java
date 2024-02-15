@@ -7,4 +7,6 @@ public interface TelegramBotService {
   void sendCommunityMessage(CoubMessage communitySubscriptionMessage);
 
   void sendTagMessage(CoubMessage tagSubscriptionMessage);
+
+  void sendChannelMessage(CoubMessage channelSubscriptionMessage);
 }

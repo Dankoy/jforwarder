@@ -9,6 +9,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
+/**
+ * @deprecated in favor {@link MessageProducerServiceKafka}
+ */
+@Deprecated(since = "2024-02-14")
 @Slf4j
 @RequiredArgsConstructor
 public class CommunityMessageProducerServiceKafka implements CommunityMessageProducerService {
@@ -42,7 +46,8 @@ public class CommunityMessageProducerServiceKafka implements CommunityMessagePro
                       "message id: {} was sent, offset: {}",
                       communitySubscriptionMessage.getId(),
                       result.getRecordMetadata().offset());
-                  // if kafka accepted - send update last permalink in db for subscription
+                  // if kafka accepted - send update last permalink in db for
+                  // subscription
                   sendAck.accept(communitySubscriptionMessage);
                   // update registry
                   sendAckToRegistry.accept(communitySubscriptionMessage);

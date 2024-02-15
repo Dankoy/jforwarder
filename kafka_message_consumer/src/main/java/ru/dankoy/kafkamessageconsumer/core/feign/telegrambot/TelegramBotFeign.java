@@ -13,4 +13,7 @@ public interface TelegramBotFeign {
 
   @PostMapping(path = "/api/v1/tag_message")
   void sendCoubTagMessage(@RequestBody CoubMessage tagSubscriptionMessage);
+
+  @PostMapping(path = "/api/v1/channel_message")
+  void sendCoubChannelMessage(@RequestBody CoubMessage channelSubscriptionMessage);
 }

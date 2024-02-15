@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription;
 
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -16,28 +15,17 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.
 @AllArgsConstructor
 public class TagSubscriptionCreateDTO {
 
-  @Valid
-  @NotNull
-  private TagCreateDTO tag;
+  @Valid @NotNull private TagCreateDTO tag;
 
-  @Valid
-  @NotNull
-  private ChatCreateDTO chat;
+  @Valid @NotNull private ChatCreateDTO chat;
 
-  @Valid
-  @NotNull
-  private OrderCreateDTO order;
+  @Valid @NotNull private OrderCreateDTO order;
 
-  @Valid
-  @NotNull
-  private ScopeCreateDTO scope;
+  @Valid @NotNull private ScopeCreateDTO scope;
 
-  @Valid
-  @NotNull
-  private TypeCreateDTO type;
+  @Valid @NotNull private TypeCreateDTO type;
 
   private String lastPermalink;
-
 
   public static TagSubscriptionCreateDTO toDTO(TagSub tagSubscription) {
 
@@ -47,9 +35,7 @@ public class TagSubscriptionCreateDTO {
         OrderCreateDTO.toDTO(tagSubscription.getOrder()),
         ScopeCreateDTO.toDTO(tagSubscription.getScope()),
         TypeCreateDTO.toDTO(tagSubscription.getType()),
-        tagSubscription.getLastPermalink()
-    );
-
+        tagSubscription.getLastPermalink());
   }
 
   public static TagSub fromDTO(TagSubscriptionCreateDTO dto) {
@@ -63,6 +49,4 @@ public class TagSubscriptionCreateDTO {
         .lastPermalink(dto.getLastPermalink())
         .build();
   }
-
-
 }

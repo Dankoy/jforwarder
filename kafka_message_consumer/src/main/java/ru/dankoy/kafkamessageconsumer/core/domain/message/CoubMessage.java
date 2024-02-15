@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import ru.dankoy.kafkamessageconsumer.core.domain.communitysubscription.Chat;
 import ru.dankoy.kafkamessageconsumer.core.domain.coub.Coub;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Chat;
 
 @Getter
 @SuperBuilder

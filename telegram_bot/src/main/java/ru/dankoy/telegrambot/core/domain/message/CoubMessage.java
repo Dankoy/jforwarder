@@ -4,8 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.coub.Coub;
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
 
 @Getter
 @SuperBuilder

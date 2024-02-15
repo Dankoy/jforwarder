@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,5 +16,4 @@ public class Chat {
   private long id;
   private long chatId;
   private String username;
-
 }

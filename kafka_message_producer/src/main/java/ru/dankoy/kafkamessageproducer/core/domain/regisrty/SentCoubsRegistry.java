@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.regisrty;
 
-
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,5 +24,4 @@ public class SentCoubsRegistry {
   private String coubPermalink;
 
   private LocalDateTime dateTime;
-
 }

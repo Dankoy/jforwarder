@@ -9,6 +9,10 @@ import org.springframework.kafka.core.KafkaTemplate;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 
+/**
+ * @deprecated in favor {@link MessageProducerServiceKafka}
+ */
+@Deprecated(since = "2024-02-14")
 @Slf4j
 @RequiredArgsConstructor
 public class TagMessageProducerServiceKafka implements TagMessageProducerService {
@@ -40,7 +44,8 @@ public class TagMessageProducerServiceKafka implements TagMessageProducerService
                       "message id: {} was sent, offset: {}",
                       tagSubscriptionMessage.getId(),
                       result.getRecordMetadata().offset());
-                  // if kafka accepted - send update last permalink in db for subscription
+                  // if kafka accepted - send update last permalink in db for
+                  // subscription
                   sendAck.accept(tagSubscriptionMessage);
                   // update registry
                   sendAckToRegistry.accept(tagSubscriptionMessage);

@@ -1,13 +1,12 @@
 package ru.dankoy.telegrambot.core.service.subscription;
 
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
-import ru.dankoy.telegrambot.core.domain.subscription.Community;
-import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.telegrambot.core.domain.subscription.Section;
+import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.community.Section;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
@@ -53,7 +52,13 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
                     String.format("Section with name '%s' not found", sectionName)));
 
     var subscription =
-        new CommunitySubscription(0, community, new Chat(chatId), section, null, new ArrayList<>());
+        (CommunitySubscription)
+            CommunitySubscription.builder()
+                .id(0)
+                .community(community)
+                .chat(new Chat(chatId))
+                .section(section)
+                .build();
 
     return subscriptionsHolderFeign.subscribe(subscription);
   }
@@ -62,13 +67,13 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
   public void unsubscribe(String communityName, String sectionName, long chatId) {
 
     var subscription =
-        new CommunitySubscription(
-            0,
-            new Community(communityName),
-            new Chat(chatId),
-            new Section(sectionName),
-            null,
-            new ArrayList<>());
+        (CommunitySubscription)
+            CommunitySubscription.builder()
+                .id(0)
+                .community(new Community(communityName))
+                .chat(new Chat(chatId))
+                .section(new Section(sectionName))
+                .build();
 
     subscriptionsHolderFeign.unsubscribe(subscription);
   }

@@ -4,10 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Order;
-import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Scope;
-import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Tag;
-import ru.dankoy.kafkamessageconsumer.core.domain.tagsubscription.Type;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Order;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Scope;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Type;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.tagsubscription.Tag;
 
 @Getter
 @SuperBuilder

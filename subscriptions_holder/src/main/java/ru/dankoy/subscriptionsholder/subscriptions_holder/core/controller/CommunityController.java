@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,23 +21,20 @@ public class CommunityController {
 
   private final CommunityService communityService;
 
-
   @GetMapping(path = "/api/v1/communities")
   public List<CommunityDTO> getAllCommunities() {
 
     var c = communityService.getAll();
 
     return c.stream().map(CommunityDTO::toDTO).toList();
-
   }
 
   @GetMapping(path = "/api/v1/communities/{name}")
   public CommunityDTO getCommunitiesByName(@PathVariable(name = "name") String name) {
 
-    var c =  communityService.getByName(name);
+    var c = communityService.getByName(name);
 
     return CommunityDTO.toDTO(c);
-
   }
 
   @PostMapping(path = "/api/v1/communities")
@@ -52,18 +48,14 @@ public class CommunityController {
     var created = communityService.create(community);
 
     return CommunityDTO.toDTO(created);
-
   }
 
   @DeleteMapping(path = "/api/v1/communities/{communityName}/{sectionName}")
   @ResponseStatus(code = HttpStatus.ACCEPTED)
   public void deleteCommunity(
       @PathVariable(name = "communityName") String communityName,
-      @PathVariable(name = "sectionName") String sectionName
-  ) {
+      @PathVariable(name = "sectionName") String sectionName) {
 
     communityService.delete(communityName, sectionName);
-
   }
-
 }

@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.controller;
 
-
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
 
 @Slf4j
 @RestController
@@ -22,7 +21,7 @@ public class TagSubscriptionController {
 
   private final MessageConverter converter;
 
-  private final TagMessageProducerService producerService;
+  private final MessageProducerServiceKafka tagMessageProducerServiceKafka;
 
   @PostMapping("/api/v1/tag_subscriptions")
   @ResponseStatus(HttpStatus.ACCEPTED)
@@ -30,13 +29,9 @@ public class TagSubscriptionController {
 
     log.info("{}", tagSubscriptions);
 
-    List<TagSubscriptionMessage> converted = tagSubscriptions.stream()
-        .map(converter::convert)
-        .flatMap(Collection::stream)
-        .toList();
+    List<TagSubscriptionMessage> converted =
+        tagSubscriptions.stream().map(converter::convert).flatMap(Collection::stream).toList();
 
-    converted.forEach(producerService::send);
-
+    converted.forEach(tagMessageProducerServiceKafka::send);
   }
-
 }

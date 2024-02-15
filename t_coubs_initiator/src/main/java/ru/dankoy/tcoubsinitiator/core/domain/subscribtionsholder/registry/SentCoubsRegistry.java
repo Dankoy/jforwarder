@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry;
 
-
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -23,5 +22,4 @@ public class SentCoubsRegistry {
   private String coubPermalink;
 
   private LocalDateTime dateTime;
-
 }

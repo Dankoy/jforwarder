@@ -17,42 +17,33 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 
-
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<Object> handleResourceNotFoundException(
-      ResourceNotFoundException ex) {
+  public ResponseEntity<Object> handleResourceNotFoundException(ResourceNotFoundException ex) {
 
     List<String> details = new ArrayList<>();
     details.add(ex.getMessage());
 
-    ApiError err = new ApiError(
-        LocalDateTime.now(),
-        HttpStatus.NOT_FOUND,
-        "Resource Not Found",
-        details);
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.NOT_FOUND, "Resource Not Found", details);
 
     return ResponseEntityBuilder.build(err);
   }
 
   @ExceptionHandler(ResourceConflictException.class)
-  public ResponseEntity<Object> handleResourceConflictException(
-      ResourceConflictException ex) {
+  public ResponseEntity<Object> handleResourceConflictException(ResourceConflictException ex) {
 
     List<String> details = new ArrayList<>();
     details.add(ex.getMessage());
 
-    ApiError err = new ApiError(
-        LocalDateTime.now(),
-        HttpStatus.CONFLICT,
-        "Resource Conflict Exception",
-        details);
+    ApiError err =
+        new ApiError(
+            LocalDateTime.now(), HttpStatus.CONFLICT, "Resource Conflict Exception", details);
 
     return ResponseEntityBuilder.build(err);
   }
-
 
   @Override
   public ResponseEntity<Object> handleHttpMessageNotReadable(
@@ -64,11 +55,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     List<String> details = new ArrayList<>();
     details.add(ex.getMessage());
 
-    ApiError err = new ApiError(
-        LocalDateTime.now(),
-        HttpStatus.BAD_REQUEST,
-        "Message not readable",
-        details);
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Message not readable", details);
 
     return ResponseEntityBuilder.build(err);
   }
@@ -81,20 +69,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
       @NonNull WebRequest request) {
 
     List<String> details =
-        ex.getBindingResult()
-            .getFieldErrors()
-            .stream()
+        ex.getBindingResult().getFieldErrors().stream()
             .map(error -> error.getObjectName() + " : " + error.getDefaultMessage())
             .toList();
 
-    ApiError err = new ApiError(
-        LocalDateTime.now(),
-        HttpStatus.BAD_REQUEST,
-        "Validation Errors",
-        details);
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Validation Errors", details);
 
     return ResponseEntityBuilder.build(err);
   }
-
-
 }

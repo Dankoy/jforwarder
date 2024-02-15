@@ -41,44 +41,36 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
   public TagSubscription createSubscription(TagSubscription tagSubscription) {
 
     // check existence
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
-        tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
-    );
+    var optional =
+        tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
+            tagSubscription.getChat().getChatId(),
+            tagSubscription.getTag().getTitle(),
+            tagSubscription.getOrder().getName());
 
     // if exists throw exception
-    optional.ifPresent(s -> {
+    optional.ifPresent(
+        s -> {
           throw new ResourceConflictException(
-              String.format("Subscription already exists for tag - %s",
-                  tagSubscription.getTag().getTitle()));
-        }
-    );
+              String.format(
+                  "Subscription already exists for tag - %s", tagSubscription.getTag().getTitle()));
+        });
 
     // Throws ResourceNotFoundException
     var tag = tagService.getByTitle(tagSubscription.getTag().getTitle());
     var scope = scopeService.getByName(tagSubscription.getScope().getName());
     var type = typeService.getByName(tagSubscription.getType().getName());
-    var order = orderService.getByName(tagSubscription.getOrder().getName());
+    //    var order = orderService.getByName(tagSubscription.getOrder().getName());
 
     // todo: do i even need to save chat when creating subscription?
 
-    var optionalChat = telegramChatService.getByTelegramChatId(
-        tagSubscription.getChat().getChatId());
+    var optionalChat =
+        telegramChatService.getByTelegramChatId(tagSubscription.getChat().getChatId());
 
     if (optionalChat.isPresent()) {
 
       var chat = optionalChat.get();
 
-      var newTagSubscription = new TagSubscription(
-          0,
-          tag,
-          chat,
-          order,
-          scope,
-          type,
-          null
-      );
+      var newTagSubscription = new TagSubscription(0, tag, chat, null, scope, type, null);
 
       return tagSubscriptionRepository.save(newTagSubscription);
 
@@ -86,53 +78,41 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
       var createdChat = telegramChatService.save(tagSubscription.getChat());
 
-      var newTagSubscription = new TagSubscription(
-          0,
-          tag,
-          createdChat,
-          order,
-          scope,
-          type,
-          null
-      );
+      var newTagSubscription = new TagSubscription(0, tag, createdChat, null, scope, type, null);
 
       return tagSubscriptionRepository.save(newTagSubscription);
-
     }
-
   }
 
   @Transactional
   @Override
   public void deleteSubscription(TagSubscription tagSubscription) {
 
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
-        tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
-    );
+    var optional =
+        tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
+            tagSubscription.getChat().getChatId(),
+            tagSubscription.getTag().getTitle(),
+            tagSubscription.getOrder().getName());
 
     optional.ifPresent(tagSubscriptionRepository::delete);
-
   }
 
   @Override
   public TagSubscription updatePermalink(TagSubscription tagSubscription) {
-    var optional = tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
-        tagSubscription.getChat().getChatId(),
-        tagSubscription.getTag().getTitle(),
-        tagSubscription.getOrder().getName()
-    );
+    var optional =
+        tagSubscriptionRepository.getByChatChatIdAndTagTitleAndOrderName(
+            tagSubscription.getChat().getChatId(),
+            tagSubscription.getTag().getTitle(),
+            tagSubscription.getOrder().getName());
 
-    var found = optional.orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format("Subscription not found: %s", tagSubscription)
-        )
-    );
+    var found =
+        optional.orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format("Subscription not found: %s", tagSubscription)));
 
     found.setLastPermalink(tagSubscription.getLastPermalink());
 
     return tagSubscriptionRepository.save(found);
-
   }
 }

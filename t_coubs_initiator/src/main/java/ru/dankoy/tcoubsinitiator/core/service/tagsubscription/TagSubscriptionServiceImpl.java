@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
 import ru.dankoy.tcoubsinitiator.core.feign.subscription.SubscriptionFeign;
 
-
 @Service
 @RequiredArgsConstructor
 public class TagSubscriptionServiceImpl implements TagSubscriptionService {

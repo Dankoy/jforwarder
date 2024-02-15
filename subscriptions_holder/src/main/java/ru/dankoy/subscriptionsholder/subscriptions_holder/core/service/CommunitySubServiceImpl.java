@@ -15,7 +15,6 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.Resour
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.CommunitySubRepository;
 
-
 @Service
 @RequiredArgsConstructor
 public class CommunitySubServiceImpl implements CommunitySubService {
@@ -41,53 +40,51 @@ public class CommunitySubServiceImpl implements CommunitySubService {
   }
 
   @Override
-  public Optional<CommunitySub> getByCommunityNameSectionNameChatId(String communityName,
-      String sectionName, long chatId) {
+  public Optional<CommunitySub> getByCommunityNameSectionNameChatId(
+      String communityName, String sectionName, long chatId) {
 
-    return communitySubRepository
-        .getByChatChatIdAndCommunityNameAndSectionName(
-            chatId, communityName, sectionName);
-
+    return communitySubRepository.getByChatChatIdAndCommunityNameAndSectionName(
+        chatId, communityName, sectionName);
   }
 
   @Transactional
   @Override
   public CommunitySub subscribeChatToCommunity(CommunitySub communitySubscription) {
 
-    var foundSubscriptionOptional = communitySubRepository
-        .getByChatChatIdAndCommunityNameAndSectionName(
+    var foundSubscriptionOptional =
+        communitySubRepository.getByChatChatIdAndCommunityNameAndSectionName(
             communitySubscription.getChat().getChatId(),
             communitySubscription.getCommunity().getName(),
             communitySubscription.getSection().getName());
 
     // if exists - exception
-    foundSubscriptionOptional.ifPresent(s -> {
+    foundSubscriptionOptional.ifPresent(
+        s -> {
           throw new ResourceConflictException(
-              String.format("Subscription already exists for community '%s-%s' and chat '%d'",
-                  s.getCommunity().getName(),
-                  s.getSection().getName(),
-                  s.getChat().getChatId())
-          );
-        }
-    );
+              String.format(
+                  "Subscription already exists for community '%s-%s' and chat" + " '%d'",
+                  s.getCommunity().getName(), s.getSection().getName(), s.getChat().getChatId()));
+        });
 
     Set<Section> sectionsToFind = Collections.singleton(communitySubscription.getSection());
 
-    var foundSectionOptional = sectionService.getSectionByName(
-        communitySubscription.getSection().getName());
+    var foundSectionOptional =
+        sectionService.getSectionByName(communitySubscription.getSection().getName());
 
-    var foundSection = foundSectionOptional.orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format("Section not found - %s", communitySubscription.getSection().getName())));
+    var foundSection =
+        foundSectionOptional.orElseThrow(
+            () ->
+                new ResourceNotFoundException(
+                    String.format(
+                        "Section not found - %s", communitySubscription.getSection().getName())));
 
     // Получаем коммунити
-    var foundCommunity = communityService.getByNameAndSectionIn(
-        communitySubscription.getCommunity().getName(),
-        sectionsToFind);
+    var foundCommunity =
+        communityService.getByNameAndSectionIn(
+            communitySubscription.getCommunity().getName(), sectionsToFind);
 
-    var foundTelegramChat = telegramChatService.getByTelegramChatId(
-        communitySubscription.getChat().getChatId()
-    );
+    var foundTelegramChat =
+        telegramChatService.getByTelegramChatId(communitySubscription.getChat().getChatId());
 
     if (foundTelegramChat.isPresent()) {
 
@@ -95,13 +92,14 @@ public class CommunitySubServiceImpl implements CommunitySubService {
       // use it
 
       // if subscription not exist - create new subscription for chat
-      var newSubscription = CommunitySub.builder()
-          .id(0)
-          .community(foundCommunity)
-          .section(foundSection)
-          .chat(chat)
-          .lastPermalink(null)
-          .build();
+      var newSubscription =
+          CommunitySub.builder()
+              .id(0)
+              .community(foundCommunity)
+              .section(foundSection)
+              .chat(chat)
+              .lastPermalink(null)
+              .build();
 
       return communitySubRepository.save(newSubscription);
 
@@ -111,16 +109,16 @@ public class CommunitySubServiceImpl implements CommunitySubService {
 
       var createdChat = telegramChatService.save(communitySubscription.getChat());
 
-      var newSubscription = CommunitySub.builder()
-          .id(0)
-          .community(foundCommunity)
-          .section(foundSection)
-          .chat(createdChat)
-          .lastPermalink(null)
-          .build();
+      var newSubscription =
+          CommunitySub.builder()
+              .id(0)
+              .community(foundCommunity)
+              .section(foundSection)
+              .chat(createdChat)
+              .lastPermalink(null)
+              .build();
 
       return communitySubRepository.save(newSubscription);
-
     }
   }
 
@@ -128,13 +126,12 @@ public class CommunitySubServiceImpl implements CommunitySubService {
   @Override
   public void unsubscribeChatFromCommunity(CommunitySub communitySubscription) {
 
-    var subscriptionFoundOptional = communitySubRepository
-        .getByChatChatIdAndCommunityNameAndSectionName(
+    var subscriptionFoundOptional =
+        communitySubRepository.getByChatChatIdAndCommunityNameAndSectionName(
             communitySubscription.getChat().getChatId(),
             communitySubscription.getCommunity().getName(),
             communitySubscription.getSection().getName());
 
     subscriptionFoundOptional.ifPresent(communitySubRepository::delete);
-
   }
 }

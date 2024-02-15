@@ -1,0 +1,34 @@
+FROM  gradle:8.6.0-jdk21
+#FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
+
+LABEL authors="turtality"
+
+ARG TZ=Europe/Moscow
+ENV TZ ${TZ}
+
+ARG JAR_VERSION
+ENV ENV_JAR_VERSION $JAR_VERSION
+ENV ENV_PATH_TO_JAR=coub_smart_searcher/build/libs/coub_smart_searcher-$JAR_VERSION.jar
+
+RUN echo "$TZ" > /etc/timezone
+
+WORKDIR /app
+COPY ./buildSrc ./buildSrc
+COPY ./coub_smart_searcher/src ./coub_smart_searcher/src
+COPY ./coub_smart_searcher/build.gradle ./coub_smart_searcher/
+COPY ./build.gradle ./
+COPY ./settings.gradle ./
+
+RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
+
+ENTRYPOINT java -Xms700m -Xmx700m \
+  -XX:MaxMetaspaceSize=200m \
+  -XX:NewSize=200m \
+  -XX:MaxNewSize=200m \
+  -XX:+UseG1GC \
+  -XX:+HeapDumpOnOutOfMemoryError \
+  -XX:HeapDumpPath=./dump.hprof \
+  -XX:+UseGCOverheadLimit \
+  -XX:+UseStringDeduplication \
+  -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m \
+  -jar "$ENV_PATH_TO_JAR"

@@ -17,15 +17,14 @@ public interface SentCoubsRegistryRepository extends JpaRepository<SentCoubsRegi
   Page<SentCoubsRegistry> findAll(Pageable pageable);
 
   @EntityGraph(value = "sent-coubs-registry-full", type = EntityGraphType.LOAD)
-  Page<SentCoubsRegistry> getAllBySubscriptionId(@Param("subscriptionId") long subscriptionId,
-      Pageable pageable);
+  Page<SentCoubsRegistry> getAllBySubscriptionId(
+      @Param("subscriptionId") long subscriptionId, Pageable pageable);
 
   @EntityGraph(value = "sent-coubs-registry-full", type = EntityGraphType.LOAD)
   Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
       @Param("subscriptionId") long subscriptionId,
       @Param("dateTime") LocalDateTime dateTime,
-      Pageable pageable
-  );
+      Pageable pageable);
 
   Optional<SentCoubsRegistry> getById(long id);
 }

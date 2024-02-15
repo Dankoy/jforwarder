@@ -3,10 +3,10 @@ package ru.dankoy.kafkamessageproducer.core.domain.message;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Order;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Scope;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Scope;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Tag;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.Type;
 
 @Getter
 @SuperBuilder

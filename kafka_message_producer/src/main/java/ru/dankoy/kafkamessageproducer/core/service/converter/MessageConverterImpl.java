@@ -3,11 +3,13 @@ package ru.dankoy.kafkamessageproducer.core.service.converter;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
+import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.ChannelSubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
 
@@ -45,6 +47,25 @@ public class MessageConverterImpl implements MessageConverter {
                         .order(tagSubscription.getOrder())
                         .scope(tagSubscription.getScope())
                         .type(tagSubscription.getType())
+                        .coub(c)
+                        .lastPermalink(c.getPermalink())
+                        .build())
+        .toList();
+  }
+
+  @Override
+  public List<ChannelSubscriptionMessage> convert(ChannelSubscription channelSubscription) {
+    return channelSubscription.getCoubs().stream()
+        .map(
+            c ->
+                (ChannelSubscriptionMessage)
+                    ChannelSubscriptionMessage.builder()
+                        .id(channelSubscription.getId())
+                        .channel(channelSubscription.getChannel())
+                        .chat(channelSubscription.getChat())
+                        .order(channelSubscription.getOrder())
+                        .scope(channelSubscription.getScope())
+                        .type(channelSubscription.getType())
                         .coub(c)
                         .lastPermalink(c.getPermalink())
                         .build())

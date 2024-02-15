@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 import ru.dankoy.tcoubsinitiator.core.feign.subscription.SubscriptionFeign;
 
-
 @Service
 @RequiredArgsConstructor
 public class SubscriptionServiceImpl implements SubscriptionService {

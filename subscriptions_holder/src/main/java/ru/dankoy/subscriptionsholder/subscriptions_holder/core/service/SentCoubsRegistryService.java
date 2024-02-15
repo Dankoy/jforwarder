@@ -11,11 +11,10 @@ public interface SentCoubsRegistryService {
 
   Page<SentCoubsRegistry> getAllBySubscriptionId(long subscriptionId, Pageable pageable);
 
-  Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(long subscriptionId,
-      LocalDateTime dateTime, Pageable pageable);
+  Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
+      long subscriptionId, LocalDateTime dateTime, Pageable pageable);
 
   SentCoubsRegistry create(SentCoubsRegistry sentCoubsRegistry);
 
   void deleteById(long id);
-
 }

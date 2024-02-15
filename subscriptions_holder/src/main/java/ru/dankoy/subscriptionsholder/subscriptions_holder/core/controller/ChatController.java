@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,18 +21,16 @@ public class ChatController {
 
   private final TelegramChatService telegramChatService;
 
-
   @GetMapping("/api/v1/telegram_chat/{chatId}")
   public ChatDTO getChatById(@PathVariable("chatId") long chatId) {
     var chatOptional = telegramChatService.getByTelegramChatId(chatId);
 
-    var chat = chatOptional.orElseThrow(
-        () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
+    var chat =
+        chatOptional.orElseThrow(
+            () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
 
     return ChatDTO.toDTO(chat);
-
   }
-
 
   @PostMapping("/api/v1/telegram_chat")
   public ChatDTO createChat(@RequestBody @Valid ChatCreateDTO chatCreateDTO) {
@@ -43,7 +40,6 @@ public class ChatController {
     var saved = telegramChatService.save(chat);
 
     return ChatDTO.toDTO(saved);
-
   }
 
   @PutMapping("/api/v1/telegram_chat")
@@ -54,7 +50,5 @@ public class ChatController {
     var saved = telegramChatService.save(chat);
 
     return ChatDTO.toDTO(saved);
-
   }
-
 }

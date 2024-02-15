@@ -20,4 +20,9 @@ public class TelegramBotServiceImpl implements TelegramBotService {
   public void sendTagMessage(CoubMessage tagSubscriptionMessage) {
     telegramBotFeign.sendCoubTagMessage(tagSubscriptionMessage);
   }
+
+  @Override
+  public void sendChannelMessage(CoubMessage channelSubscriptionMessage) {
+    telegramBotFeign.sendCoubChannelMessage(channelSubscriptionMessage);
+  }
 }

@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Type;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Type;
 
 @ToString
 @Getter
@@ -16,20 +16,11 @@ public class TypeCreateDTO {
 
   public static TypeCreateDTO toDTO(Type type) {
 
-    return new TypeCreateDTO(
-        type.getName()
-    );
-
+    return new TypeCreateDTO(type.getName());
   }
 
   public static Type fromDTO(TypeCreateDTO dto) {
 
-    return new Type(
-        0,
-        dto.getName()
-    );
-
+    return new Type(0, dto.getName());
   }
-
-
 }

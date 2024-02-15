@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
+/**
+ * @deprecated in favor {@link CoubMessageConsumer}
+ */
+@Deprecated(since = "2024-02-01")
 @Slf4j
 @RequiredArgsConstructor
 public class TagSubscriptionMessageConsumerBotSender implements TagSubscriptionMessageConsumer {

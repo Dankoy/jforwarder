@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
+import org.telegram.telegrambots.meta.api.methods.commands.DeleteMyCommands;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -23,14 +24,16 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
-import ru.dankoy.telegrambot.core.domain.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.subscription.Chat;
-import ru.dankoy.telegrambot.core.domain.subscription.Community;
-import ru.dankoy.telegrambot.core.domain.subscription.CommunitySubscription;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.Order;
-import ru.dankoy.telegrambot.core.domain.tagsubscription.TagSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.Order;
+import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
@@ -38,6 +41,7 @@ import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
+import ru.dankoy.telegrambot.core.service.subscription.ChannelSubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
@@ -45,6 +49,11 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 @Slf4j
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
+
+  private static final String TEMPLATE_SUBSCRIPTION_SUCCESS = "subscriptionCompleted";
+  private static final String TEMPLATE_UNSUBSCRIBE_SUCCESS = "unsubscriptionCompleted";
+  private static final String TEMPLATE_SUBSCRIPTION_EXISTS = "alreadySubscribed";
+  private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
 
   private static final String COMMAND_FIRST_FIELD = "first";
   private static final String COMMAND_SECOND_FIELD = "second";
@@ -63,6 +72,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
   private final TagSubscriptionService tagSubscriptionService;
 
+  private final ChannelSubscriptionService channelSubscriptionService;
+
   private final OrderService orderService;
 
   private final LocalisationService localisationService;
@@ -79,12 +90,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     this.templateBuilder = botConfiguration.templateBuilder();
     this.communityService = botConfiguration.communityService();
     this.tagSubscriptionService = botConfiguration.tagSubscriptionService();
+    this.channelSubscriptionService = botConfiguration.channelSubscriptionService();
     this.orderService = botConfiguration.orderService();
     this.localisationService = botConfiguration.localisationService();
     this.localeProvider = botConfiguration.localeProvider();
 
     try {
 
+      unregisterCommands(botConfiguration);
       registerCommands(botConfiguration);
 
     } catch (TelegramApiException e) {
@@ -120,7 +133,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var subscribeCommunityFromGroup = "/subscribe" + getGroupChatBotName();
     var unsubscribeCommunityFromGroup = "/unsubscribe" + getGroupChatBotName();
     var communitiesFromGroup = "/communities" + getGroupChatBotName();
-    var tagOrdersFromGroup = "/tag_orders" + getGroupChatBotName();
+    var tagOrdersFromGroup = "/orders" + getGroupChatBotName();
 
     if (messageText.equals("/my_subscriptions") || messageText.equals(subsFromGroup)) {
       mySubscriptions(inputMessage);
@@ -138,8 +151,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
       unsubscribeUtils(inputMessage);
     } else if (messageText.equals("/communities") || messageText.equals(communitiesFromGroup)) {
       communities(inputMessage);
-    } else if (messageText.equals("/tag_orders") || messageText.equals(tagOrdersFromGroup)) {
-      tagOrders(inputMessage);
+    } else if (messageText.startsWith("/orders") || messageText.equals(tagOrdersFromGroup)) {
+      orders(inputMessage);
     } else {
       help(inputMessage);
     }
@@ -180,12 +193,15 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     List<CommunitySubscription> subs =
         communitySubscriptionService.getSubscriptionsByChatId(chatId);
     List<TagSubscription> tagSubs = tagSubscriptionService.getSubscriptionsByChatId(chatId);
+    List<ChannelSubscription> channelSubs =
+        channelSubscriptionService.getSubscriptionsByChatId(chatId);
 
     var sendMessage = createReply(inputMessage);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("communitySubscriptions", subs);
     templateData.put("tagSubscriptions", tagSubs);
+    templateData.put("channelSubscriptions", channelSubs);
 
     var text =
         templateBuilder.writeTemplate(
@@ -261,7 +277,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "subscriptionCompleted",
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
               new Object[] {s.getCommunity().getName(), s.getSection().getName()},
               localeProvider.getLocale(inputMessage)));
 
@@ -270,7 +286,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (Conflict e) {
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "alreadySubscribed",
+              TEMPLATE_SUBSCRIPTION_EXISTS,
               new Object[] {communityName, sectionName},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
@@ -281,9 +297,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {e.getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -300,13 +316,13 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "unsubscriptionCompleted",
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
               new Object[] {communityName, sectionName},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
 
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -324,6 +340,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
           .equals(SubscriptionType.COMMUNITY.getType())) {
         subscribeToCommunity(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        subscribeByChannel(command, inputMessage);
       }
     } catch (BotException e) {
       var sendMessage = createReply(inputMessage);
@@ -349,6 +369,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
           .equals(SubscriptionType.TAG.getType())) {
         unsubscribeFromTag(command, inputMessage);
+      } else if (command
+          .get(COMMAND_SUBSCRIPTION_TYPE_FIELD)
+          .equals(SubscriptionType.CHANNEL.getType())) {
+        unsubscribeFromChannel(command, inputMessage);
       }
 
     } catch (BotException e) {
@@ -374,7 +398,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "subscriptionCompleted",
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
               new Object[] {s.getTag().getTitle(), s.getOrder().getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
@@ -382,7 +406,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (Conflict e) {
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "alreadySubscribed",
+              TEMPLATE_SUBSCRIPTION_EXISTS,
               new Object[] {tagName, orderValue},
               localeProvider.getLocale(inputMessage)));
 
@@ -394,9 +418,9 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {e.getValue()},
               localeProvider.getLocale(inputMessage)));
       send(sendMessage);
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -414,14 +438,80 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
-              "unsubscriptionCompleted",
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
               new Object[] {tagName, orderValue},
               localeProvider.getLocale(inputMessage)));
 
       send(sendMessage);
 
     } catch (BotException e) {
-      send(buildSubscriptionHelpMessage(inputMessage, command.get(COMMAND)));
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void subscribeByChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      var s =
+          channelSubscriptionService.subscribe(
+              channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_SUCCESS,
+              new Object[] {s.getChannel().getPermalink(), s.getOrder().getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+
+    } catch (Conflict e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_SUBSCRIPTION_EXISTS,
+              new Object[] {channelPermalink, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+    } catch (NotFoundException e) {
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              e.getExceptionObjectType().getType(),
+              new Object[] {e.getValue()},
+              localeProvider.getLocale(inputMessage)));
+      send(sendMessage);
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
+    }
+  }
+
+  private void unsubscribeFromChannel(Map<String, String> command, Message inputMessage) {
+
+    var sendMessage = createReply(inputMessage);
+
+    var channelPermalink = command.get(COMMAND_FIRST_FIELD);
+    var orderValue = command.get(COMMAND_SECOND_FIELD);
+
+    try {
+
+      channelSubscriptionService.unsubscribe(
+          channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+
+      sendMessage.setText(
+          localisationService.getLocalizedMessage(
+              TEMPLATE_UNSUBSCRIBE_SUCCESS,
+              new Object[] {channelPermalink, orderValue},
+              localeProvider.getLocale(inputMessage)));
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      send(buildHelpMessage(inputMessage, command.get(COMMAND), TEMPLATE_SUBSCRIPTION_EXCEPTION));
     }
   }
 
@@ -442,26 +532,37 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     send(sendMessage);
   }
 
-  private void tagOrders(Message inputMessage) {
+  private void orders(Message inputMessage) {
 
-    var sendMessage = createReply(inputMessage);
-    sendMessage.setParseMode(ParseMode.MARKDOWN);
-    List<Order> orders = orderService.findAll();
+    try {
 
-    // escape special chars in order names
-    var updated =
-        orders.stream().map(order -> new Order(escapeMetaCharacters(order.getValue()))).toList();
+      Map<String, SubscriptionType> command = parseOrderCommandMultipleWords(inputMessage);
 
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put("orders", updated);
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      List<Order> orders = orderService.findAllByType(command.get(COMMAND_SUBSCRIPTION_TYPE_FIELD));
 
-    var text =
-        templateBuilder.writeTemplate(
-            templateData, "tag_orders.ftl", localeProvider.getLocale(inputMessage));
+      // escape special chars in order names
+      var updated =
+          orders.stream().map(order -> new Order(escapeMetaCharacters(order.getValue()))).toList();
 
-    sendMessage.setText(text);
+      Map<String, Object> templateData = new HashMap<>();
+      templateData.put("orders", updated);
 
-    send(sendMessage);
+      var text =
+          templateBuilder.writeTemplate(
+              templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
+
+      sendMessage.setText(text);
+
+      send(sendMessage);
+
+    } catch (BotException e) {
+      var sendMessage = createReply(inputMessage);
+      sendMessage.setText(e.getMessage());
+      sendMessage.setParseMode(ParseMode.MARKDOWN);
+      send(sendMessage);
+    }
   }
 
   private void send(SendMessage sendMessage) {
@@ -484,9 +585,41 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     if (command.length < 4) {
       log.error("Expected valid command but got - {}", Arrays.asList(command));
-      throwSubscriptionException(inputMessage, command[0]);
+      throwSubscriptionException(inputMessage, command[0], TEMPLATE_SUBSCRIPTION_EXCEPTION);
     }
 
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    // Get all words after 0 and last element and concat in one string
+    var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
+
+    result.put(COMMAND, command[0]);
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
+    result.put(COMMAND_FIRST_FIELD, s);
+    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
+
+    return result;
+  }
+
+  private Map<String, SubscriptionType> parseOrderCommandMultipleWords(Message inputMessage) {
+
+    Map<String, SubscriptionType> result = new HashMap<>();
+
+    String[] command = inputMessage.getText().split(" ");
+
+    if (command.length != 2) {
+      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      throwSubscriptionException(inputMessage, command[0], "orders_exception.ftl");
+    }
+
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, SubscriptionType.valueOf(command[1].toUpperCase()));
+
+    return result;
+  }
+
+  private void checkSubscriptionTypeInCommand(Message inputMessage, String[] command) {
     try {
       SubscriptionType.valueOf(command[1].toUpperCase());
     } catch (IllegalArgumentException e) {
@@ -498,16 +631,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               new Object[] {Arrays.asList(SubscriptionType.values()).toString().toLowerCase()},
               localeProvider.getLocale(inputMessage)));
     }
-
-    // Get all words after 0 and last element and concat in one string
-    var s = Arrays.stream(command, 2, command.length - 1).collect(Collectors.joining(" "));
-
-    result.put(COMMAND, command[0]);
-    result.put(COMMAND_SUBSCRIPTION_TYPE_FIELD, command[1]);
-    result.put(COMMAND_FIRST_FIELD, s);
-    result.put(COMMAND_SECOND_FIELD, command[command.length - 1]);
-
-    return result;
   }
 
   @Override
@@ -623,6 +746,58 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     }
   }
 
+  @Override
+  public void sendMessage(ChannelSubscriptionMessage message) {
+
+    var sendMessage = new SendMessage();
+
+    var channelTitle = message.getChannel().getTitle();
+    var orderValue = message.getOrder().getValue();
+    var coubUrl = message.getCoub().getUrl();
+    var chatId = message.getChat().getChatId();
+
+    sendMessage.setChatId(chatId);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("channelTitle", channelTitle);
+    templateData.put("orderValue", orderValue);
+    templateData.put("url", coubUrl);
+    var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
+
+    sendMessage.setText(text);
+
+    try {
+
+      log.info(
+          "Sent message to chat '{}' for channel subscription '{}' {}",
+          message.getChat().getChatId(),
+          message.getId(),
+          message.getChannel().getPermalink());
+
+      execute(sendMessage);
+
+      log.info(
+          "Message sent to '{}' with message '{}'",
+          sendMessage.getChatId(),
+          StringUtils.normalizeSpace(sendMessage.getText()));
+
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found = telegramChatService.getChatById(chatId);
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
+        }
+      }
+    } catch (TelegramApiException e) {
+      log.error("Error sending message - {}", e.getMessage());
+    }
+  }
+
   private String escapeMetaCharacters(String inputString) {
     final String[] metaCharacters = {
       "\\", "^", "$", "{", "}", "[", "]", "(", ")", ".", "*", "+", "?", "|", "<", ">", "-", "&",
@@ -637,27 +812,26 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     return inputString;
   }
 
-  private SendMessage buildSubscriptionHelpMessage(Message message, String command) {
+  private SendMessage buildHelpMessage(Message message, String command, String helpType) {
 
     return SendMessage.builder()
         .chatId(message.getChatId())
-        .text(getSubscriptionCommandHelp(message, command))
+        .text(getCommandHelp(message, command, helpType))
         .parseMode(ParseMode.MARKDOWN)
         .build();
   }
 
-  private String getSubscriptionCommandHelp(Message message, String command) {
+  private String getCommandHelp(Message message, String command, String helpType) {
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put(COMMAND, command);
 
-    return templateBuilder.writeTemplate(
-        templateData, "subscription_exception.ftl", localeProvider.getLocale(message));
+    return templateBuilder.writeTemplate(templateData, helpType, localeProvider.getLocale(message));
   }
 
-  private void throwSubscriptionException(Message message, String command) {
+  private void throwSubscriptionException(Message message, String command, String helpType) {
 
-    throw new BotException(getSubscriptionCommandHelp(message, command));
+    throw new BotException(getCommandHelp(message, command, helpType));
   }
 
   private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
@@ -679,6 +853,25 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
         this.execute(setMyCommands);
       }
+    }
+  }
+
+  private void unregisterCommands(BotConfiguration botConfiguration) throws TelegramApiException {
+
+    // delete for default locale (without locale)
+
+    var deleteMyCommands = new DeleteMyCommands();
+    deleteMyCommands.setScope(new BotCommandScopeDefault());
+    this.execute(deleteMyCommands);
+
+    // then delete for every knows locale
+    for (Entry<Locale, List<BotCommand>> entry :
+        botConfiguration.commandsHolder().getCommands().entrySet()) {
+
+      deleteMyCommands =
+          new DeleteMyCommands(new BotCommandScopeDefault(), entry.getKey().getLanguage());
+
+      this.execute(deleteMyCommands);
     }
   }
 

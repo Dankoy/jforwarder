@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.tag.TagSubscription;
 
-
 /**
  * @deprecated in favor for {@link TagSubService}
  */
@@ -21,5 +20,4 @@ public interface TagSubscriptionService {
   void deleteSubscription(TagSubscription tagSubscription);
 
   TagSubscription updatePermalink(TagSubscription tagSubscription);
-
 }

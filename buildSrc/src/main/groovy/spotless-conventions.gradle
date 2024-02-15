@@ -1,0 +1,9 @@
+// share spring boot and dependency management for other projects via plugin
+
+plugins {
+    id 'com.diffplug.spotless'
+}
+
+repositories {
+    mavenCentral()
+}

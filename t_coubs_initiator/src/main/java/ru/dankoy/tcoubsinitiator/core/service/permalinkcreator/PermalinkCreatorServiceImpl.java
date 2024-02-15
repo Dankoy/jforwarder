@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.service.permalinkcreator;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.config.coub.CoubConnectorProperties;
@@ -18,7 +17,6 @@ public class PermalinkCreatorServiceImpl implements PermalinkCreatorService {
     var pl = permalink.getPermalink();
     var coubUrl = coubProperties.getUrl();
     permalink.setUrl(coubUrl + "community/" + pl);
-
   }
 
   @Override
@@ -27,8 +25,5 @@ public class PermalinkCreatorServiceImpl implements PermalinkCreatorService {
     var pl = permalink.getPermalink();
     var coubUrl = coubProperties.getUrl();
     permalink.setUrl(coubUrl + "view/" + pl);
-
   }
-
-
 }

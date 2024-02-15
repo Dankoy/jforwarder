@@ -11,5 +11,4 @@ public interface SectionRepository extends JpaRepository<Section, Long> {
   Optional<Section> getByName(String name);
 
   List<Section> getByNameIsIn(Set<String> names);
-
 }

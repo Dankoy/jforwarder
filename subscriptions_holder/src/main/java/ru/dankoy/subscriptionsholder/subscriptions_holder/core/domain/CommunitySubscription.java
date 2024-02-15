@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,16 +20,16 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 
 /**
- * @deprecated in favor for inherited classes
- * {@link
- * CommunitySub}
+ * @deprecated in favor for inherited classes {@link CommunitySub}
  */
 @Deprecated(since = "2024-01-28")
-@NamedEntityGraph(name = "community-subscription-full",
-    attributeNodes = {@NamedAttributeNode("community"),
-        @NamedAttributeNode("section"),
-        @NamedAttributeNode("chat")}
-)
+@NamedEntityGraph(
+    name = "community-subscription-full",
+    attributeNodes = {
+      @NamedAttributeNode("community"),
+      @NamedAttributeNode("section"),
+      @NamedAttributeNode("chat")
+    })
 @Getter
 @ToString
 @Data
@@ -57,8 +56,6 @@ public class CommunitySubscription {
   @JoinColumn(name = "chat_id")
   private Chat chat;
 
-
   @Column(name = "last_permalink")
   private String lastPermalink;
-
 }

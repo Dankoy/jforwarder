@@ -1,11 +1,9 @@
 package ru.dankoy.tcoubsinitiator.config.coub;
 
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
 
 @ToString
 @Getter

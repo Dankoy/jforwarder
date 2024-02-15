@@ -1,0 +1,20 @@
+plugins {
+    id 'multimodule-config'
+    id 'spring-conventions'
+    id 'spring-cache-conventions'
+    id 'spring-web-conventions'
+    id 'spring-feign-conventions'
+    id 'micrometer-conventions'
+    id 'loki-conventions'
+}
+
+group = 'ru.dankoy.coubsmartsearcher'
+// version comes from root project
+
+dependencies {
+
+    // eureka
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+}
+

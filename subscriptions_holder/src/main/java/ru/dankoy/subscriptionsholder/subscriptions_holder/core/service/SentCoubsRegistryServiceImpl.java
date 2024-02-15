@@ -28,8 +28,8 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
   @Override
   public Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
       long subscriptionId, LocalDateTime dateTime, Pageable pageable) {
-    return sentCoubsRegistryRepository.getAllBySubscriptionIdAndDateTimeAfter(subscriptionId,
-        dateTime, pageable);
+    return sentCoubsRegistryRepository.getAllBySubscriptionIdAndDateTimeAfter(
+        subscriptionId, dateTime, pageable);
   }
 
   @Transactional

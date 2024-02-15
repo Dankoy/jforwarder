@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.tag.Order;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Order;
 
 @ToString
 @Getter
@@ -15,31 +15,17 @@ public class OrderDTO {
 
   private long id;
 
-  @NotEmpty
-  private String name;
+  @NotEmpty private String name;
 
-  @NotEmpty
-  private String value;
+  @NotEmpty private String value;
 
   public static OrderDTO toDTO(Order order) {
 
-    return new OrderDTO(
-        order.getId(),
-        order.getName(),
-        order.getValue()
-    );
-
+    return new OrderDTO(order.getId(), order.getName(), order.getValue());
   }
 
   public static Order fromDTO(OrderDTO dto) {
 
-    return new Order(
-        dto.getId(),
-        dto.getName(),
-        dto.getValue()
-    );
-
+    return new Order(dto.getId(), dto.getName(), dto.getValue(), null);
   }
-
-
 }

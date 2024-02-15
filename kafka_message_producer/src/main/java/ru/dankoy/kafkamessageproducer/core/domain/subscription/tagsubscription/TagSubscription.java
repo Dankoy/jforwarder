@@ -6,7 +6,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Scope;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
+import ru.dankoy.kafkamessageproducer.core.domain.subscription.Type;
 
 @Getter
 @ToString

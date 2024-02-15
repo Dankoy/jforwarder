@@ -19,21 +19,16 @@ public interface TagSubRepository extends JpaRepository<TagSub, Long> {
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
   Page<TagSub> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
-
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
   List<TagSub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
-
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
   List<TagSub> getAllByChatChatIdAndTagTitle(
-      @Param("externalChatId") long externalChatId,
-      @Param("tagTitle") String tagTitle);
-
+      @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
 
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
   Optional<TagSub> getByChatChatIdAndTagTitleAndOrderValue(
       @Param("externalChatId") long externalChatId,
       @Param("tagTitle") String tagTitle,
       @Param("orderValue") String orderValue);
-
 }

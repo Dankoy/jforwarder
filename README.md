@@ -16,38 +16,50 @@ https://t.me/coub_forwarder_bot
 # Purpose
 
 The reason for creation of this project is to have access to coubs in telegram private or group
-chats.
+chats. Without registration and sms.
+
+# Features
+
+1) Subscription on channel
+2) Subscription on tag
+3) Subscription on community
 
 ## Usage
 
-User can subscribe to different coub communities and sections or by tags in telegram bot. Then
-periodically bot will send new coubs to subscribed user. Bot sends only coubs that has been
-published after last sent coub to chat.
+User can subscribe to different coub communities and sections, by tags or directly to channels in
+telegram bot. Then periodically bot will send new coubs to subscribed user. Bot sends only coubs
+that has been published after last sent coub to chat.
 
 ### Example of making community subscription
 
 1) To get all available communities and its sections:
-```/communities```
- 
-    > Available communities:    
-     community: animals-pets    
-     sections: monthly, quarter, half, daily, fresh, rising, weekly    
-    ... truncated ...
+   ```/communities```
+
+   > Available communities:    
+   community: animals-pets    
+   sections: monthly, quarter, half, daily, fresh, rising, weekly    
+   ... truncated ...
 
 2) To subscribe to community or tag:    
-```/subscribe community animals-pets weekly```    
-```/subscribe tag cars popular```
+   ```/subscribe community animals-pets weekly```    
+   ```/subscribe tag cars popular```
+   ```/subscribe channel meteoralp most_recent```
 
-3) Bot will periodically send links to coubs for every subscription user has.    
+3) Bot will periodically send links to coubs for every subscription user has.
 
-    Example of message:    
-    > community #animals-pets #weekly    
-     https://coub.com/view/3ca3fu
-   
+   Example of message:
+   > community #animals-pets #weekly    
+   https://coub.com/view/3ca3fu
+
 4) Show user active subscriptions: ```/my_subscriptions```
-    > Community subscriptions:    
-   1: animals-pets weekly    
-   
+   > Community subscriptions:    
+   1: animals-pets weekly
+
+## Where to find channel identification?
+
+Open coub channel in browser. Find the last word in URL. Use it.
+
+![img.jpg](img.jpg)
 
 ## Stack
 
@@ -124,11 +136,12 @@ docker buildx build --platform linux/amd64,linux/arm64 --build-arg JAR_VERSION=x
 docker compose up -d
 ```
 
-### Monitoring 
+### Monitoring
 
 For monitoring created new docker compose project [monitoring](/monitoring)
 
 #### Add .env file in monitoring folder
+
 ```
 POSTGRES_CONTAINER_PASSWORD=password
 POSTGRES_CONTAINER_USER=user
@@ -137,7 +150,8 @@ GF_SECURITY_ADMIN_USER=user
 GF_SECURITY_ADMIN_PASSWORD=password
 ```
 
-#### Run monitoring 
+#### Run monitoring
+
 ```shell
 cd monitoring && docker compose up -d
 ```

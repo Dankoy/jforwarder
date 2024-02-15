@@ -14,21 +14,27 @@ public class ObservabilityConfig {
   @Bean
   ObservationRegistryCustomizer<ObservationRegistry> skipActuatorEndpointsFromObservation() {
     PathMatcher pathMatcher = new AntPathMatcher("/");
-    return registry -> registry.observationConfig().observationPredicate((name, context) -> {
-      // ServerRequestObservationContext is reactive. So import reactive dep
-      if (context instanceof ServerRequestObservationContext observationContext) {
-        return !pathMatcher.match("/actuator/**",
-            observationContext.getCarrier().getURI().getPath());
-      } else {
-        return true;
-      }
-    });
+    return registry ->
+        registry
+            .observationConfig()
+            .observationPredicate(
+                (name, context) -> {
+                  // ServerRequestObservationContext is reactive. So import
+                  // reactive dep
+                  if (context instanceof ServerRequestObservationContext observationContext) {
+                    return !pathMatcher.match(
+                        "/actuator/**", observationContext.getCarrier().getURI().getPath());
+                  } else {
+                    return true;
+                  }
+                });
   }
 
   @Bean
   ObservationRegistryCustomizer<ObservationRegistry> skipSecuritySpansFromObservation() {
-    return registry -> registry.observationConfig().observationPredicate((name, context) ->
-        !name.startsWith("spring.security"));
+    return registry ->
+        registry
+            .observationConfig()
+            .observationPredicate((name, context) -> !name.startsWith("spring.security"));
   }
-
 }

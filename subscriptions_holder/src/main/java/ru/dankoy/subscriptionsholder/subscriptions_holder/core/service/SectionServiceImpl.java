@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Section;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SectionRepository;
 
-
 @RequiredArgsConstructor
 @Service
 public class SectionServiceImpl implements SectionService {
@@ -25,10 +24,6 @@ public class SectionServiceImpl implements SectionService {
   public List<Section> getBySectionNames(Set<Section> sections) {
 
     return sectionRepository.getByNameIsIn(
-        sections.stream()
-            .map(Section::getName)
-            .collect(Collectors.toSet())
-    );
-
+        sections.stream().map(Section::getName).collect(Collectors.toSet()));
   }
 }

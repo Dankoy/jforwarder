@@ -322,16 +322,16 @@ services:
   #### telegram bot related end ####
 
   #### coub tags searcher start ####
-  coub-tags-searcher:
+  coub-smart-searcher:
     env_file:
       - .env
     build:
       context: .
-      dockerfile: Dockerfile.coub_tags_searcher
+      dockerfile: Dockerfile.coub_smart_searcher
       args:
         - JAR_VERSION=${JAR_VERSION}
-    image: ${DOCKER_HUB_USER}/coub_tags_searcher:${JAR_VERSION}
-    container_name: coub-tags-searcher
+    image: ${DOCKER_HUB_USER}/coub_smart_searcher:${JAR_VERSION}
+    container_name: coub-smart-searcher
     ports:
       - "8086:8086"
     networks:

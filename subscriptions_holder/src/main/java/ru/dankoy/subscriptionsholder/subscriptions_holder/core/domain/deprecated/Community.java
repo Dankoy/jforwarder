@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.deprecated;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,8 +12,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Deprecated(forRemoval = false)
-//@Entity
-//@Table(name = "communities")
+// @Entity
+// @Table(name = "communities")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,5 +37,4 @@ public class Community {
   public Community(String name) {
     this.name = name;
   }
-
 }

@@ -29,26 +29,22 @@ public class FilterByRegistryServiceImpl implements FilterByRegistryService {
 
       log.info("Filter by registry");
       // filter subscriptions by registry
-      Set<SentCoubsRegistry> registry = sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
-          sub.getId(),
-          LocalDateTime.now().minusDays(coubRegistryProperties.filterDays())
-      );
+      Set<SentCoubsRegistry> registry =
+          sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
+              sub.getId(), LocalDateTime.now().minusDays(coubRegistryProperties.filterDays()));
       log.debug("Found registry - {}", registry);
 
-      Set<String> registryPermalinks = registry.stream()
-          .map(SentCoubsRegistry::getCoubPermalink)
-          .collect(Collectors.toSet());
+      Set<String> registryPermalinks =
+          registry.stream().map(SentCoubsRegistry::getCoubPermalink).collect(Collectors.toSet());
 
-      List<Coub> filtered = new ArrayList<>(
-          sub.getCoubs().stream()
-              .filter(c -> !registryPermalinks.contains(c.getPermalink()))
-              .toList()
-      );
+      List<Coub> filtered =
+          new ArrayList<>(
+              sub.getCoubs().stream()
+                  .filter(c -> !registryPermalinks.contains(c.getPermalink()))
+                  .toList());
       sub.setCoubs(filtered);
 
       log.info("Filtered done");
-
     }
-
   }
 }

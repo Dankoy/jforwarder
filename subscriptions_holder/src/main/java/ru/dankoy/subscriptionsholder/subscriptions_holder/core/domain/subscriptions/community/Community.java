@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,13 +18,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
-
 @NamedEntityGraph(
     name = "sections-entity-graph",
-    attributeNodes = {
-        @NamedAttributeNode("sections")
-    }
-)
+    attributeNodes = {@NamedAttributeNode("sections")})
 @Entity
 @Table(name = "communities")
 @Data
@@ -46,13 +41,13 @@ public class Community {
 
   @BatchSize(size = 10) // not necessary if entity graph is used
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "community_section",
+  @JoinTable(
+      name = "community_section",
       joinColumns = @JoinColumn(name = "community_id", referencedColumnName = "id"),
       inverseJoinColumns = @JoinColumn(name = "section_id", referencedColumnName = "id"))
-  private Set<Section> sections; //entity graph
+  private Set<Section> sections; // entity graph
 
   public Community(String name) {
     this.name = name;
   }
-
 }

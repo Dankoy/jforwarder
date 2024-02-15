@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +19,9 @@ public class TagController {
 
   private final TagService tagService;
 
-  @GetMapping(value = "/api/v1/tags", params = {"title"})
+  @GetMapping(
+      value = "/api/v1/tags",
+      params = {"title"})
   public TagDTO getByTitle(@RequestParam("title") String title) {
 
     var found = tagService.getByTitle(title);
@@ -36,14 +37,11 @@ public class TagController {
     var created = tagService.create(tag);
 
     return TagDTO.toDTO(created);
-
   }
 
   @DeleteMapping(value = "/api/v1/tags/{title}")
   public void delete(@PathVariable("title") String title) {
 
     tagService.deleteByTitle(title);
-
   }
-
 }

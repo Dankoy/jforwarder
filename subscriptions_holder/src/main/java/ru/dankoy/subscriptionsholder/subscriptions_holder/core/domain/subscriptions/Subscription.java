@@ -17,14 +17,13 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-
-@NamedEntityGraph(name = "subscription-full",
+@NamedEntityGraph(
+    name = "subscription-full",
     attributeNodes = {
-        @NamedAttributeNode("id"),
-        @NamedAttributeNode("chat"),
-        @NamedAttributeNode("lastPermalink")
-    }
-)
+      @NamedAttributeNode("id"),
+      @NamedAttributeNode("chat"),
+      @NamedAttributeNode("lastPermalink")
+    })
 @Table(name = "subscriptions")
 @Data
 @SuperBuilder
@@ -42,8 +41,6 @@ public class Subscription {
   @JoinColumn(name = "chat_id")
   private Chat chat;
 
-
   @Column(name = "last_permalink")
   private String lastPermalink;
-
 }

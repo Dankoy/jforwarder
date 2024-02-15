@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.Chat;
+import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Chat;
 
 @EqualsAndHashCode
 @Getter
@@ -24,24 +24,20 @@ public class Subscription {
 
   private String lastPermalink;
 
-  @Setter
-  private List<Coub> coubs = new ArrayList<>();
+  @Setter private List<Coub> coubs = new ArrayList<>();
 
   public void addCoubs(List<Coub> coubsToAdd) {
 
     for (var coub : coubsToAdd) {
 
-      var newCoub = new Coub(
-          coub.getId(),
-          coub.getTitle(),
-          coub.getPermalink(),
-          coub.getUrl(),
-          coub.getPublishedAt()
-      );
+      var newCoub =
+          new Coub(
+              coub.getId(),
+              coub.getTitle(),
+              coub.getPermalink(),
+              coub.getUrl(),
+              coub.getPublishedAt());
       coubs.add(newCoub);
-
     }
-
   }
-
 }

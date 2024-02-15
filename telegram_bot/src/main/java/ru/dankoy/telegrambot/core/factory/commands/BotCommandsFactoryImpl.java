@@ -7,9 +7,9 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.MySubscriptionsCommand;
+import ru.dankoy.telegrambot.core.service.bot.commands.OrdersCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
-import ru.dankoy.telegrambot.core.service.bot.commands.TagOrdersCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
 
@@ -93,10 +93,10 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
   @Override
   public BotCommand tagOrdersCommand() {
 
-    var command = localisationService.getLocalizedMessage("tagOrdersCommand", null, locale);
+    var command = localisationService.getLocalizedMessage("ordersCommand", null, locale);
     var description =
-        localisationService.getLocalizedMessage("tagOrdersCommandDescription", null, locale);
+        localisationService.getLocalizedMessage("ordersCommandDescription", null, locale);
 
-    return new TagOrdersCommand(command, description);
+    return new OrdersCommand(command, description);
   }
 }

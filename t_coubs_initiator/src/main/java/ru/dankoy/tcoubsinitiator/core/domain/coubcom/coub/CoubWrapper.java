@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
 @Getter
 @NoArgsConstructor
 public class CoubWrapper {
@@ -20,7 +19,5 @@ public class CoubWrapper {
   @JsonProperty("total_pages")
   private int totalPages;
 
-  @Getter
-  private List<Coub> coubs;
-
+  @Getter private List<Coub> coubs;
 }

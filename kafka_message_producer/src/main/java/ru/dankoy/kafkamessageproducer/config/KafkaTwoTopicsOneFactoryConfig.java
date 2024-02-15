@@ -1,6 +1,7 @@
 package ru.dankoy.kafkamessageproducer.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -17,10 +18,10 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerService;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.CommunityMessageProducerServiceKafka;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerService;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.TagMessageProducerServiceKafka;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessage;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessageImpl;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafkaImpl;
 import ru.dankoy.kafkamessageproducer.core.service.regisrty.SentCoubsRegisrtyService;
 import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionService;
 
@@ -28,16 +29,21 @@ import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionServ
 @Configuration
 public class KafkaTwoTopicsOneFactoryConfig {
 
+  private static final String HEADER_NAME = "subscription_type";
+
   private final String coubCommunityTopicName;
   private final String coubTagTopicName;
+  private final String coubChannelTopicName;
   private final String communityProducerClientId;
 
   public KafkaTwoTopicsOneFactoryConfig(
       @Value("${application.kafka.topic.coub-com-subs}") String coubCommunityTopicName,
       @Value("${application.kafka.topic.coub-tag-subs}") String coubTagTopicName,
+      @Value("${application.kafka.topic.coub-channel-subs}") String coubChannelTopicName,
       @Value("${application.kafka.producers.coubs.client-id}") String coubsProducerClientId) {
     this.coubCommunityTopicName = coubCommunityTopicName;
     this.coubTagTopicName = coubTagTopicName;
+    this.coubChannelTopicName = coubChannelTopicName;
     this.communityProducerClientId = coubsProducerClientId;
   }
 
@@ -83,28 +89,82 @@ public class KafkaTwoTopicsOneFactoryConfig {
   }
 
   @Bean
-  public CommunityMessageProducerService communityMessageProducerService(
-      NewTopic topicCoubCommunityMessage,
-      KafkaTemplate<String, CoubMessage> kafkaTemplate,
-      SubscriptionService subscriptionService,
-      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
-    return new CommunityMessageProducerServiceKafka(
-        kafkaTemplate,
-        topicCoubCommunityMessage.name(),
-        subscriptionService::updatePermalink,
-        sentCoubsRegisrtyService::create);
+  public NewTopic topicCoubChannelMessage() {
+    return TopicBuilder.name(coubChannelTopicName).partitions(2).replicas(1).build();
   }
 
   @Bean
-  public TagMessageProducerService tagMessageProducerService(
-      NewTopic topicCoubTagMessage,
+  public KafkaTemplateCoubMessage kafkaTemplateCoubMessage(
       KafkaTemplate<String, CoubMessage> kafkaTemplate,
       SubscriptionService subscriptionService,
       SentCoubsRegisrtyService sentCoubsRegisrtyService) {
-    return new TagMessageProducerServiceKafka(
-        kafkaTemplate,
-        topicCoubTagMessage.name(),
-        subscriptionService::updatePermalink,
-        sentCoubsRegisrtyService::create);
+    return new KafkaTemplateCoubMessageImpl(
+        kafkaTemplate, subscriptionService::updatePermalink, sentCoubsRegisrtyService::create);
   }
+
+  @Bean
+  public MessageProducerServiceKafka channelMessageProducerServiceKafka(
+      NewTopic topicCoubChannelMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+    return new MessageProducerServiceKafkaImpl(
+        topicCoubChannelMessage.name(),
+        kafkaTemplateCoubMessage,
+        r -> r.headers().add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @Bean
+  public MessageProducerServiceKafka communityMessageProducerServiceKafka(
+      NewTopic topicCoubCommunityMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+    return new MessageProducerServiceKafkaImpl(
+        topicCoubCommunityMessage.name(),
+        kafkaTemplateCoubMessage,
+        r -> r.headers().add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @Bean
+  public MessageProducerServiceKafka tagMessageProducerServiceKafka(
+      NewTopic topicCoubTagMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+    return new MessageProducerServiceKafkaImpl(
+        topicCoubTagMessage.name(),
+        kafkaTemplateCoubMessage,
+        r -> r.headers().add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  //  @Bean
+  //  public CommunityMessageProducerService communityMessageProducerService(
+  //      NewTopic topicCoubCommunityMessage,
+  //      KafkaTemplate<String, CoubMessage> kafkaTemplate,
+  //      SubscriptionService subscriptionService,
+  //      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+  //    return new CommunityMessageProducerServiceKafka(
+  //        kafkaTemplate,
+  //        topicCoubCommunityMessage.name(),
+  //        subscriptionService::updatePermalink,
+  //        sentCoubsRegisrtyService::create);
+  //  }
+  //
+  //  @Bean
+  //  public TagMessageProducerService tagMessageProducerService(
+  //      NewTopic topicCoubTagMessage,
+  //      KafkaTemplate<String, CoubMessage> kafkaTemplate,
+  //      SubscriptionService subscriptionService,
+  //      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+  //    return new TagMessageProducerServiceKafka(
+  //        kafkaTemplate,
+  //        topicCoubTagMessage.name(),
+  //        subscriptionService::updatePermalink,
+  //        sentCoubsRegisrtyService::create);
+  //  }
+  //
+  //  @Bean
+  //  public ChannelMessageProducerService channelMessageProducerService(
+  //      NewTopic topicCoubChannelMessage,
+  //      KafkaTemplate<String, CoubMessage> kafkaTemplate,
+  //      SubscriptionService subscriptionService,
+  //      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
+  //    return new ChannelMessageProducerServiceKafka(
+  //        kafkaTemplate,
+  //        topicCoubChannelMessage.name(),
+  //        subscriptionService::updatePermalink,
+  //        sentCoubsRegisrtyService::create);
+  //  }
 }

@@ -1,12 +1,10 @@
 package ru.dankoy.tcoubsinitiator.core.domain.coubcom.community;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
@@ -18,7 +16,5 @@ public final class Community {
 
   private String title;
 
-  @Setter
-  private String url;
-
+  @Setter private String url;
 }

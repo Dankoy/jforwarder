@@ -19,11 +19,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     var optional = subscriptionRepository.findById(id);
 
     return optional.orElseThrow(
-        () -> new ResourceNotFoundException(
-            String.format("Subscription not found: %s", id))
-    );
-
-
+        () -> new ResourceNotFoundException(String.format("Subscription not found: %s", id)));
   }
 
   @Transactional
@@ -33,7 +29,5 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     var sub = findById(subscription.getId());
     sub.setLastPermalink(subscription.getLastPermalink());
     return subscriptionRepository.save(sub);
-
   }
-
 }

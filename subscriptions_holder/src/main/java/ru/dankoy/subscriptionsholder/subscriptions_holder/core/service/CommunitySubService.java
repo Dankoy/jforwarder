@@ -15,13 +15,12 @@ public interface CommunitySubService {
 
   List<CommunitySub> getAllByChatChatId(long telegramChatId);
 
-  Optional<CommunitySub> getByCommunityNameSectionNameChatId(String communityName,
-      String sectionName, long chatId);
+  Optional<CommunitySub> getByCommunityNameSectionNameChatId(
+      String communityName, String sectionName, long chatId);
 
   @Transactional
   CommunitySub subscribeChatToCommunity(CommunitySub communitySubscription);
 
   @Transactional
   void unsubscribeChatFromCommunity(CommunitySub communitySubscription);
-
 }

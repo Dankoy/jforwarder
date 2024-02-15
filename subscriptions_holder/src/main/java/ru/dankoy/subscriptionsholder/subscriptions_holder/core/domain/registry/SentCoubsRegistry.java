@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,15 +16,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 
-
-@NamedEntityGraph(name = "sent-coubs-registry-full",
+@NamedEntityGraph(
+    name = "sent-coubs-registry-full",
     includeAllAttributes = true,
     attributeNodes = {
-        @NamedAttributeNode("subscription"),
-        @NamedAttributeNode("coubPermalink"),
-        @NamedAttributeNode("dateTime")
-    }
-)
+      @NamedAttributeNode("subscription"),
+      @NamedAttributeNode("coubPermalink"),
+      @NamedAttributeNode("dateTime")
+    })
 @Table(name = "sent_coubs_registry")
 @Entity
 @Data
@@ -47,5 +45,4 @@ public class SentCoubsRegistry {
 
   @Column(name = "date_time")
   private LocalDateTime dateTime;
-
 }

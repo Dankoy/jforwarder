@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,5 +18,4 @@ public class CommunitySubscription extends Subscription {
 
   private Community community;
   private Section section;
-
 }

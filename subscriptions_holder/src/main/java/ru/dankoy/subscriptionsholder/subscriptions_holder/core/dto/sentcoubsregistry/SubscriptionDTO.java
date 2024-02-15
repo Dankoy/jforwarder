@@ -11,7 +11,6 @@ import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 
-
 @ToString
 @Getter
 @Builder
@@ -23,9 +22,7 @@ public class SubscriptionDTO {
   @Min(1)
   private long id;
 
-  @Valid
-  @NotNull
-  private ChatDTO chat;
+  @Valid @NotNull private ChatDTO chat;
 
   public static SubscriptionDTO toDTO(Subscription subscription) {
 
@@ -33,16 +30,10 @@ public class SubscriptionDTO {
         .id(subscription.getId())
         .chat(ChatDTO.toDTO(subscription.getChat()))
         .build();
-
   }
 
   public static Subscription fromDTO(SubscriptionDTO dto) {
 
-    return Subscription.builder()
-        .id(dto.getId())
-        .chat(ChatDTO.fromDTO(dto.getChat()))
-        .build();
-
+    return Subscription.builder().id(dto.getId()).chat(ChatDTO.fromDTO(dto.getChat())).build();
   }
-
 }

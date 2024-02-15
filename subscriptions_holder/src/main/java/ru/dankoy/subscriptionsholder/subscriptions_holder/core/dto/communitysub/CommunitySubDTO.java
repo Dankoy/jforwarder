@@ -1,6 +1,5 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,18 +25,15 @@ public class CommunitySubDTO {
 
   private String lastPermalink;
 
-
   public static CommunitySubDTO toDTO(CommunitySub communitySubscription) {
 
     return CommunitySubDTO.builder()
         .id(communitySubscription.getId())
-        .community(
-            CommunityWithoutSectionsDTO.toDTO(communitySubscription.getCommunity()))
+        .community(CommunityWithoutSectionsDTO.toDTO(communitySubscription.getCommunity()))
         .section(SectionDTO.toDTO(communitySubscription.getSection()))
         .chat(ChatDTO.toDTO(communitySubscription.getChat()))
         .lastPermalink(communitySubscription.getLastPermalink())
         .build();
-
   }
 
   public static CommunitySub fromDTO(CommunitySubDTO dto) {
@@ -49,8 +45,5 @@ public class CommunitySubDTO {
         .chat(ChatDTO.fromDTO(dto.getChat()))
         .lastPermalink(dto.getLastPermalink())
         .build();
-
   }
-
-
 }

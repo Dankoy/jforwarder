@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
-
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,7 @@ import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerTagSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 @Slf4j
 @Service
@@ -42,8 +42,8 @@ public class SchedulerSubscriptionServiceTag {
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<TagSubscription> tagSubscriptionsPage = tagSubscriptionService.getAllSubscriptionsWithActiveChats(
-          pageable);
+      Page<TagSubscription> tagSubscriptionsPage =
+          tagSubscriptionService.getAllSubscriptionsWithActiveChats(pageable);
 
       totalPages = tagSubscriptionsPage.getTotalPages() - 1;
 
@@ -61,18 +61,15 @@ public class SchedulerSubscriptionServiceTag {
         Collections.reverse(coubsToSend);
 
         subscription.addCoubs(coubsToSend);
-
       }
 
       filter.filterByRegistry(tagSubscriptionsPage.getContent());
 
       // remove subscriptions without coubs
 
-      var toSend = tagSubscriptionsPage.stream()
-          .filter(s -> !s.getCoubs().isEmpty())
-          .toList();
+      var toSend = tagSubscriptionsPage.stream().filter(s -> !s.getCoubs().isEmpty()).toList();
 
-      //send to message producer service
+      // send to message producer service
 
       log.info("Coubs to send for all subscriptions - {}", toSend);
 
@@ -81,26 +78,12 @@ public class SchedulerSubscriptionServiceTag {
       }
 
       log.info("Page {} of {} is done", page, totalPages);
-      log.info("Amount of tag subscriptions processed: {}",
-          tagSubscriptionsPage.getContent().size());
+      log.info(
+          "Amount of tag subscriptions processed: {}", tagSubscriptionsPage.getContent().size());
 
       page++;
 
-      sleep(5_000);
-
+      Utils.sleep(5_000);
     }
-
   }
-
-  private void sleep(long millis) {
-
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while trying to get coubs", e);
-    }
-
-  }
-
 }

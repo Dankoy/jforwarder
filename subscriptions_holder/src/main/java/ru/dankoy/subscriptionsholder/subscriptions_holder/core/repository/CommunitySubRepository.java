@@ -17,17 +17,14 @@ public interface CommunitySubRepository extends JpaRepository<CommunitySub, Long
   Page<CommunitySub> findAll(Pageable pageable);
 
   @EntityGraph(value = "community-subscription-full-inherited", type = EntityGraphType.LOAD)
-  Page<CommunitySub> findAllByChatActive(@Param("active") boolean active,
-      Pageable pageable);
+  Page<CommunitySub> findAllByChatActive(@Param("active") boolean active, Pageable pageable);
 
   @EntityGraph(value = "community-subscription-full-inherited", type = EntityGraphType.LOAD)
   List<CommunitySub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
-
 
   @EntityGraph(value = "community-subscription-full-inherited", type = EntityGraphType.LOAD)
   Optional<CommunitySub> getByChatChatIdAndCommunityNameAndSectionName(
       @Param("externalChatId") long externalChatId,
       @Param("communityName") String communityName,
       @Param("sectionName") String sectionName);
-
 }

@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription;
 
-
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,5 +15,4 @@ public class Section {
 
   private long id;
   private String name;
-
 }

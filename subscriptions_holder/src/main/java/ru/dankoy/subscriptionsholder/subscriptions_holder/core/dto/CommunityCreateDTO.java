@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.community.Community;
 
-
 @ToString
 @Getter
 @Builder
@@ -24,13 +23,9 @@ public class CommunityCreateDTO {
   @Min(1)
   private long externalId;
 
-  @NotEmpty
-  private String name;
+  @NotEmpty private String name;
 
-  @Valid
-  @NotNull
-  private Set<CommunityCreateSectionDTO> sections;
-
+  @Valid @NotNull private Set<CommunityCreateSectionDTO> sections;
 
   public static CommunityCreateDTO toDTO(Community community) {
 
@@ -40,10 +35,8 @@ public class CommunityCreateDTO {
         .sections(
             community.getSections().stream()
                 .map(CommunityCreateSectionDTO::toDTO)
-                .collect(Collectors.toSet())
-        )
+                .collect(Collectors.toSet()))
         .build();
-
   }
 
   public static Community fromDTO(CommunityCreateDTO dto) {
@@ -52,11 +45,6 @@ public class CommunityCreateDTO {
         0,
         dto.externalId,
         dto.name,
-        dto.sections.stream()
-            .map(CommunityCreateSectionDTO::fromDTO)
-            .collect(Collectors.toSet())
-    );
-
+        dto.sections.stream().map(CommunityCreateSectionDTO::fromDTO).collect(Collectors.toSet()));
   }
-
 }

@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-
 @ToString
 @Getter
 @Builder
@@ -43,7 +42,6 @@ public class ChatDTO {
         .username(chat.getUsername())
         .active(chat.isActive())
         .build();
-
   }
 
   public static Chat fromDTO(ChatDTO dto) {
@@ -56,9 +54,6 @@ public class ChatDTO {
         dto.firstName,
         dto.lastName,
         dto.username,
-        dto.active
-    );
-
+        dto.active);
   }
-
 }
