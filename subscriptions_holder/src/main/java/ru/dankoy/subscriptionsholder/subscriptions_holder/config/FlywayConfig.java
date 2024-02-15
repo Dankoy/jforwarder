@@ -1,13 +1,11 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.config;
 
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-//@Configuration
+// @Configuration
 public class FlywayConfig {
 
-//  @Bean
+  //  @Bean
   public FlywayMigrationStrategy flywayMigrationStrategy() {
     return strategy -> {
       strategy.repair();
