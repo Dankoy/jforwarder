@@ -30,9 +30,10 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
     var totalPages = Integer.MAX_VALUE;
 
     var sort = Sort.by("id").ascending();
-    var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
     while (currentPage <= totalPages) {
+
+      var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
       Page<SentCoubsRegistry> page =
           sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
