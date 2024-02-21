@@ -86,7 +86,7 @@ public class SchedulerSubscriptionServiceChannel {
 
       page++;
 
-      Utils.sleep(5_000);
+      Utils.sleep(3_000);
     }
   }
 }

@@ -21,7 +21,10 @@ COPY ./settings.gradle ./
 
 RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
 
-ENTRYPOINT java -Xms700m -Xmx700m \
+# remote debug
+# java -agentlib:jdwp=transport=dt_socket,server=y,address=*:8000,suspend=n
+
+ENTRYPOINT java -Xms400m -Xmx400m \
              -XX:MaxMetaspaceSize=200m \
              -XX:NewSize=200m \
              -XX:MaxNewSize=200m \

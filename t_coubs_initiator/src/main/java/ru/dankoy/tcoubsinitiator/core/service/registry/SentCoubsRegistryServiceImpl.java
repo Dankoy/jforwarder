@@ -16,7 +16,7 @@ import ru.dankoy.tcoubsinitiator.core.feign.registry.SentCoubsRegisrtyFeign;
 public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
 
   private static final int FIRST_PAGE = 0;
-  private static final int PER_PAGE = 10;
+  private static final int PER_PAGE = 30;
 
   private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
 
@@ -30,9 +30,10 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
     var totalPages = Integer.MAX_VALUE;
 
     var sort = Sort.by("id").ascending();
-    var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
     while (currentPage <= totalPages) {
+
+      var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
       Page<SentCoubsRegistry> page =
           sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
