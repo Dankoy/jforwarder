@@ -16,7 +16,7 @@ import ru.dankoy.tcoubsinitiator.core.feign.registry.SentCoubsRegisrtyFeign;
 public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
 
   private static final int FIRST_PAGE = 0;
-  private static final int PER_PAGE = 10;
+  private static final int PER_PAGE = 30;
 
   private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
 
