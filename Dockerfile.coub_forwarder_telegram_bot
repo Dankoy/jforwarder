@@ -1,30 +1,37 @@
-FROM  gradle:8.6.0-jdk21
+FROM eclipse-temurin:21.0.2_13-jdk-jammy AS build
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
+ARG SERVICE_NAME=telegram_bot
+
+COPY ./gradle ./gradle
+COPY ./build.gradle ./settings.gradle ./gradlew ./
+COPY ./buildSrc ./buildSrc
+COPY ./$SERVICE_NAME ./$SERVICE_NAME
+
+RUN ["/bin/bash", "-c", "./gradlew clean bootJar -x test"]
+
+FROM eclipse-temurin:21.0.2_13-jre-alpine
 LABEL authors="turtality"
 
 ARG TZ=Europe/Moscow
 ENV TZ ${TZ}
 
+ENV SERVICE_NAME=telegram_bot
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
-ENV ENV_PATH_TO_JAR=telegram_bot/build/libs/telegram_bot-$JAR_VERSION.jar
+ENV ENV_PATH_BUILD_JAR=$SERVICE_NAME/build/libs/$SERVICE_NAME-$JAR_VERSION.jar
+ENV ENV_PATH_TO_JAR=$SERVICE_NAME-$JAR_VERSION.jar
 
 RUN echo "$TZ" > /etc/timezone
 
 WORKDIR /app
-COPY ./buildSrc ./buildSrc
-COPY ./telegram_bot/src ./telegram_bot/src
-COPY ./telegram_bot/build.gradle ./telegram_bot/
-COPY ./build.gradle ./
-COPY ./settings.gradle ./
 
-RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
+COPY --from=build ./$ENV_PATH_BUILD_JAR ./
 
 ENTRYPOINT java -Xms400m -Xmx400m \
-             -XX:MaxMetaspaceSize=200m \
-             -XX:NewSize=200m \
-             -XX:MaxNewSize=200m \
+             -XX:MaxMetaspaceSize=150m \
+             -XX:NewSize=150m \
+             -XX:MaxNewSize=150m \
              -XX:+UseG1GC \
              -XX:+HeapDumpOnOutOfMemoryError \
              -XX:HeapDumpPath=./dump.hprof \

@@ -1,6 +1,16 @@
-FROM  gradle:8.6.0-jdk21
+FROM eclipse-temurin:21.0.2_13-jdk-jammy AS build
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
-# FROM --platform=linux/amd64 gradle:8.6.0-jdk17-alpine
+
+ARG SERVICE_NAME=subscriptions_holder
+
+COPY ./gradle ./gradle
+COPY ./build.gradle ./settings.gradle ./gradlew ./
+COPY ./buildSrc ./buildSrc
+COPY ./$SERVICE_NAME ./$SERVICE_NAME
+
+RUN ["/bin/bash", "-c", "./gradlew clean bootJar -x test"]
+
+FROM eclipse-temurin:21.0.2_13-jre-alpine
 LABEL authors="turtality"
 
 ARG TZ=Europe/Moscow
@@ -10,21 +20,17 @@ ENV TZ ${TZ}
 ARG JASYPT_PASSWORD
 ENV ENV_JASYPT_PASSWORD $JASYPT_PASSWORD
 
+ENV SERVICE_NAME=subscriptions_holder
 ARG JAR_VERSION
 ENV ENV_JAR_VERSION $JAR_VERSION
-ENV ENV_PATH_TO_JAR=subscriptions_holder/build/libs/subscriptions_holder-$JAR_VERSION.jar
+ENV ENV_PATH_BUILD_JAR=$SERVICE_NAME/build/libs/$SERVICE_NAME-$JAR_VERSION.jar
+ENV ENV_PATH_TO_JAR=$SERVICE_NAME-$JAR_VERSION.jar
 
-RUN echo "$TZ" > /etc/timezone
+RUN echo "$TZ" > /etc/timezone && apk --no-cache add curl
 
 WORKDIR /app
-COPY ./buildSrc ./buildSrc
-COPY ./subscriptions_holder/src ./subscriptions_holder/src
-COPY ./subscriptions_holder/build.gradle ./subscriptions_holder/
-COPY ./build.gradle ./
-COPY ./settings.gradle ./
 
-RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
-# RUN ["/bin/sh", "-c", "gradle clean bootJar -x test"] # alpine
+COPY --from=build ./$ENV_PATH_BUILD_JAR ./
 
 # entrypoint не работает с шеллом, работает только ARG переменные
 # не работает с переменными вообще. нужно использовать голый entrypoint
@@ -33,9 +39,9 @@ ENTRYPOINT java -Djasypt.encryptor.password=${JASYPT_PASSWORD} \
                 -Djasypt.encryptor.algorithm=PBEWithMD5AndDES \
                 -Djasypt.encryptor.ivGeneratorClassName=org.jasypt.iv.NoIvGenerator \
                  -Xms400m -Xmx400m \
-                  -XX:MaxMetaspaceSize=200m \
-                  -XX:NewSize=200m \
-                  -XX:MaxNewSize=200m \
+                  -XX:MaxMetaspaceSize=150m \
+                  -XX:NewSize=150m \
+                  -XX:MaxNewSize=150m \
                   -XX:+UseG1GC \
                   -XX:+HeapDumpOnOutOfMemoryError \
                   -XX:HeapDumpPath=./dump.hprof \
