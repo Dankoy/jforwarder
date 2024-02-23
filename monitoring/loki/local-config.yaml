@@ -1,0 +1,64 @@
+# 429 too many outstanding requests
+# https://github.com/grafana/loki/issues/5123#issuecomment-1167018445
+# https://community.grafana.com/t/too-many-outstanding-requests-on-loki-2-7-1/78249/11
+
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+
+common:
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: filesystem
+      schema: v11
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  retention_period: 365d # days to delete old logs, you can change
+  max_query_lookback: 60d
+  split_queries_by_interval: 1h # fix 429 too many outstanding requests
+  max_query_parallelism: 32 # fix 429 too many outstanding requests
+
+
+# no separate alert manager
+#ruler:
+#  alertmanager_url: http://localhost:9093
+
+analytics:
+  reporting_enabled: false
+
+compactor:
+  working_directory: /loki/retention
+  shared_store: filesystem
+  compaction_interval: 15m
+  retention_enabled: true
+  retention_delete_delay: 2h
+  retention_delete_worker_count: 150
+
+querier:
+  query_ingesters_within: 2h # avoid https://github.com/grafana/loki/issues/6043
+
+query_range:
+  parallelise_shardable_queries: true # fix 429 too many outstanding requests
+
+query_scheduler:
+  max_outstanding_requests_per_tenant: 4096 # fix 429 too many outstanding requests
+
+frontend:
+  max_outstanding_per_tenant: 4096 # fix 429 too many outstanding requests
+  compress_responses: true # fix 429 too many outstanding requests
