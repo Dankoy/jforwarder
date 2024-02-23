@@ -37,6 +37,7 @@ services:
       - JAEGER_SAMPLER_TYPE=const
       - JAEGER_SAMPLER_PARAM=1
     volumes:
+      - ./loki/local-config.yaml:/etc/loki/local-config.yaml:ro
       - loki_volume:/loki
     networks:
       - jforwarder-network
