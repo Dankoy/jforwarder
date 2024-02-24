@@ -1,7 +1,18 @@
 # jforwarder
 
-![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/main.yml/badge.svg)    
-[![HitCount](https://hits.dwyl.com/dankoy/jforwarder.svg?style=flat)](http://hits.dwyl.com/dankoy/jforwarder)
+![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/jforwarder) 
+![GitHub Tag](https://img.shields.io/github/v/tag/dankoy/jforwarder) 
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/dankoy/jforwarder/total) 
+
+![GitHub tag checks state](https://img.shields.io/github/checks-status/dankoy/jforwarder/v1.1.3) 
+![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/main.yml/badge.svg) 
+![Dependencies](https://img.shields.io/librariesio/github/dankoy/jforwarder) 
+
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDankoy%2Fjforwarder&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) 
+
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/jforwarder) 
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub) 
+
 
 # Trademark disclaimer
 
