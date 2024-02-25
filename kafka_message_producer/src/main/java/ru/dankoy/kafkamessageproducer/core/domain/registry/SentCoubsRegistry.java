@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.regisrty;
+package ru.dankoy.kafkamessageproducer.core.domain.registry;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;

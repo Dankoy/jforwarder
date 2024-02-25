@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
+import ru.dankoy.kafkamessageproducer.core.domain.registry.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 
 @FeignClient(name = "subscriptions-holder")

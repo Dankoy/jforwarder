@@ -1,7 +1,7 @@
 package ru.dankoy.kafkamessageproducer.core.service.regisrty;
 
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
+import ru.dankoy.kafkamessageproducer.core.domain.registry.SentCoubsRegistry;
 
 public interface SentCoubsRegisrtyService {
 

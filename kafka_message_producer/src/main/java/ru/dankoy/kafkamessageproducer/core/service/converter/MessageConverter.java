@@ -5,7 +5,7 @@ import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMes
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
+import ru.dankoy.kafkamessageproducer.core.domain.registry.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.ChannelSubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;

@@ -3,7 +3,7 @@ package ru.dankoy.kafkamessageproducer.core.service.regisrty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.regisrty.SentCoubsRegistry;
+import ru.dankoy.kafkamessageproducer.core.domain.registry.SentCoubsRegistry;
 import ru.dankoy.kafkamessageproducer.core.feign.subscriptionsholder.subscription.SubscriptionFeign;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
 
