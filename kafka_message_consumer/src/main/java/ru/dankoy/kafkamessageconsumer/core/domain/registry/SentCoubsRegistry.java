@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.domain.regisrty;
+package ru.dankoy.kafkamessageconsumer.core.domain.registry;
 
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Subscription;
 
 @EqualsAndHashCode
 @Getter

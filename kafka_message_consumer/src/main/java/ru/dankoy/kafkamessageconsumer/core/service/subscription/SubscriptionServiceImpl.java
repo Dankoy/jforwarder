@@ -1,11 +1,11 @@
-package ru.dankoy.kafkamessageproducer.core.service.subscription;
+package ru.dankoy.kafkamessageconsumer.core.service.subscription;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
-import ru.dankoy.kafkamessageproducer.core.feign.subscriptionsholder.subscription.SubscriptionFeign;
-import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
+import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
+import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Subscription;
+import ru.dankoy.kafkamessageconsumer.core.feign.subscriptionsholder.SubscriptionFeign;
+import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverter;
 
 @Service
 @RequiredArgsConstructor

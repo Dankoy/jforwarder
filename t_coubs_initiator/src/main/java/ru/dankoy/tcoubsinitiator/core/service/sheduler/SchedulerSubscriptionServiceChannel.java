@@ -47,8 +47,8 @@ public class SchedulerSubscriptionServiceChannel {
 
       totalPages = allSubscriptionsWithActiveChats.getTotalPages() - 1;
 
-      log.info("TagSubscriptions page - {}", allSubscriptionsWithActiveChats);
-      log.info("TagSubscriptions - {}", allSubscriptionsWithActiveChats.getContent());
+      log.info("ChannelSubscriptions page - {}", allSubscriptionsWithActiveChats);
+      log.info("ChannelSubscriptions - {}", allSubscriptionsWithActiveChats.getContent());
 
       // поиск кубов из апи с last_permalink
       for (var subscription : allSubscriptionsWithActiveChats) {
@@ -81,7 +81,7 @@ public class SchedulerSubscriptionServiceChannel {
 
       log.info("Page {} of {} is done", page, totalPages);
       log.info(
-          "Amount of tag subscriptions processed: {}",
+          "Amount of channel subscriptions processed: {}",
           allSubscriptionsWithActiveChats.getContent().size());
 
       page++;

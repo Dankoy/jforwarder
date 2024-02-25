@@ -22,8 +22,6 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCo
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessageImpl;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafkaImpl;
-import ru.dankoy.kafkamessageproducer.core.service.regisrty.SentCoubsRegisrtyService;
-import ru.dankoy.kafkamessageproducer.core.service.subscription.SubscriptionService;
 
 @Slf4j
 @Configuration
@@ -95,11 +93,8 @@ public class KafkaTwoTopicsOneFactoryConfig {
 
   @Bean
   public KafkaTemplateCoubMessage kafkaTemplateCoubMessage(
-      KafkaTemplate<String, CoubMessage> kafkaTemplate,
-      SubscriptionService subscriptionService,
-      SentCoubsRegisrtyService sentCoubsRegisrtyService) {
-    return new KafkaTemplateCoubMessageImpl(
-        kafkaTemplate, subscriptionService::updatePermalink, sentCoubsRegisrtyService::create);
+      KafkaTemplate<String, CoubMessage> kafkaTemplate) {
+    return new KafkaTemplateCoubMessageImpl(kafkaTemplate);
   }
 
   @Bean

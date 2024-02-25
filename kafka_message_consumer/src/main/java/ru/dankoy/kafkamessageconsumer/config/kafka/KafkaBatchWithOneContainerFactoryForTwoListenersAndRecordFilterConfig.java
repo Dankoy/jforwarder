@@ -34,6 +34,8 @@ import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumer;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumerImpl;
+import ru.dankoy.kafkamessageconsumer.core.service.registry.SentCoubsRegistryService;
+import ru.dankoy.kafkamessageconsumer.core.service.subscription.SubscriptionService;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
 /**
@@ -191,21 +193,37 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
   }
 
   @Bean
-  public CoubMessageConsumer coubCommunityMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendCommunityMessage);
+  public CoubMessageConsumer coubCommunityMessageConsumer(
+      TelegramBotService telegramBotService,
+      SentCoubsRegistryService sentCoubsRegistryService,
+      SubscriptionService subscriptionService) {
+    return new CoubMessageConsumerImpl(
+        telegramBotService::sendCommunityMessage,
+        sentCoubsRegistryService::create,
+        subscriptionService::updatePermalink);
   }
 
   @Bean
-  public CoubMessageConsumer coubTagMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendTagMessage);
+  public CoubMessageConsumer coubTagMessageConsumer(
+      TelegramBotService telegramBotService,
+      SentCoubsRegistryService sentCoubsRegistryService,
+      SubscriptionService subscriptionService) {
+    return new CoubMessageConsumerImpl(
+        telegramBotService::sendTagMessage,
+        sentCoubsRegistryService::create,
+        subscriptionService::updatePermalink);
   }
 
   @Bean
-  public CoubMessageConsumer coubChannelMessageConsumer(TelegramBotService telegramBotService) {
-    return new CoubMessageConsumerImpl(telegramBotService::sendChannelMessage);
+  public CoubMessageConsumer coubChannelMessageConsumer(
+      TelegramBotService telegramBotService,
+      SentCoubsRegistryService sentCoubsRegistryService,
+      SubscriptionService subscriptionService) {
+    return new CoubMessageConsumerImpl(
+        telegramBotService::sendChannelMessage,
+        sentCoubsRegistryService::create,
+        subscriptionService::updatePermalink);
   }
-
-  // one listener but multiple handlers
 
   public static class KafkaClientSubscription {
 
