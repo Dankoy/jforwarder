@@ -1,14 +1,10 @@
 package ru.dankoy.kafkamessageproducer.core.service.converter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Component;
 import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.kafkamessageproducer.core.domain.registry.SentCoubsRegistry;
-import ru.dankoy.kafkamessageproducer.core.domain.subscription.Subscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.ChannelSubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
@@ -70,24 +66,5 @@ public class MessageConverterImpl implements MessageConverter {
                         .lastPermalink(c.getPermalink())
                         .build())
         .toList();
-  }
-
-  @Override
-  public SentCoubsRegistry convertToRegistry(CoubMessage message) {
-    return SentCoubsRegistry.builder()
-        .subscription(Subscription.builder().id(message.getId()).build())
-        .coubPermalink(message.getCoub().getPermalink())
-        .dateTime(LocalDateTime.now())
-        .build();
-  }
-
-  @Override
-  public Subscription convert(CoubMessage message) {
-
-    return Subscription.builder()
-        .id(message.getId())
-        .chat(message.getChat())
-        .lastPermalink(message.getCoub().getPermalink())
-        .build();
   }
 }
