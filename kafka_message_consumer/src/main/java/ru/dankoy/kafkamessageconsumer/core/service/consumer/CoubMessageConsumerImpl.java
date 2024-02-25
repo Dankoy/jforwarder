@@ -13,6 +13,10 @@ public class CoubMessageConsumerImpl implements CoubMessageConsumer {
 
   private final Consumer<CoubMessage> telegramBotServiceConsumer;
 
+  private final Consumer<CoubMessage> registryConsumer;
+
+  private final Consumer<CoubMessage> updatePermalinkConsumer;
+
   @Override
   public void accept(List<? extends CoubMessage> value) {
     int i = 0;
@@ -22,6 +26,10 @@ public class CoubMessageConsumerImpl implements CoubMessageConsumer {
         log.info("Sending message: {}", v);
         telegramBotServiceConsumer.accept(v);
         log.info("Message sent");
+        registryConsumer.accept(v);
+        log.info("Registry updated");
+        updatePermalinkConsumer.accept(v);
+        log.info("Last permalink updated");
       }
     } catch (Exception e) {
       log.error("Message not sent with error: {}", e.getMessage());
@@ -34,5 +42,9 @@ public class CoubMessageConsumerImpl implements CoubMessageConsumer {
     log.info("Sending message: {}", value);
     telegramBotServiceConsumer.accept(value);
     log.info("Message sent");
+    registryConsumer.accept(value);
+    log.info("Registry updated");
+    updatePermalinkConsumer.accept(value);
+    log.info("Last permalink updated");
   }
 }
