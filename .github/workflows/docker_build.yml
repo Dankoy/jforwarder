@@ -27,7 +27,7 @@ jobs:
           cache: gradle
 
       - name: tests
-        run: gradlew ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
+        run: gradle ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
 
   build:
     runs-on: ubuntu-latest
