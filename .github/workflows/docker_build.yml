@@ -30,6 +30,7 @@ jobs:
         run: gradle ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
 
   build:
+    needs: [ test ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
