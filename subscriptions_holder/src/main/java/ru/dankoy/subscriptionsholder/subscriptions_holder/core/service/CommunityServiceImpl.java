@@ -20,8 +20,6 @@ public class CommunityServiceImpl implements CommunityService {
 
   private final CommunityRepository communityRepository;
 
-  private final TelegramChatService telegramChatService;
-
   private final SectionService sectionService;
 
   @Override
@@ -100,7 +98,13 @@ public class CommunityServiceImpl implements CommunityService {
   @Override
   @Transactional
   public Community update(Community community) {
-    return communityRepository.save(community);
+    var optional = communityRepository.findById(community.getId());
+
+    if (optional.isPresent()) {
+      return communityRepository.save(community);
+    } else {
+      throw new ResourceNotFoundException(String.format("Not found - %s", community.getId()));
+    }
   }
 
   @Override
