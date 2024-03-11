@@ -2,7 +2,6 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -25,12 +24,11 @@ class TypeServiceImplTest extends TestContainerBase {
 
   @Autowired private TypeServiceImpl typeService;
 
-  private final String TYPE_NAME = "";
-
   @DisplayName("getByName expects correct response")
   @Test
   void getByNameTest_expectsCorrectResponse() {
 
+    String TYPE_NAME = "";
     var actual = typeService.getByName(TYPE_NAME);
 
     var expected = entityManager.find(Type.class, actual.getId());
