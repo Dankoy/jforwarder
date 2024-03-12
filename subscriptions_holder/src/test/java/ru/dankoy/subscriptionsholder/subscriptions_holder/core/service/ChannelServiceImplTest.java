@@ -20,7 +20,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.Resour
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({ChannelServiceImpl.class})
-class ChannelServiceImplTest extends TestContainerBase {
+class ChannelServiceImplTest extends TestContainerBase implements ChannelMaker {
 
   @Autowired private ChannelServiceImpl channelService;
 
@@ -28,8 +28,6 @@ class ChannelServiceImplTest extends TestContainerBase {
 
   private static final String channelName = "channel1";
   private static final String permalink = "permalink";
-
-  private final Channel toPersist = new Channel(0, channelName, permalink);
 
   @DisplayName("get by title expects not found exception")
   @Test
@@ -43,7 +41,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void getByTitleTestExpectsCorrect() {
 
-    var channelToPersist = persistChannel(toPersist);
+    var channelToPersist = persistChannel(makeCorrectChannel());
 
     var actual = channelService.getByTitle(channelName);
 
@@ -62,7 +60,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void getByPermalinkTestExpectsCorrect() {
 
-    var channel = persistChannel(toPersist);
+    var channel = persistChannel(makeCorrectChannel());
 
     var actual = channelService.getByPermalink(permalink);
 
@@ -73,7 +71,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void createTestExpectsResourceConflictException() {
 
-    var channel = persistChannel(toPersist);
+    var channel = persistChannel(makeCorrectChannel());
 
     assertThatThrownBy(() -> channelService.create(channel))
         .isInstanceOf(ResourceConflictException.class);
@@ -83,17 +81,19 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void createTestExpectsCorrectResponse() {
 
-    var actual = channelService.create(toPersist);
+    var actual = channelService.create(makeCorrectChannel());
 
     var expected = getChannel(actual);
 
-    assertThat(actual).isEqualTo(expected).isEqualTo(toPersist);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @DisplayName("modify channel expects resource not found exception")
   @Test
   void modifyTestExpectsResourceConflictException() {
 
+    var toPersist = makeCorrectChannel();
+    
     assertThatThrownBy(() -> channelService.modify(toPersist))
         .isInstanceOf(ResourceNotFoundException.class);
   }
@@ -102,7 +102,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void modifyTestExpectsCorrectResponse() {
 
-    var channel = persistChannel(toPersist);
+    var channel = persistChannel(makeCorrectChannel());
 
     channel.setPermalink("new");
 
@@ -117,7 +117,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void deleteByTitleTestExpectsCorrectResponse() {
 
-    var channel = persistChannel(toPersist);
+    var channel = persistChannel(makeCorrectChannel());
 
     channelService.deleteByTitle(channel.getTitle());
 
@@ -128,7 +128,7 @@ class ChannelServiceImplTest extends TestContainerBase {
   @Test
   void deleteByPermalinkTestExpectsCorrectResponse() {
 
-    var channel = persistChannel(toPersist);
+    var channel = persistChannel(makeCorrectChannel());
 
     channelService.deleteByPermalink(channel.getPermalink());
 
