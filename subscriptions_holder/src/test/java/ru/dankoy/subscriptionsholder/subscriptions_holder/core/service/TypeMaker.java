@@ -4,8 +4,8 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface TypeMaker {
 
-  default Type makeCorrectType(String type) {
+  default Type makeCorrectType() {
 
-    return new Type(1L, type);
+    return new Type(1L, "");
   }
 }
