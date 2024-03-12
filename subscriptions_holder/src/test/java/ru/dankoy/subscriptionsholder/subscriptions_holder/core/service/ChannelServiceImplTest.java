@@ -93,7 +93,7 @@ class ChannelServiceImplTest extends TestContainerBase implements ChannelMaker {
   void modifyTestExpectsResourceConflictException() {
 
     var toPersist = makeCorrectChannel();
-    
+
     assertThatThrownBy(() -> channelService.modify(toPersist))
         .isInstanceOf(ResourceNotFoundException.class);
   }
