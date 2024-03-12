@@ -19,7 +19,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.Resour
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({TagServiceImpl.class})
-class TagServiceImplTest extends TestContainerBase {
+class TagServiceImplTest extends TestContainerBase implements TagMaker {
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -31,7 +31,7 @@ class TagServiceImplTest extends TestContainerBase {
   @Test
   void getByTitleTest_expectsCorrectResponse() {
 
-    var expected = new Tag(0L, TITLE);
+    var expected = makeCorrectTag(TITLE);
     entityManager.persist(expected);
     entityManager.flush();
 
@@ -52,7 +52,7 @@ class TagServiceImplTest extends TestContainerBase {
   @Test
   void createTest_expectsCorrectResponse() {
 
-    var toCreate = new Tag(0L, TITLE);
+    var toCreate = makeCorrectTag(TITLE);
 
     var actual = tagService.create(toCreate);
 
@@ -65,7 +65,7 @@ class TagServiceImplTest extends TestContainerBase {
   @Test
   void createTest_expectsResourceConflictException() {
 
-    var toCreate = new Tag(0L, TITLE);
+    var toCreate = makeCorrectTag(TITLE);
     entityManager.persist(toCreate);
     entityManager.flush();
 
@@ -77,7 +77,7 @@ class TagServiceImplTest extends TestContainerBase {
   @Test
   void modifyTest_expectCorrectResponse() {
 
-    var toCreate = new Tag(0L, TITLE);
+    var toCreate = makeCorrectTag(TITLE);
     entityManager.persist(toCreate);
     entityManager.flush();
 
@@ -104,7 +104,7 @@ class TagServiceImplTest extends TestContainerBase {
   @Test
   void deleteByTitleTest_expectsCorrectResponse() {
 
-    var toCreate = new Tag(0L, TITLE);
+    var toCreate = makeCorrectTag(TITLE);
     entityManager.persist(toCreate);
     entityManager.flush();
 

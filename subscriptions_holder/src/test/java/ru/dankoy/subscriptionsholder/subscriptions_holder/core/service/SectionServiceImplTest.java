@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +22,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({SectionServiceImpl.class})
-class SectionServiceImplTest extends TestContainerBase {
+class SectionServiceImplTest extends TestContainerBase implements SectionMaker {
 
   @Autowired private SectionServiceImpl sectionService;
 
@@ -33,7 +32,7 @@ class SectionServiceImplTest extends TestContainerBase {
 
     var name = "weekly";
 
-    var expected = makeCorrectList().stream().filter(s -> s.getName().equals(name)).findFirst();
+    var expected = makeCorrectSections().stream().filter(s -> s.getName().equals(name)).findFirst();
 
     var actual = sectionService.getSectionByName(name);
 
@@ -56,7 +55,7 @@ class SectionServiceImplTest extends TestContainerBase {
   @Test
   void getBySectionNamesTest_expectsCorrectResponse() {
 
-    Set<Section> expected = makeCorrectList().stream().limit(2).collect(Collectors.toSet());
+    Set<Section> expected = makeCorrectSections().stream().limit(2).collect(Collectors.toSet());
 
     List<Section> actual = sectionService.getBySectionNames(expected);
 
@@ -67,7 +66,7 @@ class SectionServiceImplTest extends TestContainerBase {
   @Test
   void getBySectionNamesTest_expectsEmptyList() {
 
-    Set<Section> expected = makeCorrectList().stream().limit(0).collect(Collectors.toSet());
+    Set<Section> expected = makeCorrectSections().stream().limit(0).collect(Collectors.toSet());
 
     List<Section> actual = sectionService.getBySectionNames(expected);
 
@@ -76,21 +75,8 @@ class SectionServiceImplTest extends TestContainerBase {
 
   private Section findCorrectBySectionName(String name) {
 
-    var optional = makeCorrectList().stream().filter(s -> s.getName().equals(name)).findFirst();
+    var optional = makeCorrectSections().stream().filter(s -> s.getName().equals(name)).findFirst();
 
     return optional.orElseThrow();
-  }
-
-  private Set<Section> makeCorrectList() {
-
-    return Stream.of(
-            new Section(1L, "daily"),
-            new Section(2L, "weekly"),
-            new Section(3L, "monthly"),
-            new Section(4L, "quarter"),
-            new Section(5L, "half"),
-            new Section(6L, "rising"),
-            new Section(7L, "fresh"))
-        .collect(Collectors.toSet());
   }
 }

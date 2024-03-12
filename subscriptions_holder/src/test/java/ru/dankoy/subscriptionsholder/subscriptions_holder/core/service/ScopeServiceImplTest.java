@@ -13,14 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Scope;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 
 @DisplayName("Test ScopeServiceImpl ")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({ScopeServiceImpl.class})
-class ScopeServiceImplTest extends TestContainerBase {
+class ScopeServiceImplTest extends TestContainerBase implements ScopeMaker {
 
   @Autowired private ScopeServiceImpl scopeService;
 
@@ -30,7 +29,7 @@ class ScopeServiceImplTest extends TestContainerBase {
 
     var name = "all";
 
-    var expected = new Scope(1L, "all");
+    var expected = makeCorrectScope();
 
     var actual = scopeService.getByName(name);
 

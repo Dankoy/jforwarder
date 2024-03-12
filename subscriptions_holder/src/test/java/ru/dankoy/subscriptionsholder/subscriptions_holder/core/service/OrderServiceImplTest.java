@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -21,14 +19,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Order;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.SubscriptionType;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 
 @DisplayName("Test OrderServiceImpl ")
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({OrderServiceImpl.class})
-class OrderServiceImplTest extends TestContainerBase {
+class OrderServiceImplTest extends TestContainerBase implements SubscriptionTypeMaker, OrderMaker {
 
   @Autowired private OrderServiceImpl orderService;
 
@@ -117,32 +114,6 @@ class OrderServiceImplTest extends TestContainerBase {
             .findFirst();
 
     return expectedOptional.orElseThrow();
-  }
-
-  private Map<String, SubscriptionType> makeCorrectSubscriptionType() {
-
-    Map<String, SubscriptionType> subs = new HashMap<>();
-    subs.put("community", new SubscriptionType(1L, "community"));
-    subs.put("tag", new SubscriptionType(2L, "tag"));
-    subs.put("channel", new SubscriptionType(3L, "channel"));
-
-    return subs;
-  }
-
-  private List<Order> makeCorrectOrders() {
-
-    Map<String, SubscriptionType> subs = makeCorrectSubscriptionType();
-
-    return Stream.of(
-            new Order(1L, "likes_count", "top", subs.get("tag")),
-            new Order(2L, "newest_popular", "popular", subs.get("tag")),
-            new Order(3L, "views_count", "views_count", subs.get("tag")),
-            new Order(4L, "newest", "fresh", subs.get("tag")),
-            new Order(5L, "likes_count", "most_liked", subs.get("channel")),
-            new Order(6L, "newest", "most_recent", subs.get("channel")),
-            new Order(7L, "views_count", "most_viewed", subs.get("channel")),
-            new Order(8L, "oldest", "oldest", subs.get("channel")))
-        .toList();
   }
 
   private static Stream<Arguments> getByValueAndTypeExpectsResourceNotFoundExceptionSource() {

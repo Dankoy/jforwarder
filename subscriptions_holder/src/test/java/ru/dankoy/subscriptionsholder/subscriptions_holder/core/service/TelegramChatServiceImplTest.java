@@ -18,17 +18,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import({TelegramChatServiceImpl.class})
-class TelegramChatServiceImplTest extends TestContainerBase {
+class TelegramChatServiceImplTest extends TestContainerBase implements ChatMaker {
 
   @PersistenceContext private EntityManager entityManager;
 
   @Autowired private TelegramChatServiceImpl telegramChatService;
 
+  private static final long chatId = 123L;
+
   @DisplayName("save expects correct response")
   @Test
   void saveTest_expectsCorrectResponse() {
 
-    var toSave = new Chat(0L, 123, "type", "title", "firstName", "lastName", "username", true);
+    var toSave = makeChat(chatId);
 
     var actual = telegramChatService.save(toSave);
 
@@ -41,8 +43,8 @@ class TelegramChatServiceImplTest extends TestContainerBase {
   @Test
   void saveTest_existingChat_expectsIntegrityError() {
 
-    var toSave = new Chat(0L, 123, "type", "title", "firstName", "lastName", "username", true);
-    var toSave2 = new Chat(0L, 123, "type", "title", "firstName", "lastName", "username", true);
+    var toSave = makeChat(chatId);
+    var toSave2 = makeChat(chatId);
 
     entityManager.persist(toSave);
     entityManager.flush();
@@ -55,9 +57,7 @@ class TelegramChatServiceImplTest extends TestContainerBase {
   @Test
   void getByTelegramChatIdTest_expectsCorrectResponse() {
 
-    var chatId = 123L;
-
-    var toSave = new Chat(0L, chatId, "type", "title", "firstName", "lastName", "username", true);
+    var toSave = makeChat(chatId);
 
     entityManager.persist(toSave);
     entityManager.flush();
@@ -70,8 +70,6 @@ class TelegramChatServiceImplTest extends TestContainerBase {
   @DisplayName("getByTelegramChatId expects correct response")
   @Test
   void getByTelegramChatIdTest_expectsEmptyOptionalCorrectResponse() {
-
-    var chatId = 123L;
 
     var actual = telegramChatService.getByTelegramChatId(chatId);
 
