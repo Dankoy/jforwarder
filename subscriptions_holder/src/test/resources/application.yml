@@ -41,22 +41,6 @@ server:
 #    lease-expiration-duration-in-seconds: 90
   #    instance-id: "${spring.application.name}:${server.port}"
 
-management:
-  info:
-    env:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
-  health:
-    defaults:
-      enabled: true
-    diskspace:
-      enabled: true
 #  zipkin:
 #    tracing:
 #      connect-timeout: 1s
