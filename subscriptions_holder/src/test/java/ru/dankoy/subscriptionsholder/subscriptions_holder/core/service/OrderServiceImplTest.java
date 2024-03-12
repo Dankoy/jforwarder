@@ -2,12 +2,10 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -101,19 +99,6 @@ class OrderServiceImplTest extends TestContainerBase implements SubscriptionType
     var actual = orderService.getAllBySubscriptionType(type);
 
     assertThat(actual).isEmpty();
-  }
-
-  private Order findCorrectByValueAndSubscriptionType(String value, String subscriptionType) {
-
-    Optional<Order> expectedOptional =
-        makeCorrectOrders().stream()
-            .filter(
-                c ->
-                    c.getValue().equals(value)
-                        && c.getSubscriptionType().getType().equals(subscriptionType))
-            .findFirst();
-
-    return expectedOptional.orElseThrow();
   }
 
   private static Stream<Arguments> getByValueAndTypeExpectsResourceNotFoundExceptionSource() {

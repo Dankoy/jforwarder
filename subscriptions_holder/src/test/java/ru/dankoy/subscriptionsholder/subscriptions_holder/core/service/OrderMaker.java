@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Order;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.SubscriptionType;
@@ -22,5 +23,18 @@ public interface OrderMaker extends SubscriptionTypeMaker {
             new Order(7L, "views_count", "most_viewed", subs.get("channel")),
             new Order(8L, "oldest", "oldest", subs.get("channel")))
         .toList();
+  }
+
+  default Order findCorrectByValueAndSubscriptionType(String value, String subscriptionType) {
+
+    Optional<Order> expectedOptional =
+        makeCorrectOrders().stream()
+            .filter(
+                c ->
+                    c.getValue().equals(value)
+                        && c.getSubscriptionType().getType().equals(subscriptionType))
+            .findFirst();
+
+    return expectedOptional.orElseThrow();
   }
 }
