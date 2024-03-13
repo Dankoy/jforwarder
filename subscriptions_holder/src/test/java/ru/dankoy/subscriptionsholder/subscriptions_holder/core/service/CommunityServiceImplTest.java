@@ -7,7 +7,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -296,32 +295,6 @@ class CommunityServiceImplTest extends TestContainerBase implements CommunityMak
             .getFirstResult();
 
     assertThat(expectedInt).isZero();
-  }
-
-  private Community findCorrectCommunityByName(String name) {
-
-    Optional<Community> expectedOptional =
-        correctCommunities().stream().filter(c -> c.getName().equals(name)).findFirst();
-
-    return expectedOptional.orElseThrow(() -> new RuntimeException("Not found " + name));
-  }
-
-  private Community findCorrectCommunityByNameAndSectionName(String name, String sectionName) {
-
-    Optional<Community> expectedOptional =
-        correctCommunities().stream().filter(c -> c.getName().equals(name)).findFirst();
-
-    expectedOptional.ifPresentOrElse(
-        c ->
-            c.setSections(
-                c.getSections().stream()
-                    .filter(s -> s.getName().equals(sectionName))
-                    .collect(Collectors.toSet())),
-        () -> {
-          throw new RuntimeException("Not found " + name);
-        });
-
-    return expectedOptional.orElseThrow();
   }
 
   private static Stream<Arguments> getByNameAndSectionNameExpectsResourceNotFoundException() {
