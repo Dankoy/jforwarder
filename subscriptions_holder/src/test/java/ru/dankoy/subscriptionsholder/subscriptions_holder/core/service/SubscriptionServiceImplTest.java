@@ -2,7 +2,6 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -38,7 +37,7 @@ class SubscriptionServiceImplTest extends TestContainerBase
     entityManager.flush();
 
     var subs = makeCorrectCommunitySubs(community, chat);
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     subs.forEach(entityManager::persist);
     entityManager.persist(sub);
@@ -74,7 +73,7 @@ class SubscriptionServiceImplTest extends TestContainerBase
     entityManager.persist(channel);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     entityManager.persist(sub);
     entityManager.flush();
