@@ -8,7 +8,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface ChannelSubMaker extends ScopeMaker, TypeMaker, OrderMaker {
 
-  default List<ChannelSub> makeSubs(Channel channel, Chat chat) {
+  default List<ChannelSub> makeChannelSubs(Channel channel, Chat chat) {
 
     var value = "most_recent";
     var orderType = "channel";

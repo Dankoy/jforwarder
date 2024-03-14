@@ -50,7 +50,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var subs = makeSubs(channel, chat);
+    var subs = makeChannelSubs(channel, chat);
 
     subs.forEach(entityManager::persist);
     entityManager.flush();
@@ -70,7 +70,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var subs = makeSubs(channel, chat);
+    var subs = makeChannelSubs(channel, chat);
 
     subs.forEach(entityManager::persist);
     entityManager.flush();
@@ -90,7 +90,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var subs = makeSubs(channel, chat);
+    var subs = makeChannelSubs(channel, chat);
 
     subs.forEach(entityManager::persist);
     entityManager.flush();
@@ -110,7 +110,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var subs = makeSubs(channel, chat);
+    var subs = makeChannelSubs(channel, chat);
 
     subs.forEach(entityManager::persist);
     entityManager.flush();
@@ -130,7 +130,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     var expected = channelSubService.createSubscription(sub);
 
@@ -149,7 +149,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     entityManager.persist(sub);
 
@@ -166,7 +166,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(channel);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     var expected = channelSubService.createSubscription(sub);
 
@@ -185,7 +185,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     entityManager.persist(sub);
 
@@ -211,7 +211,7 @@ class ChannelSubServiceImplTest extends TestContainerBase
     entityManager.persist(chat);
     entityManager.flush();
 
-    var sub = makeSubs(channel, chat).getFirst();
+    var sub = makeChannelSubs(channel, chat).getFirst();
 
     channelSubService.deleteSubscription(sub);
 
