@@ -9,14 +9,7 @@ public interface SectionMaker {
 
   default Set<Section> makeCorrectSections() {
 
-    return Stream.of(
-            new Section(1L, "daily"),
-            new Section(2L, "weekly"),
-            new Section(3L, "monthly"),
-            new Section(4L, "quarter"),
-            new Section(5L, "half"),
-            new Section(6L, "rising"),
-            new Section(7L, "fresh"))
+    return Stream.of(new Section(1L, "daily"), new Section(2L, "weekly"))
         .collect(Collectors.toSet());
   }
 }
