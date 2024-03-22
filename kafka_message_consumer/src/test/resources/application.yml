@@ -1,0 +1,66 @@
+application:
+  kafka:
+    topic:
+      coub-com-subs: "coub-com-sub"
+      coub-tag-subs: "coub-tag-sub"
+      coub-channel-subs: "coub-channel-sub"
+    consumers:
+      community-coubs-consumer:
+        group-id: "community-coubs-consumer-group"
+        client-id: "community-coubs-consumer-id" # custom props configuration in factory
+      tag-coubs-consumer:
+        group-id: "tag-coubs-consumer-group"
+        client-id: "tag-coubs-consumer-id" # custom props configuration in factory
+      channel-coubs-consumer:
+        group-id: "channel-coubs-consumer-group"
+        client-id: "channel-coubs-consumer-id"
+#      coubs-consumer: # for handlers in one listener
+#        group-id: "coubs-consumer-group"
+#        client-id: "coubs-consumer-id"
+
+
+spring:
+  application:
+    name: kafka-message-consumer
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092}
+    consumer:
+      bootstrap-servers: ${KAFKA_SERVER:http://127.0.0.1:9092}
+      client-id: "coubs-consumer" # default one
+      group-id: "coubs_group"
+    listener:
+      ack-mode: batch
+
+
+
+server:
+  port: 8085
+
+
+logging:
+  level:
+    root: INFO
+    ru:
+      dankoy:
+        kafkamessageconsumer:
+          core:
+            feign: TRACE
+
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+
