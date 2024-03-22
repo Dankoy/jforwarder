@@ -14,7 +14,8 @@ jobs:
     strategy:
       matrix:
         projects: [
-          "subscriptions_holder", "t_coubs_initiator", "coub_smart_searcher"
+          "subscriptions_holder", "t_coubs_initiator", "coub_smart_searcher",
+          "kafka_message_producer", "kafka_message_consumer"
         ]
 
     steps:
