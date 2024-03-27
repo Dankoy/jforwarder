@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: coub-smart-searcher
+
+coub:
+  connector:
+    gatewayApiUrl: ${GATEWAY_COUB_URL:http://localhost:8760/cc/}
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: false
+  port: 8086
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    ru:
+      dankoy:
+        coubtagssearcher:
+          core:
+            feign: TRACE

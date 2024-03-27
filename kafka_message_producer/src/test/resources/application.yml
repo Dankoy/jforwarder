@@ -1,0 +1,55 @@
+application:
+  kafka:
+    topic:
+      #      coub-subscriptions: "coub-subscriptions" # one topic for all subs
+      coub-com-subs: "coub-com-sub"
+      coub-tag-subs: "coub-tag-sub"
+      coub-channel-subs: "coub-channel-sub"
+    producers:
+      coubs:
+        client-id: "coubs-producer" # custom props configuration in factory
+
+spring:
+  application:
+    name: kafka-message-producer
+  kafka:
+    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092} # common bootstrap server for every producer
+    producer:
+      client-id: "coubs-producer"
+      retries: 5
+
+
+server:
+  port: 8083
+
+
+logging:
+  level:
+    root: INFO
+    ru:
+      dankoy:
+        kafkamessageproducer:
+          core:
+            feign: TRACE
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+
+

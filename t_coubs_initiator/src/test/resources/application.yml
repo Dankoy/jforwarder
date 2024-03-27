@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: t-coubs-initiator
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 160000000
+            readTimeout: 160000000
+
+server:
+  port: 8081
+
+coub:
+  connector:
+    url: "https://coub.com/"
+    apiUrl: "https://coub.com/api/v2/"
+    gatewayApiUrl: ${GATEWAY_COUB_URL:http://localhost:8760/cc/}
+  sorting: false
+  registry:
+    filter:
+      days: 30
+
+
+logging:
+  level:
+    root: INFO
+    ru:
+      dankoy:
+        tcoubsinitiator:
+          core:
+            feign: TRACE
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true

@@ -41,7 +41,7 @@ public class TagServiceImpl implements TagService {
   @Override
   public Tag modify(Tag tag) {
 
-    var optional = tagRepository.getByTitle(tag.getTitle());
+    var optional = tagRepository.findById(tag.getId());
 
     optional.ifPresentOrElse(
         t -> tagRepository.save(tag),
@@ -50,7 +50,7 @@ public class TagServiceImpl implements TagService {
               String.format("Tag not found - '%s'", tag.getTitle()));
         });
 
-    return tagRepository.save(tag);
+    return tag;
   }
 
   @Override

@@ -1,6 +1,8 @@
 package ru.dankoy.kafkamessageproducer.core.domain.message;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.Order;
@@ -11,6 +13,8 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscripti
 @Getter
 @SuperBuilder
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 public final class ChannelSubscriptionMessage extends CoubMessage {
   private Channel channel;
 
