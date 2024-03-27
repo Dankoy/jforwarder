@@ -1,5 +1,6 @@
 package ru.dankoy.kafkamessageconsumer.core.domain.message;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.communitysubscrip
 @SuperBuilder
 @ToString(callSuper = true)
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public final class CommunitySubscriptionMessage extends CoubMessage {
   private Community community;
   private Section section;
