@@ -94,19 +94,6 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
   static class KafkaTestContainersConfiguration {
 
     @Bean
-    ConcurrentKafkaListenerContainerFactory<String, CoubMessage> kafkaListenerContainerFactory() {
-      ConcurrentKafkaListenerContainerFactory<String, CoubMessage> factory =
-          new ConcurrentKafkaListenerContainerFactory<>();
-      factory.setConsumerFactory(consumerFactory());
-      return factory;
-    }
-
-    @Bean
-    public ConsumerFactory<String, CoubMessage> consumerFactory() {
-      return new DefaultKafkaConsumerFactory<>(consumerConfigs());
-    }
-
-    @Bean
     public KafkaConsumer<String, CoubMessage> kafkaConsumer() {
 
       var jsonDeserializer = new JsonDeserializer<CoubMessage>(CoubMessage.class);
