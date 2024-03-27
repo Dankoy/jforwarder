@@ -28,6 +28,7 @@ spring:
       bootstrap-servers: ${KAFKA_SERVER:http://127.0.0.1:9092}
       client-id: "coubs-consumer" # default one
       group-id: "coubs_group"
+      auto-offset-reset: earliest
     listener:
       ack-mode: batch
 
