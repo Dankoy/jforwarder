@@ -608,8 +608,23 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
           sendMessage.getChatId(),
           sendMessage.getMessageThreadId(),
           StringUtils.normalizeSpace(sendMessage.getText()));
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403
+          || e.getMessage().contains(TelegramBotApiErrorMessages.TOPIC_CLOSED.getMessage())) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found =
+            telegramChatService.getChatByIdAndMessageThreadId(
+                Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
+        }
+      }
     } catch (TelegramApiException e) {
-      log.error(e.getMessage());
+      log.error("Error sending message - {}", e.getMessage());
     }
   }
 
@@ -699,39 +714,15 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}'-{} for subscription '{}' {} {}",
-          message.getChat(),
-          message.getChat().getMessageThreadId(),
-          message.getId(),
-          message.getCommunity().getName(),
-          message.getSection().getName());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}'-{} with message '{}'",
-          sendMessage.getChatId(),
-          sendMessage.getMessageThreadId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for subscription '{}' {} {}",
+        message.getChat(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getCommunity().getName(),
+        message.getSection().getName());
   }
 
   @Override
@@ -756,38 +747,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}'-{} for tag subscription '{}' {}",
-          message.getChat().getChatId(),
-          message.getChat().getMessageThreadId(),
-          message.getId(),
-          message.getTag().getTitle());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}'-{} with message '{}'",
-          sendMessage.getChatId(),
-          sendMessage.getMessageThreadId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for tag subscription '{}' {}",
+        message.getChat().getChatId(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getTag().getTitle());
   }
 
   @Override
@@ -812,38 +779,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}'-{} for channel subscription '{}' {}",
-          message.getChat().getChatId(),
-          message.getChat().getMessageThreadId(),
-          message.getId(),
-          message.getChannel().getPermalink());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}'-{} with message '{}'",
-          sendMessage.getChatId(),
-          sendMessage.getMessageThreadId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for channel subscription '{}' {}",
+        message.getChat().getChatId(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getChannel().getPermalink());
   }
 
   private String escapeMetaCharacters(String inputString) {
