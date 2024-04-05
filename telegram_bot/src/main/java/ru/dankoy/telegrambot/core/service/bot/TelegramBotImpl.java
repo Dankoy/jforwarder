@@ -113,8 +113,6 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       Message message = update.getMessage();
 
-      log.info("Message thread id {}", String.valueOf(message.getMessageThreadId()));
-
       if (update.getMessage().hasText()) {
         log.info(
             "Received message from '{}' with text '{}'",
