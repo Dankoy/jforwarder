@@ -15,5 +15,8 @@ public interface TagService {
 
   List<TagSubscription> getAllSubscriptionsByChat(long chatId);
 
+  List<TagSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId);
+
   Tag create(Tag tag);
 }

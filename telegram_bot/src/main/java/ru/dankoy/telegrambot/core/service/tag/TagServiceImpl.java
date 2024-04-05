@@ -37,10 +37,21 @@ public class TagServiceImpl implements TagService {
     subscriptionsHolderFeign.unsubscribeByTag(tagSubscription);
   }
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @Override
   public List<TagSubscription> getAllSubscriptionsByChat(long chatId) {
 
     return subscriptionsHolderFeign.getAllTagSubscriptionsByChatId(chatId);
+  }
+
+  @Override
+  public List<TagSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatIdAndMessageThreadId(
+        chatId, messageThreadId);
   }
 
   @Override

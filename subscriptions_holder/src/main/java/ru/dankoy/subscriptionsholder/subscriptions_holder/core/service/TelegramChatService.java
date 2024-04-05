@@ -13,4 +13,6 @@ public interface TelegramChatService {
   void deleteChats(List<Chat> chats);
 
   Optional<Chat> getByTelegramChatId(long chatId);
+
+  Optional<Chat> getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
 }

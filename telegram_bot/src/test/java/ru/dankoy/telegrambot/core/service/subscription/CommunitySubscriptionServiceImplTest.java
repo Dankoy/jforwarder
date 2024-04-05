@@ -33,14 +33,20 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
   void getSubscriptionsByChatIdTest() {
 
     var chatId = 123L;
+    var messageThreadId = 1;
 
     var community = correctCommunities().getFirst();
     var chat = makeChat(chatId);
     var subs = makeCorrectCommunitySubs(community, chat);
 
-    given(subscriptionsHolderFeign.getAllSubscriptionsByChatId(chatId)).willReturn(subs);
+    given(
+            subscriptionsHolderFeign.getAllSubscriptionsByChatIdAndMessageThreadId(
+                chatId, messageThreadId))
+        .willReturn(subs);
 
-    var expected = communitySubscriptionService.getSubscriptionsByChatId(chatId);
+    var expected =
+        communitySubscriptionService.getSubscriptionsByChatIdAndMessageThreadId(
+            chatId, messageThreadId);
 
     assertThat(expected).isEqualTo(subs);
   }
@@ -50,6 +56,7 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
   void subscribeTest_expectsCorrectResponse() {
 
     var chatId = 123L;
+    var messageThreadId = 1;
     var communityName = "memes";
     var sectionName = "daily";
 
@@ -58,10 +65,13 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
     var sub = makeCorrectCommunitySubs(community, chat).getFirst();
 
     given(communityService.getByName(communityName)).willReturn(Optional.of(community));
-    given(communitySubscriptionService.subscribe(communityName, sectionName, chatId))
+    given(
+            communitySubscriptionService.subscribe(
+                communityName, sectionName, chatId, messageThreadId))
         .willReturn(sub);
 
-    var expected = communitySubscriptionService.subscribe(communityName, sectionName, chatId);
+    var expected =
+        communitySubscriptionService.subscribe(communityName, sectionName, chatId, messageThreadId);
 
     verify(subscriptionsHolderFeign, times(1)).subscribe(any());
     assertThat(expected).isEqualTo(sub);
@@ -72,13 +82,16 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
   void subscribeTest_communityNotFound_expectsNotFoundException() {
 
     var chatId = 123L;
+    var messageThreadId = 1;
     var communityName = "blah";
     var sectionName = "daily";
 
     given(communityService.getByName(communityName)).willReturn(Optional.empty());
 
     assertThatThrownBy(
-            () -> communitySubscriptionService.subscribe(communityName, sectionName, chatId))
+            () ->
+                communitySubscriptionService.subscribe(
+                    communityName, sectionName, chatId, messageThreadId))
         .isInstanceOf(NotFoundException.class);
 
     verify(subscriptionsHolderFeign, times(0)).subscribe(any());
@@ -89,6 +102,7 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
   void subscribeTest_sectionNotFound_expectsNotFoundException() {
 
     var chatId = 123L;
+    var messageThreadId = 1;
     var communityName = "memes";
     var sectionName = "blah";
 
@@ -97,7 +111,9 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
     given(communityService.getByName(communityName)).willReturn(Optional.of(community));
 
     assertThatThrownBy(
-            () -> communitySubscriptionService.subscribe(communityName, sectionName, chatId))
+            () ->
+                communitySubscriptionService.subscribe(
+                    communityName, sectionName, chatId, messageThreadId))
         .isInstanceOf(NotFoundException.class);
 
     verify(subscriptionsHolderFeign, times(0)).subscribe(any());
@@ -108,10 +124,11 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
   void unsubscribe() {
 
     var chatId = 123L;
+    var messageThreadId = 1;
     var communityName = "memes";
     var sectionName = "blah";
 
-    communitySubscriptionService.unsubscribe(communityName, sectionName, chatId);
+    communitySubscriptionService.unsubscribe(communityName, sectionName, chatId, messageThreadId);
 
     verify(subscriptionsHolderFeign, times(1)).unsubscribe(any());
   }

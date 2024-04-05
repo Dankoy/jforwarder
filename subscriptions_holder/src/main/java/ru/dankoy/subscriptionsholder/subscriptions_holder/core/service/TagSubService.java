@@ -11,6 +11,9 @@ public interface TagSubService {
 
   List<TagSub> getAllByTelegramChatId(long telegramChatId);
 
+  List<TagSub> getAllByTelegramChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId);
+
   TagSub createSubscription(TagSub tagSubscription);
 
   void deleteSubscription(TagSub tagSubscription);

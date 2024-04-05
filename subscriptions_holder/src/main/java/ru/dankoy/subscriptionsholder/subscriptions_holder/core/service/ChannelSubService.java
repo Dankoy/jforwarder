@@ -11,6 +11,9 @@ public interface ChannelSubService {
 
   List<ChannelSub> getAllByTelegramChatId(long telegramChatId);
 
+  List<ChannelSub> getAllByTelegramChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId);
+
   ChannelSub createSubscription(ChannelSub channelSub);
 
   void deleteSubscription(ChannelSub channelSub);

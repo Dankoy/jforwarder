@@ -40,4 +40,11 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
     return telegramChatRepository.findByChatId(chatId);
   }
+
+  @Override
+  public Optional<Chat> getByTelegramChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    return telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
 }

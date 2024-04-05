@@ -20,13 +20,25 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
 
   private final CommunityService communityService;
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   public List<CommunitySubscription> getSubscriptionsByChatId(long chatId) {
 
     return subscriptionsHolderFeign.getAllSubscriptionsByChatId(chatId);
   }
 
+  public List<CommunitySubscription> getSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    return subscriptionsHolderFeign.getAllSubscriptionsByChatIdAndMessageThreadId(
+        chatId, messageThreadId);
+  }
+
   @Override
-  public CommunitySubscription subscribe(String communityName, String sectionName, long chatId) {
+  public CommunitySubscription subscribe(
+      String communityName, String sectionName, long chatId, Integer messageThreadId) {
 
     // 1. find community
     var optionalCommunity = communityService.getByName(communityName);
@@ -56,7 +68,7 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
             CommunitySubscription.builder()
                 .id(0)
                 .community(community)
-                .chat(new Chat(chatId))
+                .chat(new Chat(chatId, messageThreadId))
                 .section(section)
                 .build();
 
@@ -64,14 +76,15 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
   }
 
   @Override
-  public void unsubscribe(String communityName, String sectionName, long chatId) {
+  public void unsubscribe(
+      String communityName, String sectionName, long chatId, Integer messageThreadId) {
 
     var subscription =
         (CommunitySubscription)
             CommunitySubscription.builder()
                 .id(0)
                 .community(new Community(communityName))
-                .chat(new Chat(chatId))
+                .chat(new Chat(chatId, messageThreadId))
                 .section(new Section(sectionName))
                 .build();
 

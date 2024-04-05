@@ -40,6 +40,13 @@ public class CommunitySubServiceImpl implements CommunitySubService {
   }
 
   @Override
+  public List<CommunitySub> getAllByChatChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId) {
+    return communitySubRepository.getAllByChatChatIdAndChatMessageThreadId(
+        telegramChatId, messageThreadId);
+  }
+
+  @Override
   public Optional<CommunitySub> getByCommunityNameSectionNameChatId(
       String communityName, String sectionName, long chatId) {
 
@@ -47,13 +54,23 @@ public class CommunitySubServiceImpl implements CommunitySubService {
         chatId, communityName, sectionName);
   }
 
+  @Override
+  public Optional<CommunitySub> getByCommunityNameSectionNameChatIdMessageThreadId(
+      String communityName, String sectionName, long chatId, Integer messageThreadId) {
+
+    return communitySubRepository
+        .getByChatChatIdAndChatMessageThreadIdAndCommunityNameAndSectionName(
+            chatId, messageThreadId, communityName, sectionName);
+  }
+
   @Transactional
   @Override
   public CommunitySub subscribeChatToCommunity(CommunitySub communitySubscription) {
 
     var foundSubscriptionOptional =
-        communitySubRepository.getByChatChatIdAndCommunityNameAndSectionName(
+        communitySubRepository.getByChatChatIdAndChatMessageThreadIdAndCommunityNameAndSectionName(
             communitySubscription.getChat().getChatId(),
+            communitySubscription.getChat().getMessageThreadId(),
             communitySubscription.getCommunity().getName(),
             communitySubscription.getSection().getName());
 
@@ -84,7 +101,9 @@ public class CommunitySubServiceImpl implements CommunitySubService {
             communitySubscription.getCommunity().getName(), sectionsToFind);
 
     var foundTelegramChat =
-        telegramChatService.getByTelegramChatId(communitySubscription.getChat().getChatId());
+        telegramChatService.getByTelegramChatIdAndMessageThreadId(
+            communitySubscription.getChat().getChatId(),
+            communitySubscription.getChat().getMessageThreadId());
 
     if (foundTelegramChat.isPresent()) {
 
@@ -127,8 +146,9 @@ public class CommunitySubServiceImpl implements CommunitySubService {
   public void unsubscribeChatFromCommunity(CommunitySub communitySubscription) {
 
     var subscriptionFoundOptional =
-        communitySubRepository.getByChatChatIdAndCommunityNameAndSectionName(
+        communitySubRepository.getByChatChatIdAndChatMessageThreadIdAndCommunityNameAndSectionName(
             communitySubscription.getChat().getChatId(),
+            communitySubscription.getChat().getMessageThreadId(),
             communitySubscription.getCommunity().getName(),
             communitySubscription.getSection().getName());
 

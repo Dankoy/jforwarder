@@ -23,8 +23,20 @@ public interface ChannelSubRepository extends JpaRepository<ChannelSub, Long> {
   List<ChannelSub> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
   @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
+  List<ChannelSub> getAllByChatChatIdAndChatMessageThreadId(
+      @Param("telegramChatId") long telegramChatId,
+      @Param("messageThreadId") Integer messageThreadId);
+
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
   Optional<ChannelSub> getByChatChatIdAndChannelPermalinkAndOrderValue(
       @Param("externalChatId") long externalChatId,
+      @Param("channelPermalink") String channelPermalink,
+      @Param("orderValue") String orderValue);
+
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
+  Optional<ChannelSub> getByChatChatIdAndChatMessageThreadIdAndChannelPermalinkAndOrderValue(
+      @Param("externalChatId") long externalChatId,
+      @Param("messageThreadId") Integer messageThreadId,
       @Param("channelPermalink") String channelPermalink,
       @Param("orderValue") String orderValue);
 }

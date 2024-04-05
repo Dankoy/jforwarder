@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ class TelegramChatServiceImplTest extends TestContainerBase implements ChatMaker
 
   @DisplayName("save expects correct response")
   @Test
+  @Disabled(value = "because of topics support. chats.chat_id is not unique anymore.")
   void saveTest_existingChat_expectsIntegrityError() {
 
     var toSave = makeChat(chatId);

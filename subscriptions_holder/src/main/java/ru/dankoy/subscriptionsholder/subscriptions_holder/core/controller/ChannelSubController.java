@@ -36,9 +36,11 @@ public class ChannelSubController {
       value = "/api/v1/channel_subscriptions",
       params = {"telegramChatId"})
   public List<ChannelSubscriptionDTO> getAllByTelegramChat(
-      @RequestParam("telegramChatId") long telegramChatId) {
+      @RequestParam("telegramChatId") long telegramChatId,
+      @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
 
-    var subs = channelSubService.getAllByTelegramChatId(telegramChatId);
+    var subs =
+        channelSubService.getAllByTelegramChatIdAndMessageThreadId(telegramChatId, messageThreadId);
 
     return subs.stream().map(ChannelSubscriptionDTO::toDTO).toList();
   }

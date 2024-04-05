@@ -163,11 +163,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var sendMessage = createReply(message);
 
     var tChat = message.getChat();
+    var messageThreadId = message.getMessageThreadId();
 
     log.info("Check chat status - {}", tChat.getId());
     try {
-      var found = telegramChatService.getChatById(tChat.getId());
-      log.info("Found chat - {}", tChat.getId());
+      var found = telegramChatService.getChatByIdAndMessageThreadId(tChat.getId(), messageThreadId);
+      log.info("Found chat - {}-{}", tChat.getId(), messageThreadId);
 
       if (!found.isActive()) {
         sendMessage.setText(
@@ -189,12 +190,16 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void mySubscriptions(Message inputMessage) {
 
     long chatId = inputMessage.getChat().getId();
+    Integer messageThreadId = inputMessage.getMessageThreadId();
 
     List<CommunitySubscription> subs =
-        communitySubscriptionService.getSubscriptionsByChatId(chatId);
-    List<TagSubscription> tagSubs = tagSubscriptionService.getSubscriptionsByChatId(chatId);
+        communitySubscriptionService.getSubscriptionsByChatIdAndMessageThreadId(
+            chatId, messageThreadId);
+    List<TagSubscription> tagSubs =
+        tagSubscriptionService.getSubscriptionsByChatIdAndMessageThreadId(chatId, messageThreadId);
     List<ChannelSubscription> channelSubs =
-        channelSubscriptionService.getSubscriptionsByChatId(chatId);
+        channelSubscriptionService.getSubscriptionsByChatIdAndMessageThreadId(
+            chatId, messageThreadId);
 
     var sendMessage = createReply(inputMessage);
 
@@ -215,10 +220,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
   private void start(Message inputMessage) {
 
     var tChat = inputMessage.getChat();
+    var messageThreadId = inputMessage.getMessageThreadId();
 
     try {
 
-      var found = telegramChatService.getChatById(inputMessage.getChatId());
+      var found = telegramChatService.getChatByIdAndMessageThreadId(tChat.getId(), messageThreadId);
       log.info("chat - {}", found);
       found.setActive(true);
       telegramChatService.update(found);
@@ -234,7 +240,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
               tChat.getFirstName(),
               tChat.getLastName(),
               tChat.getUserName(),
-              true);
+              true,
+              messageThreadId);
       log.info("New chat to create - {}", newChat);
       telegramChatService.createChat(newChat);
     }
@@ -273,7 +280,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       var s =
           communitySubscriptionService.subscribe(
-              communityName, sectionName, inputMessage.getChat().getId());
+              communityName,
+              sectionName,
+              inputMessage.getChat().getId(),
+              inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -312,7 +322,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     try {
       communitySubscriptionService.unsubscribe(
-          communityName, sectionName, inputMessage.getChat().getId());
+          communityName,
+          sectionName,
+          inputMessage.getChat().getId(),
+          inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -394,7 +407,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       var s =
           tagSubscriptionService.subscribe(
-              tagName, orderValue, "all", "", inputMessage.getChat().getId());
+              tagName,
+              orderValue,
+              "all",
+              "",
+              inputMessage.getChat().getId(),
+              inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -434,7 +452,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     try {
 
       tagSubscriptionService.unsubscribe(
-          tagName, orderValue, "all", "", inputMessage.getChat().getId());
+          tagName,
+          orderValue,
+          "all",
+          "",
+          inputMessage.getChat().getId(),
+          inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -460,7 +483,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
       var s =
           channelSubscriptionService.subscribe(
-              channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+              channelPermalink,
+              orderValue,
+              "all",
+              "",
+              inputMessage.getChat().getId(),
+              inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -500,7 +528,12 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     try {
 
       channelSubscriptionService.unsubscribe(
-          channelPermalink, orderValue, "all", "", inputMessage.getChat().getId());
+          channelPermalink,
+          orderValue,
+          "all",
+          "",
+          inputMessage.getChat().getId(),
+          inputMessage.getMessageThreadId());
 
       sendMessage.setText(
           localisationService.getLocalizedMessage(
@@ -569,11 +602,27 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     try {
       execute(sendMessage);
       log.info(
-          "Reply sent to '{}' with message '{}'",
+          "Reply sent to '{}'-{} with message '{}'",
           sendMessage.getChatId(),
+          sendMessage.getMessageThreadId(),
           StringUtils.normalizeSpace(sendMessage.getText()));
+    } catch (TelegramApiRequestException e) {
+      if (e.getErrorCode() == 403
+          || e.getMessage().contains(TelegramBotApiErrorMessages.TOPIC_CLOSED.getMessage())) {
+
+        log.warn("User blocked bot. Make it not active");
+
+        var found =
+            telegramChatService.getChatByIdAndMessageThreadId(
+                Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+
+        if (found.isActive()) {
+          found.setActive(false);
+          telegramChatService.update(found);
+        }
+      }
     } catch (TelegramApiException e) {
-      log.error(e.getMessage());
+      log.error("Error sending message - {}", e.getMessage());
     }
   }
 
@@ -649,9 +698,11 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var sectionName = message.getSection().getName();
     var coubUrl = message.getCoub().getUrl();
     var chatId = message.getChat().getChatId();
+    var messageThreadId = message.getChat().getMessageThreadId();
 
     var sendMessage = new SendMessage();
     sendMessage.setChatId(chatId);
+    sendMessage.setMessageThreadId(messageThreadId);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("communityName", communityName);
@@ -661,37 +712,15 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}' for subscription '{}' {} {}",
-          message.getChat(),
-          message.getId(),
-          message.getCommunity().getName(),
-          message.getSection().getName());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}' with message '{}'",
-          sendMessage.getChatId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatById(chatId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for subscription '{}' {} {}",
+        message.getChat(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getCommunity().getName(),
+        message.getSection().getName());
   }
 
   @Override
@@ -703,8 +732,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var orderValue = message.getOrder().getValue();
     var coubUrl = message.getCoub().getUrl();
     var chatId = message.getChat().getChatId();
+    var messageThreadId = message.getChat().getMessageThreadId();
 
     sendMessage.setChatId(chatId);
+    sendMessage.setMessageThreadId(messageThreadId);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("tagName", tagName);
@@ -714,36 +745,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}' for tag subscription '{}' {}",
-          message.getChat().getChatId(),
-          message.getId(),
-          message.getTag().getTitle());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}' with message '{}'",
-          sendMessage.getChatId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatById(chatId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for tag subscription '{}' {}",
+        message.getChat().getChatId(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getTag().getTitle());
   }
 
   @Override
@@ -755,8 +764,10 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     var orderValue = message.getOrder().getValue();
     var coubUrl = message.getCoub().getUrl();
     var chatId = message.getChat().getChatId();
+    var messageThreadId = message.getChat().getMessageThreadId();
 
     sendMessage.setChatId(chatId);
+    sendMessage.setMessageThreadId(messageThreadId);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("channelTitle", channelTitle);
@@ -766,36 +777,14 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     sendMessage.setText(text);
 
-    try {
+    send(sendMessage);
 
-      log.info(
-          "Sent message to chat '{}' for channel subscription '{}' {}",
-          message.getChat().getChatId(),
-          message.getId(),
-          message.getChannel().getPermalink());
-
-      execute(sendMessage);
-
-      log.info(
-          "Message sent to '{}' with message '{}'",
-          sendMessage.getChatId(),
-          StringUtils.normalizeSpace(sendMessage.getText()));
-
-    } catch (TelegramApiRequestException e) {
-      if (e.getErrorCode() == 403) {
-
-        log.warn("User blocked bot. Make it not active");
-
-        var found = telegramChatService.getChatById(chatId);
-
-        if (found.isActive()) {
-          found.setActive(false);
-          telegramChatService.update(found);
-        }
-      }
-    } catch (TelegramApiException e) {
-      log.error("Error sending message - {}", e.getMessage());
-    }
+    log.info(
+        "Sent message to chat '{}'-{} for channel subscription '{}' {}",
+        message.getChat().getChatId(),
+        message.getChat().getMessageThreadId(),
+        message.getId(),
+        message.getChannel().getPermalink());
   }
 
   private String escapeMetaCharacters(String inputString) {
@@ -816,6 +805,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     return SendMessage.builder()
         .chatId(message.getChatId())
+        .messageThreadId(message.getMessageThreadId())
         .text(getCommandHelp(message, command, helpType))
         .parseMode(ParseMode.MARKDOWN)
         .build();
@@ -884,6 +874,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
 
     var sendMessage = new SendMessage();
     sendMessage.setChatId(inputMessage.getChat().getId());
+    sendMessage.setMessageThreadId(inputMessage.getMessageThreadId());
     sendMessage.setReplyToMessageId(inputMessage.getMessageId());
 
     return sendMessage;

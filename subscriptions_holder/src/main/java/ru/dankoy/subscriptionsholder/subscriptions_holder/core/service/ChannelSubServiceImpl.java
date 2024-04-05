@@ -33,14 +33,22 @@ public class ChannelSubServiceImpl implements ChannelSubService {
     return channelSubRepository.getAllByChatChatId(telegramChatId);
   }
 
+  @Override
+  public List<ChannelSub> getAllByTelegramChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId) {
+    return channelSubRepository.getAllByChatChatIdAndChatMessageThreadId(
+        telegramChatId, messageThreadId);
+  }
+
   @Transactional
   @Override
   public ChannelSub createSubscription(ChannelSub channelSub) {
 
     // check existence
     var optional =
-        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
+        channelSubRepository.getByChatChatIdAndChatMessageThreadIdAndChannelPermalinkAndOrderValue(
             channelSub.getChat().getChatId(),
+            channelSub.getChat().getMessageThreadId(),
             channelSub.getChannel().getPermalink(),
             channelSub.getOrder().getValue());
 
@@ -61,7 +69,9 @@ public class ChannelSubServiceImpl implements ChannelSubService {
             channelSub.getOrder().getValue(),
             channelSub.getOrder().getSubscriptionType().getType());
 
-    var optionalChat = telegramChatService.getByTelegramChatId(channelSub.getChat().getChatId());
+    var optionalChat =
+        telegramChatService.getByTelegramChatIdAndMessageThreadId(
+            channelSub.getChat().getChatId(), channelSub.getChat().getMessageThreadId());
 
     if (optionalChat.isPresent()) {
 
@@ -104,8 +114,9 @@ public class ChannelSubServiceImpl implements ChannelSubService {
   public void deleteSubscription(ChannelSub channelSub) {
 
     var optional =
-        channelSubRepository.getByChatChatIdAndChannelPermalinkAndOrderValue(
+        channelSubRepository.getByChatChatIdAndChatMessageThreadIdAndChannelPermalinkAndOrderValue(
             channelSub.getChat().getChatId(),
+            channelSub.getChat().getMessageThreadId(),
             channelSub.getChannel().getPermalink(),
             channelSub.getOrder().getValue());
 

@@ -15,8 +15,14 @@ public interface CommunitySubService {
 
   List<CommunitySub> getAllByChatChatId(long telegramChatId);
 
+  List<CommunitySub> getAllByChatChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId);
+
   Optional<CommunitySub> getByCommunityNameSectionNameChatId(
       String communityName, String sectionName, long chatId);
+
+  Optional<CommunitySub> getByCommunityNameSectionNameChatIdMessageThreadId(
+      String communityName, String sectionName, long chatId, Integer messageThreadId);
 
   @Transactional
   CommunitySub subscribeChatToCommunity(CommunitySub communitySubscription);

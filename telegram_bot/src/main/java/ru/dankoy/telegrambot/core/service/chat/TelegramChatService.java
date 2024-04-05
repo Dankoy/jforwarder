@@ -6,6 +6,8 @@ public interface TelegramChatService {
 
   Chat getChatById(long chatId);
 
+  Chat getChatByIdAndMessageThreadId(long chatId, Integer messageThreadId);
+
   Chat createChat(Chat chat);
 
   Chat update(Chat chat);

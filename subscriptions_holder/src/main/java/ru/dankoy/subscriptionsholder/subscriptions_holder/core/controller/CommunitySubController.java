@@ -44,8 +44,11 @@ public class CommunitySubController {
       value = "/api/v1/community_subscriptions",
       params = {"telegramChatId"})
   public List<CommunitySubDTO> getAllByTelegramChatId(
-      @RequestParam(value = "telegramChatId") long telegramChatId) {
-    var s = communitySubService.getAllByChatChatId(telegramChatId);
+      @RequestParam(value = "telegramChatId") long telegramChatId,
+      @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
+
+    var s =
+        communitySubService.getAllByChatChatIdAndMessageThreadId(telegramChatId, messageThreadId);
     return s.stream().map(CommunitySubDTO::toDTO).toList();
   }
 

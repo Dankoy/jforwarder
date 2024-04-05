@@ -26,14 +26,29 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
 
   private final OrderService orderService;
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @Override
   public List<ChannelSubscription> getSubscriptionsByChatId(long chatId) {
     return channelService.getAllSubscriptionsByChat(chatId);
   }
 
   @Override
+  public List<ChannelSubscription> getSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+    return channelService.getAllSubscriptionsByChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
+
+  @Override
   public ChannelSubscription subscribe(
-      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
+      String channelPermalink,
+      String orderValue,
+      String scopeName,
+      String typeName,
+      long chatId,
+      Integer messageThreadId) {
     // 1. Find tag order
 
     var optionalTagOrder = orderService.findByValue(orderValue, SubscriptionType.CHANNEL);
@@ -59,7 +74,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
               ChannelSubscription.builder()
                   .id(0)
                   .channel(channel)
-                  .chat(new Chat(chatId))
+                  .chat(new Chat(chatId, messageThreadId))
                   .order(order)
                   .scope(new Scope(scopeName))
                   .type(new Type(typeName))
@@ -83,7 +98,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
                 ChannelSubscription.builder()
                     .id(0)
                     .channel(new Channel(created.getPermalink()))
-                    .chat(new Chat(chatId))
+                    .chat(new Chat(chatId, messageThreadId))
                     .order(order)
                     .scope(new Scope(scopeName))
                     .type(new Type(typeName))
@@ -103,7 +118,12 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
 
   @Override
   public void unsubscribe(
-      String channelPermalink, String orderValue, String scopeName, String typeName, long chatId) {
+      String channelPermalink,
+      String orderValue,
+      String scopeName,
+      String typeName,
+      long chatId,
+      Integer messageThreadId) {
 
     var order = new Order(orderValue);
     order.setSubscriptionType(SubscriptionType.CHANNEL);
@@ -113,7 +133,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
             ChannelSubscription.builder()
                 .id(0)
                 .channel(new Channel(channelPermalink))
-                .chat(new Chat(chatId))
+                .chat(new Chat(chatId, messageThreadId))
                 .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))
