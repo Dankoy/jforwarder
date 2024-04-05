@@ -19,8 +19,7 @@ public class Community {
   private long externalId;
   private String name;
 
-  @Setter
-  private Set<Section> sections;
+  @Setter private Set<Section> sections;
 
   public Community(String name) {
     this.name = name;
