@@ -37,10 +37,22 @@ public class ChannelServiceImpl implements ChannelService {
     subscriptionsHolderFeign.unsubscribeByChannel(channelSubscription);
   }
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @Override
   public List<ChannelSubscription> getAllSubscriptionsByChat(long chatId) {
 
     return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatId(chatId);
+  }
+
+  @Override
+  public List<ChannelSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatIdAndMessageThreadId(
+        chatId, messageThreadId);
   }
 
   @Override

@@ -24,7 +24,10 @@ public class Chat {
 
   @Setter private boolean active;
 
-  public Chat(long chatId) {
+  private Integer messageThreadId;
+
+  public Chat(long chatId, Integer messageThreadId) {
     this.chatId = chatId;
+    this.messageThreadId = messageThreadId;
   }
 }

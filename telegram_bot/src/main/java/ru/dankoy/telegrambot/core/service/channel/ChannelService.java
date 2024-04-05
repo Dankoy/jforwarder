@@ -15,5 +15,8 @@ public interface ChannelService {
 
   List<ChannelSubscription> getAllSubscriptionsByChat(long chatId);
 
+  List<ChannelSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId);
+
   Channel create(Channel tag);
 }

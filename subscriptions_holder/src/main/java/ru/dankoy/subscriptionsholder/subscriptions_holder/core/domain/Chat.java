@@ -42,4 +42,7 @@ public class Chat {
 
   @Column(name = "active")
   private boolean active;
+
+  @Column(name = "message_thread_id")
+  private Integer messageThreadId;
 }

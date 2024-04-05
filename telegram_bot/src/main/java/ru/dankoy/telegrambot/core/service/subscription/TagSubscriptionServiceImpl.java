@@ -26,14 +26,29 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
   private final OrderService orderService;
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @Override
   public List<TagSubscription> getSubscriptionsByChatId(long chatId) {
     return tagService.getAllSubscriptionsByChat(chatId);
   }
 
   @Override
+  public List<TagSubscription> getSubscriptionsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+    return tagService.getAllSubscriptionsByChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
+
+  @Override
   public TagSubscription subscribe(
-      String tagName, String orderValue, String scopeName, String typeName, long chatId) {
+      String tagName,
+      String orderValue,
+      String scopeName,
+      String typeName,
+      long chatId,
+      Integer messageThreadId) {
 
     // 1. Find tag order
 
@@ -61,7 +76,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
               TagSubscription.builder()
                   .id(0)
                   .tag(tag)
-                  .chat(new Chat(chatId))
+                  .chat(new Chat(chatId, messageThreadId))
                   .order(order)
                   .scope(new Scope(scopeName))
                   .type(new Type(typeName))
@@ -84,7 +99,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
                 TagSubscription.builder()
                     .id(0)
                     .tag(created)
-                    .chat(new Chat(chatId))
+                    .chat(new Chat(chatId, messageThreadId))
                     .order(order)
                     .scope(new Scope(scopeName))
                     .type(new Type(typeName))
@@ -103,7 +118,12 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
   @Override
   public void unsubscribe(
-      String tagName, String orderValue, String scopeName, String typeName, long chatId) {
+      String tagName,
+      String orderValue,
+      String scopeName,
+      String typeName,
+      long chatId,
+      Integer messageThreadId) {
 
     var order = new Order(orderValue);
     order.setSubscriptionType(SubscriptionType.TAG);
@@ -113,7 +133,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
             TagSubscription.builder()
                 .id(0)
                 .tag(new Tag(tagName))
-                .chat(new Chat(chatId))
+                .chat(new Chat(chatId, messageThreadId))
                 .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))

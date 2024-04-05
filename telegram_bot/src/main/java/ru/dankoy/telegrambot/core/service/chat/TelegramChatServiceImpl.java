@@ -11,9 +11,18 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
   private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @Override
   public Chat getChatById(long chatId) {
     return subscriptionsHolderFeign.getChatById(chatId);
+  }
+
+  @Override
+  public Chat getChatByIdAndMessageThreadId(long chatId, Integer messageThreadId) {
+    return subscriptionsHolderFeign.getChatByIdAndMessageThreadId(chatId, messageThreadId);
   }
 
   @Override

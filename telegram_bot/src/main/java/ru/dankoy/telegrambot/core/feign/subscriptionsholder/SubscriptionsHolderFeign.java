@@ -22,11 +22,23 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 public interface SubscriptionsHolderFeign {
 
   // subscriptions
+
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @GetMapping(
       path = "/api/v1/community_subscriptions",
       params = {"telegramChatId"})
   List<CommunitySubscription> getAllSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
+
+  @GetMapping(
+      path = "/api/v1/community_subscriptions",
+      params = {"telegramChatId", "messageThreadId"})
+  List<CommunitySubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
+      @RequestParam("telegramChatId") long telegramChatId,
+      @RequestParam("messageThreadId") Integer messageThreadId);
 
   @PostMapping(path = "/api/v1/community_subscriptions")
   CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
@@ -40,11 +52,23 @@ public interface SubscriptionsHolderFeign {
   Community getCommunityByName(@PathVariable("name") String communityName);
 
   // tag subscriptions
+
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @GetMapping(
       path = "/api/v1/tag_subscriptions",
       params = {"telegramChatId"})
   List<TagSubscription> getAllTagSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
+
+  @GetMapping(
+      path = "/api/v1/tag_subscriptions",
+      params = {"telegramChatId", "messageThreadId"})
+  List<TagSubscription> getAllTagSubscriptionsByChatIdAndMessageThreadId(
+      @RequestParam("telegramChatId") long telegramChatId,
+      @RequestParam("messageThreadId") Integer messageThreadId);
 
   @PostMapping(path = "/api/v1/tag_subscriptions")
   TagSubscription subscribeByTag(@RequestBody TagSubscription tagSubscription);
@@ -53,10 +77,22 @@ public interface SubscriptionsHolderFeign {
   void unsubscribeByTag(@RequestBody TagSubscription tagSubscription);
 
   // chats
+
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @GetMapping(
       path = "/api/v1/telegram_chat/{chatId}",
       params = {"chatId"})
   Chat getChatById(@PathVariable("chatId") long chatId);
+
+  @GetMapping(
+      path = "/api/v1/telegram_chat",
+      params = {"chatId", "messageThreadId"})
+  Chat getChatByIdAndMessageThreadId(
+      @RequestParam("chatId") long chatId,
+      @RequestParam("messageThreadId") Integer messageThreadId);
 
   @PostMapping(path = "/api/v1/telegram_chat")
   Chat createChat(@RequestBody Chat chat);
@@ -102,11 +138,23 @@ public interface SubscriptionsHolderFeign {
   Channel createChannel(@RequestBody Channel channel);
 
   // channel subscriptions
+
+  /**
+   * @deprecated for topics support via messageThreadId
+   */
+  @Deprecated(since = "2024-04-05", forRemoval = true)
   @GetMapping(
       path = "/api/v1/channel_subscriptions",
       params = {"telegramChatId"})
   List<ChannelSubscription> getAllChannelSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
+
+  @GetMapping(
+      path = "/api/v1/channel_subscriptions",
+      params = {"telegramChatId", "messageThreadId"})
+  List<ChannelSubscription> getAllChannelSubscriptionsByChatIdAndMessageThreadId(
+      @RequestParam("telegramChatId") long telegramChatId,
+      @RequestParam("messageThreadId") Integer messageThreadId);
 
   @PostMapping(path = "/api/v1/channel_subscriptions")
   ChannelSubscription subscribeByChannel(@RequestBody ChannelSubscription channelSubscription);

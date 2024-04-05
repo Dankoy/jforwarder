@@ -15,5 +15,6 @@ public class Chat {
 
   private long id;
   private long chatId;
+  private Integer messageThreadId;
   private String username;
 }

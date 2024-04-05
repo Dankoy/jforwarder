@@ -28,6 +28,8 @@ public class ChatCreateDTO {
 
   private boolean active;
 
+  private Integer messageThreadId;
+
   public static ChatCreateDTO toDTO(Chat chat) {
 
     return builder()
@@ -38,12 +40,21 @@ public class ChatCreateDTO {
         .lastName(chat.getLastName())
         .username(chat.getUsername())
         .active(chat.isActive())
+        .messageThreadId(chat.getMessageThreadId())
         .build();
   }
 
   public static Chat fromDTO(ChatCreateDTO dto) {
 
     return new Chat(
-        0, dto.chatId, dto.type, dto.title, dto.firstName, dto.lastName, dto.username, dto.active);
+        0,
+        dto.chatId,
+        dto.type,
+        dto.title,
+        dto.firstName,
+        dto.lastName,
+        dto.username,
+        dto.active,
+        dto.messageThreadId);
   }
 }

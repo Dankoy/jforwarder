@@ -31,14 +31,22 @@ public class TagSubServiceImpl implements TagSubService {
     return tagSubRepository.getAllByChatChatId(telegramChatId);
   }
 
+  @Override
+  public List<TagSub> getAllByTelegramChatIdAndMessageThreadId(
+      long telegramChatId, Integer messageThreadId) {
+    return tagSubRepository.getAllByChatChatIdAndChatMessageThreadId(
+        telegramChatId, messageThreadId);
+  }
+
   @Transactional
   @Override
   public TagSub createSubscription(TagSub tagSubscription) {
 
     // check existence
     var optional =
-        tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
+        tagSubRepository.getByChatChatIdAndChatMessageThreadIdAndTagTitleAndOrderValue(
             tagSubscription.getChat().getChatId(),
+            tagSubscription.getChat().getMessageThreadId(),
             tagSubscription.getTag().getTitle(),
             tagSubscription.getOrder().getValue());
 
@@ -62,7 +70,8 @@ public class TagSubServiceImpl implements TagSubService {
     // todo: do i even need to save chat when creating subscription?
 
     var optionalChat =
-        telegramChatService.getByTelegramChatId(tagSubscription.getChat().getChatId());
+        telegramChatService.getByTelegramChatIdAndMessageThreadId(
+            tagSubscription.getChat().getChatId(), tagSubscription.getChat().getMessageThreadId());
 
     if (optionalChat.isPresent()) {
 
@@ -105,8 +114,9 @@ public class TagSubServiceImpl implements TagSubService {
   public void deleteSubscription(TagSub tagSubscription) {
 
     var optional =
-        tagSubRepository.getByChatChatIdAndTagTitleAndOrderValue(
+        tagSubRepository.getByChatChatIdAndChatMessageThreadIdAndTagTitleAndOrderValue(
             tagSubscription.getChat().getChatId(),
+            tagSubscription.getChat().getMessageThreadId(),
             tagSubscription.getTag().getTitle(),
             tagSubscription.getOrder().getValue());
 
