@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
@@ -18,7 +19,7 @@ public class Community {
   private long externalId;
   private String name;
 
-  private Set<Section> sections;
+  @Setter private Set<Section> sections;
 
   public Community(String name) {
     this.name = name;

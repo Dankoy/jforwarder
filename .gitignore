@@ -39,3 +39,6 @@ out/
 
 ### coub_connector ###
 coub_connector
+
+### macos ###
+.DS_Store

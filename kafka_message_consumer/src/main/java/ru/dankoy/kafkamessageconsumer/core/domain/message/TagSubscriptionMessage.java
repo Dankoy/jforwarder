@@ -1,5 +1,6 @@
 package ru.dankoy.kafkamessageconsumer.core.domain.message;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import ru.dankoy.kafkamessageconsumer.core.domain.subscription.tagsubscription.T
 @SuperBuilder
 @ToString(callSuper = true)
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public final class TagSubscriptionMessage extends CoubMessage {
   private Tag tag;
 

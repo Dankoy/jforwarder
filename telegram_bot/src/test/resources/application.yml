@@ -1,0 +1,56 @@
+application:
+  bot:
+    name: ${TELEGRAM_BOT_NAME:name}
+    token: ${TELEGRAM_BOT_API_TOKEN:name}
+    default-locale: "en"
+    locales:
+      - "en"
+      - "ru"
+
+spring:
+  application:
+    name: telegram-bot
+  freemarker:
+    template-loader-path: "classpath:/freemarker/templates"
+  devtools:
+    restart:
+      enabled: false
+  messages:
+    basename: "i18n/appmessages"
+    encoding: "UTF-8"
+
+server:
+  port: 8084
+
+
+logging:
+  level:
+    root: INFO
+    ru:
+      dankoy:
+        telegrambot:
+          core:
+            feign: TRACE
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+
+debug: false
+

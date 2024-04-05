@@ -22,7 +22,7 @@ public class ChannelController {
   @GetMapping(
       value = "/api/v1/channels",
       params = {"permalink"})
-  public ChannelDTO getByTitle(@RequestParam("permalink") String permalink) {
+  public ChannelDTO getByPermalink(@RequestParam("permalink") String permalink) {
 
     var found = channelService.getByPermalink(permalink);
 

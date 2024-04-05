@@ -6,7 +6,32 @@ on:
 
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        projects: [
+          "subscriptions_holder", "t_coubs_initiator", "coub_smart_searcher",
+          "kafka_message_producer", "kafka_message_consumer", "telegram_bot"
+        ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: tests
+        run: gradle ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
+
   build:
+    needs: [ test ]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -14,12 +39,12 @@ jobs:
     strategy:
       matrix:
         docker-file: [ "coub_smart_searcher",
-                      "kafka_message_consumer", 
-                      "kafka_message_producer",
-                       "spring_eureka_registry", 
-                       "spring_gateway", 
+                       "kafka_message_consumer",
+                       "kafka_message_producer",
+                       "spring_eureka_registry",
+                       "spring_gateway",
                        "subscriptions_holder",
-                       "t_coubs_initiator", 
+                       "t_coubs_initiator",
                        "coub_forwarder_telegram_bot"
         ]
 
