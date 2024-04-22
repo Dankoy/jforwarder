@@ -38,6 +38,7 @@ jobs:
           VALIDATE_SHELL_SHFMT: false # don't lint shell
           VALIDATE_MARKDOWN: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_JSCPD: false
           VALIDATE_JAVA: false # make true someday
           VALIDATE_SQLFLUFF: false
           FILTER_REGEX_EXCLUDE: "gradlew"
