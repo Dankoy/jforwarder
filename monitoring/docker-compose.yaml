@@ -28,8 +28,8 @@ services:
 #      - jforwarder-network
 #
   loki:
-    image: grafana/loki
-    container_name: grafana-loki:2.9.8
+    image: grafana/loki:2.9.8
+    container_name: grafana-loki
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"
