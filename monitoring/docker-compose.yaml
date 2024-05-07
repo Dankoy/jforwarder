@@ -29,7 +29,7 @@ services:
 #
   loki:
     image: grafana/loki
-    container_name: grafana-loki
+    container_name: grafana-loki:2.9.8
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
       - "3100:3100"
@@ -43,7 +43,7 @@ services:
       - jforwarder-network
 
   prometheus-node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.8.0
     container_name: prometheus-node-exporter
     user: root
     volumes:
@@ -60,7 +60,7 @@ services:
   grafana:
     env_file:
       - .env
-    image: 'grafana/grafana:latest'
+    image: 'grafana/grafana:10.4.2'
     container_name: grafana
     ports:
       - '3000:3000'
@@ -75,7 +75,7 @@ services:
       - jforwarder-network
 
   prometheus:
-    image: 'prom/prometheus:latest'
+    image: 'prom/prometheus:v2.51.2'
     container_name: prometheus
     ports:
       - '9090:9090'
@@ -89,7 +89,7 @@ services:
   prometheus-postgres-exporter:
     env_file:
       - .env
-    image: 'bitnami/postgres-exporter:latest'
+    image: 'bitnami/postgres-exporter:0.15.0'
     container_name: prometheus-postgres-exporter
     environment:
       - DATA_SOURCE_NAME=${DATA_SOURCE_NAME}
