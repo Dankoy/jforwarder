@@ -34,7 +34,7 @@ services:
       retries: 5
 
   kafka-ui:
-    image: provectuslabs/kafka-ui:v0.7.1
+    image: provectuslabs/kafka-ui:v0.7.2
     container_name: kafka-ui
     ports:
       - "8080:8080"
@@ -146,7 +146,7 @@ services:
   subscriptions-holder-postgres:
     env_file:
       - .env
-    image: 'postgres:latest'
+    image: 'postgres:16.2'
     container_name: subscriptions-holder-postgres-db
     environment:
       POSTGRES_DB: ${POSTGRES_CONTAINER_DB}
@@ -170,7 +170,7 @@ services:
   ###### zipkin related start #####
 
   zipkin-cassandra:
-    image: openzipkin/zipkin-cassandra
+    image: openzipkin/zipkin-cassandra:2.22.2
     container_name: zipkin-cassandra
     volumes:
       - cassandra_volume:/cassandra
@@ -178,7 +178,7 @@ services:
       - jforwarder-network
 
   zipkin-dependencies:
-    image: openzipkin/zipkin-dependencies
+    image: openzipkin/zipkin-dependencies:3.1.5
     container_name: zipkin-dependencies
     entrypoint: crond -f
     environment:
@@ -190,7 +190,7 @@ services:
       - jforwarder-network
 
   zipkin:
-    image: openzipkin/zipkin:latest
+    image: openzipkin/zipkin:3.1.1
     container_name: zipkin
     environment:
       - STORAGE_TYPE=cassandra3
