@@ -11,9 +11,19 @@ import ru.dankoy.telegrambot.core.service.bot.commands.OrdersCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
+import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
+import ru.dankoy.telegrambot.core.service.subscription.ChannelSubscriptionService;
+import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
+import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 
-public record BotCommandsFactoryImpl(LocalisationService localisationService, Locale locale)
+public record BotCommandsFactoryImpl(
+    LocalisationService localisationService,
+    Locale locale,
+    CommunitySubscriptionService communitySubscriptionService,
+    TagSubscriptionService tagSubscriptionService,
+    ChannelSubscriptionService channelSubscriptionService,
+    TelegramChatService telegramChatService)
     implements BotCommandsFactory {
 
   @Override
@@ -57,7 +67,12 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
     var description =
         localisationService.getLocalizedMessage("mySubscriptionsCommandDescription", null, locale);
 
-    return new MySubscriptionsCommand(command, description);
+    return new MySubscriptionsCommand(
+        command,
+        description,
+        communitySubscriptionService,
+        tagSubscriptionService,
+        channelSubscriptionService);
   }
 
   @Override
@@ -67,7 +82,7 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
     var description =
         localisationService.getLocalizedMessage("startCommandDescription", null, locale);
 
-    return new StartCommand(command, description);
+    return new StartCommand(command, description, telegramChatService);
   }
 
   @Override
@@ -77,7 +92,12 @@ public record BotCommandsFactoryImpl(LocalisationService localisationService, Lo
     var description =
         localisationService.getLocalizedMessage("subscribeCommandDescription", null, locale);
 
-    return new SubscribeCommand(command, description);
+    return new SubscribeCommand(
+        command,
+        description,
+        communitySubscriptionService,
+        tagSubscriptionService,
+        channelSubscriptionService);
   }
 
   @Override

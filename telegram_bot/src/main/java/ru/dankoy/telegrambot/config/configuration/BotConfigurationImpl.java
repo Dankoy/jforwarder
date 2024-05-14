@@ -2,6 +2,7 @@ package ru.dankoy.telegrambot.config.configuration;
 
 import lombok.Builder;
 import ru.dankoy.telegrambot.config.FullBotProperties;
+import ru.dankoy.telegrambot.core.gateway.MessageGateway;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
@@ -25,5 +26,6 @@ public record BotConfigurationImpl(
     ChannelSubscriptionService channelSubscriptionService,
     OrderService orderService,
     LocalisationService localisationService,
-    LocaleProvider localeProvider)
+    LocaleProvider localeProvider,
+    MessageGateway messageGateway)
     implements BotConfiguration {}

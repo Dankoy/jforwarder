@@ -13,8 +13,9 @@ import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
 import ru.dankoy.telegrambot.config.configuration.BotConfigurationImpl;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
+import ru.dankoy.telegrambot.core.gateway.MessageGateway;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBotImpl;
+import ru.dankoy.telegrambot.core.service.bot.TelegramBotIntegrationFlowImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
@@ -52,7 +53,8 @@ public class TelegramBotConfig {
       OrderService orderService,
       LocalisationService localisationService,
       LocaleProvider localeProvider,
-      ChannelSubscriptionService channelSubscriptionService) {
+      ChannelSubscriptionService channelSubscriptionService,
+      MessageGateway messageGateway) {
 
     return BotConfigurationImpl.builder()
         .fullBotProperties(properties)
@@ -66,23 +68,36 @@ public class TelegramBotConfig {
         .localisationService(localisationService)
         .localeProvider(localeProvider)
         .channelSubscriptionService(channelSubscriptionService)
+        .messageGateway(messageGateway)
         .build();
   }
 
   @Bean
   public TelegramBot telegramBot(BotConfiguration botConfiguration) {
 
-    return new TelegramBotImpl(botConfiguration);
+    return new TelegramBotIntegrationFlowImpl(botConfiguration);
   }
 
   @Bean
   public List<BotCommandsFactory> botCommandsFactories(
-      LocaleConfig localeConfig, LocalisationService localisationService) {
+      LocaleConfig localeConfig,
+      LocalisationService localisationService,
+      CommunitySubscriptionService communitySubscriptionService,
+      TagSubscriptionService tagSubscriptionService,
+      ChannelSubscriptionService channelSubscriptionService,
+      TelegramChatService telegramChatService) {
 
     List<BotCommandsFactory> factories = new ArrayList<>();
 
     for (Locale locale : localeConfig.getLocales()) {
-      factories.add(new BotCommandsFactoryImpl(localisationService, locale));
+      factories.add(
+          new BotCommandsFactoryImpl(
+              localisationService,
+              locale,
+              communitySubscriptionService,
+              tagSubscriptionService,
+              channelSubscriptionService,
+              telegramChatService));
     }
 
     return factories;
