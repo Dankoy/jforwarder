@@ -1,11 +1,20 @@
 package ru.dankoy.telegrambot.config.integration;
 
+import java.time.Duration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.router.HeaderValueRouter;
+import org.springframework.integration.scheduling.PollerMetadata;
+import org.springframework.integration.support.utils.IntegrationUtils;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandlingException;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.support.PeriodicTrigger;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
@@ -22,44 +31,83 @@ import ru.dankoy.telegrambot.core.service.flow.ChatFlowHandler;
 import ru.dankoy.telegrambot.core.service.flow.CommandParserService;
 import ru.dankoy.telegrambot.core.service.reply.ReplyCreatorService;
 
+@Slf4j
 @Configuration
 public class FlowConfig {
 
   // Поток в который поступают сообщения из чатов
   @Bean
   public MessageChannel inputMessageChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel mySubscriptionsChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel startChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel helpChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel subscribeChannel() {
-    return new QueueChannel(50);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel messageSourceLocalizationChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel freemarkerLocalizationChannel() {
-    return new QueueChannel(25);
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
   }
+
+  @Bean
+  public MessageChannel sendMessageChannel() {
+    // this channel send messages as soon they created.
+    //  With queue integration flow waited 5 seconds every time before handle message.
+    return new PublishSubscribeChannel(executor());
+//    return new QueueChannel(25);
+  }
+
+  @Bean
+  public ThreadPoolTaskExecutor executor() {
+    // Make pub-sub channels async. Otherwise all work happens in caller thread.
+    ThreadPoolTaskExecutor pool = new ThreadPoolTaskExecutor();
+    pool.setCorePoolSize(10);
+    pool.setMaxPoolSize(10);
+    pool.setWaitForTasksToCompleteOnShutdown(true);
+    return pool;
+  }
+
+//  @Bean(name = PollerMetadata.DEFAULT_POLLER)
+//  public PollerMetadata defaultPoller() {
+//
+//    PollerMetadata pollerMetadata = new PollerMetadata();
+//    pollerMetadata.setTrigger(new PeriodicTrigger(Duration.ofMillis(300)));
+//    return pollerMetadata;
+//  }
+
+  //  @Bean(name = PollerMetadata.DEFAULT_POLLER)
+  //  public PollerMetadata poller() {
+  //    return Pollers.fixedDelay(200).getObject();
+  //  }
 
   //  // общий выходной поток
   //  @Bean
@@ -84,23 +132,21 @@ public class FlowConfig {
   @Bean
   public IntegrationFlow botExceptionsFlow() {
     return IntegrationFlow.from("errorChannel") // default error channel
-        .<Object, Class<?>>route(
-            Object::getClass,
+        .<MessageHandlingException, Class<?>>route(
+            errorMessage -> errorMessage.getCause().getClass(),
             m ->
-                m.channelMapping(BotFlowException.class, "messageSourceLocalizationChannel")
-                    .channelMapping(BotCommandFlowException.class, "freemarkerLocalizationChannel"))
+                m.channelMapping(BotFlowException.class, messageSourceLocalizationChannel())
+                    .channelMapping(BotCommandFlowException.class, freemarkerLocalizationChannel()))
         .get();
   }
 
   @Bean
   public IntegrationFlow errorMessageSourceLocalizationFlow(
       ReplyCreatorService replyCreatorService, TelegramBot telegramBot) {
+
     return IntegrationFlow.from(messageSourceLocalizationChannel())
         .handle(replyCreatorService, "replyWithMessageSourceOnException")
-        .handle(telegramBot, "sendMessage")
-        //        .filter("#payload.failedMessage.headers['parsedCommand']")
-        //        .handle(replyCreatorService, "createReplySubscriptionHelp")
-        //        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
   }
 
@@ -109,8 +155,13 @@ public class FlowConfig {
       ReplyCreatorService replyCreatorService, TelegramBot telegramBot) {
     return IntegrationFlow.from(freemarkerLocalizationChannel())
         .handle(replyCreatorService, "replyWithFreemarkerOnException")
-        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
+  }
+
+  @Bean
+  public IntegrationFlow sendMessageFlow(TelegramBot telegramBot) {
+    return IntegrationFlow.from(sendMessageChannel()).handle(telegramBot, "sendMessage").get();
   }
 
   // Flow for any input message from user in chats
@@ -136,7 +187,7 @@ public class FlowConfig {
         .handle(chatFlowHandler, "checkChatStatus")
         .handle(command, "mySubscriptions")
         .handle(replyCreatorService, "createReplyMySubscriptions")
-        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
   }
 
@@ -152,7 +203,7 @@ public class FlowConfig {
     return IntegrationFlow.from(startChannel())
         .handle(command, "start")
         .handle(replyCreatorService, "createReplyStart")
-        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
   }
 
@@ -183,7 +234,7 @@ public class FlowConfig {
         .handle(commandParserService, "parseSubscribeCommand") // add headers for command
         .handle(command, "subscribe")
         .handle(replyCreatorService, "createReplyCommunitySubscriptionSuccessful")
-        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
   }
 
