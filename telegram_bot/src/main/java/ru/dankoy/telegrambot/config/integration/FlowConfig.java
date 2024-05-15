@@ -1,20 +1,16 @@
 package ru.dankoy.telegrambot.config.integration;
 
-import java.time.Duration;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.PublishSubscribeChannel;
-import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
-import org.springframework.integration.dsl.Pollers;
 import org.springframework.integration.router.HeaderValueRouter;
-import org.springframework.integration.scheduling.PollerMetadata;
-import org.springframework.integration.support.utils.IntegrationUtils;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
+import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.scheduling.support.PeriodicTrigger;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
@@ -29,6 +25,7 @@ import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
 import ru.dankoy.telegrambot.core.service.flow.BotMessageRouter;
 import ru.dankoy.telegrambot.core.service.flow.ChatFlowHandler;
 import ru.dankoy.telegrambot.core.service.flow.CommandParserService;
+import ru.dankoy.telegrambot.core.service.flow.MessageTransformer;
 import ru.dankoy.telegrambot.core.service.reply.ReplyCreatorService;
 
 @Slf4j
@@ -39,43 +36,43 @@ public class FlowConfig {
   @Bean
   public MessageChannel inputMessageChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel mySubscriptionsChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel startChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel helpChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel subscribeChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel messageSourceLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel freemarkerLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
   }
 
   @Bean
@@ -83,7 +80,15 @@ public class FlowConfig {
     // this channel send messages as soon they created.
     //  With queue integration flow waited 5 seconds every time before handle message.
     return new PublishSubscribeChannel(executor());
-//    return new QueueChannel(25);
+    //    return new QueueChannel(25);
+  }
+
+  @Bean
+  public MessageChannel commandHelpChannel() {
+    // this channel send messages as soon they created.
+    //  With queue integration flow waited 5 seconds every time before handle message.
+    return new PublishSubscribeChannel(executor());
+    //    return new QueueChannel(25);
   }
 
   @Bean
@@ -96,13 +101,13 @@ public class FlowConfig {
     return pool;
   }
 
-//  @Bean(name = PollerMetadata.DEFAULT_POLLER)
-//  public PollerMetadata defaultPoller() {
-//
-//    PollerMetadata pollerMetadata = new PollerMetadata();
-//    pollerMetadata.setTrigger(new PeriodicTrigger(Duration.ofMillis(300)));
-//    return pollerMetadata;
-//  }
+  //  @Bean(name = PollerMetadata.DEFAULT_POLLER)
+  //  public PollerMetadata defaultPoller() {
+  //
+  //    PollerMetadata pollerMetadata = new PollerMetadata();
+  //    pollerMetadata.setTrigger(new PeriodicTrigger(Duration.ofMillis(300)));
+  //    return pollerMetadata;
+  //  }
 
   //  @Bean(name = PollerMetadata.DEFAULT_POLLER)
   //  public PollerMetadata poller() {
@@ -129,6 +134,7 @@ public class FlowConfig {
     return router;
   }
 
+  // дефолтный обработчик событий
   @Bean
   public IntegrationFlow botExceptionsFlow() {
     return IntegrationFlow.from("errorChannel") // default error channel
@@ -142,7 +148,7 @@ public class FlowConfig {
 
   @Bean
   public IntegrationFlow errorMessageSourceLocalizationFlow(
-      ReplyCreatorService replyCreatorService, TelegramBot telegramBot) {
+      ReplyCreatorService replyCreatorService) {
 
     return IntegrationFlow.from(messageSourceLocalizationChannel())
         .handle(replyCreatorService, "replyWithMessageSourceOnException")
@@ -151,10 +157,21 @@ public class FlowConfig {
   }
 
   @Bean
-  public IntegrationFlow errorFreemarkerLocalizationFlow(
-      ReplyCreatorService replyCreatorService, TelegramBot telegramBot) {
+  public IntegrationFlow errorFreemarkerLocalizationFlow(ReplyCreatorService replyCreatorService) {
     return IntegrationFlow.from(freemarkerLocalizationChannel())
         .handle(replyCreatorService, "replyWithFreemarkerOnException")
+        .channel(sendMessageChannel())
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow commandHelpFlow(ReplyCreatorService replyCreatorService) {
+
+    return IntegrationFlow.from(freemarkerLocalizationChannel())
+        .filter(
+            MessagingException.class,
+            m -> Objects.nonNull(m.getFailedMessage().getHeaders().get("commandString")))
+        .handle(replyCreatorService, "replyWithHelpOnBotCommandFlowException")
         .channel(sendMessageChannel())
         .get();
   }
@@ -178,7 +195,6 @@ public class FlowConfig {
   public IntegrationFlow mySubscriptionsFlow(
       CommandsExtractorService commandsExtractorService,
       ReplyCreatorService replyCreatorService,
-      TelegramBot telegramBot,
       ChatFlowHandler chatFlowHandler) {
 
     var command = commandsExtractorService.getCommand(MySubscriptionsCommand.class);
@@ -194,9 +210,7 @@ public class FlowConfig {
   // FLow for processing start command
   @Bean
   public IntegrationFlow startFlow(
-      CommandsExtractorService commandsExtractorService,
-      ReplyCreatorService replyCreatorService,
-      TelegramBot telegramBot) {
+      CommandsExtractorService commandsExtractorService, ReplyCreatorService replyCreatorService) {
 
     var command = commandsExtractorService.getCommand(StartCommand.class);
 
@@ -209,12 +223,11 @@ public class FlowConfig {
 
   // FLow for processing help command
   @Bean
-  public IntegrationFlow helpFlow(
-      ReplyCreatorService replyCreatorService, TelegramBot telegramBot) {
+  public IntegrationFlow helpFlow(ReplyCreatorService replyCreatorService) {
 
     return IntegrationFlow.from(helpChannel())
         .handle(replyCreatorService, "createReplyHelp")
-        .handle(telegramBot, "sendMessage")
+        .channel(sendMessageChannel())
         .get();
   }
 
@@ -222,16 +235,19 @@ public class FlowConfig {
   @Bean
   public IntegrationFlow subscribeFlow(
       ReplyCreatorService replyCreatorService,
-      TelegramBot telegramBot,
       ChatFlowHandler chatFlowHandler,
       CommandsExtractorService commandsExtractorService,
-      CommandParserService commandParserService) {
+      CommandParserService commandParserService,
+      MessageTransformer messageTransformer) {
 
     var command = commandsExtractorService.getCommand(SubscribeCommand.class);
 
     return IntegrationFlow.from(subscribeChannel())
         .handle(chatFlowHandler, "checkChatStatus")
         .handle(commandParserService, "parseSubscribeCommand") // add headers for command
+        // добавляет строку команды по которой, если произошла ошибка можно отправить help по
+        // команде
+        .transform(messageTransformer, "addCommandStringToHeaders")
         .handle(command, "subscribe")
         .handle(replyCreatorService, "createReplyCommunitySubscriptionSuccessful")
         .channel(sendMessageChannel())

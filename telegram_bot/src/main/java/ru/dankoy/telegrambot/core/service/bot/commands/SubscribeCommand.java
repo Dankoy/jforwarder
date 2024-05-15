@@ -48,39 +48,26 @@ public class SubscribeCommand extends BotCommand {
 
     Map<String, String> command = (Map<String, String>) message.getHeaders().get("parsedCommand");
 
-    try {
+    // route
+    assert command != null;
 
-      // route
-      assert command != null;
+    if (command
+        .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
+        .equals(SubscriptionType.TAG.getType())) {
 
-      if (command
-          .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
-          .equals(SubscriptionType.TAG.getType())) {
+      //        subscribeByTag(command, inputMessage);
 
-        //        subscribeByTag(command, inputMessage);
+    } else if (command
+        .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
+        .equals(SubscriptionType.COMMUNITY.getType())) {
 
-      } else if (command
-          .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
-          .equals(SubscriptionType.COMMUNITY.getType())) {
+      subscribeToCommunity(command, inputMessage);
 
-        subscribeToCommunity(command, inputMessage);
+    } else if (command
+        .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
+        .equals(SubscriptionType.CHANNEL.getType())) {
 
-      } else if (command
-          .get(CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint())
-          .equals(SubscriptionType.CHANNEL.getType())) {
-
-        //        subscribeByChannel(command, inputMessage);
-      }
-    } catch (BotException e) {
-
-      throw new BotFlowException(e.getMessage(), e, inputMessage, null, null);
-
-      // todo: PARSEMODE
-
-      //      var sendMessage = createReply(inputMessage);
-      //      sendMessage.setText(e.getMessage());
-      //      sendMessage.setParseMode(ParseMode.MARKDOWN);
-      //      send(sendMessage);
+      //        subscribeByChannel(command, inputMessage);
     }
 
     return inputMessage;

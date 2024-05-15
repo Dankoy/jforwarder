@@ -72,30 +72,31 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     return sendMessage;
   }
 
-  @Override
-  public SendMessage createReplySubscriptionHelp(MessagingException messagingException) {
-    //      send(buildHelpMessage(inputMessage, command.get(COMMAND),
-    // TEMPLATE_SUBSCRIPTION_EXCEPTION));
-
-    var message = messagingException.getFailedMessage();
-    var inputMessage = (Message) message.getPayload();
-    Map<String, String> command =
-        (Map<String, String>)
-            messagingException.getFailedMessage().getHeaders().get("parsedCommand");
-
-    var sendMessage = createSendMessage(inputMessage);
-
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put(COMMAND, command);
-
-    var text =
-        templateBuilder.writeTemplate(
-            templateData, TEMPLATE_SUBSCRIPTION_EXCEPTION, localeProvider.getLocale(inputMessage));
-
-    sendMessage.setText(text);
-
-    return sendMessage;
-  }
+  //  @Override
+  //  public SendMessage createReplySubscriptionHelp(MessagingException messagingException) {
+  //    //      send(buildHelpMessage(inputMessage, command.get(COMMAND),
+  //    // TEMPLATE_SUBSCRIPTION_EXCEPTION));
+  //
+  //    var message = messagingException.getFailedMessage();
+  //    var inputMessage = (Message) message.getPayload();
+  //    Map<String, String> command =
+  //        (Map<String, String>)
+  //            messagingException.getFailedMessage().getHeaders().get("parsedCommand");
+  //
+  //    var sendMessage = createSendMessage(inputMessage);
+  //
+  //    Map<String, Object> templateData = new HashMap<>();
+  //    templateData.put(COMMAND, command);
+  //
+  //    var text =
+  //        templateBuilder.writeTemplate(
+  //            templateData, TEMPLATE_SUBSCRIPTION_EXCEPTION,
+  // localeProvider.getLocale(inputMessage));
+  //
+  //    sendMessage.setText(text);
+  //
+  //    return sendMessage;
+  //  }
 
   @Override
   public SendMessage createReplyStart(Message inputMessage) {
@@ -153,13 +154,43 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var sendMessage = createSendMessage(inputMessage);
 
     Map<String, Object> templateData = new HashMap<>();
-    templateData.put(COMMAND, command);
+    templateData.put(COMMAND, command[0]);
 
     var text =
         templateBuilder.writeTemplate(
             templateData, helpType, localeProvider.getLocale(inputMessage));
 
     sendMessage.setText(text);
+    sendMessage.enableMarkdown(true);
+
+    return sendMessage;
+  }
+
+  @Override
+  public SendMessage replyWithHelpOnBotCommandFlowException(MessagingException messagingException) {
+
+    var botException = (BotCommandFlowException) messagingException.getCause();
+    var message = messagingException.getFailedMessage();
+    var inputMessage = botException.getInputBotMessage();
+    return helpReply(message, inputMessage);
+  }
+
+  private SendMessage helpReply(
+      org.springframework.messaging.Message<?> message, Message inputMessage) {
+
+    var command = message.getHeaders().get("commandString");
+
+    var sendMessage = createSendMessage(inputMessage);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put(COMMAND, command);
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, TEMPLATE_SUBSCRIPTION_EXCEPTION, localeProvider.getLocale(inputMessage));
+
+    sendMessage.setText(text);
+    sendMessage.enableMarkdown(true);
 
     return sendMessage;
   }

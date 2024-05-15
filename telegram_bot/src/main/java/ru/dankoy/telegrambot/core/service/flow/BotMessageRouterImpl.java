@@ -15,8 +15,6 @@ public class BotMessageRouterImpl implements BotMessageRouter {
 
   private final CommandsExtractorService commandsExtractorService;
 
-  private final CommandParserService commandParserService;
-
   @Override
   public org.springframework.messaging.Message<Message> commandRoute(Message inputMessage) {
 

@@ -14,8 +14,6 @@ public interface ReplyCreatorService {
   SendMessage createReplyCommunitySubscriptionSuccessful(
       CreateReplySubscribeDto createReplySubscribeDto);
 
-  SendMessage createReplySubscriptionHelp(MessagingException messagingException);
-
   SendMessage createReplyStart(Message inputMessage);
 
   SendMessage createReplyHelp(Message inputMessage);
@@ -23,4 +21,7 @@ public interface ReplyCreatorService {
   SendMessage replyWithMessageSourceOnException(MessagingException messagingException);
 
   SendMessage replyWithFreemarkerOnException(MessagingException messagingException);
+
+  SendMessage replyWithHelpOnBotCommandFlowException(MessagingException messagingException);
+
 }
