@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
@@ -61,7 +64,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
 
     var inputMessage = createReplySubscribeDto.message();
     var sendMessage = createSendMessage(inputMessage);
-    var s = createReplySubscribeDto.communitySubscriptionDto().communitySubscription();
+    var s = (CommunitySubscription) createReplySubscribeDto.subscriptionDto().subscription();
 
     sendMessage.setText(
         localisationService.getLocalizedMessage(
@@ -72,31 +75,39 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     return sendMessage;
   }
 
-  //  @Override
-  //  public SendMessage createReplySubscriptionHelp(MessagingException messagingException) {
-  //    //      send(buildHelpMessage(inputMessage, command.get(COMMAND),
-  //    // TEMPLATE_SUBSCRIPTION_EXCEPTION));
-  //
-  //    var message = messagingException.getFailedMessage();
-  //    var inputMessage = (Message) message.getPayload();
-  //    Map<String, String> command =
-  //        (Map<String, String>)
-  //            messagingException.getFailedMessage().getHeaders().get("parsedCommand");
-  //
-  //    var sendMessage = createSendMessage(inputMessage);
-  //
-  //    Map<String, Object> templateData = new HashMap<>();
-  //    templateData.put(COMMAND, command);
-  //
-  //    var text =
-  //        templateBuilder.writeTemplate(
-  //            templateData, TEMPLATE_SUBSCRIPTION_EXCEPTION,
-  // localeProvider.getLocale(inputMessage));
-  //
-  //    sendMessage.setText(text);
-  //
-  //    return sendMessage;
-  //  }
+  @Override
+  public SendMessage createReplyTagSubscriptionSuccessful(
+      CreateReplySubscribeDto createReplySubscribeDto) {
+
+    var inputMessage = createReplySubscribeDto.message();
+    var sendMessage = createSendMessage(inputMessage);
+    var s = (TagSubscription) createReplySubscribeDto.subscriptionDto().subscription();
+
+    sendMessage.setText(
+        localisationService.getLocalizedMessage(
+            TEMPLATE_SUBSCRIPTION_SUCCESS,
+            new Object[] {s.getTag().getTitle(), s.getOrder().getName()},
+            localeProvider.getLocale(inputMessage)));
+
+    return sendMessage;
+  }
+
+  @Override
+  public SendMessage createReplyChannelSubscriptionSuccessful(
+      CreateReplySubscribeDto createReplySubscribeDto) {
+
+    var inputMessage = createReplySubscribeDto.message();
+    var sendMessage = createSendMessage(inputMessage);
+    var s = (ChannelSubscription) createReplySubscribeDto.subscriptionDto().subscription();
+
+    sendMessage.setText(
+        localisationService.getLocalizedMessage(
+            TEMPLATE_SUBSCRIPTION_SUCCESS,
+            new Object[] {s.getChannel().getPermalink(), s.getOrder().getName()},
+            localeProvider.getLocale(inputMessage)));
+
+    return sendMessage;
+  }
 
   @Override
   public SendMessage createReplyStart(Message inputMessage) {

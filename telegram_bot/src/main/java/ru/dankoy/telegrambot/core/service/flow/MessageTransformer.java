@@ -6,5 +6,4 @@ public interface MessageTransformer {
 
   org.springframework.messaging.Message<Message> addCommandStringToHeaders(
       org.springframework.messaging.Message<Message> message);
-
 }

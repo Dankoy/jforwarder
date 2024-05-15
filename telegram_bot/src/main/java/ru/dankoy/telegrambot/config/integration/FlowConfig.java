@@ -11,6 +11,10 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
+import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
+import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
@@ -36,43 +40,36 @@ public class FlowConfig {
   @Bean
   public MessageChannel inputMessageChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel mySubscriptionsChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel startChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel helpChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel subscribeChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel messageSourceLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
   public MessageChannel freemarkerLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
@@ -80,7 +77,6 @@ public class FlowConfig {
     // this channel send messages as soon they created.
     //  With queue integration flow waited 5 seconds every time before handle message.
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
   }
 
   @Bean
@@ -88,7 +84,27 @@ public class FlowConfig {
     // this channel send messages as soon they created.
     //  With queue integration flow waited 5 seconds every time before handle message.
     return new PublishSubscribeChannel(executor());
-    //    return new QueueChannel(25);
+  }
+
+  @Bean
+  public MessageChannel communitySubscriptionSuccessChannel() {
+    // this channel send messages as soon they created.
+    //  With queue integration flow waited 5 seconds every time before handle message.
+    return new PublishSubscribeChannel(executor());
+  }
+
+  @Bean
+  public MessageChannel tagSubscriptionSuccessChannel() {
+    // this channel send messages as soon they created.
+    //  With queue integration flow waited 5 seconds every time before handle message.
+    return new PublishSubscribeChannel(executor());
+  }
+
+  @Bean
+  public MessageChannel channelSubscriptionSuccessChannel() {
+    // this channel send messages as soon they created.
+    //  With queue integration flow waited 5 seconds every time before handle message.
+    return new PublishSubscribeChannel(executor());
   }
 
   @Bean
@@ -112,12 +128,6 @@ public class FlowConfig {
   //  @Bean(name = PollerMetadata.DEFAULT_POLLER)
   //  public PollerMetadata poller() {
   //    return Pollers.fixedDelay(200).getObject();
-  //  }
-
-  //  // общий выходной поток
-  //  @Bean
-  //  public MessageChannel outputMessageChannel() {
-  //    return new PublishSubscribeChannel();
   //  }
 
   @Bean
@@ -234,7 +244,6 @@ public class FlowConfig {
   // FLow for processing subscribe command
   @Bean
   public IntegrationFlow subscribeFlow(
-      ReplyCreatorService replyCreatorService,
       ChatFlowHandler chatFlowHandler,
       CommandsExtractorService commandsExtractorService,
       CommandParserService commandParserService,
@@ -249,59 +258,56 @@ public class FlowConfig {
         // команде
         .transform(messageTransformer, "addCommandStringToHeaders")
         .handle(command, "subscribe")
+        .<CreateReplySubscribeDto, Class<?>>route(
+            m -> m.subscriptionDto().subscription().getClass()
+
+            //                Objects.requireNonNull(
+            //                        m.getHeaders()
+            //                            .get(
+            //
+            // CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint()))
+            //                    .toString()
+            ,
+            m ->
+                m.channelMapping(CommunitySubscription.class, "communitySubscriptionSuccessChannel")
+                    .channelMapping(TagSubscription.class, "tagSubscriptionSuccessChannel")
+                    .channelMapping(ChannelSubscription.class, "channelSubscriptionSuccessChannel")
+            //                m.channelMapping(
+            //                        SubscriptionType.COMMUNITY.getType(),
+            // "communitySubscriptionSuccessChannel")
+            //                    .channelMapping(SubscriptionType.TAG.getType(),
+            // "tagSubscriptionSuccessChannel")
+            //                    .channelMapping(
+            //                        SubscriptionType.CHANNEL.getType(),
+            // "channelSubscriptionSuccessChannel")
+            )
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow communitySubscriptionSuccessFlow(ReplyCreatorService replyCreatorService) {
+
+    return IntegrationFlow.from(communitySubscriptionSuccessChannel())
         .handle(replyCreatorService, "createReplyCommunitySubscriptionSuccessful")
         .channel(sendMessageChannel())
         .get();
   }
 
-  //  @Bean
-  //  public IntegrationFlow morphingFlow(
-  //      XenomorphingService xenomorphingService,
-  //      OvomorphSelector ovomorphSelector) {
-  //    return IntegrationFlows
-  //        .from(stage1Channel())
-  //        .handle(xenomorphingService, "eggMorphing")
-  //        // фильтр на заголовок, есть ли жертвы поблизости
-  //        .filter(ovomorphSelector)
-  //        // facehugger морфится в chestburster без дополнительных условий
-  //        .handle(xenomorphingService, "facehuggerMorphing")
-  //        // chestburster морфится в drone без дополнительных условий
-  //        .handle(xenomorphingService, "chestbursterMorphing")
-  //        // допустим, что жертв достаточно, поэтому меняем у объекта дрона готовность к
-  // трансформации.
-  //        // По-хорошему нужен отдельный сервис, который бы проверял внешние условия, что жертв
-  //        // достаточно, в зависимости от, например, отдельного объекта, содержащего количество
-  // жертв
-  //        // с разными параметрами, которые, в свою очередь влияли на шкалу насыщенности дрона для
-  // эволюции
-  //        .<Drone, Drone>transform(drone -> Drone.builder()
-  //            .age(drone.getAge())
-  //            .name(drone.getName())
-  //            .fedEnoughForEvolution(true)
-  //            // добавляет еще и предрасположенность к типу эволюции
-  //            .predispositionXenoType(XenomorphType.randomOfSentryOrWarrior())
-  //            .build())
-  //        // Добавить заголовок в зависимости от предрасположенности
-  //        .enrichHeaders(h -> h.headerExpression(
-  //            "predisposition",
-  //            "#root.payload.predispositionXenoType.name()")
-  //        )
-  //        // В зависимости от заголовка сообщения, происходит роутинг в один из двух каналов по
-  //        // эволюции дрона в преторианца или дробителя
-  //        .route(droneRouter())
-  //        .get();
-  //  }
-  //
-  //
-  //  // Флоу, описывающий трансформацию дрона в praetorian
-  //  @Bean
-  //  public IntegrationFlow morphingDroneToWarriorFlow(XenomorphingService xenomorphingService) {
-  //    return IntegrationFlows
-  //        .from(stage6WarriorChannel())
-  //        .handle(xenomorphingService, "droneToWarriorMorphing")
-  //        .handle(xenomorphingService, "warriorMorphing")
-  //        .channel(xenoOutputChannel())
-  //        .get();
-  //  }
+  @Bean
+  public IntegrationFlow tagSubscriptionSuccessFlow(ReplyCreatorService replyCreatorService) {
 
+    return IntegrationFlow.from(tagSubscriptionSuccessChannel())
+        .handle(replyCreatorService, "createReplyTagSubscriptionSuccessful")
+        .channel(sendMessageChannel())
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow channelSubscriptionSuccessFlow(ReplyCreatorService replyCreatorService) {
+
+    return IntegrationFlow.from(channelSubscriptionSuccessChannel())
+        .handle(replyCreatorService, "createReplyChannelSubscriptionSuccessful")
+        .channel(sendMessageChannel())
+        .get();
+  }
 }

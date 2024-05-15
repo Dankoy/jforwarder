@@ -14,6 +14,11 @@ public interface ReplyCreatorService {
   SendMessage createReplyCommunitySubscriptionSuccessful(
       CreateReplySubscribeDto createReplySubscribeDto);
 
+  SendMessage createReplyTagSubscriptionSuccessful(CreateReplySubscribeDto createReplySubscribeDto);
+
+  SendMessage createReplyChannelSubscriptionSuccessful(
+      CreateReplySubscribeDto createReplySubscribeDto);
+
   SendMessage createReplyStart(Message inputMessage);
 
   SendMessage createReplyHelp(Message inputMessage);
@@ -23,5 +28,4 @@ public interface ReplyCreatorService {
   SendMessage replyWithFreemarkerOnException(MessagingException messagingException);
 
   SendMessage replyWithHelpOnBotCommandFlowException(MessagingException messagingException);
-
 }
