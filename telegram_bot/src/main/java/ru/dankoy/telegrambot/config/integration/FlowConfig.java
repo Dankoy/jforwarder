@@ -63,6 +63,11 @@ public class FlowConfig {
   }
 
   @Bean
+  public MessageChannel unsubscribeChannel() {
+    return new PublishSubscribeChannel(executor());
+  }
+
+  @Bean
   public MessageChannel messageSourceLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
   }
@@ -307,6 +312,29 @@ public class FlowConfig {
 
     return IntegrationFlow.from(channelSubscriptionSuccessChannel())
         .handle(replyCreatorService, "createReplyChannelSubscriptionSuccessful")
+        .channel(sendMessageChannel())
+        .get();
+  }
+
+  // FLow for processing unsubscribe command
+  @Bean
+  public IntegrationFlow unsubscribeFlow(
+      ChatFlowHandler chatFlowHandler,
+      CommandsExtractorService commandsExtractorService,
+      CommandParserService commandParserService,
+      MessageTransformer messageTransformer,
+      ReplyCreatorService replyCreatorService) {
+
+    var command = commandsExtractorService.getCommand(UnsubscribeCommand.class);
+
+    return IntegrationFlow.from(unsubscribeChannel())
+        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(commandParserService, "parseSubscribeCommand") // add headers for command
+        // добавляет строку команды по которой, если произошла ошибка можно отправить help по
+        // команде
+        .transform(messageTransformer, "addCommandStringToHeaders")
+        .handle(command, "unsubscribe")
+        .handle(replyCreatorService, "createReplyUnsubscriptionSuccessful")
         .channel(sendMessageChannel())
         .get();
   }

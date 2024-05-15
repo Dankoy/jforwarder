@@ -107,7 +107,12 @@ public record BotCommandsFactoryImpl(
     var description =
         localisationService.getLocalizedMessage("unsubscribeCommandDescription", null, locale);
 
-    return new UnsubscribeCommand(command, description);
+    return new UnsubscribeCommand(
+        command,
+        description,
+        communitySubscriptionService,
+        tagSubscriptionService,
+        channelSubscriptionService);
   }
 
   @Override

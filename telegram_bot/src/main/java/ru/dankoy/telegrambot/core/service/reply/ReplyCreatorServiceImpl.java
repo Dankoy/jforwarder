@@ -14,6 +14,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscri
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
+import ru.dankoy.telegrambot.core.dto.flow.CreateReplyUnsubscribeDto;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
@@ -27,6 +28,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
   private static final String COMMAND = "command";
   private static final String TEMPLATE_SUBSCRIPTION_SUCCESS = "subscriptionCompleted";
   private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
+  private static final String TEMPLATE_UNSUBSCRIBE_SUCCESS = "unsubscriptionCompleted";
 
   private final LocalisationService localisationService;
   private final TemplateBuilder templateBuilder;
@@ -105,6 +107,21 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
             TEMPLATE_SUBSCRIPTION_SUCCESS,
             new Object[] {s.getChannel().getPermalink(), s.getOrder().getName()},
             localeProvider.getLocale(inputMessage)));
+
+    return sendMessage;
+  }
+
+  @Override
+  public SendMessage createReplyUnsubscriptionSuccessful(
+      CreateReplyUnsubscribeDto createReplyUnsubscribeDto) {
+
+    var inputMessage = createReplyUnsubscribeDto.message();
+    var sendMessage = createSendMessage(inputMessage);
+    var objects = createReplyUnsubscribeDto.objects();
+
+    sendMessage.setText(
+        localisationService.getLocalizedMessage(
+            TEMPLATE_UNSUBSCRIBE_SUCCESS, objects, localeProvider.getLocale(inputMessage)));
 
     return sendMessage;
   }
