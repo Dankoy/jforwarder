@@ -1,11 +1,14 @@
 package ru.dankoy.telegrambot.config.integration;
 
+import io.github.resilience4j.ratelimiter.RateLimiterConfig;
+import java.time.Duration;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
+import org.springframework.integration.handler.advice.RateLimiterRequestHandlerAdvice;
 import org.springframework.integration.router.HeaderValueRouter;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
@@ -161,6 +164,16 @@ public class FlowConfig {
     return pool;
   }
 
+  // rate limiter for one message in 1 second
+  @Bean
+  public RateLimiterRequestHandlerAdvice rateLimiterRequestHandlerAdvice() {
+    return new RateLimiterRequestHandlerAdvice(
+        RateLimiterConfig.custom()
+            .limitRefreshPeriod(Duration.ofSeconds(1))
+            .limitForPeriod(1)
+            .build());
+  }
+
   //  @Bean(name = PollerMetadata.DEFAULT_POLLER)
   //  public PollerMetadata defaultPoller() {
   //
@@ -232,7 +245,9 @@ public class FlowConfig {
 
   @Bean
   public IntegrationFlow sendMessageFlow(TelegramBot telegramBot) {
-    return IntegrationFlow.from(sendMessageChannel()).handle(telegramBot, "sendMessage").get();
+    return IntegrationFlow.from(sendMessageChannel())
+        .handle(telegramBot, "sendMessage", c -> c.advice(rateLimiterRequestHandlerAdvice()))
+        .get();
   }
 
   // Flow for any input message from user in chats
