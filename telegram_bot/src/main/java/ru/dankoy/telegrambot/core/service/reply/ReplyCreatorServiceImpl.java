@@ -374,7 +374,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
   private SendMessage createSendMessageForSubscription(CoubMessage subscription) {
 
     var sendMessage = new SendMessage();
-    sendMessage.setChatId(subscription.getChat().getId());
+    sendMessage.setChatId(subscription.getChat().getChatId());
     sendMessage.setMessageThreadId(subscription.getChat().getMessageThreadId());
     return sendMessage;
   }
