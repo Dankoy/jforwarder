@@ -11,6 +11,9 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
+import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
@@ -403,9 +406,11 @@ public class FlowConfig {
         .<Subscription, Class<?>>route(
             Subscription::getClass,
             m ->
-                m.channelMapping(CommunitySubscription.class, "communitySubscriptionSendChannel")
-                    .channelMapping(TagSubscription.class, "tagSubscriptionSendChannel")
-                    .channelMapping(ChannelSubscription.class, "channelSubscriptionSendChannel"))
+                m.channelMapping(
+                        CommunitySubscriptionMessage.class, "communitySubscriptionSendChannel")
+                    .channelMapping(TagSubscriptionMessage.class, "tagSubscriptionSendChannel")
+                    .channelMapping(
+                        ChannelSubscriptionMessage.class, "channelSubscriptionSendChannel"))
         .get();
   }
 
