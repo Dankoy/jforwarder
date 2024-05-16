@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
-import ru.dankoy.telegrambot.config.LocaleConfig;
-import ru.dankoy.telegrambot.config.TelegramBotProperties;
+import ru.dankoy.telegrambot.config.bot.properties.LocaleConfig;
+import ru.dankoy.telegrambot.config.bot.properties.TelegramBotProperties;
 
 @ExtendWith(MockitoExtension.class)
 class LocalisationServiceImplTest {

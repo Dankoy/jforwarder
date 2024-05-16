@@ -32,5 +32,8 @@ dependencies {
     // freemarker
     implementation 'org.freemarker:freemarker'
 
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+    implementation "io.github.resilience4j:resilience4j-ratelimiter"
+
 }
 

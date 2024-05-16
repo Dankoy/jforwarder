@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.config;
+package ru.dankoy.telegrambot.config.bot.properties;
 
 import java.util.Locale;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "application.bot")
-public class TelegramBotProperties implements LocaleConfig, BotCredentialsConfig {
+public class TelegramBotProperties implements LocaleConfig, BotCredentialsConfig, BotNameProvider {
 
   private final String name;
   private final String token;

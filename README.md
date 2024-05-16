@@ -43,7 +43,7 @@ that has been published after last sent coub to chat.
 
 ### Example of making community subscription
 
-1) To get all available communities and its sections:
+1) To get all available communities and its sections:    
    ```/communities```
 
    > Available communities:    
@@ -53,7 +53,7 @@ that has been published after last sent coub to chat.
 
 2) To subscribe to community or tag:    
    ```/subscribe community animals-pets weekly```    
-   ```/subscribe tag cars popular```
+   ```/subscribe tag cars popular```    
    ```/subscribe channel meteoralp most_recent```
 
 3) Bot will periodically send links to coubs for every subscription user has.
@@ -74,20 +74,22 @@ Open coub channel in browser. Find the last word in URL. Use it.
 
 ## Stack
 
-1. Spring boot 3.2.2
-2. PostgreSQL
-3. Flyway
+1. Java 21
+2. Spring boot 3.2.5
+3. Spring Integration
 4. Spring Cloud Netflix Eureka
 5. Spring Cloud Loadbalancer
 6. Spring Cloud Gateway
 7. Open feign
 8. Caffeine Cache
-9. Micrometer tracing
-10. Zipkin reporter brave
-11. Zipkin
-12. Docker compose
-13. Telegrambots 6.9.7.0
-14. Java 21
+9. PostgreSQL
+10. Flyway
+11. Micrometer tracing
+12. Zipkin reporter brave
+13. Zipkin
+14. Docker compose
+15. Telegrambots
+
 
 ## Monitoring stack
 

@@ -1,7 +1,7 @@
-package ru.dankoy.telegrambot.config.configuration;
+package ru.dankoy.telegrambot.config.bot.configuration.deprecated;
 
 import lombok.Builder;
-import ru.dankoy.telegrambot.config.FullBotProperties;
+import ru.dankoy.telegrambot.config.bot.properties.FullBotProperties;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
