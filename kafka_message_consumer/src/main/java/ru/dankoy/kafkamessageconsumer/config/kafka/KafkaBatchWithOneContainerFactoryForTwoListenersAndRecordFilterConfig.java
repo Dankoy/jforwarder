@@ -93,7 +93,7 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     //        "ru.dankoy.kafkamessageproducer.core.domain.message"); // from producer
 
     // max amount of messages got by one poll
-    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3);
+    props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 10);
 
     // polling interval. how many seconds consumer can work with pack of messages
     props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20_000);
