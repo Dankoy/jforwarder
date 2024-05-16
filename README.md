@@ -75,7 +75,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 ## Stack
 
 1. Java 21
-2. Spring boot 3.2.2
+2. Spring boot 3.2.5
 3. Spring Integration
 4. Spring Cloud Netflix Eureka
 5. Spring Cloud Loadbalancer
