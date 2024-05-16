@@ -15,6 +15,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscri
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyCommunitiesDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
+import ru.dankoy.telegrambot.core.dto.flow.CreateReplyOrdersDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyUnsubscribeDto;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
@@ -75,6 +76,26 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var text =
         templateBuilder.writeTemplate(
             templateData, "communities.ftl", localeProvider.getLocale(inputMessage));
+
+    sendMessage.setText(text);
+    sendMessage.setParseMode(ParseMode.MARKDOWN);
+
+    return sendMessage;
+  }
+
+  @Override
+  public SendMessage createReplyOrders(CreateReplyOrdersDto createReplyOrdersDto) {
+
+    var inputMessage = createReplyOrdersDto.message();
+    var orders = createReplyOrdersDto.orders();
+    var sendMessage = createSendMessage(inputMessage);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("orders", orders);
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
 
     sendMessage.setText(text);
     sendMessage.setParseMode(ParseMode.MARKDOWN);

@@ -16,6 +16,8 @@ import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
 @Slf4j
 public class CommandParserServiceImpl implements CommandParserService {
 
+  public static final String LOG_MESSAGE = "Expected valid command but got - {}";
+
   @Override
   public org.springframework.messaging.Message<Message> parseSubscribeCommand(Message message) {
     Map<String, String> result = new HashMap<>();
@@ -23,7 +25,7 @@ public class CommandParserServiceImpl implements CommandParserService {
     String[] command = message.getText().split(" ");
 
     if (command.length < 4) {
-      log.error("Expected valid command but got - {}", Arrays.asList(command));
+      log.error(LOG_MESSAGE, Arrays.asList(command));
 
       throw new BotCommandFlowException(
           "Invalid command", message, "subscription_exception.ftl", command);
@@ -41,6 +43,32 @@ public class CommandParserServiceImpl implements CommandParserService {
         CommandConstraints.COMMAND_SECOND_FIELD.getConstraint(), command[command.length - 1]);
 
     return MessageBuilder.withPayload(message)
+        .setHeader("parsedCommand", result)
+        .setErrorChannelName("errorChannel")
+        .build();
+  }
+
+  @Override
+  public org.springframework.messaging.Message<Message> parseOrderCommandMultipleWords(
+      Message inputMessage) {
+
+    Map<String, SubscriptionType> result = new HashMap<>();
+
+    String[] command = inputMessage.getText().split(" ");
+
+    if (command.length != 2) {
+      log.error(LOG_MESSAGE, Arrays.asList(command));
+
+      throw new BotCommandFlowException(LOG_MESSAGE, inputMessage, "orders_exception.ftl", command);
+    }
+
+    checkSubscriptionTypeInCommand(inputMessage, command);
+
+    result.put(
+        CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint(),
+        SubscriptionType.valueOf(command[1].toUpperCase()));
+
+    return MessageBuilder.withPayload(inputMessage)
         .setHeader("parsedCommand", result)
         .setErrorChannelName("errorChannel")
         .build();

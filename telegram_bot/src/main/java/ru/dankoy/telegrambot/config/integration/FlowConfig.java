@@ -36,6 +36,11 @@ import ru.dankoy.telegrambot.core.service.reply.ReplyCreatorService;
 @Configuration
 public class FlowConfig {
 
+  public static final String HANDLE_METHOD_ADD_COMMAND_STRING_TO_HEADERS =
+      "addCommandStringToHeaders";
+
+  public static final String HANDLE_METHOD_CHECK_CHAT_STATUS = "checkChatStatus";
+
   // Поток в который поступают сообщения из чатов
   @Bean
   public MessageChannel inputMessageChannel() {
@@ -69,6 +74,11 @@ public class FlowConfig {
 
   @Bean
   public MessageChannel communitiesChannel() {
+    return new PublishSubscribeChannel(executor());
+  }
+
+  @Bean
+  public MessageChannel ordersChannel() {
     return new PublishSubscribeChannel(executor());
   }
 
@@ -220,7 +230,7 @@ public class FlowConfig {
     var command = commandsExtractorService.getCommand(MySubscriptionsCommand.class);
 
     return IntegrationFlow.from(mySubscriptionsChannel())
-        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(chatFlowHandler, HANDLE_METHOD_CHECK_CHAT_STATUS)
         .handle(command, "mySubscriptions")
         .handle(replyCreatorService, "createReplyMySubscriptions")
         .channel(sendMessageChannel())
@@ -262,11 +272,11 @@ public class FlowConfig {
     var command = commandsExtractorService.getCommand(SubscribeCommand.class);
 
     return IntegrationFlow.from(subscribeChannel())
-        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(chatFlowHandler, HANDLE_METHOD_CHECK_CHAT_STATUS)
         .handle(commandParserService, "parseSubscribeCommand") // add headers for command
         // добавляет строку команды по которой, если произошла ошибка можно отправить help по
         // команде
-        .transform(messageTransformer, "addCommandStringToHeaders")
+        .transform(messageTransformer, HANDLE_METHOD_ADD_COMMAND_STRING_TO_HEADERS)
         .handle(command, "subscribe")
         .<CreateReplySubscribeDto, Class<?>>route(
             m -> m.subscriptionDto().subscription().getClass(),
@@ -316,11 +326,11 @@ public class FlowConfig {
     var command = commandsExtractorService.getCommand(UnsubscribeCommand.class);
 
     return IntegrationFlow.from(unsubscribeChannel())
-        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(chatFlowHandler, HANDLE_METHOD_CHECK_CHAT_STATUS)
         .handle(commandParserService, "parseSubscribeCommand") // add headers for command
         // добавляет строку команды по которой, если произошла ошибка можно отправить help по
         // команде
-        .transform(messageTransformer, "addCommandStringToHeaders")
+        .transform(messageTransformer, HANDLE_METHOD_ADD_COMMAND_STRING_TO_HEADERS)
         .handle(command, "unsubscribe")
         .handle(replyCreatorService, "createReplyUnsubscriptionSuccessful")
         .channel(sendMessageChannel())
@@ -336,9 +346,31 @@ public class FlowConfig {
     var command = commandsExtractorService.getCommand(CommunitiesCommand.class);
 
     return IntegrationFlow.from(communitiesChannel())
-        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(chatFlowHandler, HANDLE_METHOD_CHECK_CHAT_STATUS)
         .handle(command, "communities")
         .handle(replyCreatorService, "createReplyCommunities")
+        .channel(sendMessageChannel())
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow ordersFlow(
+      ChatFlowHandler chatFlowHandler,
+      CommandsExtractorService commandsExtractorService,
+      CommandParserService commandParserService,
+      MessageTransformer messageTransformer,
+      ReplyCreatorService replyCreatorService) {
+
+    var command = commandsExtractorService.getCommand(OrdersCommand.class);
+
+    return IntegrationFlow.from(ordersChannel())
+        .handle(chatFlowHandler, HANDLE_METHOD_CHECK_CHAT_STATUS)
+        .handle(commandParserService, "parseOrderCommandMultipleWords") // add headers for command
+        // добавляет строку команды по которой, если произошла ошибка можно отправить help по
+        // команде
+        .transform(messageTransformer, HANDLE_METHOD_ADD_COMMAND_STRING_TO_HEADERS)
+        .handle(command, "orders")
+        .handle(replyCreatorService, "createReplyOrders")
         .channel(sendMessageChannel())
         .get();
   }

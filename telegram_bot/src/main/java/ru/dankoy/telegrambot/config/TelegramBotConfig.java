@@ -85,7 +85,9 @@ public class TelegramBotConfig {
       CommunitySubscriptionService communitySubscriptionService,
       TagSubscriptionService tagSubscriptionService,
       ChannelSubscriptionService channelSubscriptionService,
-      TelegramChatService telegramChatService) {
+      TelegramChatService telegramChatService,
+      CommunityService communityService,
+      OrderService orderService) {
 
     List<BotCommandsFactory> factories = new ArrayList<>();
 
@@ -97,7 +99,9 @@ public class TelegramBotConfig {
               communitySubscriptionService,
               tagSubscriptionService,
               channelSubscriptionService,
-              telegramChatService));
+              telegramChatService,
+              communityService,
+              orderService));
     }
 
     return factories;

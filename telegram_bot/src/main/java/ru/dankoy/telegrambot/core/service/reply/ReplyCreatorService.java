@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyCommunitiesDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
+import ru.dankoy.telegrambot.core.dto.flow.CreateReplyOrdersDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyUnsubscribeDto;
 
@@ -14,6 +15,8 @@ public interface ReplyCreatorService {
       CreateReplyMySubscriptionsDto createReplyMySubscriptionsDto);
 
   SendMessage createReplyCommunities(CreateReplyCommunitiesDto createReplyCommunitiesDto);
+
+  SendMessage createReplyOrders(CreateReplyOrdersDto createReplyOrdersDto);
 
   SendMessage createReplyCommunitySubscriptionSuccessful(
       CreateReplySubscribeDto createReplySubscribeDto);
