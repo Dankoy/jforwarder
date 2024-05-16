@@ -146,6 +146,9 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
           found.setActive(false);
           telegramChatService.update(found);
         }
+      } else {
+        // some other exception in api
+        log.error("Something went wrong: {}", e.getMessage());
       }
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
