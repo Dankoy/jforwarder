@@ -46,6 +46,11 @@ import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionServ
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
+/**
+ * @deprecated in favor {@link TelegramBotIntegrationFlowImpl} with integration flow {@link
+ *     ru.dankoy.telegrambot.config.integration.FlowConfig}
+ */
+@Deprecated
 @Slf4j
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
