@@ -12,7 +12,7 @@ import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import ru.dankoy.telegrambot.config.configuration.BotConfigurationImpl;
+import ru.dankoy.telegrambot.config.bot.configuration.deprecated.BotConfigurationImpl;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.channel.ChannelServiceImpl;

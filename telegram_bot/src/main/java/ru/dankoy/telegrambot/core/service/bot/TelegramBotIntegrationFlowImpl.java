@@ -18,7 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
+import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfiguration;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;

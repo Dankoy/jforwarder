@@ -1,4 +1,4 @@
-package ru.dankoy.telegrambot.config;
+package ru.dankoy.telegrambot.config.bot.properties;
 
 import java.util.Locale;
 

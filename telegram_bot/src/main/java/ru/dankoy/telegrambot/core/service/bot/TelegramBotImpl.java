@@ -23,7 +23,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
-import ru.dankoy.telegrambot.config.configuration.BotConfiguration;
+import ru.dankoy.telegrambot.config.bot.configuration.deprecated.BotConfiguration;
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
@@ -50,7 +50,7 @@ import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
  * @deprecated in favor {@link TelegramBotIntegrationFlowImpl} with integration flow {@link
  *     ru.dankoy.telegrambot.config.integration.FlowConfig}
  */
-@Deprecated
+@Deprecated(since = "2024-05-16")
 @Slf4j
 @RequiredArgsConstructor
 public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramBot {
