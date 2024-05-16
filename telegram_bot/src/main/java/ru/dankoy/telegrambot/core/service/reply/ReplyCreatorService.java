@@ -3,6 +3,9 @@ package ru.dankoy.telegrambot.core.service.reply;
 import org.springframework.messaging.MessagingException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
+import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyCommunitiesDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyOrdersDto;
@@ -32,6 +35,12 @@ public interface ReplyCreatorService {
   SendMessage createReplyStart(Message inputMessage);
 
   SendMessage createReplyHelp(Message inputMessage);
+
+  SendMessage createCommunitySubscriptionMessage(CommunitySubscriptionMessage message);
+
+  SendMessage createTagSubscriptionMessage(TagSubscriptionMessage message);
+
+  SendMessage createChannelSubscriptionMessage(ChannelSubscriptionMessage message);
 
   SendMessage replyWithMessageSourceOnException(MessagingException messagingException);
 

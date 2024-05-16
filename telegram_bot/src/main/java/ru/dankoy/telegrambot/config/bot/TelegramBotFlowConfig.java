@@ -15,7 +15,7 @@ import ru.dankoy.telegrambot.config.bot.properties.FullBotProperties;
 import ru.dankoy.telegrambot.config.bot.properties.LocaleConfig;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
-import ru.dankoy.telegrambot.core.gateway.MessageGateway;
+import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotIntegrationFlowImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
@@ -26,7 +26,6 @@ import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.subscription.ChannelSubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.CommunitySubscriptionService;
 import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
-import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 @Configuration
 @RequiredArgsConstructor
@@ -47,15 +46,13 @@ public class TelegramBotFlowConfig {
       FullBotProperties properties,
       CommandsHolder commandsHolder,
       TelegramChatService telegramChatService,
-      TemplateBuilder templateBuilder,
-      MessageGateway messageGateway) {
+      BotMessageGateway botMessageGateway) {
 
     return BotConfigurationImpl.builder()
         .fullBotProperties(properties)
         .commandsHolder(commandsHolder)
         .telegramChatService(telegramChatService)
-        .templateBuilder(templateBuilder)
-        .messageGateway(messageGateway)
+        .botMessageGateway(botMessageGateway)
         .build();
   }
 

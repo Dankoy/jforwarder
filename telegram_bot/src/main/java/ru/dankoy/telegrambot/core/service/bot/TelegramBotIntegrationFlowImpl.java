@@ -1,9 +1,7 @@
 package ru.dankoy.telegrambot.core.service.bot;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +17,9 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfiguration;
-import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
-import ru.dankoy.telegrambot.core.gateway.MessageGateway;
+import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
-import ru.dankoy.telegrambot.core.service.template.TemplateBuilder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,9 +29,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
 
   private final TelegramChatService telegramChatService;
 
-  private final TemplateBuilder templateBuilder;
-
-  private final MessageGateway messageGateway;
+  private final BotMessageGateway botMessageGateway;
 
   public TelegramBotIntegrationFlowImpl(BotConfiguration botConfiguration) {
 
@@ -45,8 +37,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
 
     this.botName = botConfiguration.fullBotProperties().getName();
     this.telegramChatService = botConfiguration.telegramChatService();
-    this.templateBuilder = botConfiguration.templateBuilder();
-    this.messageGateway = botConfiguration.messageGateway();
+    this.botMessageGateway = botConfiguration.botMessageGateway();
 
     try {
 
@@ -73,7 +64,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
             message.getChat().getId(),
             message.getText());
 
-        messageGateway.process(message);
+        botMessageGateway.process(message);
       }
     }
   }
@@ -81,103 +72,6 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
   @Override
   public String getBotUsername() {
     return botName;
-  }
-
-  // todo: move to integration flow
-  @Override
-  public void sendMessage(CommunitySubscriptionMessage message) {
-
-    var communityName = message.getCommunity().getName();
-    var sectionName = message.getSection().getName();
-    var coubUrl = message.getCoub().getUrl();
-    var chatId = message.getChat().getChatId();
-    var messageThreadId = message.getChat().getMessageThreadId();
-
-    var sendMessage = new SendMessage();
-    sendMessage.setChatId(chatId);
-    sendMessage.setMessageThreadId(messageThreadId);
-
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put("communityName", communityName);
-    templateData.put("sectionName", sectionName);
-    templateData.put("url", coubUrl);
-    var text = templateBuilder.writeTemplate(templateData, "community_subscription_message.ftl");
-
-    sendMessage.setText(text);
-
-    send(sendMessage);
-
-    log.info(
-        "Sent message to chat '{}'-{} for subscription '{}' {} {}",
-        message.getChat(),
-        message.getChat().getMessageThreadId(),
-        message.getId(),
-        message.getCommunity().getName(),
-        message.getSection().getName());
-  }
-
-  @Override
-  public void sendMessage(TagSubscriptionMessage message) {
-
-    var sendMessage = new SendMessage();
-
-    var tagName = message.getTag().getTitle();
-    var orderValue = message.getOrder().getValue();
-    var coubUrl = message.getCoub().getUrl();
-    var chatId = message.getChat().getChatId();
-    var messageThreadId = message.getChat().getMessageThreadId();
-
-    sendMessage.setChatId(chatId);
-    sendMessage.setMessageThreadId(messageThreadId);
-
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put("tagName", tagName);
-    templateData.put("orderValue", orderValue);
-    templateData.put("url", coubUrl);
-    var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
-
-    sendMessage.setText(text);
-
-    send(sendMessage);
-
-    log.info(
-        "Sent message to chat '{}'-{} for tag subscription '{}' {}",
-        message.getChat().getChatId(),
-        message.getChat().getMessageThreadId(),
-        message.getId(),
-        message.getTag().getTitle());
-  }
-
-  @Override
-  public void sendMessage(ChannelSubscriptionMessage message) {
-
-    var sendMessage = new SendMessage();
-
-    var channelTitle = message.getChannel().getTitle();
-    var orderValue = message.getOrder().getValue();
-    var coubUrl = message.getCoub().getUrl();
-    var chatId = message.getChat().getChatId();
-    var messageThreadId = message.getChat().getMessageThreadId();
-
-    sendMessage.setChatId(chatId);
-    sendMessage.setMessageThreadId(messageThreadId);
-
-    Map<String, Object> templateData = new HashMap<>();
-    templateData.put("channelTitle", channelTitle);
-    templateData.put("orderValue", orderValue);
-    templateData.put("url", coubUrl);
-    var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
-
-    sendMessage.setText(text);
-
-    send(sendMessage);
-
-    log.info(
-        "Sent message to chat '{}'-{} for channel subscription '{}' {}",
-        message.getChat().getChatId(),
-        message.getChat().getMessageThreadId(),
-        message.getId(),
-        message.getChannel().getPermalink());
   }
 
   private void registerCommands(BotConfiguration botConfiguration) throws TelegramApiException {
@@ -234,7 +128,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
     try {
       execute(sendMessage);
       log.info(
-          "Reply sent to '{}'-{} with message '{}'",
+          "Message sent to '{}'-{} with message '{}'",
           sendMessage.getChatId(),
           sendMessage.getMessageThreadId(),
           StringUtils.normalizeSpace(sendMessage.getText()));

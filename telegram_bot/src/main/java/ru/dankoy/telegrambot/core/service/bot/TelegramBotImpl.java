@@ -699,7 +699,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     return "@" + botName;
   }
 
-  @Override
+  //  @Override
   public void sendMessage(CommunitySubscriptionMessage message) {
 
     var communityName = message.getCommunity().getName();
@@ -731,7 +731,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
         message.getSection().getName());
   }
 
-  @Override
+  //  @Override
   public void sendMessage(TagSubscriptionMessage message) {
 
     var sendMessage = new SendMessage();
@@ -763,7 +763,7 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
         message.getTag().getTitle());
   }
 
-  @Override
+  //  @Override
   public void sendMessage(ChannelSubscriptionMessage message) {
 
     var sendMessage = new SendMessage();
