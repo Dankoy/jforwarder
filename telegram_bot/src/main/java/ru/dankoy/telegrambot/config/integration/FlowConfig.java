@@ -68,6 +68,11 @@ public class FlowConfig {
   }
 
   @Bean
+  public MessageChannel communitiesChannel() {
+    return new PublishSubscribeChannel(executor());
+  }
+
+  @Bean
   public MessageChannel messageSourceLocalizationChannel() {
     return new PublishSubscribeChannel(executor());
   }
@@ -264,28 +269,11 @@ public class FlowConfig {
         .transform(messageTransformer, "addCommandStringToHeaders")
         .handle(command, "subscribe")
         .<CreateReplySubscribeDto, Class<?>>route(
-            m -> m.subscriptionDto().subscription().getClass()
-
-            //                Objects.requireNonNull(
-            //                        m.getHeaders()
-            //                            .get(
-            //
-            // CommandConstraints.COMMAND_SUBSCRIPTION_TYPE_FIELD.getConstraint()))
-            //                    .toString()
-            ,
+            m -> m.subscriptionDto().subscription().getClass(),
             m ->
                 m.channelMapping(CommunitySubscription.class, "communitySubscriptionSuccessChannel")
                     .channelMapping(TagSubscription.class, "tagSubscriptionSuccessChannel")
-                    .channelMapping(ChannelSubscription.class, "channelSubscriptionSuccessChannel")
-            //                m.channelMapping(
-            //                        SubscriptionType.COMMUNITY.getType(),
-            // "communitySubscriptionSuccessChannel")
-            //                    .channelMapping(SubscriptionType.TAG.getType(),
-            // "tagSubscriptionSuccessChannel")
-            //                    .channelMapping(
-            //                        SubscriptionType.CHANNEL.getType(),
-            // "channelSubscriptionSuccessChannel")
-            )
+                    .channelMapping(ChannelSubscription.class, "channelSubscriptionSuccessChannel"))
         .get();
   }
 
@@ -335,6 +323,22 @@ public class FlowConfig {
         .transform(messageTransformer, "addCommandStringToHeaders")
         .handle(command, "unsubscribe")
         .handle(replyCreatorService, "createReplyUnsubscriptionSuccessful")
+        .channel(sendMessageChannel())
+        .get();
+  }
+
+  @Bean
+  public IntegrationFlow communitiesFlow(
+      ChatFlowHandler chatFlowHandler,
+      CommandsExtractorService commandsExtractorService,
+      ReplyCreatorService replyCreatorService) {
+
+    var command = commandsExtractorService.getCommand(CommunitiesCommand.class);
+
+    return IntegrationFlow.from(communitiesChannel())
+        .handle(chatFlowHandler, "checkChatStatus")
+        .handle(command, "communities")
+        .handle(replyCreatorService, "createReplyCommunities")
         .channel(sendMessageChannel())
         .get();
   }

@@ -6,12 +6,14 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
+import ru.dankoy.telegrambot.core.dto.flow.CreateReplyCommunitiesDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyMySubscriptionsDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyUnsubscribeDto;
@@ -56,6 +58,26 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
             templateData, "subscriptions.ftl", localeProvider.getLocale(inputMessage));
 
     sendMessage.setText(text);
+
+    return sendMessage;
+  }
+
+  @Override
+  public SendMessage createReplyCommunities(CreateReplyCommunitiesDto createReplyCommunitiesDto) {
+
+    var inputMessage = createReplyCommunitiesDto.message();
+    var communities = createReplyCommunitiesDto.communities();
+    var sendMessage = createSendMessage(inputMessage);
+
+    Map<String, Object> templateData = new HashMap<>();
+    templateData.put("communities", communities);
+
+    var text =
+        templateBuilder.writeTemplate(
+            templateData, "communities.ftl", localeProvider.getLocale(inputMessage));
+
+    sendMessage.setText(text);
+    sendMessage.setParseMode(ParseMode.MARKDOWN);
 
     return sendMessage;
   }
