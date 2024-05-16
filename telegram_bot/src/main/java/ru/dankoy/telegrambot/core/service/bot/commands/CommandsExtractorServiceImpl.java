@@ -1,12 +1,15 @@
 package ru.dankoy.telegrambot.core.service.bot.commands;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import ru.dankoy.telegrambot.config.BotNameProvider;
-import ru.dankoy.telegrambot.config.LocaleConfig;
+import ru.dankoy.telegrambot.config.bot.properties.BotNameProvider;
+import ru.dankoy.telegrambot.config.bot.properties.LocaleConfig;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
 
 @Slf4j
@@ -30,14 +33,20 @@ public class CommandsExtractorServiceImpl implements CommandsExtractorService {
     // убираем все лишнее из команды
     var commandWord = commandText.split(" ")[0];
 
-    var commandsByLocale = commandsHolder.getCommands().get(locale);
+    Map<Locale, List<BotCommand>> commands = commandsHolder.getCommands();
+
+    var optional = Optional.ofNullable(commands.get(locale));
+
+    var commandsByLocale =
+        optional.orElse(commandsHolder.getCommands().get(localeConfig.getDefaultLocale()));
 
     for (var command : commandsByLocale) {
-      var c = "/" + command.getCommand() + getGroupChatBotName();
-      if (c.equals(commandWord)) {
+      var groupCommand = "/" + command.getCommand() + getGroupChatBotName();
+      var singleChatCommand = "/" + command.getCommand();
+      if (groupCommand.equals(commandWord)) {
         return Optional.of(command);
       }
-      if (command.getCommand().equals(commandWord)) {
+      if (singleChatCommand.equals(commandWord)) {
         return Optional.of(command);
       }
     }
