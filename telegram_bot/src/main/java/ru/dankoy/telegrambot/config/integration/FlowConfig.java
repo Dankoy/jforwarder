@@ -13,8 +13,8 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
+import ru.dankoy.telegrambot.core.domain.message.CoubMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.subscription.Subscription;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
@@ -403,8 +403,8 @@ public class FlowConfig {
   public IntegrationFlow subscriptionMessagesFlow() {
 
     return IntegrationFlow.from(subscriptionMessagesChannel())
-        .<Subscription, Class<?>>route(
-            Subscription::getClass,
+        .<CoubMessage, Class<?>>route(
+            CoubMessage::getClass,
             m ->
                 m.channelMapping(
                         CommunitySubscriptionMessage.class, "communitySubscriptionSendChannel")
