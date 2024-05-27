@@ -10,6 +10,7 @@ import org.springframework.integration.channel.PublishSubscribeChannel;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.handler.advice.RateLimiterRequestHandlerAdvice;
 import org.springframework.integration.router.HeaderValueRouter;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.MessagingException;
@@ -33,6 +34,7 @@ import ru.dankoy.telegrambot.core.service.bot.commands.OrdersCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
+import ru.dankoy.telegrambot.core.service.flow.BotCommandValidator;
 import ru.dankoy.telegrambot.core.service.flow.BotMessageRouter;
 import ru.dankoy.telegrambot.core.service.flow.ChatFlowHandler;
 import ru.dankoy.telegrambot.core.service.flow.CommandParserService;
@@ -252,8 +254,11 @@ public class FlowConfig {
 
   // Flow for any input message from user in chats
   @Bean
-  public IntegrationFlow inputMessageProcessingFlow(BotMessageRouter botMessageRouter) {
+  public IntegrationFlow inputMessageProcessingFlow(
+      BotMessageRouter botMessageRouter, BotCommandValidator botCommandValidator) {
     return IntegrationFlow.from(inputMessageChannel())
+        .handle(botCommandValidator, "isValid")
+        .filter(Message.class, m -> Objects.equals(m.getHeaders().get("isValid"), true))
         .handle(botMessageRouter, "commandRoute")
         .route(commandRouter())
         .get();

@@ -1,18 +1,17 @@
 # jforwarder
 
-[![GitHub Release](https://img.shields.io/github/v/release/dankoy/jforwarder)](https://github.com/Dankoy/jforwarder/releases/latest) 
-![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/jforwarder) 
+[![GitHub Release](https://img.shields.io/github/v/release/dankoy/jforwarder)](https://github.com/Dankoy/jforwarder/releases/latest)
+![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/jforwarder)
 
-![GitHub tag checks state](https://img.shields.io/github/checks-status/dankoy/jforwarder/v1.1.3) 
-![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/main.yml/badge.svg) 
-![Dependencies](https://img.shields.io/librariesio/github/dankoy/jforwarder) 
+![GitHub tag checks state](https://img.shields.io/github/checks-status/dankoy/jforwarder/v1.1.3)
+![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/main.yml/badge.svg)
+![Dependencies](https://img.shields.io/librariesio/github/dankoy/jforwarder)
 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDankoy%2Fjforwarder&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) 
+[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FDankoy%2Fjforwarder&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/jforwarder) 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub_forwarder_bot) 
-![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub) 
-
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/jforwarder)
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub_forwarder_bot)
+![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub)
 
 # Trademark disclaimer
 
@@ -34,6 +33,11 @@ chats. Without registration and sms.
 1) Subscription on channel
 2) Subscription on tag
 3) Subscription on community
+
+Subscriptions can be created for:
+- individual private chats
+- supergroups
+- separate topics in supergroups
 
 ## Usage
 
@@ -89,7 +93,6 @@ Open coub channel in browser. Find the last word in URL. Use it.
 13. Zipkin
 14. Docker compose
 15. Telegrambots
-
 
 ## Monitoring stack
 
