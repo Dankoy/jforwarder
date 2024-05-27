@@ -104,7 +104,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
     deleteMyCommands.setScope(new BotCommandScopeDefault());
     this.execute(deleteMyCommands);
 
-    // then delete for every knows locale
+    // then delete for every known locale
     for (Entry<Locale, List<BotCommand>> entry :
         botConfiguration.commandsHolder().getCommands().entrySet()) {
 
