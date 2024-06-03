@@ -25,6 +25,7 @@ dependencies {
 
     // flyway
     implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
 
     // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
@@ -42,5 +43,6 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.junit.jupiter:junit-jupiter-params'
+    testImplementation 'org.flywaydb:flyway-database-postgresql'
 
 }
