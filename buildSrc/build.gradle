@@ -9,7 +9,7 @@ repositories {
 // dependency for spring boot gradle plugin and dependency management.
 // It is necessary to share it between conventions as plugins
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-gradle-plugin:3.3.0'
     implementation 'io.spring.gradle:dependency-management-plugin:1.1.5'
     implementation 'com.diffplug.spotless:spotless-lib:2.45.0'
     implementation 'com.diffplug.spotless:spotless-plugin-gradle:6.25.0'
