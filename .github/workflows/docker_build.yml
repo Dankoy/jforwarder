@@ -75,7 +75,7 @@ jobs:
       # secrets are not passed to the runner when
       # a workflow is triggered from a forked repository.
       - name: docker build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           build-args: |
