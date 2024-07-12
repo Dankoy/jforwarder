@@ -18,16 +18,16 @@ public class LocaleProviderImpl implements LocaleProvider {
 
     var langCode = message.getFrom().getLanguageCode();
 
-    if (Objects.isNull(langCode)) {
-      return localeConfig.getDefaultLocale();
-    } else {
-      return Locale.of(langCode);
-    }
+    return checkAndReturn(langCode);
   }
 
   @Override
   public Locale getLocale(String locale) {
 
+    return checkAndReturn(locale);
+  }
+
+  private Locale checkAndReturn(String locale) {
     if (Objects.isNull(locale)) {
       return localeConfig.getDefaultLocale();
     } else {
