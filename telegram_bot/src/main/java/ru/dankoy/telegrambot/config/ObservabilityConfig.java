@@ -43,4 +43,21 @@ public class ObservabilityConfig {
             .observationConfig()
             .observationPredicate((name, context) -> !name.startsWith("spring.security"));
   }
+
+  @Bean
+  ObservationRegistryCustomizer<ObservationRegistry> skipEurekaRegistrySpansFromObservation() {
+    PathMatcher pathMatcher = new AntPathMatcher("/");
+    return (registry) ->
+        registry
+            .observationConfig()
+            .observationPredicate(
+                (name, context) -> {
+                  if (context instanceof ServerRequestObservationContext observationContext) {
+                    return !pathMatcher.match(
+                        "/eureka/**", observationContext.getCarrier().getRequestURI());
+                  } else {
+                    return true;
+                  }
+                });
+  }
 }
