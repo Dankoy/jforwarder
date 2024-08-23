@@ -15,10 +15,6 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandlingException;
 import org.springframework.messaging.MessagingException;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
-import ru.dankoy.telegrambot.core.domain.message.CoubMessage;
-import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
@@ -53,11 +49,6 @@ public class FlowConfig {
   // Поток в который поступают сообщения из чатов
   @Bean
   public MessageChannel inputMessageChannel() {
-    return new PublishSubscribeChannel(executor());
-  }
-
-  @Bean
-  public MessageChannel subscriptionMessagesChannel() {
     return new PublishSubscribeChannel(executor());
   }
 
@@ -138,21 +129,6 @@ public class FlowConfig {
   public MessageChannel channelSubscriptionSuccessChannel() {
     // this channel send messages as soon they created.
     //  With queue integration flow waited 5 seconds every time before handle message.
-    return new PublishSubscribeChannel(executor());
-  }
-
-  @Bean
-  public MessageChannel communitySubscriptionSendChannel() {
-    return new PublishSubscribeChannel(executor());
-  }
-
-  @Bean
-  public MessageChannel tagSubscriptionSendChannel() {
-    return new PublishSubscribeChannel(executor());
-  }
-
-  @Bean
-  public MessageChannel channelSubscriptionSendChannel() {
     return new PublishSubscribeChannel(executor());
   }
 
@@ -415,50 +391,6 @@ public class FlowConfig {
         .transform(messageTransformer, HANDLE_METHOD_ADD_COMMAND_STRING_TO_HEADERS)
         .handle(command, "orders")
         .handle(replyCreatorService, "createReplyOrders")
-        .channel(sendMessageChannel())
-        .get();
-  }
-
-  @Bean
-  public IntegrationFlow subscriptionMessagesFlow() {
-
-    return IntegrationFlow.from(subscriptionMessagesChannel())
-        .<CoubMessage, Class<?>>route(
-            CoubMessage::getClass,
-            m ->
-                m.channelMapping(
-                        CommunitySubscriptionMessage.class, "communitySubscriptionSendChannel")
-                    .channelMapping(TagSubscriptionMessage.class, "tagSubscriptionSendChannel")
-                    .channelMapping(
-                        ChannelSubscriptionMessage.class, "channelSubscriptionSendChannel"))
-        .get();
-  }
-
-  @Bean
-  public IntegrationFlow communitySubscriptionSendMessageFlow(
-      ReplyCreatorService replyCreatorService) {
-
-    return IntegrationFlow.from(communitySubscriptionSendChannel())
-        .handle(replyCreatorService, "createCommunitySubscriptionMessage")
-        .channel(sendMessageChannel())
-        .get();
-  }
-
-  @Bean
-  public IntegrationFlow tagSubscriptionSendMessageFlow(ReplyCreatorService replyCreatorService) {
-
-    return IntegrationFlow.from(tagSubscriptionSendChannel())
-        .handle(replyCreatorService, "createTagSubscriptionMessage")
-        .channel(sendMessageChannel())
-        .get();
-  }
-
-  @Bean
-  public IntegrationFlow channelSubscriptionSendMessageFlow(
-      ReplyCreatorService replyCreatorService) {
-
-    return IntegrationFlow.from(channelSubscriptionSendChannel())
-        .handle(replyCreatorService, "createChannelSubscriptionMessage")
         .channel(sendMessageChannel())
         .get();
   }
