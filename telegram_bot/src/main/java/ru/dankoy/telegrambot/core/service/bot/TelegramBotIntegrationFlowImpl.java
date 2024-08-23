@@ -18,6 +18,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfiguration;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
+import ru.dankoy.telegrambot.core.exceptions.BotSendMessageException;
 import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 
@@ -149,9 +150,11 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
       } else {
         // some other exception in api
         log.error("Something went wrong: {}", e.getMessage());
+        throw new BotSendMessageException(e.getMessage(), e);
       }
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
+      throw new BotSendMessageException(e.getMessage(), e);
     }
   }
 }
