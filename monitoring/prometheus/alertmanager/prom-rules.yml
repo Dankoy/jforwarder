@@ -1,0 +1,41 @@
+groups:
+  - name: AllInstances
+    rules:
+
+      # Prometheus related
+      - alert: PrometheusTargetMissing
+        expr: up == 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus target missing (instance {{ $labels.instance }})
+          description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: PrometheusAlertmanagerNotificationFailing
+        expr: rate(alertmanager_notifications_failed_total[1m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+        annotations:
+          summary: Prometheus AlertManager notification failing (instance {{ $labels.instance }})
+          description: "Alertmanager is failing sending notifications\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: PrometheusTargetScrapingSlow
+        expr: prometheus_target_interval_length_seconds{quantile="0.9"} / on (interval, instance, job) prometheus_target_interval_length_seconds{quantile="0.5"} > 1.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus target scraping slow (instance {{ $labels.instance }})
+          description: "Prometheus is scraping exporters slowly since it exceeded the requested interval time. Your Prometheus server is under-provisioned.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+      - alert: PrometheusLargeScrape
+        expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total[10m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Prometheus large scrape (instance {{ $labels.instance }})
+          description: "Prometheus has many scrapes that exceed the sample limit\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
