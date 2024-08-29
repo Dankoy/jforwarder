@@ -2,31 +2,31 @@ version: "3.9"
 
 services:
 
-# can't pull from gcr.io. Permission denied
-#  cadvisor:
-#    image: gcr.io/cadvisor-arm64:v0.47.2
-#    container_name: cadvisor
-#    volumes:
-#      - '/:/rootfs:ro'
-#      - '/var/run:/var/run:ro'
-#      - '/sys:/sys:ro'
-#      - '/var/lib/docker/:/var/lib/docker:ro'
-#    networks:
-#      - jforwarder-network
+  # can't pull from gcr.io. Permission denied
+  #  cadvisor:
+  #    image: gcr.io/cadvisor-arm64:v0.47.2
+  #    container_name: cadvisor
+  #    volumes:
+  #      - '/:/rootfs:ro'
+  #      - '/var/run:/var/run:ro'
+  #      - '/sys:/sys:ro'
+  #      - '/var/lib/docker/:/var/lib/docker:ro'
+  #    networks:
+  #      - jforwarder-network
 
-#  tempo:
-#    image: grafana/tempo
-#    container_name: grafana-tempo
-#    command: [ "-config.file=/etc/tempo.yaml" ]
-#    volumes:
-#      - ./tempo/tempo-local.yml:/etc/tempo.yaml
-#      - tempo_volume:/tmp/tempo
-#    ports:
-#      - "14268"  # jaeger ingest
-#      - "9411:9411" # zipkin
-#    networks:
-#      - jforwarder-network
-#
+  #  tempo:
+  #    image: grafana/tempo
+  #    container_name: grafana-tempo
+  #    command: [ "-config.file=/etc/tempo.yaml" ]
+  #    volumes:
+  #      - ./tempo/tempo-local.yml:/etc/tempo.yaml
+  #      - tempo_volume:/tmp/tempo
+  #    ports:
+  #      - "14268"  # jaeger ingest
+  #      - "9411:9411" # zipkin
+  #    networks:
+  #      - jforwarder-network
+  #
   loki:
     image: grafana/loki:2.9.8
     container_name: grafana-loki
@@ -82,6 +82,7 @@ services:
     command: '--config.file=/etc/prometheus/config.yml'
     volumes:
       - './prometheus/prometheus.yml:/etc/prometheus/config.yml'
+      - './prometheus/alertmanager:/etc/prometheus/alertmanager'
       - prometheus_volume:/prometheus
     networks:
       - jforwarder-network
@@ -96,13 +97,25 @@ services:
     networks:
       - jforwarder-network
 
+  prometheus-alertmanager:
+    image: 'prom/alertmanager:v0.27.0'
+    container_name: prometheus-alertmanager
+    ports:
+      - "9093:9093"
+    command:
+        - '--config.file=/etc/alertmanager/alertmanager.yml'
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - jforwarder-network
+
 volumes:
   prometheus_volume:
     driver: local
   grafana_volume:
     driver: local
-#  tempo_volume:
-#    driver: local
+  #  tempo_volume:
+  #    driver: local
   loki_volume:
     driver: local
 
