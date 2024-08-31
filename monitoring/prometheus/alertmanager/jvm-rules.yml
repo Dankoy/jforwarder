@@ -3,14 +3,6 @@ groups:
 
     rules:
 
-      - alert: RequestsRate
-        expr: rate(http_server_requests_seconds_count[5m]) > 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: Application receiving too many requests
-
       - alert: FeignResponseErrorsIrate
         expr: irate(feign_Client_http_response_code_total{status_group="5xx"}[1m]) / irate(feign_Client_http_response_code_total[1m]) * 100 > 5
         for: 1m
