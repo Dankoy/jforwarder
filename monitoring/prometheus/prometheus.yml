@@ -6,6 +6,7 @@ rule_files:
   - alertmanager/node-exporter-rules.yml
   - alertmanager/postgresql-rules.yml
   - alertmanager/prom-rules.yml
+  - alertmanager/jvm-rules.yml
 #  - alertmanager/smart-rules.yml
 
 # Alerting specifies settings related to the Alertmanager
