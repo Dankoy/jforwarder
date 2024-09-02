@@ -3,10 +3,12 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry.SentCoubsRegistry;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SentCoubsRegistryRepository;
 
 @Service
@@ -41,7 +43,13 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
   @Transactional
   @Override
   public void deleteById(long id) {
-    var optional = sentCoubsRegistryRepository.getById(id);
-    optional.ifPresent(sentCoubsRegistryRepository::delete);
+    var ref = sentCoubsRegistryRepository.getReferenceById(id);
+    try {
+      sentCoubsRegistryRepository.delete(ref);
+    } catch (DataAccessException e) {
+      // catch access exception and wrap with own one
+      throw new ResourceNotFoundException(
+          String.format("Couldn't find registry with id '%d'", id), e);
+    }
   }
 }
