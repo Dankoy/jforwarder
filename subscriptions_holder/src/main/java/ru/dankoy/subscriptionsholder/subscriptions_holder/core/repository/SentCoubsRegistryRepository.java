@@ -2,7 +2,6 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository;
 
 import feign.Param;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -26,5 +25,6 @@ public interface SentCoubsRegistryRepository extends JpaRepository<SentCoubsRegi
       @Param("dateTime") LocalDateTime dateTime,
       Pageable pageable);
 
-  Optional<SentCoubsRegistry> getById(long id);
+  // Optional no more. Read how getReferenceById works.
+  SentCoubsRegistry getReferenceById(long id);
 }

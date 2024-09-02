@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.registry.SentCoubsRegistry;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 
 @DisplayName("Test SentCoubsRegistryServiceImpl ")
 @DataJpaTest
@@ -241,7 +242,7 @@ class SentCoubsRegistryServiceImplTest extends TestContainerBase
 
   @DisplayName("deleteById not existing expects correct response")
   @Test
-  void deleteById_deletesNotExistingRegistry_expectsCorrectResponse() {
+  void deleteById_deletesNotExistingRegistry_expectsResourceNotFoundException() {
 
     var rId = 123422L;
 
@@ -254,7 +255,10 @@ class SentCoubsRegistryServiceImplTest extends TestContainerBase
     var empty = entityManager.find(SentCoubsRegistry.class, rId);
     assertThat(empty).isNull();
 
-    sentCoubsRegistryService.deleteById(registry.getFirst().getId());
+    var toDeleteId = registry.getFirst().getId();
+
+    assertThatThrownBy(() -> sentCoubsRegistryService.deleteById(toDeleteId))
+        .isInstanceOf(ResourceNotFoundException.class);
 
     var actual = entityManager.find(SentCoubsRegistry.class, rId);
 
