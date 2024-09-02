@@ -48,8 +48,8 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
       sentCoubsRegistryRepository.delete(ref);
     } catch (DataAccessException e) {
       // catch access exception and wrap with own one
-      throw new ResourceNotFoundException(String.format("Couldn't find registry with id '%d'", id),
-          e);
+      throw new ResourceNotFoundException(
+          String.format("Couldn't find registry with id '%d'", id), e);
     }
   }
 }
