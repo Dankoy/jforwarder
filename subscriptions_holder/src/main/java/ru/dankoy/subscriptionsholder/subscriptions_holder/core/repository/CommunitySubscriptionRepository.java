@@ -50,34 +50,34 @@ public interface CommunitySubscriptionRepository
 
   @Query(
       """
-          select s, ch, sect, c from CommunitySubscription s
-          join s.community c
-          join s.chat ch
-          join s.section sect
-          where c.name = :communityName
-              """)
+      select s, ch, sect, c from CommunitySubscription s
+      join s.community c
+      join s.chat ch
+      join s.section sect
+      where c.name = :communityName
+      """)
   List<CommunitySubscription> getAllByCommunityName(@Param("communityName") String communityName);
 
   @Query(
       """
-          select s, ch, sect, c from CommunitySubscription s
-          join s.community c
-          join s.chat ch
-          join s.section sect
-          where ch.chatId = :telegramChatId
-              """)
+      select s, ch, sect, c from CommunitySubscription s
+      join s.community c
+      join s.chat ch
+      join s.section sect
+      where ch.chatId = :telegramChatId
+      """)
   List<CommunitySubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
   @Query(
       """
-          select s, ch, sect, c from CommunitySubscription s
-          join s.community c
-          join s.chat ch
-          join s.section sect
-          where c.name = :communityName
-          and ch.chatId = :externalChatId
-          and sect.name = :sectionName
-              """)
+      select s, ch, sect, c from CommunitySubscription s
+      join s.community c
+      join s.chat ch
+      join s.section sect
+      where c.name = :communityName
+      and ch.chatId = :externalChatId
+      and sect.name = :sectionName
+      """)
   Optional<CommunitySubscription> getByChatChatIdAndCommunityNameAndSectionName(
       @Param("externalChatId") long externalChatId,
       @Param("communityName") String communityName,

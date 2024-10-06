@@ -25,11 +25,11 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
 
   @Query(
       """
-              select c from Community c
-              join c.sections s
-              where s.name in :sectionNames
-              and c.name = :name
-          """)
+          select c from Community c
+          join c.sections s
+          where s.name in :sectionNames
+          and c.name = :name
+      """)
   Optional<Community> getByNameAndSections(
       @Param("name") String name, @Param("sectionNames") Set<String> sectionNames);
 }

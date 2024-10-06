@@ -19,11 +19,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
   @Query(
       """
-          select o, st from Order o
-          join o.subscriptionType st
-          where st.type = :subscriptionType
-          and o.value = :value
-              """)
+      select o, st from Order o
+      join o.subscriptionType st
+      where st.type = :subscriptionType
+      and o.value = :value
+      """)
   Optional<Order> findByValueAndSubscriptionType(
       @Param("value") String value, @Param("subscriptionType") String subscriptionType);
 }
