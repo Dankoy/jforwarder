@@ -51,42 +51,42 @@ public interface TagSubscriptionRepository extends JpaRepository<TagSubscription
 
   @Query(
       """
-          select ts, ch, t, ord, sco, ty from TagSubscription ts
-          join ts.chat ch
-          join ts.tag t
-          join ts.order ord
-          join ts.scope sco
-          join ts.type ty
-          where ch.chatId = :telegramChatId
-              """)
+      select ts, ch, t, ord, sco, ty from TagSubscription ts
+      join ts.chat ch
+      join ts.tag t
+      join ts.order ord
+      join ts.scope sco
+      join ts.type ty
+      where ch.chatId = :telegramChatId
+      """)
   List<TagSubscription> getAllByChatChatId(@Param("telegramChatId") long telegramChatId);
 
   @Query(
       """
-          select ts, ch, t, ord, sco, ty from TagSubscription ts
-          join ts.chat ch
-          join ts.tag t
-          join ts.order ord
-          join ts.scope sco
-          join ts.type ty
-          where t.title = :tagTitle
-          and ch.chatId = :externalChatId
-              """)
+      select ts, ch, t, ord, sco, ty from TagSubscription ts
+      join ts.chat ch
+      join ts.tag t
+      join ts.order ord
+      join ts.scope sco
+      join ts.type ty
+      where t.title = :tagTitle
+      and ch.chatId = :externalChatId
+      """)
   List<TagSubscription> getAllByChatChatIdAndTagTitle(
       @Param("externalChatId") long externalChatId, @Param("tagTitle") String tagTitle);
 
   @Query(
       """
-          select ts, ch, t, ord, sco, ty from TagSubscription ts
-          join ts.chat ch
-          join ts.tag t
-          join ts.order ord
-          join ts.scope sco
-          join ts.type ty
-          where t.title = :tagTitle
-          and ch.chatId = :externalChatId
-          and ord.name = :orderName
-              """)
+      select ts, ch, t, ord, sco, ty from TagSubscription ts
+      join ts.chat ch
+      join ts.tag t
+      join ts.order ord
+      join ts.scope sco
+      join ts.type ty
+      where t.title = :tagTitle
+      and ch.chatId = :externalChatId
+      and ord.name = :orderName
+      """)
   Optional<TagSubscription> getByChatChatIdAndTagTitleAndOrderName(
       @Param("externalChatId") long externalChatId,
       @Param("tagTitle") String tagTitle,

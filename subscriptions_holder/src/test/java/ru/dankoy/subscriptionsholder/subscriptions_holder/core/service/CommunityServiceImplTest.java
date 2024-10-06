@@ -86,7 +86,7 @@ class CommunityServiceImplTest extends TestContainerBase implements CommunityMak
     var name = "memes";
     var sectionName = "weekly";
 
-    var expected = findCorrectCommunityByNameAndSectionName(name, sectionName);
+    var expected = findCorrectCommunityByName(name);
 
     var actual = communityService.getByNameAndSectionName(name, sectionName);
 

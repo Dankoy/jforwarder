@@ -18,16 +18,18 @@ public interface CommunityRepository extends JpaRepository<Community, Long> {
   @EntityGraph(value = "sections-entity-graph")
   Optional<Community> getByName(String name);
 
+  // Doesn't filter by section name. Returns full list of sections, but makes sure section really
+  // exists in that list
   @EntityGraph(value = "sections-entity-graph")
   Optional<Community> getByNameAndSectionsName(String name, String sectionName);
 
   @Query(
       """
-              select c from Community c
-              join c.sections s
-              where s.name in :sectionNames
-              and c.name = :name
-          """)
+          select c from Community c
+          join c.sections s
+          where s.name in :sectionNames
+          and c.name = :name
+      """)
   Optional<Community> getByNameAndSections(
       @Param("name") String name, @Param("sectionNames") Set<String> sectionNames);
 }
