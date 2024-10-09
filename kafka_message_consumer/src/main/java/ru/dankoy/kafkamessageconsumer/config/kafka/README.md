@@ -97,3 +97,42 @@ When using Spring Boot, you can assign set the strategy as follows:
 
 spring.kafka.consumer.properties.partition.assignment.strategy=\
 org.apache.kafka.clients.consumer.RoundRobinAssignor
+
+# BatchListenerFailedException
+
+If listener consumes messages in batches, then something could go wrong in the middle of batch
+consumption.
+
+```java
+
+@Bean
+public DefaultErrorHandler errorHandler() {
+  BackOff fixedBackOff = new FixedBackOff(1000L, 5);
+  DefaultErrorHandler errorHandler =
+      new DefaultErrorHandler(
+          (consumerRecord, e) -> {
+            // logic to execute when all the retry attemps are exhausted
+          },
+          fixedBackOff);
+  errorHandler.addRetryableExceptions(SocketTimeoutException.class);
+  errorHandler.addNotRetryableExceptions(NullPointerException.class);
+  errorHandler.addNotRetryableExceptions(NotFound.class);
+  return errorHandler;
+}
+```
+
+For example, in batch of three messages, first messages consumed successfully, then second message
+threw exception `BatchListenerFailedException`. Then by logic above, consumer factory will commit
+offset for first message but retry on next message. When backoff is exhausted it logs it. Then tries
+new poll and try to deliver it again.
+
+For a batch listener, the listener must throw a BatchListenerFailedException indicating which
+records in the batch failed.
+
+The sequence of events is:
+
+- Commit the offsets of the records before the index.
+- If retries are not exhausted, perform seeks so that all the remaining records (including the failed record) will be redelivered.
+- If retries are exhausted, attempt recovery of the failed record (default log only) and perform seeks so that the remaining records (excluding the failed record) will be redelivered. The recovered record’s offset is committed.
+- If retries are exhausted and recovery fails, seeks are performed as if retries are not exhausted.
+
