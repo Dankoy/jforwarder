@@ -24,7 +24,7 @@ services:
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       - KAFKA_ADVERTISED_HOST_NAME=kafka
      # - JMX_PORT=12345
-      - "KAFKA_JMX_OPTS=-javaagent:/prometheus/jmx_prometheus_javaagent-1.0.1.jar=12345:/prometheus/config.yml -Dcom.sun.management.jmxremote.rmi.port=12345 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
+      - "KAFKA_JMX_OPTS=-javaagent:/prometheus/jmx_prometheus_javaagent-1.0.1.jar=12345:/prometheus/kafka-kraft-config-3_0_0.yml -Dcom.sun.management.jmxremote.rmi.port=12345 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
     volumes:
       - kafka_volume:/bitnami/kafka
       - ./monitoring/kafka:/prometheus
