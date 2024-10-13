@@ -45,6 +45,10 @@ spotless {
         trimTrailingWhitespace()
         endWithNewline()
     }
+    json {
+        target 'monitoring/**/*.json', '**/*.json'
+        jackson()
+    }
 }
 
 
