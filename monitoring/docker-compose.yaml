@@ -28,7 +28,7 @@ services:
   #      - jforwarder-network
   #
   loki:
-    image: grafana/loki:2.9.8
+    image: grafana/loki:3.2.0
     container_name: grafana-loki
     command: [ "-config.file=/etc/loki/local-config.yaml" ]
     ports:
@@ -43,7 +43,7 @@ services:
       - jforwarder-network
 
   prometheus-node-exporter:
-    image: prom/node-exporter:v1.8.0
+    image: prom/node-exporter:v1.8.2
     container_name: prometheus-node-exporter
     user: root
     volumes:
@@ -60,7 +60,7 @@ services:
   grafana:
     env_file:
       - .env
-    image: 'grafana/grafana:10.4.2'
+    image: 'grafana/grafana:11.2.2'
     container_name: grafana
     ports:
       - '3000:3000'
@@ -75,7 +75,7 @@ services:
       - jforwarder-network
 
   prometheus:
-    image: 'prom/prometheus:v2.51.2'
+    image: 'prom/prometheus:v2.54.1'
     container_name: prometheus
     ports:
       - '9090:9090'
