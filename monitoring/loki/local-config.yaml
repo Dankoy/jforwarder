@@ -27,12 +27,20 @@ schema_config:
       index:
         prefix: index_
         period: 24h
+    - from: 2024-10-14
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
 
 limits_config:
   retention_period: 365d # days to delete old logs, you can change
-  max_query_lookback: 60d
+  max_query_lookback: 120d
   split_queries_by_interval: 1h # fix 429 too many outstanding requests
   max_query_parallelism: 32 # fix 429 too many outstanding requests
+  allow_structured_metadata: false
 
 
 # no separate alert manager
@@ -44,11 +52,11 @@ analytics:
 
 compactor:
   working_directory: /loki/retention
-  shared_store: filesystem
   compaction_interval: 15m
   retention_enabled: true
   retention_delete_delay: 2h
   retention_delete_worker_count: 150
+  delete_request_store: filesystem
 
 querier:
   query_ingesters_within: 2h # avoid https://github.com/grafana/loki/issues/6043
