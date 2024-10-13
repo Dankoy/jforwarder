@@ -43,6 +43,7 @@ jobs:
           VALIDATE_SQLFLUFF: false
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
+          VALIDATE_JSON_PRETTIER: false
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

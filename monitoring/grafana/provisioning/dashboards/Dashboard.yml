@@ -36,3 +36,13 @@ providers:
     updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
     options:
       path: /etc/grafana/provisioning/dashboards/17175_rev1.json
+
+  - name: 'Kafka JMX'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+    options:
+      path: /etc/grafana/provisioning/dashboards/18276_rev1.json
+  
