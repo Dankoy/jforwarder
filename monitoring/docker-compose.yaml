@@ -109,6 +109,13 @@ services:
     networks:
       - jforwarder-network
 
+  grafana-mimir:
+    image: 'gragana/mimir:'
+    container_name: grafana-mimir:2.14.0
+    ports: 
+      - "9009:9009"
+    
+
 volumes:
   prometheus_volume:
     driver: local
