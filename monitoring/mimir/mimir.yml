@@ -10,32 +10,36 @@ common:
     s3:
       endpoint: minio:9000
       access_key_id: mimir
-      secret_access_key: supersecret
+      secret_access_key: superpassword
       insecure: true
       bucket_name: mimir
 
 # Blocks storage requires a prefix when using a common object storage bucket.
+# blocks_storage:
+#   storage_prefix: blocks
+#   backend: s3
+#   s3:
+#     bucket_name: mimir-blocks
+
 blocks_storage:
-  storage_prefix: blocks
+  s3:
+     bucket_name: mimir-blocks
+  bucket_store:
+    sync_dir: /data/tsdb-sync
   tsdb:
-    dir: /data/ingester
+    dir: /data/tsdb
 
-# Use memberlist, a gossip-based protocol, to enable the 3 Mimir replicas to communicate
-# memberlist:
-#   join_members: [mimir-1, mimir-2, mimir-3]
-
-ruler:
-  rule_path: /data/ruler
-  alertmanager_url: http://127.0.0.1:8080/alertmanager
-  ring:
-    # Quickly detect unhealthy rulers to speed up the tutorial.
-    heartbeat_period: 2s
-    heartbeat_timeout: 10s
-
-alertmanager:
-  data_dir: /data/alertmanager
-  fallback_config_file: /etc/alertmanager-fallback-config.yaml
-  external_url: http://localhost:9009/alertmanager
+ruler_storage:
+  backend: s3
+  s3:
+    bucket_name: mimir-ruler
 
 server:
   log_level: warn
+
+limits:
+  # Delete from storage metrics data older than 1 year.
+  compactor_blocks_retention_period: 1y
+
+usage_stats:
+  enabled: false

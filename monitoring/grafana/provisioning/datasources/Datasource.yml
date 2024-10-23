@@ -6,6 +6,17 @@ deleteDatasources:
 
 datasources:
 
+  - id: prometheus-local
+    uid: prometheus-local
+    type: prometheus
+    name: Prometheus
+    editable: true                        # whether it should be editable
+    isDefault: false                      # whether this should be the default DS
+    org_id: 1                             # id of the organization to tie this datasource to
+    access: proxy
+    url: "http://prometheus:9090"
+    version: 2                            # well, versioning
+
   - id: prometheus
     uid: prometheus
     type: prometheus
@@ -14,7 +25,7 @@ datasources:
     isDefault: true                      # whether this should be the default DS
     org_id: 1                             # id of the organization to tie this datasource to
     access: proxy
-    url: "http://prometheus:9090"
+    url: "http://grafana-mimir:9009"
     version: 1                            # well, versioning
 
 #  - id: Tempo
