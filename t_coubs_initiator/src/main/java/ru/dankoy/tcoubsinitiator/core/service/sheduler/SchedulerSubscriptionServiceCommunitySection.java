@@ -19,12 +19,11 @@ import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 /**
- * @deprecated in favor for  @{link SchedulerCommunitySubscriptionService.class}
+ * @deprecated in favor for @{link SchedulerCommunitySubscriptionService.class}
  */
-
 @Deprecated(since = "2024-10-24", forRemoval = true)
 @Slf4j
-//@Service
+// @Service
 @RequiredArgsConstructor
 public class SchedulerSubscriptionServiceCommunitySection {
 
