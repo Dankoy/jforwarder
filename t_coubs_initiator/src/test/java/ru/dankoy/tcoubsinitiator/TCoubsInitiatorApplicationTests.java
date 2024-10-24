@@ -19,9 +19,9 @@ import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.Me
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerTagSubscriptionServiceImpl;
 import ru.dankoy.tcoubsinitiator.core.service.permalinkcreator.PermalinkCreatorServiceImpl;
 import ru.dankoy.tcoubsinitiator.core.service.registry.SentCoubsRegistryServiceImpl;
-import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerSubscriptionServiceChannel;
-import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerSubscriptionServiceCommunitySection;
-import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerSubscriptionServiceTag;
+import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerChannelSubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerCommunitySubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.sheduler.SchedulerTagSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionServiceImpl;
 import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionServiceImpl;
 
@@ -50,10 +50,10 @@ class TCoubsInitiatorApplicationTests {
     var permalinkCreatorService = context.getBean(PermalinkCreatorServiceImpl.class);
     var sentCoubsRegistryRepository = context.getBean(SentCoubsRegistryServiceImpl.class);
     var schedulerSubscriptionServiceChannel =
-        context.getBean(SchedulerSubscriptionServiceChannel.class);
-    var schedulerSubscriptionServiceTag = context.getBean(SchedulerSubscriptionServiceTag.class);
+        context.getBean(SchedulerChannelSubscriptionService.class);
+    var schedulerSubscriptionServiceTag = context.getBean(SchedulerTagSubscriptionService.class);
     var schedulerSubscriptionServiceCommunitySection =
-        context.getBean(SchedulerSubscriptionServiceCommunitySection.class);
+        context.getBean(SchedulerCommunitySubscriptionService.class);
     var subscriptionService = context.getBean(SubscriptionServiceImpl.class);
     var tagSubscriptionService = context.getBean(TagSubscriptionServiceImpl.class);
 

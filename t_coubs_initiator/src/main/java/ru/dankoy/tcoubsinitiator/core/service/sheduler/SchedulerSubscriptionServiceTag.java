@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
@@ -17,8 +16,12 @@ import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.Me
 import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
+/**
+ * @deprecated in favor for @{link SchedulerTagSubscriptionService.class}
+ */
+@Deprecated(since = "2024-10-24", forRemoval = true)
 @Slf4j
-@Service
+// @Service
 @RequiredArgsConstructor
 public class SchedulerSubscriptionServiceTag {
 
