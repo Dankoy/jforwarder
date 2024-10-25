@@ -78,16 +78,12 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
   protected void logPageContent(Page<T> subs) {
 
-    log.info("{} page - {}", subs.getContent().getClass().getName(), subs);
-    log.info("{} - {}", subs.getContent().getClass().getName(), subs.getContent());
+    log.info("{} - {}", subs, subs.getContent());
   }
 
   protected void logDone(int page, int totalPages, Page<T> subs) {
 
     log.info("Page {} of {} is done", page, totalPages);
-    log.info(
-        "Amount of {} subscriptions processed: {}",
-        subs.getContent().getClass().getName(),
-        subs.getContent().size());
+    log.info("Amount of subscriptions processed: {}", subs.getContent().size());
   }
 }
