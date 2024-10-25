@@ -249,7 +249,12 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
   }
 
   private List<Coub> limitCoubs(List<Coub> coubs, int limit) {
-    return coubs.subList(0, limit);
+
+    if (limit < coubs.size()) {
+      return coubs.subList(0, limit);
+    } else {
+      return coubs.subList(0, coubs.size());
+    }
   }
 
   private void sleep(long millis) {
