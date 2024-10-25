@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,29 +38,18 @@ public class SchedulerTagSubscriptionService
   }
 
   @Override
-  public Page<TagSubscription> getActiveSubscriptions(Pageable pageable) {
+  protected Page<TagSubscription> getActiveSubscriptions(Pageable pageable) {
     return tagSubscriptionService.getAllSubscriptionsWithActiveChats(pageable);
   }
 
   @Override
-  public void findLastPermalinkSubs(Page<TagSubscription> page) {
+  protected List<Coub> findUnsentCoubsForSubscription(TagSubscription subscription) {
 
-    // поиск кубов из апи с last_permalink
-    for (var subscription : page) {
-
-      log.info("Working with subscription - '{}'", subscription);
-
-      List<Coub> coubsToSend = coubFinderService.findUnsentCoubsForTagSubscription(subscription);
-
-      // reverse coubs
-      Collections.reverse(coubsToSend);
-
-      subscription.addCoubs(coubsToSend);
-    }
+    return coubFinderService.findUnsentCoubsForTagSubscription(subscription);
   }
 
   @Override
-  public void send(List<TagSubscription> toSend) {
+  protected void send(List<TagSubscription> toSend) {
 
     if (!toSend.isEmpty()) {
       messageProducerTagSubscriptionService.sendTagSubscriptionsData(toSend);

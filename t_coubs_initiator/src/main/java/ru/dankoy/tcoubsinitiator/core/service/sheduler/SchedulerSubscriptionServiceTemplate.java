@@ -1,5 +1,6 @@
 package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
@@ -56,9 +58,25 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
   protected abstract Page<T> getActiveSubscriptions(Pageable pageable);
 
-  protected abstract void findLastPermalinkSubs(Page<T> page);
-
   protected abstract void send(List<T> toSend);
+
+  protected abstract List<Coub> findUnsentCoubsForSubscription(T subscription);
+
+  protected void findLastPermalinkSubs(Page<T> page) {
+
+    // поиск кубов из апи с last_permalink
+    for (var subscription : page) {
+
+      log.info("Working with subscription - '{}'", subscription);
+
+      List<Coub> coubsToSend = findUnsentCoubsForSubscription(subscription);
+
+      // reverse coubs
+      Collections.reverse(coubsToSend);
+
+      subscription.addCoubs(coubsToSend);
+    }
+  }
 
   protected void filterByRegistry(Page<T> page) {
     filter.filterByRegistry(page.getContent());

@@ -1,6 +1,5 @@
 package ru.dankoy.tcoubsinitiator.core.service.sheduler;
 
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,21 +43,9 @@ public class SchedulerChannelSubscriptionService
   }
 
   @Override
-  public void findLastPermalinkSubs(Page<ChannelSubscription> page) {
+  protected List<Coub> findUnsentCoubsForSubscription(ChannelSubscription subscription) {
 
-    // поиск кубов из апи с last_permalink
-    for (var subscription : page) {
-
-      log.info("Working with subscription - '{}'", subscription);
-
-      List<Coub> coubsToSend =
-          coubFinderService.findUnsentCoubsForChannelSubscription(subscription);
-
-      // reverse coubs
-      Collections.reverse(coubsToSend);
-
-      subscription.addCoubs(coubsToSend);
-    }
+    return coubFinderService.findUnsentCoubsForChannelSubscription(subscription);
   }
 
   @Override
