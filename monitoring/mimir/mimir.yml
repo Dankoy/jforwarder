@@ -1,0 +1,44 @@
+# Run Mimir in single process mode, with all components running in 1 process.
+target: all
+
+# Configure Mimir to use Minio as object storage backend.
+common:
+  storage:
+    backend: s3
+    s3:
+      endpoint: minio:9000
+      access_key_id: ${access_key_id}
+      secret_access_key: ${secret_access_key}
+      insecure: true
+      bucket_name: mimir
+
+# Blocks storage requires a prefix when using a common object storage bucket.
+# Blocks storage is used for long time data
+blocks_storage:
+  backend: s3
+  storage_prefix: blocks
+  bucket_store:
+    sync_dir: /data/tsdb-sync
+  # ingesters writes here and "flush" this data to blocks storage in s3 backend every 2 hours.
+  tsdb:
+    dir: /data/tsdb
+
+ruler_storage:
+  backend: s3
+  storage_prefix: ruler
+
+ingester:
+  ring:
+    # Default - 3. Made one. Mimir should be in 3 replicas otherwise.
+    replication_factor: 1
+
+limits:
+  # Delete from storage metrics data older than 1 year.
+  compactor_blocks_retention_period: 1y
+
+usage_stats:
+  enabled: false
+
+server:
+  http_listen_port: 9009 # should be set to work properly
+  log_level: warn

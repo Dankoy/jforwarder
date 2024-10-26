@@ -19,9 +19,9 @@
    ```
 
    ```yml
-  # for some unknown reason exporter tries to connect to localhost even if you define hostPort in config.yml.
-  # broken stuff.
-  jmx-exporter:
+      # for some unknown reason exporter tries to connect to localhost even if you define hostPort in config.yml.
+      # broken stuff.
+   jmx-exporter:
     image: 'docker.io/bitnami/jmx-exporter:1.0.1'
     container_name: jmx-exporter
     ports:
@@ -48,3 +48,6 @@
    Then proceed to update to schema v13 or newer before re-enabling this config, search for 'Storage Schema' in the docs for the schema update procedure\n
    
    CONFIG ERROR: `tsdb` index type is required to store Structured Metadata and use native OTLP ingestion, your index type is `boltdb-shipper` (defined in the `store` parameter of the schema_config). Set `allow_structured_metadata: false` in the `limits_config` section or set the command line argument `-validation.allow-structured-metadata=false` and restart Loki. Then proceed to update the schema to use index type `tsdb` before re-enabling this config, search for 'Storage Schema' in the docs for the schema update procedure"
+
+8) Mimir runs as one container. Should run as microservices in production. 
+   To read more about storage blocks - [git](https://github.com/grafana/mimir/discussions/4187)
