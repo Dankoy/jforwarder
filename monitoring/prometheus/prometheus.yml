@@ -20,7 +20,6 @@ alerting:
 remote_write:
   - url: http://grafana-mimir:9009/api/v1/push
     # Add X-Scope-OrgID header so that Mimir knows what tenant the remote write data should be stored in.
-    # In this case, our tenant is "demo"
     headers:
       X-Scope-OrgID: jforwarder
 

@@ -1,5 +1,3 @@
-# Do not use this configuration in production.
-# It is for demonstration purposes only.
 # Run Mimir in single process mode, with all components running in 1 process.
 target: all
 
@@ -15,27 +13,24 @@ common:
       bucket_name: mimir
 
 # Blocks storage requires a prefix when using a common object storage bucket.
-# blocks_storage:
-#   storage_prefix: blocks
-#   backend: s3
-#   s3:
-#     bucket_name: mimir-blocks
-
+# Blocks storage is used for long time data
 blocks_storage:
-  s3:
-     bucket_name: mimir-blocks
+  backend: s3
+  storage_prefix: blocks
   bucket_store:
     sync_dir: /data/tsdb-sync
+  # ingesters writes here and "flush" this data to blocks storage in s3 backend every 2 hours.
   tsdb:
     dir: /data/tsdb
 
 ruler_storage:
   backend: s3
-  s3:
-    bucket_name: mimir-ruler
+  storage_prefix: ruler
 
-server:
-  log_level: warn
+ingester:
+  ring:
+    # Default - 3. Made one. Mimir should be in 3 replicas otherwise.
+    replication_factor: 1
 
 limits:
   # Delete from storage metrics data older than 1 year.
@@ -43,3 +38,7 @@ limits:
 
 usage_stats:
   enabled: false
+
+server:
+  http_listen_port: 9009 # should be set to work properly
+  log_level: warn

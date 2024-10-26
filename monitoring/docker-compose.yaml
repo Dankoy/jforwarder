@@ -113,7 +113,7 @@ services:
     image: 'docker.io/grafana/mimir:2.14.0'
     container_name: grafana-mimir
     ports: 
-      - "9009:9009"
+     - "9009:9009"
     command: ["-config.file=/etc/mimir.yaml"]
     depends_on:
       - minio
@@ -134,11 +134,7 @@ services:
         while ! isAlive; do sleep 0.1; done                                # wait until Minio is alive
         mc alias set minio http://127.0.0.1:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD # setup Minio client
         mc mb minio/mimir || true                                    # create a test bucket
-        mc mb minio/mimir-blocks || true                                    # create a test bucket
-        mc mb minio/mimir-ruler || true                                    # create a test bucket
         mc anonymous set public minio/mimir                          # make the test bucket public
-        mc anonymous set public minio/mimir-blocks                          # make the test bucket public
-        mc anonymous set public minio/mimir-ruler                          # make the test bucket public
         kill -s INT $(cat /tmp/minio.pid) && rm /tmp/minio.pid             # stop Minio
         while isAlive; do sleep 0.1; done                                  # wait until Minio is stopped
         exec minio $0 "$@"                                                 # start Minio in the foreground
