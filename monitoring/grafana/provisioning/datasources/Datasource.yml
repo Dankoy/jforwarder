@@ -6,16 +6,17 @@ deleteDatasources:
 
 datasources:
 
-  - id: prometheus-local
-    uid: prometheus-local
-    type: prometheus
-    name: Prometheus
-    editable: true                        # whether it should be editable
-    isDefault: false                      # whether this should be the default DS
-    org_id: 1                             # id of the organization to tie this datasource to
-    access: proxy
-    url: "http://prometheus:9090"
-    version: 2                            # well, versioning
+# Deprecated. Moved to mimir backed metrics.
+  # - id: prometheus
+  #   uid: prometheus
+  #   type: prometheus
+  #   name: Prometheus
+  #   editable: true                        # whether it should be editable
+  #   isDefault: false                      # whether this should be the default DS
+  #   org_id: 1                             # id of the organization to tie this datasource to
+  #   access: proxy
+  #   url: "http://prometheus:9090"
+  #   version: 2                            # well, versioning
 
 # Added header to differentiate prometheus client. Prometheus scraps all data and pushes it 
 # to mimir with tenant "jforwarder". So all "jforwarder" related stuff should be accessed with its header.
