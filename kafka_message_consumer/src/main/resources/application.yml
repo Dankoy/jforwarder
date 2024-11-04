@@ -31,7 +31,12 @@ spring:
     listener:
       ack-mode: batch
 
-
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
 
 server:
   port: 8085
