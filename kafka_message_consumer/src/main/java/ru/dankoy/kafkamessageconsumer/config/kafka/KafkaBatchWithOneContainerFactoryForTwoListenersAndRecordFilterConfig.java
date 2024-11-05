@@ -96,7 +96,9 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 3);
 
     // polling interval. how many seconds consumer can work with pack of messages
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 20_000);
+    // time to process last polled records + idle between polls must be less than
+    // max.poll.interval.ms.
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 120_000);
 
     // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
@@ -138,7 +140,7 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
 
     // if you have one consumer but two topics or partitions, then set to two, etc.
     factory.setConcurrency(2);
-    factory.getContainerProperties().setIdleBetweenPolls(30_000); // polling interval
+    factory.getContainerProperties().setIdleBetweenPolls(10_000); // polling interval
     factory
         .getContainerProperties()
         .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
@@ -147,7 +149,8 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     factory.setCommonErrorHandler(errorHandler());
 
     // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
-    // somehow these settings make consumer consume messages every 15 seconds
+    // somehow these settings make (idleBetweenPolls=30_000 and maxPollInterval=20_000) consumer
+    // consume messages every 15 seconds
 
     factory.getContainerProperties().setListenerTaskExecutor(concurrentTaskExecutor());
     return factory;
