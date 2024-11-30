@@ -23,7 +23,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param
+    include-stacktrace: on-param
     include-exception: false
   port: 8082
 
@@ -83,5 +83,11 @@ management:
 logging:
   level:
     root: INFO
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
