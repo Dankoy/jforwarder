@@ -7,7 +7,7 @@ spring:
     hibernate:
       ddl-auto: validate
 
-    show-sql: true
+    show-sql: false # sql is logged by logback
 
   datasource:
     url: ${POSTGRES_CONTAINER_URL:ENC(39g3EzgM/ERP7cuefR7UVIixfmzzk5d7DwduA6hikA58UMtYimlpj+pHyUrmjH7K)}
@@ -23,7 +23,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param
+    include-stacktrace: on-param
     include-exception: false
   port: 8082
 
@@ -83,5 +83,11 @@ management:
 logging:
   level:
     root: INFO
+    org:
+      hibernate:
+        SQL: DEBUG
+        orm:
+          jdbc:
+            bind: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
