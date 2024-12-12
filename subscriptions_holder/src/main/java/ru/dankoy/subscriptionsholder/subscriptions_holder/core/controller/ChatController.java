@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramChatService;
 
@@ -48,11 +49,11 @@ public class ChatController {
   }
 
   @PutMapping("/api/v1/telegram_chat")
-  public ChatDTO updateChat(@RequestBody @Valid ChatDTO chatDTO) {
+  public ChatDTO updateChat(@RequestBody @Valid ChatUpdateDTO chatDTO) {
 
-    var chat = ChatDTO.fromDTO(chatDTO);
+    var chat = ChatUpdateDTO.fromDTO(chatDTO);
 
-    var saved = telegramChatService.save(chat);
+    var saved = telegramChatService.update(chat);
 
     return ChatDTO.toDTO(saved);
   }

@@ -1,11 +1,13 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TelegramChatRepository;
 
 @RequiredArgsConstructor
@@ -24,6 +26,26 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   @Transactional
   @Override
   public Chat save(Chat chat) {
+
+    return telegramChatRepository.save(chat);
+  }
+
+  @Transactional(isolation = Isolation.REPEATABLE_READ)
+  @Override
+  public Chat update(Chat chat) {
+
+    // get the existing chat by id
+    var found =
+        telegramChatRepository
+            .findForUpdateByChatIdAndMessageThreadId(chat.getChatId(), chat.getMessageThreadId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Chat not found - %d", chat.getChatId())));
+
+    // get created date from the existing chat and set it to the new chat
+    chat.setDateCreated(found.getDateCreated());
+    chat.setId(found.getId());
 
     return telegramChatRepository.save(chat);
   }

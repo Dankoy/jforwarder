@@ -2,14 +2,18 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.jpalisteners.ChatListener;
 
+@EntityListeners(ChatListener.class)
 @Entity
 @Table(name = "chats")
 @Data
@@ -45,4 +49,10 @@ public class Chat {
 
   @Column(name = "message_thread_id")
   private Integer messageThreadId;
+
+  @Column(name = "date_created", nullable = false)
+  private LocalDateTime dateCreated;
+
+  @Column(name = "date_modified", nullable = true)
+  private LocalDateTime dateModified;
 }
