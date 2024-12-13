@@ -17,8 +17,6 @@ public class ChatListener {
 
   @PreUpdate
   public void preUpdate(Chat chat) {
-    if (chat.getDateModified() == null) {
-      chat.setDateModified(LocalDateTime.now(ZoneOffset.UTC));
-    }
+    chat.setDateModified(LocalDateTime.now(ZoneOffset.UTC));
   }
 }

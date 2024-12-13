@@ -17,8 +17,6 @@ public class SubscriptionListener {
 
   @PreUpdate
   public void preUpdate(Subscription subscription) {
-    if (subscription.getModifiedAt() == null) {
-      subscription.setModifiedAt(LocalDateTime.now(ZoneOffset.UTC));
-    }
+    subscription.setModifiedAt(LocalDateTime.now(ZoneOffset.UTC));
   }
 }
