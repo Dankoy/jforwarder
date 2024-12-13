@@ -32,7 +32,7 @@ public class ChannelSubscriptionDTO {
   private String lastPermalink;
 
   private LocalDateTime createdAt;
-  
+
   private LocalDateTime modifiedAt;
 
   public static ChannelSubscriptionDTO toDTO(ChannelSub channelSub) {
