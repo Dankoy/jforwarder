@@ -32,6 +32,8 @@ public class ChannelSubscriptionDTO {
   private String lastPermalink;
 
   private LocalDateTime createdAt;
+  
+  private LocalDateTime modifiedAt;
 
   public static ChannelSubscriptionDTO toDTO(ChannelSub channelSub) {
 
@@ -43,7 +45,8 @@ public class ChannelSubscriptionDTO {
         ScopeDTO.toDTO(channelSub.getScope()),
         TypeDTO.toDTO(channelSub.getType()),
         channelSub.getLastPermalink(),
-        channelSub.getCreatedAt());
+        channelSub.getCreatedAt(),
+        channelSub.getModifiedAt());
   }
 
   public static ChannelSub fromDTO(ChannelSubscriptionDTO dto) {
@@ -57,6 +60,7 @@ public class ChannelSubscriptionDTO {
         .type(TypeDTO.fromDTO(dto.getType()))
         .lastPermalink(dto.getLastPermalink())
         .createdAt(dto.getCreatedAt())
+        .modifiedAt(dto.getModifiedAt())
         .build();
   }
 }

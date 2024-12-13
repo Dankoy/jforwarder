@@ -28,6 +28,8 @@ public class CommunitySubDTO {
 
   private LocalDateTime createdAt;
 
+  private LocalDateTime modifiedAt;
+
   public static CommunitySubDTO toDTO(CommunitySub communitySubscription) {
 
     return CommunitySubDTO.builder()
@@ -37,6 +39,7 @@ public class CommunitySubDTO {
         .chat(ChatDTO.toDTO(communitySubscription.getChat()))
         .lastPermalink(communitySubscription.getLastPermalink())
         .createdAt(communitySubscription.getCreatedAt())
+        .modifiedAt(communitySubscription.getModifiedAt())
         .build();
   }
 
@@ -49,6 +52,7 @@ public class CommunitySubDTO {
         .chat(ChatDTO.fromDTO(dto.getChat()))
         .lastPermalink(dto.getLastPermalink())
         .createdAt(dto.getCreatedAt())
+        .modifiedAt(dto.getModifiedAt())
         .build();
   }
 }
