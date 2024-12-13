@@ -65,10 +65,6 @@ class ChannelSubControllerTest implements ChannelMaker, ChatMaker, ChannelSubMak
 
     given(channelSubService.createSubscription(any())).willReturn(outputSub);
 
-    System.out.println(objectMapper.writeValueAsString(LocalDateTime.now()));
-
-    System.out.println(objectMapper.writeValueAsString(outputDto));
-
     mvc.perform(
             post("/api/v1/channel_subscriptions")
                 .contentType(MediaType.APPLICATION_JSON)
