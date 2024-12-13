@@ -1,5 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,8 @@ public class TagSubscriptionDTO {
 
   private String lastPermalink;
 
+  private LocalDateTime createdAt;
+
   public static TagSubscriptionDTO toDTO(TagSub tagSubscription) {
 
     return new TagSubscriptionDTO(
@@ -36,7 +40,8 @@ public class TagSubscriptionDTO {
         OrderDTO.toDTO(tagSubscription.getOrder()),
         ScopeDTO.toDTO(tagSubscription.getScope()),
         TypeDTO.toDTO(tagSubscription.getType()),
-        tagSubscription.getLastPermalink());
+        tagSubscription.getLastPermalink(),
+        tagSubscription.getCreatedAt());
   }
 
   public static TagSub fromDTO(TagSubscriptionDTO dto) {
@@ -49,6 +54,7 @@ public class TagSubscriptionDTO {
         .scope(ScopeDTO.fromDTO(dto.getScope()))
         .type(TypeDTO.fromDTO(dto.getType()))
         .lastPermalink(dto.getLastPermalink())
+        .createdAt(dto.getCreatedAt())
         .build();
   }
 }
