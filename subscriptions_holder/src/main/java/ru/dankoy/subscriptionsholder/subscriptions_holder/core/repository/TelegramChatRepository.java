@@ -17,4 +17,8 @@ public interface TelegramChatRepository extends JpaRepository<Chat, Long> {
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
   Optional<Chat> findForUpdateByChatIdAndMessageThreadId(long chatId, Integer threadId);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})
+  Optional<Chat> findForUpdateById(long id);
 }

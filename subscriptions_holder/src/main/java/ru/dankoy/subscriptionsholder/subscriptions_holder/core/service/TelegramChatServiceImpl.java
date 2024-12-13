@@ -38,7 +38,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
     var found =
         telegramChatRepository
-            .findById(chat.getId())
+            .findForUpdateById(chat.getId())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
