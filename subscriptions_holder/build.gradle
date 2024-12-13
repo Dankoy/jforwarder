@@ -32,6 +32,9 @@ dependencies {
     implementation 'org.flywaydb:flyway-core:11.1.0'
     implementation 'org.flywaydb:flyway-database-postgresql:11.1.0'
 
+    // jackson
+    testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
     // jasypt
     implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 
