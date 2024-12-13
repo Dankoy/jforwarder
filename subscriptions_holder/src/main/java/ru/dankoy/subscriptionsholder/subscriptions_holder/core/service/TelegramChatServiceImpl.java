@@ -35,9 +35,10 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   public Chat update(Chat chat) {
 
     // get the existing chat by id
+
     var found =
         telegramChatRepository
-            .findForUpdateByChatIdAndMessageThreadId(chat.getChatId(), chat.getMessageThreadId())
+            .findById(chat.getId())
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
@@ -45,7 +46,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
     // get created date from the existing chat and set it to the new chat
     chat.setDateCreated(found.getDateCreated());
-    chat.setId(found.getId());
 
     return telegramChatRepository.save(chat);
   }

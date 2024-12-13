@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
@@ -14,7 +15,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @AllArgsConstructor
 public class ChatUpdateDTO {
 
-  private long id;
+  @Setter private long id;
 
   private long chatId;
 
