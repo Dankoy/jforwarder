@@ -32,6 +32,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
   @Override
   public Chat update(Chat chat) {
-    return subscriptionsHolderFeign.updateChat(chat);
+    return subscriptionsHolderFeign.updateChat(chat.getId(), chat);
   }
 }

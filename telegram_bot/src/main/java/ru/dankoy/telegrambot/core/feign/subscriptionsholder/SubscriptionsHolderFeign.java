@@ -97,8 +97,8 @@ public interface SubscriptionsHolderFeign {
   @PostMapping(path = "/api/v1/telegram_chat")
   Chat createChat(@RequestBody Chat chat);
 
-  @PutMapping(path = "/api/v1/telegram_chat")
-  Chat updateChat(@RequestBody Chat chat);
+  @PutMapping(path = "/api/v1/telegram_chat/{id}")
+  Chat updateChat(@PathVariable("id") long id, @RequestBody Chat chat);
 
   // communities
   @GetMapping(path = "/api/v1/communities")
