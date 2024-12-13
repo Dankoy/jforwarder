@@ -10,6 +10,8 @@ public interface TelegramChatService {
 
   Chat save(Chat chat);
 
+  Chat update(Chat chat);
+
   void deleteChats(List<Chat> chats);
 
   Optional<Chat> getByTelegramChatId(long chatId);

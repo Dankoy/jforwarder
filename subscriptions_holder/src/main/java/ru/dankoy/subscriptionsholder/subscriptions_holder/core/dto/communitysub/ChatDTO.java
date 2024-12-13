@@ -1,5 +1,6 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +33,10 @@ public class ChatDTO {
 
   private Integer messageThreadId;
 
+  private LocalDateTime dateCreated;
+
+  private LocalDateTime dateModified;
+
   public static ChatDTO toDTO(Chat chat) {
 
     return builder()
@@ -44,6 +49,8 @@ public class ChatDTO {
         .username(chat.getUsername())
         .active(chat.isActive())
         .messageThreadId(chat.getMessageThreadId())
+        .dateCreated(chat.getDateCreated())
+        .dateModified(chat.getDateModified())
         .build();
   }
 
@@ -58,6 +65,8 @@ public class ChatDTO {
         dto.lastName,
         dto.username,
         dto.active,
-        dto.messageThreadId);
+        dto.messageThreadId,
+        dto.dateCreated,
+        dto.dateModified);
   }
 }

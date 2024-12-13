@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramChatService;
 
@@ -47,12 +49,15 @@ public class ChatController {
     return ChatDTO.toDTO(saved);
   }
 
-  @PutMapping("/api/v1/telegram_chat")
-  public ChatDTO updateChat(@RequestBody @Valid ChatDTO chatDTO) {
+  @PutMapping("/api/v1/telegram_chat/{id}")
+  public ChatDTO updateChat(
+      @PathVariable("id") long id, @RequestBody @Valid ChatUpdateDTO chatDTO) {
 
-    var chat = ChatDTO.fromDTO(chatDTO);
+    chatDTO.setId(id);
 
-    var saved = telegramChatService.save(chat);
+    var chat = ChatUpdateDTO.fromDTO(chatDTO);
+
+    var saved = telegramChatService.update(chat);
 
     return ChatDTO.toDTO(saved);
   }

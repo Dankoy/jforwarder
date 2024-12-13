@@ -7,6 +7,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,11 +21,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub.ChannelSubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub.ChannelSubscriptionDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.ChannelMaker;
@@ -39,7 +42,12 @@ class ChannelSubControllerTest implements ChannelMaker, ChatMaker, ChannelSubMak
 
   @Autowired private ObjectMapper objectMapper;
 
-  @MockBean private ChannelSubService channelSubService;
+  @MockitoBean private ChannelSubService channelSubService;
+
+  @BeforeEach
+  void setUpMapper() {
+    objectMapper.findAndRegisterModules();
+  }
 
   @DisplayName("create should correctly create")
   @Test
@@ -49,6 +57,7 @@ class ChannelSubControllerTest implements ChannelMaker, ChatMaker, ChannelSubMak
     var chat = makeChat(123L);
     var inputSub = makeChannelSubs(channel, chat).getFirst();
     var outputSub = makeChannelSubs(channel, chat).getFirst();
+    outputSub.setCreatedAt(LocalDateTime.now(ZoneOffset.UTC));
     outputSub.setId(1L);
 
     var inputDto = ChannelSubscriptionCreateDTO.toDTO(inputSub);

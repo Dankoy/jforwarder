@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
@@ -12,7 +13,9 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatCreateDTO {
+public class ChatUpdateDTO {
+
+  @Setter private long id;
 
   private long chatId;
 
@@ -30,9 +33,10 @@ public class ChatCreateDTO {
 
   private Integer messageThreadId;
 
-  public static ChatCreateDTO toDTO(Chat chat) {
+  public static ChatUpdateDTO toDTO(Chat chat) {
 
     return builder()
+        .id(chat.getId())
         .chatId(chat.getChatId())
         .type(chat.getType())
         .title(chat.getTitle())
@@ -44,10 +48,10 @@ public class ChatCreateDTO {
         .build();
   }
 
-  public static Chat fromDTO(ChatCreateDTO dto) {
+  public static Chat fromDTO(ChatUpdateDTO dto) {
 
     return new Chat(
-        0,
+        dto.id,
         dto.chatId,
         dto.type,
         dto.title,

@@ -1,5 +1,6 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,10 @@ public class ChannelSubscriptionDTO {
 
   private String lastPermalink;
 
+  private LocalDateTime createdAt;
+
+  private LocalDateTime modifiedAt;
+
   public static ChannelSubscriptionDTO toDTO(ChannelSub channelSub) {
 
     return new ChannelSubscriptionDTO(
@@ -39,7 +44,9 @@ public class ChannelSubscriptionDTO {
         OrderDTO.toDTO(channelSub.getOrder()),
         ScopeDTO.toDTO(channelSub.getScope()),
         TypeDTO.toDTO(channelSub.getType()),
-        channelSub.getLastPermalink());
+        channelSub.getLastPermalink(),
+        channelSub.getCreatedAt(),
+        channelSub.getModifiedAt());
   }
 
   public static ChannelSub fromDTO(ChannelSubscriptionDTO dto) {
@@ -52,6 +59,8 @@ public class ChannelSubscriptionDTO {
         .scope(ScopeDTO.fromDTO(dto.getScope()))
         .type(TypeDTO.fromDTO(dto.getType()))
         .lastPermalink(dto.getLastPermalink())
+        .createdAt(dto.getCreatedAt())
+        .modifiedAt(dto.getModifiedAt())
         .build();
   }
 }

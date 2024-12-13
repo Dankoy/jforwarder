@@ -135,7 +135,8 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
           StringUtils.normalizeSpace(sendMessage.getText()));
     } catch (TelegramApiRequestException e) {
       if (e.getErrorCode() == 403
-          || e.getMessage().contains(TelegramBotApiErrorMessages.TOPIC_CLOSED.getMessage())) {
+          || e.getMessage().contains(TelegramBotApiErrorMessages.TOPIC_CLOSED.getMessage())
+          || e.getMessage().contains(TelegramBotApiErrorMessages.TOPIC_DELETED.getMessage())) {
 
         log.warn("User blocked bot. Make it not active");
 
