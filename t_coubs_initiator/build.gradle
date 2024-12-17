@@ -6,6 +6,7 @@ plugins {
     id 'micrometer-conventions'
     id 'loki-conventions'
     id 'spring-cache-conventions'
+    id 'spring-resilience4j-conventions'
 }
 
 group = 'ru.dankoy.tcoubsinitiator'
