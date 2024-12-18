@@ -17,10 +17,10 @@ server:
 resilience4j.ratelimiter:
   instances:
     coub:
-      # one request in two seconds
+      # one request in one second
       limitForPeriod: 1
-      limitRefreshPeriod: 2s
-      timeoutDuration: 1s
+      limitRefreshPeriod: 1s
+      timeoutDuration: 1s # must be equals or more than limitRefreshPeriod or you get RequestNotPermitted
       registerHealthIndicator: true
 
 eureka:
