@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
@@ -30,7 +29,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
     return telegramChatRepository.save(chat);
   }
 
-  @Transactional(isolation = Isolation.REPEATABLE_READ)
+  @Transactional
   @Override
   public Chat update(Chat chat) {
 

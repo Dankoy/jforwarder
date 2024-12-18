@@ -3,7 +3,6 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
@@ -23,7 +22,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     return checkOptional(optional, id);
   }
 
-  @Transactional(isolation = Isolation.REPEATABLE_READ)
+  @Transactional
   @Override
   public Subscription updatePermalink(Subscription subscription) {
 
