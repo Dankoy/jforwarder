@@ -22,6 +22,14 @@ coub:
     filter:
       days: 30
 
+resilience4j.ratelimiter:
+  instances:
+    coub:
+      # one request in one second
+      limitForPeriod: 1
+      limitRefreshPeriod: 1s
+      timeoutDuration: 1s # must be equals or more than limitRefreshPeriod or you get RequestNotPermitted
+      registerHealthIndicator: true
 
 logging:
   level:

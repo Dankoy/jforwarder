@@ -16,7 +16,6 @@ import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerCommunitySubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.subscription.SubscriptionService;
-import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 /**
  * @deprecated in favor for @{link SchedulerCommunitySubscriptionService.class}
@@ -91,8 +90,6 @@ public class SchedulerSubscriptionServiceCommunitySection {
           communitySubscriptionsPage.getContent().size());
 
       page++;
-
-      Utils.sleep(3_000);
     }
   }
 }

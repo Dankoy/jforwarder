@@ -14,7 +14,6 @@ import ru.dankoy.tcoubsinitiator.core.service.channelsubscription.ChannelSubscri
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerChannelSubscriptionService;
-import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 /**
  * @deprecated in favor for @{link SchedulerChannelSubscriptionService.class}
@@ -88,8 +87,6 @@ public class SchedulerSubscriptionServiceChannel {
           allSubscriptionsWithActiveChats.getContent().size());
 
       page++;
-
-      Utils.sleep(3_000);
     }
   }
 }

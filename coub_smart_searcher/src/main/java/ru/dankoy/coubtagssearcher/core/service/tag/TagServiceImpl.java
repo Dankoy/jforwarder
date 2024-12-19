@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.coubtagssearcher.core.domain.Tag;
 import ru.dankoy.coubtagssearcher.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.coubtagssearcher.core.feign.CoubSmartSearchFeign;
-import ru.dankoy.coubtagssearcher.core.service.Utils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +31,6 @@ public class TagServiceImpl implements TagService {
       if (optionalFoundTag.isEmpty()) {
         log.info("On page '{}' tag '{}' not found", page, title);
         page++;
-        Utils.sleep(3_000);
 
         wrapper = coubSmartSearchFeign.getTags(title, page);
       } else {
