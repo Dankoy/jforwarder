@@ -93,6 +93,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 13. Zipkin
 14. Docker compose
 15. Telegrambots
+16. Resilience4j
 
 ## Monitoring stack
 
