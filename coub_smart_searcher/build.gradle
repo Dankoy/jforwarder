@@ -6,6 +6,7 @@ plugins {
     id 'spring-feign-conventions'
     id 'micrometer-conventions'
     id 'loki-conventions'
+    id 'spring-resilience4j-conventions'
 }
 
 group = 'ru.dankoy.coubsmartsearcher'

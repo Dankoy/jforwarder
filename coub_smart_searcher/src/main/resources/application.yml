@@ -14,6 +14,14 @@ server:
     include-exception: false
   port: 8086
 
+resilience4j.ratelimiter:
+  instances:
+    coub:
+      # one request in one second
+      limitForPeriod: 1
+      limitRefreshPeriod: 1s
+      timeoutDuration: 1s # must be equals or more than limitRefreshPeriod or you get RequestNotPermitted
+      registerHealthIndicator: true
 
 eureka:
   client:

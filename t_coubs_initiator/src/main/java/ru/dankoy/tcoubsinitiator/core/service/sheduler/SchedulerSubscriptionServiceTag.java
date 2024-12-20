@@ -14,7 +14,6 @@ import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerTagSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionService;
-import ru.dankoy.tcoubsinitiator.core.service.utils.Utils;
 
 /**
  * @deprecated in favor for @{link SchedulerTagSubscriptionService.class}
@@ -85,8 +84,6 @@ public class SchedulerSubscriptionServiceTag {
           "Amount of tag subscriptions processed: {}", tagSubscriptionsPage.getContent().size());
 
       page++;
-
-      Utils.sleep(3_000);
     }
   }
 }

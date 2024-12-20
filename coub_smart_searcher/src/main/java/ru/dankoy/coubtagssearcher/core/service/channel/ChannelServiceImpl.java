@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.coubtagssearcher.core.domain.Channel;
 import ru.dankoy.coubtagssearcher.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.coubtagssearcher.core.feign.CoubSearchFeign;
-import ru.dankoy.coubtagssearcher.core.service.Utils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,7 +40,6 @@ public class ChannelServiceImpl implements ChannelService {
 
         log.info("On page '{}' channel '{}' not found", page, permalink);
         page++;
-        Utils.sleep(3_000);
 
       } else {
         var foundChannel = optionalFoundChannel.get();

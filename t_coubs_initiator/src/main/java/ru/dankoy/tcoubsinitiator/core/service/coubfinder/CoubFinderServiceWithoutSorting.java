@@ -78,8 +78,6 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
         log.info("Coub with last permalink '{}' not found", lastPermalink);
         log.info("Trying page: {}", page);
 
-        sleep(3_000);
-
         wrapper =
             coubService.getCoubsWrapperForCommunityAndSection(
                 communitySubscription.getCommunity().getName(),
@@ -148,8 +146,6 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
 
         log.info("Coub with last permalink '{}' not found", lastPermalink);
         log.info("Trying page: {}", page);
-
-        sleep(5_000);
 
         wrapper =
             coubService.getCoubsWrapperForTag(
@@ -223,8 +219,6 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
         log.info("Coub with last permalink '{}' not found", lastPermalink);
         log.info("Trying page: {}", page);
 
-        sleep(5_000);
-
       } else {
 
         log.info("Found coub with lastPermalink in current list");
@@ -254,16 +248,6 @@ public class CoubFinderServiceWithoutSorting implements CoubFinderService {
       return coubs.subList(0, limit);
     } else {
       return coubs.subList(0, coubs.size());
-    }
-  }
-
-  private void sleep(long millis) {
-
-    try {
-      Thread.sleep(millis);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new RuntimeException("Interrupted while trying to get coubs", e);
     }
   }
 }
