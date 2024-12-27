@@ -2,6 +2,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
@@ -13,6 +15,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Subscr
 public class SubscriptionServiceImpl implements SubscriptionService {
 
   private final SubscriptionRepository subscriptionRepository;
+
+  @Override
+  public Page<Subscription> findAll(Pageable pageable) {
+    return subscriptionRepository.findAll(pageable);
+  }
 
   @Override
   public Subscription findById(long id) {
