@@ -1,6 +1,7 @@
 plugins {
     id 'multimodule-config'
     id 'spring-conventions'
+    id 'spring-web-conventions'
     id 'spring-feign-conventions'
     id 'micrometer-conventions'
     id 'loki-conventions'
