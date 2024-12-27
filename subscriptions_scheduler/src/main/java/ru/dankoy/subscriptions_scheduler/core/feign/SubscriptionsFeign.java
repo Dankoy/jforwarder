@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
 
-@FeignClient(contextId = "telegram_chat", name = "subscriptions-holder")
-public interface ChatFeign {
+@FeignClient(contextId = "subscriptions", name = "subscriptions-holder")
+public interface SubscriptionsFeign {
 
   @GetMapping(
-      path = "/api/v1/telegram_chat",
+      path = "/api/v1/subscriptions",
       params = {"page", "size", "sort"})
   Page<Chat> getAllChats(@PathVariable Pageable pageable);
 }
