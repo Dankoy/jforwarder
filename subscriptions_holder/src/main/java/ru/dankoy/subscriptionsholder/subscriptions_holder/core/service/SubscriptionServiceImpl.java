@@ -1,11 +1,13 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.Subscription;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.SubscriptionRepository;
@@ -15,6 +17,11 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Subscr
 public class SubscriptionServiceImpl implements SubscriptionService {
 
   private final SubscriptionRepository subscriptionRepository;
+
+  @Override
+  public List<Subscription> findByChats(List<Chat> chats) {
+    return subscriptionRepository.findByChatIsIn(chats);
+  }
 
   @Override
   public Page<Subscription> findAll(Pageable pageable) {
