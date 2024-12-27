@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
@@ -24,6 +25,14 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramC
 public class ChatController {
 
   private final TelegramChatService telegramChatService;
+
+  @GetMapping(value = "/api/v1/telegram_chat", params = "with_subs")
+  public PagedModel<ChatWithSubs> getAllChats(
+      @RequestParam("with_subs") boolean withSubs, Pageable pageable) {
+
+    var page = telegramChatService.findAllChatsWithSubs(pageable);
+    return new PagedModel<>(page);
+  }
 
   @GetMapping(value = "/api/v1/telegram_chat")
   public PagedModel<ChatDTO> getChats(Pageable pageable) {

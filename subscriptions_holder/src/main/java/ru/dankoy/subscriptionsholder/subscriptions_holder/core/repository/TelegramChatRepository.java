@@ -10,7 +10,8 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-public interface TelegramChatRepository extends JpaRepository<Chat, Long> {
+public interface TelegramChatRepository
+    extends JpaRepository<Chat, Long>, TelegramChatRepositoryCustom {
 
   Page<Chat> findAll(Pageable pageable);
 

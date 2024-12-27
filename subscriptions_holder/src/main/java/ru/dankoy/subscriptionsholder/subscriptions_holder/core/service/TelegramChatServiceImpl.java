@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TelegramChatRepository;
 
@@ -16,6 +17,12 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.Telegr
 public class TelegramChatServiceImpl implements TelegramChatService {
 
   private final TelegramChatRepository telegramChatRepository;
+
+  @Override
+  public Page<ChatWithSubs> findAllChatsWithSubs(Pageable pageable) {
+
+    return telegramChatRepository.findAllWithSubsBy(pageable);
+  }
 
   @Override
   public Page<Chat> findAll(Pageable pageable) {
