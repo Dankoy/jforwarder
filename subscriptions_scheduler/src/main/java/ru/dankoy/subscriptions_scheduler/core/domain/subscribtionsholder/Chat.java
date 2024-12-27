@@ -1,5 +1,6 @@
 package ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,5 +17,6 @@ public class Chat {
   private long id;
   private long chatId;
   private Integer messageThreadId;
-  private String username;
+  private LocalDateTime dateCreated;
+  private LocalDateTime dateModified;
 }
