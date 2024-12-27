@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatDTO;
 
-@FeignClient(contextId = "telegram_chat", name = "subscriptions-holder")
+@FeignClient(contextId = "telegram-chat", name = "subscriptions-holder")
 public interface ChatFeign {
 
   @GetMapping(
