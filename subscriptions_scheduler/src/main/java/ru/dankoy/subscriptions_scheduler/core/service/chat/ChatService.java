@@ -6,5 +6,5 @@ import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
 
 public interface ChatService {
 
-  Page<Chat> findAll(Pageable pageable);
+  Page<Chat> findAll(boolean withSubs, Pageable pageable);
 }

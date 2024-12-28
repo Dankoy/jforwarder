@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
-import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
 
 @EqualsAndHashCode(exclude = {"createdAt", "modifiedAt"})
 @Getter
@@ -15,7 +14,7 @@ public class Subscription {
 
   private long id;
 
-  private Chat chat;
+  private String lastPermalink;
 
   private LocalDateTime createdAt;
 

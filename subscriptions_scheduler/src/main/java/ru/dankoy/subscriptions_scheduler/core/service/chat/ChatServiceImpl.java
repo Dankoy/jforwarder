@@ -6,19 +6,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
 import ru.dankoy.subscriptions_scheduler.core.feign.ChatFeign;
-import ru.dankoy.subscriptions_scheduler.core.mapper.ChatMapper;
+import ru.dankoy.subscriptions_scheduler.core.mapper.ChatWithSubsMapper;
 
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
   private final ChatFeign chatFeign;
-  private final ChatMapper chatMapper;
+  private final ChatWithSubsMapper chatMapper;
 
   @Override
-  public Page<Chat> findAll(Pageable pageable) {
+  public Page<Chat> findAll(boolean withSubs, Pageable pageable) {
 
-    var dtosPage = chatFeign.getAllChats(pageable);
+    var dtosPage = chatFeign.getAllChats(withSubs, pageable);
 
     return dtosPage.map(chatMapper::fromDto);
   }

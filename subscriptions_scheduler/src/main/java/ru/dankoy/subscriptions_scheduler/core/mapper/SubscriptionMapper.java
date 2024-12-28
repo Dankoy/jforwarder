@@ -9,7 +9,7 @@ import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.SubscriptionDTO;
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
     unmappedTargetPolicy = ReportingPolicy.IGNORE,
-    uses = ChatMapper.class)
+    uses = ChatWithSubsMapper.class)
 public interface SubscriptionMapper {
 
   SubscriptionDTO tDto(Subscription subscription);
