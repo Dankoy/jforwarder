@@ -18,6 +18,16 @@ public class ChatWithSubsDTO {
   @NotNull(message = "Chat ID must not be null")
   private long chatId;
 
+  private String type;
+
+  private String title;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String username;
+
   @NotNull(message = "Active status must not be null")
   private boolean active;
 
