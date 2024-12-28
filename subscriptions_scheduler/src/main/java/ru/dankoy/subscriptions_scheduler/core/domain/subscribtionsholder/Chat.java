@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.subscription.Subscription;
 
@@ -16,7 +17,18 @@ public class Chat {
 
   private long id;
   private long chatId;
-  private boolean active;
+
+  private String type;
+
+  private String title;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String username;
+
+  @Setter private boolean active;
   private Integer messageThreadId;
   private LocalDateTime dateCreated;
   private LocalDateTime dateModified;

@@ -22,4 +22,10 @@ public class ChatServiceImpl implements ChatService {
 
     return dtosPage.map(chatMapper::fromDto);
   }
+
+  @Override
+  public void update(Chat chat) {
+    var withoutSubs = chatMapper.toDtoWithoutSubs(chat);
+    chatFeign.updateChat(chat.getId(), withoutSubs);
+  }
 }

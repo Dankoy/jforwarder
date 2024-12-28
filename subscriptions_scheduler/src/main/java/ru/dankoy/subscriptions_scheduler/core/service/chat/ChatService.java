@@ -7,4 +7,6 @@ import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
 public interface ChatService {
 
   Page<Chat> findAll(boolean withSubs, Pageable pageable);
+
+  void update(Chat chat);
 }
