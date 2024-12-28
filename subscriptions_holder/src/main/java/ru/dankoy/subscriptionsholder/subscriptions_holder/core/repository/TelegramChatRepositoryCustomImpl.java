@@ -18,6 +18,7 @@ import lombok.ToString;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
@@ -30,14 +31,21 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
   @Override
   public Page<ChatWithSubs> findAllWithSubsBy(Pageable pageable) {
 
+    // custom sorting from pageable
+    // String order = StringUtils.collectionToCommaDelimitedString(
+    // StreamSupport.stream(sort.spliterator(), false)
+    // .map(o -> o.getProperty() + " " + o.getDirection())
+    // .collect(Collectors.toList()));
+
+    // """
+    // select c from Chat c
+    // order by c.id asc
+    // """
+
+    var chatsPagedSql = QueryUtils.applySorting("select c from Chat c", pageable.getSort());
+
     // find paged chats
-    TypedQuery<Chat> chatsPagedQuery =
-        em.createQuery(
-            """
-            select c from Chat c
-            order by c.id asc
-            """,
-            Chat.class);
+    TypedQuery<Chat> chatsPagedQuery = em.createQuery(chatsPagedSql, Chat.class);
     TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
     List<Chat> chatListPaged =
         chatsPagedQuery
