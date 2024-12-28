@@ -2,6 +2,8 @@ spring:
   application:
     name: subscriptions-scheduler
 
+server:
+  port: 8087
 
 eureka:
   client:
