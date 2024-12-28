@@ -15,6 +15,16 @@ public class ChatWithSubs {
 
   private long chatId;
 
+  private String type;
+
+  private String title;
+
+  private String firstName;
+
+  private String lastName;
+
+  private String username;
+
   private boolean active;
 
   private Integer messageThreadId;
