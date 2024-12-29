@@ -1,9 +1,20 @@
 spring:
   application:
     name: subscriptions-scheduler
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            loggerLevel: BASIC
 
 server:
   port: 8087
+
+application:
+  scheduler:
+    cron: "0 0 0 * * *" # every midnight
+    retention: 14 # in days
 
 eureka:
   client:
@@ -54,11 +65,5 @@ management:
 logging:
   level:
     root: INFO
-    org:
-      hibernate:
-        SQL: DEBUG
-        orm:
-          jdbc:
-            bind: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

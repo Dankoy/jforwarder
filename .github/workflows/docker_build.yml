@@ -15,7 +15,8 @@ jobs:
       matrix:
         projects: [
           "subscriptions_holder", "t_coubs_initiator", "coub_smart_searcher",
-          "kafka_message_producer", "kafka_message_consumer", "telegram_bot"
+          "kafka_message_producer", "kafka_message_consumer", "telegram_bot",
+          "subscriptions_scheduler"
         ]
 
     steps:
@@ -45,7 +46,8 @@ jobs:
                        "spring_gateway",
                        "subscriptions_holder",
                        "t_coubs_initiator",
-                       "coub_forwarder_telegram_bot"
+                       "coub_forwarder_telegram_bot",
+                       "subscriptions_scheduler"
         ]
 
     steps:
