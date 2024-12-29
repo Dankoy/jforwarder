@@ -7,20 +7,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TelegramChatSearchCriteria {
 
-    private Long chatId;
+  private Long chatId;
 
-    private String type;
+  private String type;
 
-    private String title;
+  private String title;
 
-    private String firstName;
+  private String firstName;
 
-    private String lastName;
+  private String lastName;
 
-    private String username;
+  private String username;
 
-    private Boolean active;
+  private Boolean active;
 
-    private Long messageThreadId;
-
+  private Long messageThreadId;
 }
