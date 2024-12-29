@@ -31,7 +31,7 @@ COPY --from=build ./$ENV_PATH_BUILD_JAR ./
 # entrypoint не работает с шеллом, работает только ARG переменные
 # не работает с переменными вообще. нужно использовать голый entrypoint
 # ENTRYPOINT ["java", "-Djasypt.encryptor.password=${JASYPT_PASSWORD}", "-Djasypt.encryptor.algorithm=PBEWithMD5AndDES", "-Djasypt.encryptor.ivGeneratorClassName=org.jasypt.iv.NoIvGenerator", "-jar", "$ENV_PATH_TO_JAR"]
-ENTRYPOINT java -Xms400m -Xmx400m \
+ENTRYPOINT java -Xms200m -Xmx200m \
                   -XX:MaxMetaspaceSize=150m \
                   -XX:NewSize=150m \
                   -XX:MaxNewSize=150m \
