@@ -342,6 +342,8 @@ services:
     depends_on:
       spring-eureka-registry:
         condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
       zipkin:
         condition: service_healthy
     environment:
@@ -369,9 +371,9 @@ services:
     depends_on:
       spring-eureka-registry:
         condition: service_healthy
-      spring-gateway:
-        condition: service_healthy
       zipkin:
+        condition: service_healthy
+      subscriptions_holder:
         condition: service_healthy
     environment:
       - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
