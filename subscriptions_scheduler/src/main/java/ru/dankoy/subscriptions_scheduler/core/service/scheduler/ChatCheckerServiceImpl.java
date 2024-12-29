@@ -5,10 +5,11 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import ru.dankoy.subscriptions_scheduler.config.properties.SchedulerProperties;
 import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
-import ru.dankoy.subscriptions_scheduler.core.mapper.ChatWithSubsMapper;
 import ru.dankoy.subscriptions_scheduler.core.service.chat.ChatService;
 
 @Slf4j
@@ -17,13 +18,13 @@ import ru.dankoy.subscriptions_scheduler.core.service.chat.ChatService;
 public class ChatCheckerServiceImpl implements ChatCheckerService {
 
   private final ChatService chatService;
-  private final ChatWithSubsMapper chatWithSubsMapper;
+  private final SchedulerProperties schedulerProperties;
 
   private static final int INITIAL_PAGE_SIZE = 10;
   private static final int INITIAL_PAGE = 0;
 
   @Override
-  @Scheduled(initialDelay = 10000, fixedRate = 300_000) // 5 mins
+  @Scheduled(cron = "${application.scheduler.cron:-}")
   public void checkChats() {
 
     var currentPage = INITIAL_PAGE;
@@ -31,17 +32,22 @@ public class ChatCheckerServiceImpl implements ChatCheckerService {
     var total = Integer.MAX_VALUE;
     var withSubs = true;
 
-    var pageable = PageRequest.of(currentPage, size);
+    var sort = Sort.by("id").ascending();
 
     do {
 
+      var pageable = PageRequest.of(currentPage, size, sort);
+
       var page = chatService.findAll(withSubs, pageable);
 
-      // if chat doesn't have subs and is older than 14 days then disable it
+      log.info("Current page: {}, total: {}", currentPage + 1, page.getTotalPages());
+
+      // if chat doesn't have subs and is older than retention days then disable it
       var now = LocalDateTime.now();
-      var thresholdDate = now.minusDays(14);
+      var thresholdDate = now.minusDays(schedulerProperties.getRetention());
       List<Chat> chatsToDisable =
           page.getContent().stream()
+              .filter(Chat::isActive)
               .filter(c -> c.getSubscriptions().isEmpty())
               .filter(c -> c.getDateCreated() != null && c.getDateCreated().isBefore(thresholdDate))
               .map(
@@ -71,6 +77,6 @@ public class ChatCheckerServiceImpl implements ChatCheckerService {
       total = page.getTotalPages();
       currentPage++;
 
-    } while (currentPage <= total);
+    } while (currentPage < total);
   }
 }
