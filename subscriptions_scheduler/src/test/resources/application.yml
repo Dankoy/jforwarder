@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: subscriptions-scheduler
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            connectTimeout: 160000000
+            readTimeout: 160000000
+
+server:
+  port: 8087
+
+application:
+  scheduler:
+    cron: "0 0 0 * * *" # every midnight
+    retention: 14 # in days
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
