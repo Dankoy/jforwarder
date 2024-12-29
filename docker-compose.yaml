@@ -342,8 +342,6 @@ services:
     depends_on:
       spring-eureka-registry:
         condition: service_healthy
-      spring-gateway:
-        condition: service_healthy
       zipkin:
         condition: service_healthy
     environment:
@@ -351,6 +349,35 @@ services:
       - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
       - GATEWAY_COUB_URL=http://spring-gateway:8760/cc/
   #### coub tags searcher start ####
+
+
+  #### subscriptions scheduler start ####
+  subscriptions-scheduler:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.subscriptions_scheduler
+      args:
+        - JAR_VERSION=${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/subscriptions_scheduler:${JAR_VERSION}
+    container_name: subscriptions-scheduler
+    ports:
+      - "8087:8087"
+    networks:
+      - jforwarder-network
+    depends_on:
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+
+  #### subscriptions scheduler end ####
 
 
 
