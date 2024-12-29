@@ -3,6 +3,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
@@ -22,6 +25,21 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramC
 public class ChatController {
 
   private final TelegramChatService telegramChatService;
+
+  @GetMapping(value = "/api/v1/telegram_chat", params = "with_subs")
+  public Page<ChatWithSubs> getAllChats(
+      @RequestParam("with_subs") boolean withSubs, Pageable pageable) {
+
+    return telegramChatService.findAllChatsWithSubs(pageable);
+  }
+
+  @GetMapping(value = "/api/v1/telegram_chat")
+  public Page<ChatDTO> getChats(Pageable pageable) {
+
+    var page = telegramChatService.findAll(pageable);
+
+    return page.map(ChatDTO::toDTO);
+  }
 
   @GetMapping(
       value = "/api/v1/telegram_chat",

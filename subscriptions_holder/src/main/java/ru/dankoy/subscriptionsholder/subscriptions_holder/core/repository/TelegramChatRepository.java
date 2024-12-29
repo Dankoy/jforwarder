@@ -3,12 +3,17 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository;
 import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 
-public interface TelegramChatRepository extends JpaRepository<Chat, Long> {
+public interface TelegramChatRepository
+    extends JpaRepository<Chat, Long>, TelegramChatRepositoryCustom {
+
+  Page<Chat> findAll(Pageable pageable);
 
   Optional<Chat> findByChatId(long chatId);
 

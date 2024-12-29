@@ -1,0 +1,27 @@
+plugins {
+    id 'multimodule-config'
+    id 'spring-conventions'
+    id 'spring-web-conventions'
+    id 'spring-feign-conventions'
+    id 'micrometer-conventions'
+    id 'loki-conventions'
+    id 'spring-resilience4j-conventions'
+}
+
+group = 'ru.dankoy.subscriptions_scheduler'
+// version comes from root project
+
+dependencies {
+
+    // web
+    implementation 'org.springframework.data:spring-data-commons' // necessary for pagination
+
+    // eureka for service discovery
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // mapstruct
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+    annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+
+}
