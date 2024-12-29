@@ -20,7 +20,7 @@ public class SubscriptionController {
 
   private final SubscriptionService subscriptionService;
 
-  @PutMapping("/api/v1/")
+  @PutMapping("/api/v1/subscriptions")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public SubscriptionUpdatePermalinkDTO updatePermalink(
       @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
