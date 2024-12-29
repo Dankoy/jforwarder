@@ -2,8 +2,8 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,7 +20,7 @@ public class SubscriptionController {
 
   private final SubscriptionService subscriptionService;
 
-  @PutMapping("/api/v1/")
+  @PutMapping("/api/v1/subscriptions")
   @ResponseStatus(HttpStatus.ACCEPTED)
   public SubscriptionUpdatePermalinkDTO updatePermalink(
       @Valid @RequestBody SubscriptionUpdatePermalinkDTO dto) {
@@ -32,12 +32,10 @@ public class SubscriptionController {
   }
 
   @GetMapping(value = "/api/v1/subscriptions")
-  public PagedModel<SubscriptionDTO> getChats(Pageable pageable) {
+  public Page<SubscriptionDTO> getChats(Pageable pageable) {
 
     var page = subscriptionService.findAll(pageable);
 
-    var pageWithDto = page.map(SubscriptionDTO::toDTO);
-
-    return new PagedModel<>(pageWithDto);
+    return page.map(SubscriptionDTO::toDTO);
   }
 }
