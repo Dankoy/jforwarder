@@ -11,6 +11,10 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.TelegramChatRepository;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.TelegramChatSpecification;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.filter.TelegramChatFilter;
+
 
 @RequiredArgsConstructor
 @Service
@@ -19,14 +23,17 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   private final TelegramChatRepository telegramChatRepository;
 
   @Override
-  public Page<ChatWithSubs> findAllChatsWithSubs(Pageable pageable) {
+  public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
 
-    return telegramChatRepository.findAllWithSubsBy(pageable);
+    return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
   }
 
   @Override
-  public Page<Chat> findAll(Pageable pageable) {
-    return telegramChatRepository.findAll(pageable);
+  public Page<Chat> findAll(TelegramChatFilter filter, Pageable pageable) {
+
+    var spec = TelegramChatSpecification.filterBy(filter);
+
+    return telegramChatRepository.findAll(spec, pageable);
   }
 
   @Transactional

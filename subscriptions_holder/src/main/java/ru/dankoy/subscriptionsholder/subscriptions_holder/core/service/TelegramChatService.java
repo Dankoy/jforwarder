@@ -6,12 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.filter.TelegramChatFilter;
 
 public interface TelegramChatService {
 
-  Page<ChatWithSubs> findAllChatsWithSubs(Pageable pageable);
+  Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable);
 
-  Page<Chat> findAll(Pageable pageable);
+  Page<Chat> findAll(TelegramChatFilter filter, Pageable pageable);
 
   List<Chat> saveAll(List<Chat> chats);
 

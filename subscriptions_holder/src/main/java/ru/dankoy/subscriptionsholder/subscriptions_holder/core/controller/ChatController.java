@@ -3,6 +3,12 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +24,10 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramChatService;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.searchparser.SearchCriteriaParser;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.TelegramChatSearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.mapper.ChatSearchCriteriaToFilter;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,37 +35,46 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramC
 public class ChatController {
 
   private final TelegramChatService telegramChatService;
+  private final ChatSearchCriteriaToFilter mapper;
+  private final SearchCriteriaParser searchCriteriaParser;
 
-  @GetMapping(value = "/api/v1/telegram_chat", params = "with_subs")
+  @GetMapping(value = "/api/v1/telegram_chat", params = { "with_subs", "search" })
   public PagedModel<ChatWithSubs> getAllChats(
-      @RequestParam("with_subs") boolean withSubs, Pageable pageable) {
+      @RequestParam("with_subs") boolean withSubs, Pageable pageable,
+      @RequestParam(value = "search", required = false) String search) {
 
-    var page = telegramChatService.findAllChatsWithSubs(pageable);
+    // implemented search using criteria builder
+
+    var params = searchCriteriaParser.parse(search);
+
+    log.info("{}", params);
+
+    var page = telegramChatService.findAllChatsWithSubs(params, pageable);
     return new PagedModel<>(page);
   }
 
   @GetMapping(value = "/api/v1/telegram_chat")
-  public PagedModel<ChatDTO> getChats(Pageable pageable) {
+  public PagedModel<ChatDTO> getChats(Pageable pageable, TelegramChatSearchCriteria searchCriteria) {
 
-    var page = telegramChatService.findAll(pageable);
+    // implemented filter by spring specifications
+
+    var filter = mapper.toFilter(searchCriteria);
+
+    var page = telegramChatService.findAll(filter, pageable);
 
     var pageWithDto = page.map(ChatDTO::toDTO);
 
     return new PagedModel<>(pageWithDto);
   }
 
-  @GetMapping(
-      value = "/api/v1/telegram_chat",
-      params = {"chatId"})
+  @GetMapping(value = "/api/v1/telegram_chat", params = { "chatId" })
   public ChatDTO getChatById(
       @RequestParam("chatId") long chatId,
       @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
-    var chatOptional =
-        telegramChatService.getByTelegramChatIdAndMessageThreadId(chatId, messageThreadId);
+    var chatOptional = telegramChatService.getByTelegramChatIdAndMessageThreadId(chatId, messageThreadId);
 
-    var chat =
-        chatOptional.orElseThrow(
-            () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
+    var chat = chatOptional.orElseThrow(
+        () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
 
     return ChatDTO.toDTO(chat);
   }
