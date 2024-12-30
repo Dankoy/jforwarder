@@ -16,11 +16,12 @@ public class ChatServiceImpl implements ChatService {
 
   private final ChatFeign chatFeign;
   private final ChatWithSubsMapper chatMapper;
+  private static final String SEARCH = "active:true";
 
   @Override
   public Page<Chat> findAll(boolean withSubs, Pageable pageable) {
 
-    var dtosPage = chatFeign.getAllChats(withSubs, pageable);
+    var dtosPage = chatFeign.getAllChats(withSubs, SEARCH, pageable);
 
     return dtosPage.map(chatMapper::fromDto);
   }

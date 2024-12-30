@@ -17,8 +17,11 @@ public interface ChatFeign {
 
   @GetMapping(
       path = "/api/v1/telegram_chat",
-      params = {"page", "size", "sort", "with_subs"})
-  Page<ChatWithSubsDTO> getAllChats(@RequestParam("with_subs") boolean withSubs, Pageable pageable);
+      params = {"page", "size", "sort", "with_subs", "search"})
+  Page<ChatWithSubsDTO> getAllChats(
+      @RequestParam("with_subs") boolean withSubs,
+      @RequestParam(value = "search", required = false) String search,
+      Pageable pageable);
 
   @PutMapping(path = "/api/v1/telegram_chat/{id}")
   Chat updateChat(@PathVariable("id") long id, @RequestBody ChatDTO chat);
