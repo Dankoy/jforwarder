@@ -6,6 +6,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -22,6 +26,8 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.chat.ChatWithSubs;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
 
 @RequiredArgsConstructor
 public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryCustom {
@@ -46,6 +52,92 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
 
     // find paged chats
     TypedQuery<Chat> chatsPagedQuery = em.createQuery(chatsPagedSql, Chat.class);
+    TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
+    List<Chat> chatListPaged =
+        chatsPagedQuery
+            .setFirstResult(Integer.parseInt(String.valueOf(pageable.getOffset())))
+            .setMaxResults(pageable.getPageSize())
+            .getResultList();
+    long total = countQuery.getSingleResult();
+
+    var chatsPage = new PageImpl<>(chatListPaged, pageable, total);
+
+    // find all subscriptions for chats in page
+
+    var chatIds = chatListPaged.stream().map(Chat::getId).toList();
+
+    Query subQuery =
+        em.createNativeQuery(
+                """
+                select * from subscriptions s
+                where s.chat_id in :chats
+                """,
+                SubscriptionDTOForNativeQuery.class)
+            .setParameter("chats", chatIds);
+
+    @SuppressWarnings("unchecked")
+    List<SubscriptionDTOForNativeQuery> subs = subQuery.getResultList();
+
+    // group subscriptions by chat id
+    Map<Long, List<SubscriptionDTOForNativeQuery>> subsGroupedByChat =
+        subs.stream().collect(groupingBy(SubscriptionDTOForNativeQuery::getChatId));
+
+    return chatsPage.map(
+        chat -> {
+          var chatSubsOptional = Optional.ofNullable(subsGroupedByChat.get(chat.getId()));
+
+          var chatSubs = chatSubsOptional.orElse(new ArrayList<>());
+
+          var convertedSubs =
+              chatSubs.stream()
+                  .map(
+                      s -> {
+                        return new SubscriptionWithoutChatDTO(
+                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                      })
+                  .toList();
+
+          return ChatWithSubs.builder()
+              .id(chat.getId())
+              .chatId(chat.getChatId())
+              .active(chat.isActive())
+              .type(chat.getType())
+              .title(chat.getTitle())
+              .username(chat.getUsername())
+              .lastName(chat.getLastName())
+              .firstName(chat.getFirstName())
+              .messageThreadId(chat.getMessageThreadId())
+              .dateCreated(chat.getDateCreated())
+              .dateModified(chat.getDateModified())
+              .subscriptions(convertedSubs)
+              .build();
+        });
+  }
+
+  @Override
+  public Page<ChatWithSubs> findAllWithSubsByCriteria(
+      List<SearchCriteria> search, Pageable pageable) {
+
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+    CriteriaQuery<Chat> query = builder.createQuery(Chat.class);
+    Root<Chat> r = query.from(Chat.class);
+
+    Predicate predicate = builder.conjunction();
+
+    SearchQueryCriteriaConsumer<Chat> searchConsumer =
+        new SearchQueryCriteriaConsumer<>(predicate, builder, r);
+
+    search.stream().forEach(searchConsumer);
+
+    System.out.println(search);
+
+    predicate = searchConsumer.getPredicate();
+    query.where(predicate);
+    query.orderBy(QueryUtils.toOrders(pageable.getSort(), r, builder));
+
+    // find paged chats
+    TypedQuery<Chat> chatsPagedQuery = em.createQuery(query);
+
     TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
     List<Chat> chatListPaged =
         chatsPagedQuery

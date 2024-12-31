@@ -18,6 +18,9 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.ChatUpdateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramChatService;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.searchparser.SearchCriteriaParser;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.TelegramChatSearchCriteria;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.specifications.telegramchat.mapper.ChatSearchCriteriaToFilter;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,18 +28,32 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.TelegramC
 public class ChatController {
 
   private final TelegramChatService telegramChatService;
+  private final ChatSearchCriteriaToFilter mapper;
+  private final SearchCriteriaParser searchCriteriaParser;
 
-  @GetMapping(value = "/api/v1/telegram_chat", params = "with_subs")
+  @GetMapping(
+      value = "/api/v1/telegram_chat",
+      params = {"with_subs", "search"})
   public Page<ChatWithSubs> getAllChats(
-      @RequestParam("with_subs") boolean withSubs, Pageable pageable) {
+      @RequestParam("with_subs") boolean withSubs,
+      Pageable pageable,
+      @RequestParam(value = "search", required = false) String search) {
 
-    return telegramChatService.findAllChatsWithSubs(pageable);
+    // implemented search using criteria builder
+
+    var params = searchCriteriaParser.parse(search);
+
+    return telegramChatService.findAllChatsWithSubs(params, pageable);
   }
 
   @GetMapping(value = "/api/v1/telegram_chat")
-  public Page<ChatDTO> getChats(Pageable pageable) {
+  public Page<ChatDTO> getChats(Pageable pageable, TelegramChatSearchCriteria searchCriteria) {
 
-    var page = telegramChatService.findAll(pageable);
+    // implemented filter by spring specifications
+
+    var filter = mapper.toFilter(searchCriteria);
+
+    var page = telegramChatService.findAll(filter, pageable);
 
     return page.map(ChatDTO::toDTO);
   }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
@@ -14,6 +15,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
 
+  @EntityGraph(value = "subscription-full")
   Page<Subscription> findAll(Pageable pageable);
 
   List<Subscription> findByChatIsIn(List<Chat> chats);
