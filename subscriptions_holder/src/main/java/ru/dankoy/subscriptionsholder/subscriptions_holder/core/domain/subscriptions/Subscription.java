@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -26,7 +27,27 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.jpalisteners.Subs
     attributeNodes = {
       @NamedAttributeNode("id"),
       @NamedAttributeNode("chat"),
-      @NamedAttributeNode("lastPermalink")
+    },
+    subgraphs = {
+      @NamedSubgraph(
+          name = "subgraph.community-subscription",
+          attributeNodes = {@NamedAttributeNode("community"), @NamedAttributeNode("section")}),
+      @NamedSubgraph(
+          name = "subgraph.channel-subscription",
+          attributeNodes = {
+            @NamedAttributeNode("channel"),
+            @NamedAttributeNode("order"),
+            @NamedAttributeNode("scope"),
+            @NamedAttributeNode("type"),
+          }),
+      @NamedSubgraph(
+          name = "subgraph.tag-subscription",
+          attributeNodes = {
+            @NamedAttributeNode("tag"),
+            @NamedAttributeNode("order"),
+            @NamedAttributeNode("scope"),
+            @NamedAttributeNode("type"),
+          })
     })
 @Table(name = "subscriptions")
 @Data
