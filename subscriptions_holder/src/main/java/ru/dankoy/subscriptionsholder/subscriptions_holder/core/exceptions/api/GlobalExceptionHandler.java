@@ -3,6 +3,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.api;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -75,6 +76,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     ApiError err =
         new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Validation Errors", details);
+
+    return ResponseEntityBuilder.build(err);
+  }
+
+  @ExceptionHandler(InvalidDataAccessApiUsageException.class)
+  protected ResponseEntity<Object> handleInvalidDataAccessApiUsage(
+      InvalidDataAccessApiUsageException ex) {
+
+    List<String> details = new ArrayList<>();
+    details.add(ex.getMessage());
+
+    ApiError err =
+        new ApiError(LocalDateTime.now(), HttpStatus.BAD_REQUEST, "Search error", details);
 
     return ResponseEntityBuilder.build(err);
   }
