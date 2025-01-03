@@ -17,4 +17,6 @@ on:
 
 jobs:
   analyze:
+    permissions:
+      security-events: write
     uses: ./.github/workflows/codeql-advanced.yml

@@ -21,6 +21,8 @@ jobs:
       pull-requests: read
     uses: ./.github/workflows/check-changes.yml
   analyze:
+    permissions:
+      security-events: write
     needs: changes
     if: needs.changes.outputs.packages != '[]'
     uses: ./.github/workflows/codeql-advanced.yml
