@@ -6,6 +6,8 @@ on:
 
 jobs:
   changes:
+    permissions:
+      pull-requests: read
     uses: ./.github/workflows/check-changes.yml
   test:
     needs: changes
