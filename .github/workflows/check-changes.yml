@@ -1,0 +1,36 @@
+name: "Check Changes"
+
+on:
+  workflow_call:
+  # Map the workflow outputs to job outputs
+    outputs:
+      packages:
+        description: "Packages output string"
+        value: ${{ jobs.changes.outputs.packages }}
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    outputs:
+      # Expose matched filters as job 'packages' output variable
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          subscriptions_holder: subscriptions_holder/src
+          t_coubs_initiator: t_coubs_initiator/src
+          coub_smart_searcher: coub_smart_searcher/src
+          kafka_message_producer: kafka_message_producer/src
+          kafka_message_consumer: kafka_message_consumer/src
+          telegram_bot: telegram_bot/src
+          subscriptions_scheduler: subscriptions_scheduler/src
