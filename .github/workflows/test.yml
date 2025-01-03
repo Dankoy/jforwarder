@@ -11,6 +11,7 @@ jobs:
     uses: ./.github/workflows/check-changes.yml
   test:
     needs: changes
+    if: needs.changes.outputs.packages != '[]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
