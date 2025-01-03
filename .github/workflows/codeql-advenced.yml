@@ -12,12 +12,9 @@
 name: "CodeQL Advanced"
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-  schedule:
-    - cron: '22 3 * * 0'
 
 jobs:
   analyze:
@@ -42,6 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # analyze only if java changed
         include:
         - language: java-kotlin
           build-mode: none # This mode only analyzes Java. Set this to 'autobuild' or 'manual' to analyze Kotlin too.
