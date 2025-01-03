@@ -7,10 +7,6 @@ on:
       packages:
         description: "Packages output string"
         value: ${{ jobs.changes.outputs.packages }}
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   changes:
