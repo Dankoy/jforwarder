@@ -6,18 +6,38 @@ on:
 
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    outputs:
+      # Expose matched filters as job 'packages' output variable
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          subscriptions_holder: subscriptions_holder/src
+          t_coubs_initiator: t_coubs_initiator/src
+          coub_smart_searcher: coub_smart_searcher/src
+          kafka_message_producer: kafka_message_producer/src
+          kafka_message_consumer: kafka_message_consumer/src
+          telegram_bot: telegram_bot/src
+          subscriptions_scheduler: subscriptions_scheduler/src
+
   test:
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
     strategy:
       matrix:
-        projects: [
-          "subscriptions_holder", "t_coubs_initiator", "coub_smart_searcher",
-          "kafka_message_producer", "kafka_message_consumer", "telegram_bot",
-          "subscriptions_scheduler"
-        ]
+        # test only changed projects
+        projects: ${{ fromJSON(needs.changes.outputs.packages) }}  
 
     steps:
       - uses: actions/checkout@v4
