@@ -14,7 +14,7 @@ public class SearchCriteriaParserImpl implements SearchCriteriaParser {
   public List<SearchCriteria> parse(String search) {
     List<SearchCriteria> params = new ArrayList<>();
 
-    if (search == null || !isValidString(search)) {
+    if (search == null || !isValidString(search) || search.length() > 1000) {
       throw new IllegalArgumentException("Invalid search criteria");
     }
 
