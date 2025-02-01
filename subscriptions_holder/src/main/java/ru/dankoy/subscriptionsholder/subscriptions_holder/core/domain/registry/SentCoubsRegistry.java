@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -19,10 +20,13 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscripti
 @NamedEntityGraph(
     name = "sent-coubs-registry-full",
     includeAllAttributes = true,
-    attributeNodes = {
-      @NamedAttributeNode("subscription"),
-      @NamedAttributeNode("coubPermalink"),
-      @NamedAttributeNode("dateTime")
+    attributeNodes = {@NamedAttributeNode("subscription")})
+@NamedEntityGraph(
+    name = "sent-coubs-registry-with-partial-subscription",
+    subgraphs = {
+      @NamedSubgraph(
+          name = "subgraph.partial-subscription",
+          attributeNodes = {@NamedAttributeNode("id")})
     })
 @Table(name = "sent_coubs_registry")
 @Entity

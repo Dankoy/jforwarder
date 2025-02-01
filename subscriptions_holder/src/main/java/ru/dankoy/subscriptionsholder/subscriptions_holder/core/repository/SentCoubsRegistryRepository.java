@@ -19,7 +19,9 @@ public interface SentCoubsRegistryRepository extends JpaRepository<SentCoubsRegi
   Page<SentCoubsRegistry> getAllBySubscriptionId(
       @Param("subscriptionId") long subscriptionId, Pageable pageable);
 
-  @EntityGraph(value = "sent-coubs-registry-full", type = EntityGraphType.LOAD)
+  @EntityGraph(
+      value = "sent-coubs-registry-with-partial-subscription",
+      type = EntityGraphType.FETCH)
   Page<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
       @Param("subscriptionId") long subscriptionId,
       @Param("dateTime") LocalDateTime dateTime,

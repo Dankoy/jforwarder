@@ -23,10 +23,17 @@ jobs:
       id: filter
       with:
         filters: |
-          subscriptions_holder: subscriptions_holder/src
-          t_coubs_initiator: t_coubs_initiator/src
-          coub_smart_searcher: coub_smart_searcher/src
-          kafka_message_producer: kafka_message_producer/src
-          kafka_message_consumer: kafka_message_consumer/src
-          telegram_bot: telegram_bot/src
-          subscriptions_scheduler: subscriptions_scheduler/src
+          subscriptions_holder: 
+            - 'subscriptions_holder/src/**'
+          t_coubs_initiator: 
+            - 't_coubs_initiator/src/**'
+          coub_smart_searcher: 
+            - 'coub_smart_searcher/src/**'
+          kafka_message_producer: 
+            - 'kafka_message_producer/src/**'
+          kafka_message_consumer: 
+            - 'kafka_message_consumer/src/**'
+          telegram_bot: 
+            - 'telegram_bot/src/**'
+          subscriptions_scheduler: 
+            - 'subscriptions_scheduler/src/**'
