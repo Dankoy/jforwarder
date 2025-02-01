@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 
 @EqualsAndHashCode
 @Getter
@@ -16,8 +15,6 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Su
 public class SentCoubsRegistry {
 
   private long id;
-
-  private Subscription subscription;
 
   private String coubPermalink;
 
