@@ -16,7 +16,7 @@ jobs:
       pull-requests: read
     outputs:
       # Expose matched filters as job 'packages' output variable
-      individual: ${{ steps.filter.outputs.changes }}
+      individual: ${{ steps.individual.outputs.individual }}
       all: ${{ steps.all.outputs.all }}
       final: ${{ steps.final.outputs.final }}
     steps:
@@ -59,7 +59,7 @@ jobs:
              \"kafka_message_consumer\", 
              \"telegram_bot\", 
              \"subscriptions_scheduler\"]"
-        >> $GITHUB_OUTPUT
+            >> $GITHUB_OUTPUT
 
     - name: print final version
       id: final
