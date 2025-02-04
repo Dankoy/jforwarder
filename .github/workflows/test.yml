@@ -36,6 +36,6 @@ jobs:
       
       - name: test all
         if: ${{ contains(matrix.projects, 'buildSrc') }}
-        run: ./gradlew clean test
+        run: gradle clean test
 
 
