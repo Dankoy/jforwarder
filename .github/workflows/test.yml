@@ -29,13 +29,10 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
-
-      - name: tests individually
-        if: ${{ ! contains(matrix.projects, 'buildSrc') }}
+      
+      # will test all or some of the projects individually but still individually
+      - name: tests individually 
         run: gradle ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
       
-      - name: test all
-        if: ${{ contains(matrix.projects, 'buildSrc') }}
-        run: gradle clean test
 
 
