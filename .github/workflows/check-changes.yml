@@ -52,15 +52,14 @@ jobs:
       id: all
       if: ${{ contains(steps.filter.outputs.changes, 'buildSrc') }}
       run: |
-        echo "all=[
-          \"subscriptions_holder\",\
-          \"t_coubs_initiator\",\
-          \"coub_smart_searcher\",\
-          \"kafka_message_producer\",\
-          \"kafka_message_consumer\",\
-          \"telegram_bot\",\
-          \"subscriptions_scheduler\"\
-        ]" >> $GITHUB_OUTPUT
+        echo "all=[\"subscriptions_holder\", \
+             \"t_coubs_initiator\", \
+             \"coub_smart_searcher\", \
+             \"kafka_message_producer\", \
+             \"kafka_message_consumer\", \
+             \"telegram_bot\", \
+             \"subscriptions_scheduler\"]" \
+            >> $GITHUB_OUTPUT
 
     - name: print final version
       id: final
