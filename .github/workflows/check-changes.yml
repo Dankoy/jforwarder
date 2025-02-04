@@ -67,9 +67,9 @@ jobs:
         INDIVIDUAL: ${{ steps.individual.outputs.individual }}
         ALL: ${{ steps.all.outputs.all }}
       run: |
-        if [ -z "${{ env.INDIVIDUAL }}+x" ]; then 
+        if [ -z '${{ env.INDIVIDUAL }}+x' ]; then 
           echo 'final=${{ steps.all.outputs.all }}' >> $GITHUB_OUTPUT;
-        elif [ -z "${{ env.ALL }}+x" ]; then
+        elif [ -z '${{ env.ALL }}+x' ]; then
           echo 'final=${{ steps.individual.outputs.individual }}' >> $GITHUB_OUTPUT;
         else
           echo "final=[]" >> $GITHUB_OUTPUT;
