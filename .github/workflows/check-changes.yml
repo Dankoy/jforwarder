@@ -64,8 +64,8 @@ jobs:
     - name: print final version
       id: final
       env:
-        INDIVIDUAL: ${{ github.env.INDIVIDUAL }}
-        ALL: ${{ github.env.ALL }}
+        INDIVIDUAL: ${{ env.INDIVIDUAL }}
+        ALL: ${{ env.ALL }}
       run: |
         if [ -z "${INDIVIDUAL}" ]; then 
           echo "final=${ALL}" >> $GITHUB_OUTPUT;
