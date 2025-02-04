@@ -74,3 +74,9 @@ jobs:
         else
           echo "final=[]" >> $GITHUB_OUTPUT;
         fi
+
+    - name: print final output
+      run: echo "${{ steps.final.outputs.final }}"
+
+
+
