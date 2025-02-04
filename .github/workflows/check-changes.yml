@@ -45,7 +45,7 @@ jobs:
     - name: if result does not contains buildSrc
       id: individual
       if: ${{ ! contains(steps.filter.outputs.changes, 'buildSrc') }}
-      run: echo "individual=${{steps.filter.outputs.changes}} >> $GITHUB_ENV"
+      run: echo "individual=${{steps.filter.outputs.changes}} >> $GITHUB_OUTPUT"
 
 
     - name: if result contains buildSrc
@@ -59,13 +59,13 @@ jobs:
              \"kafka_message_consumer\", 
              \"telegram_bot\", 
              \"subscriptions_scheduler\"]"
-        >> "$GITHUB_ENV"
+        >> "$GITHUB_OUTPUT"
 
     - name: print final version
       id: final
       env:
-        INDIVIDUAL: ${{ env.individual }}
-        ALL: ${{ env.all }}
+        INDIVIDUAL: ${{ steps.individual.outputs.individual }}
+        ALL: ${{ steps.all.outputs.all }}
       run: |
         if [ -z "${INDIVIDUAL}" ]; then 
           echo "final=${ALL}" >> $GITHUB_OUTPUT;
