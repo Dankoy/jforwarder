@@ -58,8 +58,8 @@ jobs:
              \"kafka_message_producer\", 
              \"kafka_message_consumer\", 
              \"telegram_bot\", 
-             \"subscriptions_scheduler\"]"
-            >> $GITHUB_OUTPUT
+             \"subscriptions_scheduler\"]
+            >> $GITHUB_OUTPUT"
 
     - name: print final version
       id: final
