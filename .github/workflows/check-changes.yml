@@ -67,10 +67,10 @@ jobs:
         INDIVIDUAL: ${{ steps.individual.outputs.individual }}
         ALL: ${{ steps.all.outputs.all }}
       run: |
-        if [ -z "${INDIVIDUAL}" ]; then 
-          echo "final=${ALL}" >> $GITHUB_OUTPUT;
-        elif [ -z "${ALL}" ]; then
-          echo "final=${INDIVIDUAL}" >> $GITHUB_OUTPUT;
+        if [ -z "${{ steps.individual.outputs.individual }}" ]; then 
+          echo "final=${{ steps.all.outputs.all }}" >> $GITHUB_OUTPUT;
+        elif [ -z "${{ steps.all.outputs.all }}" ]; then
+          echo "final=${{ steps.individual.outputs.individual }}" >> $GITHUB_OUTPUT;
         else
           echo "final=[]" >> $GITHUB_OUTPUT;
         fi
