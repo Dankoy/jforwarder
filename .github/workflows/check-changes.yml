@@ -6,7 +6,7 @@ on:
     outputs:
       packages:
         description: "Packages output string"
-        value: ${{ jobs.changes.outputs.packages }}
+        value: ${{ jobs.final_check.outputs.result }}
 
 jobs:
   changes:
@@ -16,7 +16,8 @@ jobs:
       pull-requests: read
     outputs:
       # Expose matched filters as job 'packages' output variable
-      packages: ${{ steps.filter.outputs.changes }}
+      individual: ${{ steps.filter.outputs.changes }}
+      all: ${{ steps.all.outputs.all }}
     steps:
     # For pull requests it's not necessary to checkout the code
     - uses: dorny/paths-filter@v3
@@ -39,3 +40,33 @@ jobs:
             - 'subscriptions_scheduler/**'
           buildSrc:
             - 'buildSrc/**'
+
+    - name: if result does not contains buildSrc
+      id: individual
+      if: ${{ ! contains(steps.filter.outputs.changes, 'buildSrc') }}
+      run: echo "individual=${{steps.filter.outputs.changes}} >> $GITHUB_OUTPUT"
+
+
+    - name: if result contains buildSrc
+      id: all
+      if: ${{ contains(steps.filter.outputs.changes, 'buildSrc') }}
+      run: |
+        echo "all=[\"subscriptions_holder\", 
+             \"t_coubs_initiator\", 
+             \"coub_smart_searcher\", 
+             \"kafka_message_producer\", 
+             \"kafka_message_consumer\", 
+             \"telegram_bot\", 
+             \"subscriptions_scheduler\"]"
+        >> "$GITHUB_OUTPUT"
+
+  final_check:
+    runs-on: ubuntu-latest
+    needs: changes
+    env:
+      FINAL: ${{ (needs.changes.outputs.individual && needs.changes.outputs.individual) || (needs.changes.outputs.all && needs.changes.outputs.all)  }}
+    outputs:
+      result: ${{ github.env.FINAL }}
+
+          
+
