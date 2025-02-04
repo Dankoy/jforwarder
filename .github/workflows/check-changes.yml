@@ -45,7 +45,7 @@ jobs:
     - name: if result does not contains buildSrc
       id: individual
       if: ${{ ! contains(steps.filter.outputs.changes, 'buildSrc') }}
-      run: echo "individual=${{steps.filter.outputs.changes}} >> $GITHUB_OUTPUT"
+      run: echo "individual=${{steps.filter.outputs.changes}}" >> $GITHUB_OUTPUT
 
 
     - name: if result contains buildSrc
@@ -58,8 +58,8 @@ jobs:
              \"kafka_message_producer\", 
              \"kafka_message_consumer\", 
              \"telegram_bot\", 
-             \"subscriptions_scheduler\"]
-        >> $GITHUB_OUTPUT"
+             \"subscriptions_scheduler\"]"
+        >> $GITHUB_OUTPUT
 
     - name: print final version
       id: final
@@ -68,9 +68,9 @@ jobs:
         ALL: ${{ steps.all.outputs.all }}
       run: |
         if [ -z "${{ steps.individual.outputs.individual }}+x" ]; then 
-          echo "final=${{ steps.all.outputs.all }} >> $GITHUB_OUTPUT";
+          echo "final=${{ steps.all.outputs.all }}" >> $GITHUB_OUTPUT;
         elif [ -z "${{ steps.all.outputs.all }}+x" ]; then
-          echo "final=${{ steps.individual.outputs.individual }} >> $GITHUB_OUTPUT";
+          echo "final=${{ steps.individual.outputs.individual }}" >> $GITHUB_OUTPUT;
         else
-          echo "final=[] >> $GITHUB_OUTPUT";
+          echo "final=[]" >> $GITHUB_OUTPUT;
         fi
