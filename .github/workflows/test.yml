@@ -30,5 +30,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: tests
+      - name: tests individually
+        if: ${{ ! contains(matrix.projects, 'buildSrc') }}
         run: gradle ${{ matrix.projects }}:clean ${{ matrix.projects }}:test
+      
+      - name: test all
+        if: ${{ contains(matrix.projects, 'buildSrc') }}
+        run: ./gradlew clean test
+
+
