@@ -67,10 +67,9 @@ jobs:
         INDIVIDUAL: ${{ steps.individual.outputs.individual }}
         ALL: ${{ steps.all.outputs.all }}
       run: |
-        array=()
-        if [ -n "${{ env.INDIVIDUAL }}" ]; then 
+        if [ -n "${{ steps.individual.outputs.individual }}" ]; then 
           echo "final=${{ steps.all.outputs.all }}" >> $GITHUB_OUTPUT;
-        elif [ -n "${{ env.ALL }}" ]; then
+        elif [ -n "${{ steps.all.outputs.all }}" ]; then
           echo "final=${{ steps.individual.outputs.individual }}" >> $GITHUB_OUTPUT;
         else
           echo "final=[]" >> $GITHUB_OUTPUT;
