@@ -24,16 +24,18 @@ jobs:
       with:
         filters: |
           subscriptions_holder: 
-            - 'subscriptions_holder/src/**'
+            - 'subscriptions_holder/**'
           t_coubs_initiator: 
-            - 't_coubs_initiator/src/**'
+            - 't_coubs_initiator/**'
           coub_smart_searcher: 
-            - 'coub_smart_searcher/src/**'
+            - 'coub_smart_searcher/**'
           kafka_message_producer: 
-            - 'kafka_message_producer/src/**'
+            - 'kafka_message_producer/**'
           kafka_message_consumer: 
-            - 'kafka_message_consumer/src/**'
+            - 'kafka_message_consumer/**'
           telegram_bot: 
-            - 'telegram_bot/src/**'
+            - 'telegram_bot/**'
           subscriptions_scheduler: 
-            - 'subscriptions_scheduler/src/**'
+            - 'subscriptions_scheduler/**'
+          buildSrc:
+            - 'buildSrc/**'
