@@ -42,3 +42,6 @@ coub_connector
 
 ### macos ###
 .DS_Store
+
+### vscode liquibase ###
+data/liquibase
