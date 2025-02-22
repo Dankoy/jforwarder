@@ -1,0 +1,87 @@
+spring:
+  application:
+    name: telegram-chat-service
+
+  datasource:
+    url: ${POSTGRES_CONTAINER_URL:ENC(39g3EzgM/ERP7cuefR7UVIixfmzzk5d7DwduA6hikA58UMtYimlpj+pHyUrmjH7K)}
+    username: ${POSTGRES_CONTAINER_USER:ENC(Q11d86lj5Fu0dZk9EiAaqKb11aJ9oc5e)}
+    password: ${POSTGRES_CONTAINER_PASSWORD:ENC(sd1CNQox07aaV9FLpQquvR4JlbtU/pvU3oHd/l1LXvE=)}
+    driver-class-name: org.postgresql.Driver
+    
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+  jooq:
+    sql-dialect: postgres
+
+liquibase:
+  enabled: true
+  change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on-param
+    include-exception: false
+  port: 8088
+
+
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+    password: ${JASYPT_MASTER_PASSWORD:pass}
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  #    instance-id: "${spring.application.name}:${server.port}"
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+  zipkin:
+    tracing:
+      connect-timeout: 1s
+      read-timeout: 10s
+      endpoint: ${ZIPKIN_SERVER:http://localhost:9411/api/v2/spans}
+  tracing:
+    sampling:
+      probability: 1.0
+
+  # For Exemplars to work we need histogram buckets
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

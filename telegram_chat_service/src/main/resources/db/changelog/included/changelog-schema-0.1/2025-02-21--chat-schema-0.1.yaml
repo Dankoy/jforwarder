@@ -1,0 +1,55 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: Evgeny (generated)
+    changes:
+    - createTable:
+        tableName: chats
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: id
+            name: id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: chat_id
+            type: BIGINT
+        - column:
+            name: type
+            type: VARCHAR(50)
+        - column:
+            name: title
+            type: VARCHAR(80)
+        - column:
+            name: first_name
+            type: VARCHAR(50)
+        - column:
+            name: last_name
+            type: VARCHAR(50)
+        - column:
+            name: username
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: active
+            type: BOOLEAN
+        - column:
+            name: message_thread_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            defaultValueComputed: now() AT TIME ZONE 'utc'::text
+            name: date_created
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: date_modified
+            type: TIMESTAMP WITHOUT TIME ZONE
+        
+
