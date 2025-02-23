@@ -1,13 +1,14 @@
 import com.github.jasypt.encrypt.JasyptPlugin
 
-import org.jooq.codegen.*
-import org.jooq.meta.jaxb.*
-import org.jooq.meta.*
-
 buildscript {
     dependencies {
         classpath files('jasypt-encrypt-plugin-1.3.3.jar')
         classpath files('jooq-codegen-gradle-3.19.18.jar')
+        classpath("org.testcontainers:postgresql:1.20.4")
+        classpath("org.postgresql:postgresql:42.7.5")
+        classpath("org.liquibase:liquibase-gradle-plugin:3.0.1")
+        classpath('org.liquibase:liquibase-core:4.31.1')
+
     }
 }
 
@@ -19,8 +20,8 @@ plugins {
     id 'spring-web-conventions'
     id 'spring-feign-conventions'
     id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
-    id "org.jooq.jooq-codegen-gradle" version "3.19.18"
-    // id 'org.liquibase.gradle' version '3.0.1'
+    id "org.jooq.jooq-codegen-gradle" version "3.20.1"
+    id 'org.liquibase.gradle' version '3.0.1'
 }
 
 apply plugin: JasyptPlugin
@@ -28,80 +29,178 @@ apply plugin: JasyptPlugin
 group = 'ru.dankoy.telegramchatservice'
 // version comes from root project
 
+// test containers
 
-jooq  {
+import org.testcontainers.containers.PostgreSQLContainer
+import org.jooq.impl.DSL
+// import org.liquibase.*
+import java.sql.Connection
+import java.sql.Statement
+import java.sql.Driver
+// import java.sql.DataSource
+import org.postgresql.ds.PGSimpleDataSource
+import liquibase.Contexts
+import liquibase.Liquibase
+import liquibase.database.core.PostgresDatabase
+import liquibase.database.jvm.JdbcConnection
+import liquibase.resource.FileSystemResourceAccessor
+import liquibase.resource.ClassLoaderResourceAccessor
+import liquibase.resource.SearchPathResourceAccessor
 
-  configuration {
+def dbUsername = "postgres"
+def dbPassword = "postgres"
+def dbName = "postgres"
 
-    jdbc {
-      driver = 'org.h2.Driver'
-      url = 'jdbc:h2:~/test-gradle'
-      user = 'sa'
-      password = ''
-    }
+tasks.register("tc-start") {
+    doLast {
+        def db = new PostgreSQLContainer("postgres:latest")
+            .withUsername("${dbUsername}")
+            .withDatabaseName("${dbName}")
+            .withPassword("${dbPassword}")
+        db.start()
 
+        // See https://www.jooq.org/doc/latest/manual/code-generation/codegen-system-properties/
+        System.setProperty("jooq.codegen.jdbc.url", db.getJdbcUrl())
+        System.setProperty("jooq.codegen.jdbc.username", db.getUsername())
+        System.setProperty("jooq.codegen.jdbc.password", db.getPassword())
+        System.setProperty("testcontainer.containerid", db.getContainerId())
+        System.setProperty("testcontainer.imageName", db.getDockerImageName())
 
-  generator {
+        ext.jdbc = db.getJdbcUrl()
+        ext.user = db.getUsername()
+        ext.pass = db.getPassword()
 
-    database {
+        Class.forName("org.postgresql.Driver")
 
-      properties {
-        // property {
-        //   key = "classpath"
-        //   value = "${project.projectDir}/src/main/resources"
+        // // Alternatively, use Flyway, Liquibase, etc.
+        // DSL.using(db.getJdbcUrl(), dbUsername, dbPassword).use { ctx ->
+        //     new File("${projectDir}/src/main/resources/db/migration/init.sql")
+        //         .text
+        //         .split(";")
+        //         .findAll { it.trim() }
+        //         .each { ctx.execute(it) }
         // }
 
-        property {
-          key = "scripts"
-          // value = "${project.projectDir}/src/main/resources/db/changelog/db.changelog-master.yaml"
-          value = "classpath:/db/changelog/db.changelog-master.yaml"
+        def rootDir = "${projectDir}/src/main/resources"
+        def changeLogFilePath = "/db/changelog/db.changelog-master.yaml"
+
+        PGSimpleDataSource ds = new PGSimpleDataSource() ;  
+        ds.setUrl( db.getJdbcUrl() );  
+        ds.setDatabaseName( "postgres" );   
+        ds.setUser( db.getUsername() );       
+        ds.setPassword( db.getPassword() );
+        Connection conn = ds.getConnection()
+
+        def database = new PostgresDatabase()
+        database.setConnection(new JdbcConnection(conn))
+
+        // Нужно обязательно указать директорию к ресурсам и отдельно относительный путь к фалу с конфигурацией
+        Liquibase liquibase = new Liquibase(changeLogFilePath, 
+            new FileSystemResourceAccessor(new File(rootDir)), 
+            database)
+        liquibase.update(new Contexts())
+        conn.commit()
+
+    }
+}
+
+import org.testcontainers.utility.ResourceReaper
+
+tasks.register("tc-stop") {
+    doLast {
+        def containerId = System.getProperty("testcontainer.containerid")
+        def imageName = System.getProperty("testcontainer.imageName")
+
+        println "${containerId}"
+        println "${imageName}"
+
+        println "Stopping testcontainer $containerId - $imageName"
+        ResourceReaper.instance.stopAndRemoveContainer(containerId, imageName)
+    }
+}
+
+// test containers
+
+// def changeLog = "$projectDir/src/main/resources/db/changelog/changelog.xml"
+
+jooq {
+    configuration {
+
+        jdbc {
+            //   driver = 'org.testcontainers.jdbc.ContainerDatabaseDriver'
+            driver = 'org.postgresql.Driver'
+            url = System.getProperty("jooq.codegen.jdbc.url")
+            user = System.getProperty("jooq.codegen.jdbc.username")
+            password = System.getProperty("jooq.codegen.jdbc.password")
         }
-      }
 
-      name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
-      includes = ".*"
+        generator {
 
-      // All elements that are excluded from your schema (A Java regular expression.
-      // Use the pipe to separate several expressions). Excludes match before
-      // includes, i.e. excludes have a higher priority
-      excludes = 
-           "UNUSED_TABLE                # This table (unqualified name) should not be generated" +
-         "| PREFIX_.*                   # Objects with a given prefix should not be generated" +
-         "| SECRET_SCHEMA//.SECRET_TABLE # This table (qualified name) should not be generated" +
-         "| SECRET_ROUTINE              # This routine (unqualified name) ..." +
-         "| databasechangelog" +
-         "| databasechangeloglock"
+            database {
+                name = "org.jooq.meta.postgres.PostgresDatabase"
+                includes = ".*"
+                properties {
 
-      inputSchema = "dev"
+                    // Whether you want to include liquibase tables in generated output
+                    // 
+                    // - false (default)
+                    // - true: includes DATABASECHANGELOG and DATABASECHANGELOGLOCK tables
+                    property {
+                        key = "includeLiquibaseTables"
+                        value = false
+                    }
+
+                    // inputSchema = "public"
+
+                }
+
+                schemata {
+
+                    // PostgreSQL is lower case by default
+                    schema {
+                        inputSchema = "public"
+                    }
+                }
+            }
+            generate {
+                pojos true
+                daos true
+                generatedAnnotation = false
+            }
+
+            target {
+                packageName = "ru.dankoy.telegramchatservice"
+                directory = "${project.buildDir}/generated/jooq/primary"
+            }
+        }
     }
+}
 
-    // Generation flags: See advanced configuration properties
-    generate {
-      pojos true
-      daos true
-    }
-
-    target {
-      packageName = "ru.dankoy.telegramchatservice"
-      directory = "${project.buildDir}/generated/jooq/primary"
-    }
-  }
-  }
+tasks.named("jooqCodegen") {
+    dependsOn("tc-start")
+    finalizedBy("tc-stop")
 }
 
 dependencies {
 
     // liquibase
-    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.liquibase:liquibase-core:4.31.1'
+    liquibaseRuntime "org.liquibase:liquibase-core:4.31.1"
+    liquibaseRuntime "org.yaml:snakeyaml:2.3"
+    // liquibaseRuntime 'info.picocli:picocli:4.6.1' // necessary to run command line AND used ONLY in liquibase plugin tasks
+
+    compileOnly 'org.liquibase:liquibase-gradle-plugin:3.0.1'
+    // liquibaseRuntime "org.postgresql:postgresql"
 
     // jooq
     implementation 'org.springframework.boot:spring-boot-starter-jooq'
     implementation 'org.jooq:jooq-codegen'
     implementation 'org.jooq:jooq-meta'
-    jooqCodegen 'org.jooq:jooq-meta-extensions-liquibase:3.19.18'
-    jooqCodegen 'com.h2database:h2' // should be testcontainers
-    jooqCodegen 'org.liquibase:liquibase-core'
-
+    // jooqCodegen 'org.jooq:jooq-meta-extensions-liquibase:3.20.1'
+    jooqCodegen 'org.postgresql:postgresql'
+    jooqCodegen 'org.testcontainers:postgresql'
+    // jooqCodegen 'org.liquibase:liquibase-core'
+    implementation 'org.testcontainers:postgresql'
 
     // jackson
     testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -113,7 +212,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
     // aop
-    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    // implementation 'org.springframework.boot:spring-boot-starter-aop'
 
     // mapstruct
     implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -121,7 +220,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
     // data
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation 'org.testcontainers:junit-jupiter'

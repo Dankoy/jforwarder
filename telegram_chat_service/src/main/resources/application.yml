@@ -3,6 +3,7 @@ spring:
     name: telegram-chat-service
 
   datasource:
+    # url: jdbc:postgresql://telegram-chat-service-postgres-db:5433/dev
     url: ${POSTGRES_CONTAINER_URL:ENC(39g3EzgM/ERP7cuefR7UVIixfmzzk5d7DwduA6hikA58UMtYimlpj+pHyUrmjH7K)}
     username: ${POSTGRES_CONTAINER_USER:ENC(Q11d86lj5Fu0dZk9EiAaqKb11aJ9oc5e)}
     password: ${POSTGRES_CONTAINER_PASSWORD:ENC(sd1CNQox07aaV9FLpQquvR4JlbtU/pvU3oHd/l1LXvE=)}
@@ -14,10 +15,6 @@ spring:
 
   jooq:
     sql-dialect: postgres
-
-liquibase:
-  enabled: true
-  change-log: classpath:db/changelog/db.changelog-master.yaml
 
 server:
   error:

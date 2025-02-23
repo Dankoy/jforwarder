@@ -45,7 +45,7 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            defaultValueComputed: now() AT TIME ZONE 'utc'::text
+            defaultValueComputed: timezone('UTC', now()) # postgresql things, not compatible with other dbs
             name: date_created
             type: TIMESTAMP WITHOUT TIME ZONE
         - column:
