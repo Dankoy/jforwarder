@@ -179,10 +179,16 @@ jooq {
                 generatedAnnotation = false
             }
 
+            // generates files in src/main/java/ru/dankoy/telegramchatservice/core/domain/jooq
             target {
-                packageName = "ru.dankoy.telegramchatservice"
-                directory = "${project.buildDir}/generated/jooq/primary"
+                packageName = "ru.dankoy.telegramchatservice.core.domain.jooq"
+                directory = "src/main/java/"
             }
+
+            // target {
+            //     packageName = "ru.dankoy.telegramchatservice.jooq"
+            //     directory = "${project.buildDir}/classes/java/main/"
+            // }
         }
     }
 }
