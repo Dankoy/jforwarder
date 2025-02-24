@@ -6,9 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @EnableEncryptableProperties
 @SpringBootApplication
-public class SubscriptionsHolderApplication {
+public class TelegramChatServiceApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(SubscriptionsHolderApplication.class, args);
+    SpringApplication.run(TelegramChatServiceApplication.class, args);
   }
 }
