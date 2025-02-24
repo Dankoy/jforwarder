@@ -53,7 +53,7 @@ def dbName = "postgres"
 
 tasks.register("tc-start") {
     doLast {
-        def db = new PostgreSQLContainer("postgres:latest")
+        def db = new PostgreSQLContainer("postgres:16.2")
             .withUsername("${dbUsername}")
             .withDatabaseName("${dbName}")
             .withPassword("${dbPassword}")
@@ -139,16 +139,27 @@ jooq {
             database {
                 name = "org.jooq.meta.postgres.PostgresDatabase"
                 includes = ".*"
+
+                excludes = """
+                UNUSED_TABLE                # This table (unqualified name) should not be generated
+                | PREFIX_.*                   # Objects with a given prefix should not be generated
+                | SECRET_SCHEMA.SECRET_TABLE # This table (qualified name) should not be generated
+                | SECRET_ROUTINE              # This routine (unqualified name) ...
+                | databasechangelog
+                | databasechangeloglock
+                """
+
                 properties {
 
+                    // !!! It works only for liquibase from H2, not with testcontainers
                     // Whether you want to include liquibase tables in generated output
                     // 
                     // - false (default)
                     // - true: includes DATABASECHANGELOG and DATABASECHANGELOGLOCK tables
-                    property {
-                        key = "includeLiquibaseTables"
-                        value = false
-                    }
+                    // property {
+                    //     key = "includeLiquibaseTables"
+                    //     value = false
+                    // }
 
                     // inputSchema = "public"
 
