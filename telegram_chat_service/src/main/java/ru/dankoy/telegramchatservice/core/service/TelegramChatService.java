@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 // import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
@@ -13,17 +14,19 @@ public interface TelegramChatService {
 
   // Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable);
 
-  Page<Chat> findAll(TelegramChatFilter filter, Pageable pageable);
+  Page<ChatDTO> findAll(List<SearchCriteria> search, Pageable pageable);
 
-  List<Chat> saveAll(List<Chat> chats);
+  Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable);
 
-  Chat save(Chat chat);
+  List<ChatDTO> saveAll(List<ChatDTO> chats);
 
-  Chat update(Chat chat);
+  ChatDTO save(ChatDTO chat);
 
-  void deleteChats(List<Chat> chats);
+  ChatDTO update(ChatDTO chat);
 
-  Optional<Chat> getByTelegramChatId(long chatId);
+  void deleteChats(List<ChatDTO> chats);
 
-  Optional<Chat> getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
+  Optional<ChatDTO> getByTelegramChatId(long chatId);
+
+  Optional<ChatDTO> getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
 }

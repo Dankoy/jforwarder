@@ -8,8 +8,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 // import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
+import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.TelegramChatSpecification;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
@@ -20,72 +22,111 @@ import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.Tel
 public class TelegramChatServiceImpl implements TelegramChatService {
 
   private final TelegramChatRepository telegramChatRepository;
+  private final ChatMapper chatMapper;
 
   // @Override
-  // public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
+  // public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search,
+  // Pageable pageable) {
 
-  //   return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
+  // return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
   // }
 
   @Override
-  public Page<Chat> findAll(TelegramChatFilter filter, Pageable pageable) {
+  public Page<ChatDTO> findAll(List<SearchCriteria> search, Pageable pageable) {
+
+    // look in custom repository in subscriptions_holder micrioservice.
+    throw new UnsupportedOperationException();
+
+  }
+
+  @Override
+  public Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable) {
 
     var spec = TelegramChatSpecification.filterBy(filter);
 
-    return telegramChatRepository.findAll(spec, pageable);
+    return telegramChatRepository.findAll(spec, pageable).map(chatMapper::fromJpaToDTO);
   }
 
   @Transactional
   @Override
-  public List<Chat> saveAll(List<Chat> chats) {
+  public List<ChatDTO> saveAll(List<ChatDTO> chats) {
 
-    return telegramChatRepository.saveAll(chats);
+    var jpas = chats.stream().map(chatMapper::toJpaFromDTO).toList();
+
+    var res = telegramChatRepository.saveAll(jpas);
+
+    return res.stream().map(chatMapper::fromJpaToDTO).toList();
+
   }
 
   @Transactional
   @Override
-  public Chat save(Chat chat) {
+  public ChatDTO save(ChatDTO chat) {
 
-    return telegramChatRepository.save(chat);
+    var jpa = chatMapper.toJpaFromDTO(chat);
+
+    var res = telegramChatRepository.save(jpa);
+
+    return chatMapper.fromJpaToDTO(res);
+
   }
 
   @Transactional
   @Override
-  public Chat update(Chat chat) {
+  public ChatDTO update(ChatDTO chat) {
+
+    var jpa = chatMapper.toJpaFromDTO(chat);
 
     // get the existing chat by id
 
-    var found =
-        telegramChatRepository
-            .findForUpdateById(chat.getId())
-            .orElseThrow(
-                () ->
-                    new ResourceNotFoundException(
-                        String.format("Chat not found - %d", chat.getChatId())));
+    var found = telegramChatRepository
+        .findForUpdateById(jpa.getId())
+        .orElseThrow(
+            () -> new ResourceNotFoundException(
+                String.format("Chat not found - %d", chat.getChatId())));
 
     // get created date from the existing chat and set it to the new chat
-    chat.setDateCreated(found.getDateCreated());
+    jpa.setDateCreated(found.getDateCreated());
 
-    return telegramChatRepository.save(chat);
+    var res = telegramChatRepository.save(jpa);
+
+    return chatMapper.fromJpaToDTO(res);
+
   }
 
   @Transactional
   @Override
-  public void deleteChats(List<Chat> chats) {
+  public void deleteChats(List<ChatDTO> chats) {
 
-    telegramChatRepository.deleteAll(chats);
+    var jpas = chats.stream().map(chatMapper::toJpaFromDTO).toList();
+
+    telegramChatRepository.deleteAll(jpas);
   }
 
   @Override
-  public Optional<Chat> getByTelegramChatId(long chatId) {
+  public Optional<ChatDTO> getByTelegramChatId(long chatId) {
 
-    return telegramChatRepository.findByChatId(chatId);
+    var res =  telegramChatRepository.findByChatId(chatId);
+
+    if (res.isPresent()) {
+      return Optional.of(chatMapper.fromJpaToDTO(res.get()));
+    } else {
+      return Optional.empty();
+    }
+
   }
 
   @Override
-  public Optional<Chat> getByTelegramChatIdAndMessageThreadId(
+  public Optional<ChatDTO> getByTelegramChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
 
-    return telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
+    var res =  telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
+
+    if (res.isPresent()) {
+      return Optional.of(chatMapper.fromJpaToDTO(res.get()));
+    } else {
+      return Optional.empty();
+    }
+
   }
 }
