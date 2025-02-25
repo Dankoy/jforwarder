@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1
+    id: "create-chats-table"
     author: Evgeny (generated)
     changes:
     - createTable:
