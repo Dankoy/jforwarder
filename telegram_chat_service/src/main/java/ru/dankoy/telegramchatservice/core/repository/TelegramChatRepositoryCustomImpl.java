@@ -24,199 +24,204 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
-// import ru.dankoy.telegramchatservice.core.dto.SubscriptionWithoutChatDTO;
-// import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
 
+/**
+ * @deprecated because DDD and microservice separation. For working example see
+ *             subscription_holder microservice
+ */
+@Deprecated(since = "2025-02-25")
 @RequiredArgsConstructor
 public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryCustom {
 
   @PersistenceContext private final EntityManager em;
 
-//   @Override
-//   public Page<ChatWithSubs> findAllWithSubsBy(Pageable pageable) {
+  @Override
+  public Page<ChatWithSubs> findAllWithSubsBy(Pageable pageable) {
 
-//     // custom sorting from pageable
-//     // String order = StringUtils.collectionToCommaDelimitedString(
-//     // StreamSupport.stream(sort.spliterator(), false)
-//     // .map(o -> o.getProperty() + " " + o.getDirection())
-//     // .collect(Collectors.toList()));
+    // custom sorting from pageable
+    // String order = StringUtils.collectionToCommaDelimitedString(
+    // StreamSupport.stream(sort.spliterator(), false)
+    // .map(o -> o.getProperty() + " " + o.getDirection())
+    // .collect(Collectors.toList()));
 
-//     // """
-//     // select c from Chat c
-//     // order by c.id asc
-//     // """
+    // """
+    // select c from Chat c
+    // order by c.id asc
+    // """
 
-//     var chatsPagedSql = QueryUtils.applySorting("select c from Chat c", pageable.getSort());
+    var chatsPagedSql = QueryUtils.applySorting("select c from Chat c", pageable.getSort());
 
-//     // find paged chats
-//     TypedQuery<Chat> chatsPagedQuery = em.createQuery(chatsPagedSql, Chat.class);
-//     TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
-//     List<Chat> chatListPaged =
-//         chatsPagedQuery
-//             .setFirstResult(Integer.parseInt(String.valueOf(pageable.getOffset())))
-//             .setMaxResults(pageable.getPageSize())
-//             .getResultList();
-//     long total = countQuery.getSingleResult();
+    // find paged chats
+    TypedQuery<Chat> chatsPagedQuery = em.createQuery(chatsPagedSql, Chat.class);
+    TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
+    List<Chat> chatListPaged =
+        chatsPagedQuery
+            .setFirstResult(Integer.parseInt(String.valueOf(pageable.getOffset())))
+            .setMaxResults(pageable.getPageSize())
+            .getResultList();
+    long total = countQuery.getSingleResult();
 
-//     var chatsPage = new PageImpl<>(chatListPaged, pageable, total);
+    var chatsPage = new PageImpl<>(chatListPaged, pageable, total);
 
-//     // find all subscriptions for chats in page
+    // find all subscriptions for chats in page
 
-//     var chatIds = chatListPaged.stream().map(Chat::getId).toList();
+    var chatIds = chatListPaged.stream().map(Chat::getId).toList();
 
-//     Query subQuery =
-//         em.createNativeQuery(
-//                 """
-//                 select * from subscriptions s
-//                 where s.chat_id in :chats
-//                 """,
-//                 SubscriptionDTOForNativeQuery.class)
-//             .setParameter("chats", chatIds);
+    Query subQuery =
+        em.createNativeQuery(
+                """
+                select * from subscriptions s
+                where s.chat_id in :chats
+                """,
+                SubscriptionDTOForNativeQuery.class)
+            .setParameter("chats", chatIds);
 
-//     @SuppressWarnings("unchecked")
-//     List<SubscriptionDTOForNativeQuery> subs = subQuery.getResultList();
+    @SuppressWarnings("unchecked")
+    List<SubscriptionDTOForNativeQuery> subs = subQuery.getResultList();
 
-//     // group subscriptions by chat id
-//     Map<Long, List<SubscriptionDTOForNativeQuery>> subsGroupedByChat =
-//         subs.stream().collect(groupingBy(SubscriptionDTOForNativeQuery::getChatId));
+    // group subscriptions by chat id
+    Map<Long, List<SubscriptionDTOForNativeQuery>> subsGroupedByChat =
+        subs.stream().collect(groupingBy(SubscriptionDTOForNativeQuery::getChatId));
 
-//     return chatsPage.map(
-//         chat -> {
-//           var chatSubsOptional = Optional.ofNullable(subsGroupedByChat.get(chat.getId()));
+    return chatsPage.map(
+        chat -> {
+          var chatSubsOptional = Optional.ofNullable(subsGroupedByChat.get(chat.getId()));
 
-//           var chatSubs = chatSubsOptional.orElse(new ArrayList<>());
+          var chatSubs = chatSubsOptional.orElse(new ArrayList<>());
 
-//           var convertedSubs =
-//               chatSubs.stream()
-//                   .map(
-//                       s -> {
-//                         return new SubscriptionWithoutChatDTO(
-//                             s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
-//                       })
-//                   .toList();
+          var convertedSubs =
+              chatSubs.stream()
+                  .map(
+                      s -> {
+                        return new SubscriptionWithoutChatDTO(
+                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                      })
+                  .toList();
 
-//           return ChatWithSubs.builder()
-//               .id(chat.getId())
-//               .chatId(chat.getChatId())
-//               .active(chat.isActive())
-//               .type(chat.getType())
-//               .title(chat.getTitle())
-//               .username(chat.getUsername())
-//               .lastName(chat.getLastName())
-//               .firstName(chat.getFirstName())
-//               .messageThreadId(chat.getMessageThreadId())
-//               .dateCreated(chat.getDateCreated())
-//               .dateModified(chat.getDateModified())
-//               .subscriptions(convertedSubs)
-//               .build();
-//         });
-//   }
+          return ChatWithSubs.builder()
+              .id(chat.getId())
+              .chatId(chat.getChatId())
+              .active(chat.isActive())
+              .type(chat.getType())
+              .title(chat.getTitle())
+              .username(chat.getUsername())
+              .lastName(chat.getLastName())
+              .firstName(chat.getFirstName())
+              .messageThreadId(chat.getMessageThreadId())
+              .dateCreated(chat.getDateCreated())
+              .dateModified(chat.getDateModified())
+              .subscriptions(convertedSubs)
+              .build();
+        });
+  }
 
-//   @Override
-//   public Page<ChatWithSubs> findAllWithSubsByCriteria(
-//       List<SearchCriteria> search, Pageable pageable) {
+  @Override
+  public Page<ChatWithSubs> findAllWithSubsByCriteria(
+      List<SearchCriteria> search, Pageable pageable) {
 
-//     CriteriaBuilder builder = em.getCriteriaBuilder();
-//     CriteriaQuery<Chat> query = builder.createQuery(Chat.class);
-//     Root<Chat> r = query.from(Chat.class);
+    CriteriaBuilder builder = em.getCriteriaBuilder();
+    CriteriaQuery<Chat> query = builder.createQuery(Chat.class);
+    Root<Chat> r = query.from(Chat.class);
 
-//     Predicate predicate = builder.conjunction();
+    Predicate predicate = builder.conjunction();
 
-//     SearchQueryCriteriaConsumer<Chat> searchConsumer =
-//         new SearchQueryCriteriaConsumer<>(predicate, builder, r);
+    SearchQueryCriteriaConsumer<Chat> searchConsumer =
+        new SearchQueryCriteriaConsumer<>(predicate, builder, r);
 
-//     search.stream().forEach(searchConsumer);
+    search.stream().forEach(searchConsumer);
 
-//     System.out.println(search);
+    System.out.println(search);
 
-//     predicate = searchConsumer.getPredicate();
-//     query.where(predicate);
-//     query.orderBy(QueryUtils.toOrders(pageable.getSort(), r, builder));
+    predicate = searchConsumer.getPredicate();
+    query.where(predicate);
+    query.orderBy(QueryUtils.toOrders(pageable.getSort(), r, builder));
 
-//     // find paged chats
-//     TypedQuery<Chat> chatsPagedQuery = em.createQuery(query);
+    // find paged chats
+    TypedQuery<Chat> chatsPagedQuery = em.createQuery(query);
 
-//     TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
-//     List<Chat> chatListPaged =
-//         chatsPagedQuery
-//             .setFirstResult(Integer.parseInt(String.valueOf(pageable.getOffset())))
-//             .setMaxResults(pageable.getPageSize())
-//             .getResultList();
-//     long total = countQuery.getSingleResult();
+    TypedQuery<Long> countQuery = em.createQuery("select count(c) from Chat c", Long.class);
+    List<Chat> chatListPaged =
+        chatsPagedQuery
+            .setFirstResult(Integer.parseInt(String.valueOf(pageable.getOffset())))
+            .setMaxResults(pageable.getPageSize())
+            .getResultList();
+    long total = countQuery.getSingleResult();
 
-//     var chatsPage = new PageImpl<>(chatListPaged, pageable, total);
+    var chatsPage = new PageImpl<>(chatListPaged, pageable, total);
 
-//     // find all subscriptions for chats in page
+    // find all subscriptions for chats in page
 
-//     var chatIds = chatListPaged.stream().map(Chat::getId).toList();
+    var chatIds = chatListPaged.stream().map(Chat::getId).toList();
 
-//     Query subQuery =
-//         em.createNativeQuery(
-//                 """
-//                 select * from subscriptions s
-//                 where s.chat_id in :chats
-//                 """,
-//                 SubscriptionDTOForNativeQuery.class)
-//             .setParameter("chats", chatIds);
+    Query subQuery =
+        em.createNativeQuery(
+                """
+                select * from subscriptions s
+                where s.chat_id in :chats
+                """,
+                SubscriptionDTOForNativeQuery.class)
+            .setParameter("chats", chatIds);
 
-//     @SuppressWarnings("unchecked")
-//     List<SubscriptionDTOForNativeQuery> subs = subQuery.getResultList();
+    @SuppressWarnings("unchecked")
+    List<SubscriptionDTOForNativeQuery> subs = subQuery.getResultList();
 
-//     // group subscriptions by chat id
-//     Map<Long, List<SubscriptionDTOForNativeQuery>> subsGroupedByChat =
-//         subs.stream().collect(groupingBy(SubscriptionDTOForNativeQuery::getChatId));
+    // group subscriptions by chat id
+    Map<Long, List<SubscriptionDTOForNativeQuery>> subsGroupedByChat =
+        subs.stream().collect(groupingBy(SubscriptionDTOForNativeQuery::getChatId));
 
-//     return chatsPage.map(
-//         chat -> {
-//           var chatSubsOptional = Optional.ofNullable(subsGroupedByChat.get(chat.getId()));
+    return chatsPage.map(
+        chat -> {
+          var chatSubsOptional = Optional.ofNullable(subsGroupedByChat.get(chat.getId()));
 
-//           var chatSubs = chatSubsOptional.orElse(new ArrayList<>());
+          var chatSubs = chatSubsOptional.orElse(new ArrayList<>());
 
-//           var convertedSubs =
-//               chatSubs.stream()
-//                   .map(
-//                       s -> {
-//                         return new SubscriptionWithoutChatDTO(
-//                             s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
-//                       })
-//                   .toList();
+          var convertedSubs =
+              chatSubs.stream()
+                  .map(
+                      s -> {
+                        return new SubscriptionWithoutChatDTO(
+                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                      })
+                  .toList();
 
-//           return ChatWithSubs.builder()
-//               .id(chat.getId())
-//               .chatId(chat.getChatId())
-//               .active(chat.isActive())
-//               .type(chat.getType())
-//               .title(chat.getTitle())
-//               .username(chat.getUsername())
-//               .lastName(chat.getLastName())
-//               .firstName(chat.getFirstName())
-//               .messageThreadId(chat.getMessageThreadId())
-//               .dateCreated(chat.getDateCreated())
-//               .dateModified(chat.getDateModified())
-//               .subscriptions(convertedSubs)
-//               .build();
-//         });
-//   }
+          return ChatWithSubs.builder()
+              .id(chat.getId())
+              .chatId(chat.getChatId())
+              .active(chat.isActive())
+              .type(chat.getType())
+              .title(chat.getTitle())
+              .username(chat.getUsername())
+              .lastName(chat.getLastName())
+              .firstName(chat.getFirstName())
+              .messageThreadId(chat.getMessageThreadId())
+              .dateCreated(chat.getDateCreated())
+              .dateModified(chat.getDateModified())
+              .subscriptions(convertedSubs)
+              .build();
+        });
+  }
 
-//   @ToString
-//   @Getter
-//   private static class SubscriptionDTOForNativeQuery {
-//     private long id;
-//     private long chatId;
-//     private String lastPermalink;
-//     private LocalDateTime createdAt;
-//     private LocalDateTime modifiedAt;
+  @ToString
+  @Getter
+  private static class SubscriptionDTOForNativeQuery {
+    private long id;
+    private long chatId;
+    private String lastPermalink;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
-//     SubscriptionDTOForNativeQuery(
-//         long id, long chatId, String lastPermalink, Timestamp createdAt, Timestamp modifiedAt) {
+    SubscriptionDTOForNativeQuery(
+        long id, long chatId, String lastPermalink, Timestamp createdAt, Timestamp modifiedAt) {
 
-//       this.id = id;
-//       this.chatId = chatId;
-//       this.lastPermalink = lastPermalink;
-//       this.createdAt = createdAt != null ? createdAt.toLocalDateTime() : null;
-//       this.modifiedAt = modifiedAt != null ? modifiedAt.toLocalDateTime() : null;
-//     }
-//   }
+      this.id = id;
+      this.chatId = chatId;
+      this.lastPermalink = lastPermalink;
+      this.createdAt = createdAt != null ? createdAt.toLocalDateTime() : null;
+      this.modifiedAt = modifiedAt != null ? modifiedAt.toLocalDateTime() : null;
+    }
+  }
 }

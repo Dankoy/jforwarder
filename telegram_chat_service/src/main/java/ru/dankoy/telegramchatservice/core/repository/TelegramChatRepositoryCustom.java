@@ -3,12 +3,19 @@ package ru.dankoy.telegramchatservice.core.repository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-// import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
+
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
 
+/**
+ * @deprecated because DDD and microservice separation. For working example see
+ *             subscription_holder microservice
+ */
 public interface TelegramChatRepositoryCustom {
 
-  // Page<ChatWithSubs> findAllWithSubsBy(Pageable pageable);
+  @Deprecated(since = "2025-02-25")
+  Page<ChatWithSubs> findAllWithSubsBy(Pageable pageable);
 
-  // Page<ChatWithSubs> findAllWithSubsByCriteria(List<SearchCriteria> search, Pageable pageable);
+  @Deprecated(since = "2025-02-25")
+  Page<ChatWithSubs> findAllWithSubsByCriteria(List<SearchCriteria> search, Pageable pageable);
 }
