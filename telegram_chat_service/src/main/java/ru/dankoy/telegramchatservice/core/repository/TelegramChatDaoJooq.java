@@ -54,8 +54,9 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
                 .orderBy(getSortFields(pageable.getSort()))
                 .offset(offset)
                 .limit(limit)
-                .fetchInto(ChatsRecord.class);
+                .fetchInto(CHATS);
 
+        // TODO: should have condition too
         var total = dsl
                 .select(count())
                 .from(CHATS)
