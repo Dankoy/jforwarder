@@ -185,13 +185,22 @@ jooq {
                 directory = "src/main/java/"
             }
 
+            // generates in build folder. Add sourceSets{} see below + add classpth to vscode ot idea
             // target {
             //     packageName = "ru.dankoy.telegramchatservice.jooq"
-            //     directory = "${project.buildDir}/classes/java/main/"
+            //     directory = "${project.buildDir}/generated/sources/java/main/"
             // }
         }
     }
 }
+
+// sourceSets {
+//    main {
+//       java {
+//          srcDir "${buildDir}/generated/main/java"
+//       }
+//    }
+// }
 
 tasks.named("jooqCodegen") {
     dependsOn("tc-start")
