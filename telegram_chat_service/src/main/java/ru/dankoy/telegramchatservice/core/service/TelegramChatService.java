@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
-// import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
 
 public interface TelegramChatService {
 
-  // Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable);
+  Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable);
 
   Page<ChatDTO> findAll(List<SearchCriteria> search, Pageable pageable);
 
