@@ -6,6 +6,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 
+/**
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
+ */
+@Deprecated(since = "2025-02-25")
 public class ChatListener {
 
   @PrePersist

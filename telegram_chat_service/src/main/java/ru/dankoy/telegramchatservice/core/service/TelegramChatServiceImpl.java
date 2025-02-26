@@ -14,6 +14,11 @@ import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.Te
 import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
 import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
+/**
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
+ */
+@Deprecated(since = "2025-02-25")
 @RequiredArgsConstructor
 // @Service
 public class TelegramChatServiceImpl implements TelegramChatService {

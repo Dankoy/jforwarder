@@ -12,6 +12,11 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.QueryHints;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 
+/**
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
+ */
+@Deprecated(since = "2025-02-25")
 public interface TelegramChatRepository
     extends JpaRepository<Chat, Long>,
         TelegramChatRepositoryCustom,

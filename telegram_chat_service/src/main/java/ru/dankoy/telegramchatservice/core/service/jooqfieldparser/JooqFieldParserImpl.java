@@ -12,8 +12,6 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-// import static ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats.*;
-
 @Component
 public class JooqFieldParserImpl implements JooqFieldParser {
 

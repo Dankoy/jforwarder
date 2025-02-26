@@ -34,6 +34,10 @@ public class ChatController {
   private final SearchCriteriaParser searchCriteriaParser;
   private final ChatMapper chatMapper;
 
+  /**
+   * @deprecated because DDD and microservice separation. For working example see
+   *     subscription_holder microservice
+   */
   @Deprecated(since = "2025-02-25")
   @GetMapping(
       value = "/api/v1/telegram_chat",
