@@ -3,8 +3,11 @@ package ru.dankoy.telegramchatservice.core.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+// import org.springframework.data.domain.Page;
+// import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,11 +15,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-// import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
-// import ru.dankoy.telegramchatservice.core.dto.communitysub.ChatCreateDTO;
-// import ru.dankoy.telegramchatservice.core.dto.communitysub.ChatDTO;
-// import ru.dankoy.telegramchatservice.core.dto.communitysub.ChatUpdateDTO;
+
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatCreateDTO;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatUpdateDTO;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
+import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
 import ru.dankoy.telegramchatservice.core.service.searchparser.SearchCriteriaParser;
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.TelegramChatSearchCriteria;
@@ -27,73 +32,66 @@ import ru.dankoy.telegramchatservice.core.specifications.telegramchat.mapper.Cha
 @RestController
 public class ChatController {
 
-  // private final TelegramChatService telegramChatService;
-  // private final ChatSearchCriteriaToFilter mapper;
-  // private final SearchCriteriaParser searchCriteriaParser;
+  private final TelegramChatService telegramChatService;
+  private final ChatSearchCriteriaToFilter mapper;
+  private final SearchCriteriaParser searchCriteriaParser;
+  private final ChatMapper chatMapper;
 
-  // @GetMapping(
-  //     value = "/api/v1/telegram_chat",
-  //     params = {"with_subs", "search"})
-  // public Page<ChatWithSubs> getAllChats(
-  //     @RequestParam("with_subs") boolean withSubs,
-  //     Pageable pageable,
-  //     @RequestParam(value = "search", required = false) String search) {
+  @GetMapping(value = "/api/v1/telegram_chat", params = { "with_subs", "search" })
+  public Page<ChatWithSubs> getAllChats(
+      @RequestParam("with_subs") boolean withSubs,
+      Pageable pageable,
+      @RequestParam(value = "search", required = false) String search) {
 
-  //   // implemented search using criteria builder
+    // implemented search using criteria builder
 
-  //   var params = searchCriteriaParser.parse(search);
+    var params = searchCriteriaParser.parse(search);
 
-  //   return telegramChatService.findAllChatsWithSubs(params, pageable);
-  // }
+    return telegramChatService.findAllChatsWithSubs(params, pageable);
+  }
 
-  // @GetMapping(value = "/api/v1/telegram_chat")
-  // public Page<ChatDTO> getChats(Pageable pageable, TelegramChatSearchCriteria searchCriteria) {
+  @GetMapping(value = "/api/v1/telegram_chat", params = { "search" })
+  public Page<ChatDTO> getChats(Pageable pageable, @RequestParam(value = "search", required = false) String search) {
 
-  //   // implemented filter by spring specifications
+    var params = searchCriteriaParser.parse(search);
 
-  //   var filter = mapper.toFilter(searchCriteria);
+    return telegramChatService.findAll(search, pageable);
+  }
 
-  //   var page = telegramChatService.findAll(filter, pageable);
+  @GetMapping(value = "/api/v1/telegram_chat")
+  public Page<ChatDTO> getChats(Pageable pageable, TelegramChatSearchCriteria searchCriteria) {
 
-  //   return page.map(ChatDTO::toDTO);
-  // }
+    // implemented filter by spring specifications
 
-  // @GetMapping(
-  //     value = "/api/v1/telegram_chat",
-  //     params = {"chatId"})
-  // public ChatDTO getChatById(
-  //     @RequestParam("chatId") long chatId,
-  //     @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
-  //   var chatOptional =
-  //       telegramChatService.getByTelegramChatIdAndMessageThreadId(chatId, messageThreadId);
+    var filter = mapper.toFilter(searchCriteria);
 
-  //   var chat =
-  //       chatOptional.orElseThrow(
-  //           () -> new ResourceNotFoundException(String.format("Chat not found - %d", chatId)));
+    return telegramChatService.findAll(filter, pageable);
+  }
 
-  //   return ChatDTO.toDTO(chat);
-  // }
+  @GetMapping(value = "/api/v1/telegram_chat", params = { "chatId" })
+  public ChatDTO getChatById(
+      @RequestParam("chatId") long chatId,
+      @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
+    return telegramChatService.getByTelegramChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
 
-  // @PostMapping("/api/v1/telegram_chat")
-  // public ChatDTO createChat(@RequestBody @Valid ChatCreateDTO chatCreateDTO) {
+  @PostMapping("/api/v1/telegram_chat")
+  public ChatDTO createChat(@RequestBody @Valid ChatCreateDTO chatCreateDTO) {
 
-  //   var chat = ChatCreateDTO.fromDTO(chatCreateDTO);
+    var dto = chatMapper.fromChatCreateDTO(chatCreateDTO);
 
-  //   var saved = telegramChatService.save(chat);
+    return telegramChatService.save(dto);
+  }
 
-  //   return ChatDTO.toDTO(saved);
-  // }
+  @PutMapping("/api/v1/telegram_chat/{id}")
+  public ChatDTO updateChat(
+      @PathVariable("id") long id, @RequestBody @Valid ChatUpdateDTO chatDTO) {
 
-  // @PutMapping("/api/v1/telegram_chat/{id}")
-  // public ChatDTO updateChat(
-  //     @PathVariable("id") long id, @RequestBody @Valid ChatUpdateDTO chatDTO) {
+    chatDTO.setId(id);
 
-  //   chatDTO.setId(id);
+    var dto = chatMapper.fromChatUpdateDTO(chatDTO);
 
-  //   var chat = ChatUpdateDTO.fromDTO(chatDTO);
+    return telegramChatService.update(dto);
 
-  //   var saved = telegramChatService.update(chat);
-
-  //   return ChatDTO.toDTO(saved);
-  // }
+  }
 }
