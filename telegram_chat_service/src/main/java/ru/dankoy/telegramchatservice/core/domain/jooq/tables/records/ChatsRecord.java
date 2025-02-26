@@ -211,7 +211,7 @@ public class ChatsRecord extends UpdatableRecordImpl<ChatsRecord> {
         setMessageThreadId(messageThreadId);
         setDateCreated(dateCreated);
         setDateModified(dateModified);
-        resetTouchedOnNotNull();
+        resetChangedOnNotNull();
     }
 
     /**
@@ -232,7 +232,7 @@ public class ChatsRecord extends UpdatableRecordImpl<ChatsRecord> {
             setMessageThreadId(value.getMessageThreadId());
             setDateCreated(value.getDateCreated());
             setDateModified(value.getDateModified());
-            resetTouchedOnNotNull();
+            resetChangedOnNotNull();
         }
     }
 }
