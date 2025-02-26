@@ -404,6 +404,42 @@ services:
       timeout: 5s
       retries: 5
 
+  telegram-chat-service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram_chat_service
+      args:
+        - JAR_VERSION=${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/telegram_chat_service:${JAR_VERSION}
+    container_name: telegram-chat-service
+    ports:
+      - "8088:8088"
+    networks:
+      - jforwarder-network
+    depends_on:
+      subscriptions-holder-postgres:
+        condition: service_healthy
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL=${POSTGRES_CONTAINER_URL}
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER=${POSTGRES_CONTAINER_USER}
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD=${POSTGRES_CONTAINER_PASSWORD}
+      - TELEGRAM_CHAT_SERVICE_JASYPT_PASSWORD=${JASYPT_MASTER_PASSWORD}
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8082/actuator" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
   #### telegram chat service end ####
 
 
