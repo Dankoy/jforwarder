@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter;
+package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter;
 
 public record TelegramChatFilter(
     Long chatId,

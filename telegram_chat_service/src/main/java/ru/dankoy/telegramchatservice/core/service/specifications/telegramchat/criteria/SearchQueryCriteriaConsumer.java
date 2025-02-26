@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria;
+package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;

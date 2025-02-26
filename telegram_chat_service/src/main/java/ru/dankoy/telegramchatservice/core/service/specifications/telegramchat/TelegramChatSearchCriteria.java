@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.specifications.telegramchat;
+package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
