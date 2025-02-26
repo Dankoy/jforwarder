@@ -26,8 +26,8 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.domain.dto.SubscriptionWithoutChatDTO;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
 
 /**
  * @deprecated because DDD and microservice separation. For working example see

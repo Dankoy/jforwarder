@@ -6,8 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
 public interface TelegramChatService {
 

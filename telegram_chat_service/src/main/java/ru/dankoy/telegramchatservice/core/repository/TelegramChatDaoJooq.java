@@ -16,7 +16,9 @@ import org.jooq.Records;
 import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SortField;
+import org.jooq.Table;
 import org.jooq.TableField;
+import org.jooq.impl.DSL;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -31,8 +33,10 @@ import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.service.condition.SearchQueryConditionConsumer;
+import ru.dankoy.telegramchatservice.core.service.jooqfieldparser.JooqFieldParser;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
 import static org.jooq.impl.DSL.*;
 
@@ -45,6 +49,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
 
     private final DSLContext dsl;
     private final ChatMapper chatMapper;
+    private final JooqFieldParser parser;
 
     @Override
     public Page<ChatDTO> findAll(List<SearchCriteria> searchParams, Pageable pageable) {
@@ -52,7 +57,18 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
         var offset = pageable.getOffset();
         var limit = pageable.getPageSize();
 
-        var condition = collectConditions(searchParams);
+        var condition = noCondition();
+
+        Table<ChatsRecord> table = Chats.CHATS.asTable();
+
+        SearchQueryConditionConsumer<ChatsRecord> conditionConsumer = new SearchQueryConditionConsumer<>(condition,
+                parser, table);
+
+        searchParams.forEach(conditionConsumer::accept);
+
+        condition = conditionConsumer.getCondition();
+
+        var sort = parser.getSortFields(table, pageable.getSort());
 
         List<ChatsRecord> records = dsl
                 .select(Chats.CHATS.ID, Chats.CHATS.CHAT_ID, Chats.CHATS.TYPE,
@@ -61,7 +77,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
                         Chats.CHATS.DATE_CREATED, Chats.CHATS.DATE_MODIFIED)
                 .from(Chats.CHATS)
                 .where(condition)
-                .orderBy(getSortFields(pageable.getSort()))
+                .orderBy(sort)
                 .offset(offset)
                 .limit(limit)
                 .fetchInto(CHATS);
@@ -78,28 +94,6 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
                 .toList();
 
         return new PageImpl<>(chats, pageable, total);
-    }
-
-    private Condition collectConditions(List<SearchCriteria> criteria) {
-
-        var condition = noCondition();
-
-        if (criteria != null && !criteria.isEmpty()) {
-            for (SearchCriteria searchCriteria : criteria) {
-                
-                if (searchCriteria.getKey().equals("chat_id")) {
-                    condition = condition.and(CHATS.CHAT_ID.eq(Long.parseLong(searchCriteria.getValue().toString())));
-                } else if (searchCriteria.getKey().equals("type")) {
-                    condition = condition.and(CHATS.TYPE.eq(searchCriteria.getValue().toString()));
-                } else if (searchCriteria.getKey().equals("title")) {
-                    condition = condition.and(CHATS.TITLE.like("%" + searchCriteria.getValue() + "%"));
-                } else if (searchCriteria.getKey().equals("message_thread_id")) {
-                    condition = condition.and(CHATS.MESSAGE_THREAD_ID.eq(Integer.parseInt(searchCriteria.getValue().toString())));
-                }
-            }
-        }
-
-        return condition;
     }
 
     @Override
@@ -170,53 +164,6 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
 
         return chatsRecord.map(rec -> chatMapper.toChatDTO(rec.into(ChatsRecord.class)));
 
-    }
-
-    // uses reflection. Bad design.
-    private Collection<SortField<?>> getSortFields(Sort sortSpecification) {
-        Collection<SortField<?>> querySortFields = new ArrayList<>();
-
-        if (sortSpecification == null) {
-            return querySortFields;
-        }
-
-        Iterator<Sort.Order> specifiedFields = sortSpecification.iterator();
-
-        while (specifiedFields.hasNext()) {
-            Sort.Order specifiedField = specifiedFields.next();
-
-            String sortFieldName = specifiedField.getProperty();
-            Sort.Direction sortDirection = specifiedField.getDirection();
-
-            TableField tableField = getTableField(sortFieldName);
-            SortField<?> querySortField = convertTableFieldToSortField(tableField, sortDirection);
-            querySortFields.add(querySortField);
-        }
-
-        return querySortFields;
-    }
-
-    private TableField getTableField(String sortFieldName) {
-        TableField sortField = null;
-        try {
-            var fls = CHATS.getClass().getFields();
-            sortFieldName = sortFieldName.toUpperCase();
-            Field tableField = CHATS.getClass().getField(sortFieldName);
-            sortField = (TableField) tableField.get(CHATS);
-        } catch (NoSuchFieldException | IllegalAccessException ex) {
-            String errorMessage = String.format("Could not find table field: {}", sortFieldName);
-            throw new InvalidDataAccessApiUsageException(errorMessage, ex);
-        }
-
-        return sortField;
-    }
-
-    private SortField<?> convertTableFieldToSortField(TableField tableField, Sort.Direction sortDirection) {
-        if (sortDirection == Sort.Direction.ASC) {
-            return tableField.asc();
-        } else {
-            return tableField.desc();
-        }
     }
 
     @Override

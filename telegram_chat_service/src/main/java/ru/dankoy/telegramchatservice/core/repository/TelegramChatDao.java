@@ -14,8 +14,8 @@ import jakarta.persistence.QueryHint;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
 public interface TelegramChatDao {
 

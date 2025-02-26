@@ -24,8 +24,8 @@ import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
 import ru.dankoy.telegramchatservice.core.service.searchparser.SearchCriteriaParser;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.TelegramChatSearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.mapper.ChatSearchCriteriaToFilter;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.TelegramChatSearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.mapper.ChatSearchCriteriaToFilter;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +37,7 @@ public class ChatController {
   private final SearchCriteriaParser searchCriteriaParser;
   private final ChatMapper chatMapper;
 
+  @Deprecated(since = "2025-02-25")
   @GetMapping(value = "/api/v1/telegram_chat", params = { "with_subs", "search" })
   public Page<ChatWithSubs> getAllChats(
       @RequestParam("with_subs") boolean withSubs,
@@ -52,8 +53,6 @@ public class ChatController {
 
   @GetMapping(value = "/api/v1/telegram_chat", params = { "search" })
   public Page<ChatDTO> getChats(Pageable pageable, @RequestParam(value = "search", required = false) String search) {
-
-    var params = searchCriteriaParser.parse(search);
 
     return telegramChatService.findAll(search, pageable);
   }

@@ -13,9 +13,9 @@ import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.TelegramChatSpecification;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.TelegramChatSpecification;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
 @RequiredArgsConstructor
 // @Service
