@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
-// import ru.dankoy.telegramchatservice.core.dto.chat.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
@@ -18,21 +18,20 @@ import ru.dankoy.telegramchatservice.core.specifications.telegramchat.criteria.S
 import ru.dankoy.telegramchatservice.core.specifications.telegramchat.filter.TelegramChatFilter;
 
 @RequiredArgsConstructor
-@Service
+// @Service
 public class TelegramChatServiceImpl implements TelegramChatService {
 
   private final TelegramChatRepository telegramChatRepository;
   private final ChatMapper chatMapper;
 
-  // @Override
-  // public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search,
-  // Pageable pageable) {
+  @Override
+  public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
 
-  // return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
-  // }
+  return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
+  }
 
   @Override
-  public Page<ChatDTO> findAll(List<SearchCriteria> search, Pageable pageable) {
+  public Page<ChatDTO> findAll(String search, Pageable pageable) {
 
     // look in custom repository in subscriptions_holder micrioservice.
     throw new UnsupportedOperationException();
@@ -104,29 +103,28 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   }
 
   @Override
-  public Optional<ChatDTO> getByTelegramChatId(long chatId) {
+  public ChatDTO getByTelegramChatId(long chatId) {
 
     var res =  telegramChatRepository.findByChatId(chatId);
 
     if (res.isPresent()) {
-      return Optional.of(chatMapper.fromJpaToDTO(res.get()));
+      return chatMapper.fromJpaToDTO(res.get());
     } else {
-      return Optional.empty();
+      throw new ResourceNotFoundException("Chat not found by id: " + chatId);
     }
 
   }
 
   @Override
-  public Optional<ChatDTO> getByTelegramChatIdAndMessageThreadId(
+  public ChatDTO getByTelegramChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
 
     var res =  telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
 
     if (res.isPresent()) {
-      return Optional.of(chatMapper.fromJpaToDTO(res.get()));
+      return chatMapper.fromJpaToDTO(res.get());
     } else {
-      return Optional.empty();
+      throw new ResourceNotFoundException("Chat not found by id: " + chatId);
     }
-
   }
 }

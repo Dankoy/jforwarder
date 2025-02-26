@@ -13,7 +13,7 @@ public interface TelegramChatService {
 
   Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable);
 
-  Page<ChatDTO> findAll(List<SearchCriteria> search, Pageable pageable);
+  Page<ChatDTO> findAll(String search, Pageable pageable);
 
   Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable);
 
@@ -25,7 +25,7 @@ public interface TelegramChatService {
 
   void deleteChats(List<ChatDTO> chats);
 
-  Optional<ChatDTO> getByTelegramChatId(long chatId);
+  ChatDTO getByTelegramChatId(long chatId);
 
-  Optional<ChatDTO> getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
+  ChatDTO getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
 }
