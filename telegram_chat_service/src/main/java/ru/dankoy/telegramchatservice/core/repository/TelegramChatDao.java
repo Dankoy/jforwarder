@@ -29,4 +29,12 @@ public interface TelegramChatDao {
 
   Optional<ChatDTO> findForUpdateById(long id);
 
+  ChatDTO save(ChatDTO chat);
+
+  ChatDTO update(ChatDTO chat);
+
+  List<ChatDTO> saveAll(List<ChatDTO> chats);
+
+  void deleteBatch(List<ChatDTO> chats);
+
 }
