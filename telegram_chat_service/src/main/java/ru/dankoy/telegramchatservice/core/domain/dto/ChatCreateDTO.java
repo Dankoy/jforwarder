@@ -14,11 +14,9 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ChatCreateDTO {
 
-  
   private long chatId;
 
-  @NotEmpty
-  private String type;
+  @NotEmpty private String type;
 
   private String title;
 
@@ -31,5 +29,4 @@ public class ChatCreateDTO {
   private boolean active;
 
   private Integer messageThreadId;
-
 }

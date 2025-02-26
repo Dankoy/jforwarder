@@ -1,13 +1,10 @@
 package ru.dankoy.telegramchatservice.core.service;
 
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
@@ -27,7 +24,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   @Override
   public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
 
-  return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
+    return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
   }
 
   @Override
@@ -35,7 +32,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
     // look in custom repository in subscriptions_holder micrioservice.
     throw new UnsupportedOperationException();
-
   }
 
   @Override
@@ -55,7 +51,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
     var res = telegramChatRepository.saveAll(jpas);
 
     return res.stream().map(chatMapper::fromJpaToDTO).toList();
-
   }
 
   @Transactional
@@ -67,7 +62,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
     var res = telegramChatRepository.save(jpa);
 
     return chatMapper.fromJpaToDTO(res);
-
   }
 
   @Transactional
@@ -78,11 +72,13 @@ public class TelegramChatServiceImpl implements TelegramChatService {
 
     // get the existing chat by id
 
-    var found = telegramChatRepository
-        .findForUpdateById(jpa.getId())
-        .orElseThrow(
-            () -> new ResourceNotFoundException(
-                String.format("Chat not found - %d", chat.getChatId())));
+    var found =
+        telegramChatRepository
+            .findForUpdateById(jpa.getId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Chat not found - %d", chat.getChatId())));
 
     // get created date from the existing chat and set it to the new chat
     jpa.setDateCreated(found.getDateCreated());
@@ -90,7 +86,6 @@ public class TelegramChatServiceImpl implements TelegramChatService {
     var res = telegramChatRepository.save(jpa);
 
     return chatMapper.fromJpaToDTO(res);
-
   }
 
   @Transactional
@@ -105,21 +100,19 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   @Override
   public ChatDTO getByTelegramChatId(long chatId) {
 
-    var res =  telegramChatRepository.findByChatId(chatId);
+    var res = telegramChatRepository.findByChatId(chatId);
 
     if (res.isPresent()) {
       return chatMapper.fromJpaToDTO(res.get());
     } else {
       throw new ResourceNotFoundException("Chat not found by id: " + chatId);
     }
-
   }
 
   @Override
-  public ChatDTO getByTelegramChatIdAndMessageThreadId(
-      long chatId, Integer messageThreadId) {
+  public ChatDTO getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId) {
 
-    var res =  telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
+    var res = telegramChatRepository.findByChatIdAndMessageThreadId(chatId, messageThreadId);
 
     if (res.isPresent()) {
       return chatMapper.fromJpaToDTO(res.get());

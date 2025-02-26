@@ -30,8 +30,8 @@ import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.cr
 import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
 
 /**
- * @deprecated because DDD and microservice separation. For working example see
- *             subscription_holder microservice
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
  */
 @Deprecated(since = "2025-02-25")
 @RequiredArgsConstructor

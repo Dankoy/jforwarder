@@ -31,5 +31,4 @@ public class ChatUpdateDTO {
   private boolean active;
 
   private Integer messageThreadId;
-
 }

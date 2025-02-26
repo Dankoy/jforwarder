@@ -1,13 +1,10 @@
 package ru.dankoy.telegramchatservice.core.service;
 
 import java.util.List;
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
@@ -20,77 +17,75 @@ import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.fi
 @RequiredArgsConstructor
 public class TelegramChatServiceJooq implements TelegramChatService {
 
-    private final TelegramChatDao dao;
-    private final SearchCriteriaParser searchCriteriaParser;
+  private final TelegramChatDao dao;
+  private final SearchCriteriaParser searchCriteriaParser;
 
-    @Override
-    public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
-        throw new UnsupportedOperationException("Unimplemented method 'findAllChatsWithSubs'");
-    }
+  @Override
+  public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
+    throw new UnsupportedOperationException("Unimplemented method 'findAllChatsWithSubs'");
+  }
 
-    @Override
-    public Page<ChatDTO> findAll(String search, Pageable pageable) {
+  @Override
+  public Page<ChatDTO> findAll(String search, Pageable pageable) {
 
-        var criteria = searchCriteriaParser.parse(search);
+    var criteria = searchCriteriaParser.parse(search);
 
-        return dao.findAll(criteria, pageable);
+    return dao.findAll(criteria, pageable);
+  }
 
-    }
+  @Override
+  public Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+  }
 
-    @Override
-    public Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
-    }
+  @Override
+  public List<ChatDTO> saveAll(List<ChatDTO> chats) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
+  }
 
-    @Override
-    public List<ChatDTO> saveAll(List<ChatDTO> chats) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
-    }
+  @Override
+  public ChatDTO save(ChatDTO chat) {
 
-    @Override
-    public ChatDTO save(ChatDTO chat) {
+    return dao.save(chat);
+  }
 
-        return dao.save(chat);
+  @Override
+  public ChatDTO update(ChatDTO chat) {
+    // get the existing chat by id
 
-    }
+    var found =
+        dao.findForUpdateById(chat.getId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        String.format("Chat not found - %d", chat.getChatId())));
 
-    @Override
-    public ChatDTO update(ChatDTO chat) {
-        // get the existing chat by id
+    // get created date from the existing chat and set it to the new chat
+    chat.setDateCreated(found.getDateCreated());
 
-        var found = dao
-                .findForUpdateById(chat.getId())
-                .orElseThrow(
-                        () -> new ResourceNotFoundException(
-                                String.format("Chat not found - %d", chat.getChatId())));
+    return dao.update(chat);
+  }
 
-        // get created date from the existing chat and set it to the new chat
-        chat.setDateCreated(found.getDateCreated());
+  @Override
+  public void deleteChats(List<ChatDTO> chats) {
+    dao.deleteBatch(chats);
+  }
 
-        return dao.update(chat);
-    }
+  @Override
+  public ChatDTO getByTelegramChatId(long chatId) {
+    var optional = dao.findByChatId(chatId);
 
-    @Override
-    public void deleteChats(List<ChatDTO> chats) {
-        dao.deleteBatch(chats);
-    }
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException("Chat not found by id: " + chatId));
+  }
 
-    @Override
-    public ChatDTO getByTelegramChatId(long chatId) {
-        var optional = dao.findByChatId(chatId);
+  @Override
+  public ChatDTO getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId) {
+    var optional = dao.findByChatIdAndMessageThreadId(chatId, messageThreadId);
 
-        return optional.orElseThrow(() -> new ResourceNotFoundException("Chat not found by id: " + chatId));
-
-    }
-
-    @Override
-    public ChatDTO getByTelegramChatIdAndMessageThreadId(long chatId, Integer messageThreadId) {
-        var optional = dao.findByChatIdAndMessageThreadId(chatId, messageThreadId);
-
-        return optional.orElseThrow(() -> new ResourceNotFoundException("Chat not found by id: " + chatId));
-
-    }
-
+    return optional.orElseThrow(
+        () -> new ResourceNotFoundException("Chat not found by id: " + chatId));
+  }
 }

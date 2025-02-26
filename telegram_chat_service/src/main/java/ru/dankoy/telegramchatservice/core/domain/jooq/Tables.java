@@ -3,18 +3,12 @@
  */
 package ru.dankoy.telegramchatservice.core.domain.jooq;
 
-
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
 
-
-/**
- * Convenience access to all tables in public.
- */
-@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
+/** Convenience access to all tables in public. */
+@SuppressWarnings({"all", "unchecked", "rawtypes", "this-escape"})
 public class Tables {
 
-    /**
-     * The table <code>public.chats</code>.
-     */
-    public static final Chats CHATS = Chats.CHATS;
+  /** The table <code>public.chats</code>. */
+  public static final Chats CHATS = Chats.CHATS;
 }

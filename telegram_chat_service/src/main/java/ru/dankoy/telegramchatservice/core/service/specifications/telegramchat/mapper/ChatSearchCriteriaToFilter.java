@@ -3,7 +3,6 @@ package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.m
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
-
 import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.TelegramChatSearchCriteria;
 import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 

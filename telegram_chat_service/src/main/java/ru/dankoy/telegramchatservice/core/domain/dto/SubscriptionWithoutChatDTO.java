@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
- * @deprecated because DDD and microservice separation. For working example see
- *             subscription_holder microservice
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
  */
 @Deprecated(since = "2025-02-25")
 @ToString
@@ -28,5 +28,4 @@ public class SubscriptionWithoutChatDTO {
   @NotNull private LocalDateTime createdAt;
 
   @NotNull private LocalDateTime modifiedAt;
-
 }

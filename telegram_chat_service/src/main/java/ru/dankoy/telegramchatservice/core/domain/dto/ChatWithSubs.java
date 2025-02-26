@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
- * @deprecated because DDD and microservice separation. For working example see
- *             subscription_holder microservice
+ * @deprecated because DDD and microservice separation. For working example see subscription_holder
+ *     microservice
  */
 @Deprecated(since = "2025-02-25")
 @Getter

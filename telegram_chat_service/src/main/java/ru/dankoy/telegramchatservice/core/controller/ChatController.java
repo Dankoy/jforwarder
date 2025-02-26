@@ -3,7 +3,6 @@ package ru.dankoy.telegramchatservice.core.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 // import org.springframework.data.domain.Page;
@@ -15,12 +14,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatCreateDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatUpdateDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
-import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
 import ru.dankoy.telegramchatservice.core.service.searchparser.SearchCriteriaParser;
@@ -38,7 +35,9 @@ public class ChatController {
   private final ChatMapper chatMapper;
 
   @Deprecated(since = "2025-02-25")
-  @GetMapping(value = "/api/v1/telegram_chat", params = { "with_subs", "search" })
+  @GetMapping(
+      value = "/api/v1/telegram_chat",
+      params = {"with_subs", "search"})
   public Page<ChatWithSubs> getAllChats(
       @RequestParam("with_subs") boolean withSubs,
       Pageable pageable,
@@ -51,8 +50,11 @@ public class ChatController {
     return telegramChatService.findAllChatsWithSubs(params, pageable);
   }
 
-  @GetMapping(value = "/api/v1/telegram_chat", params = { "search" })
-  public Page<ChatDTO> getChats(Pageable pageable, @RequestParam(value = "search", required = false) String search) {
+  @GetMapping(
+      value = "/api/v1/telegram_chat",
+      params = {"search"})
+  public Page<ChatDTO> getChats(
+      Pageable pageable, @RequestParam(value = "search", required = false) String search) {
 
     return telegramChatService.findAll(search, pageable);
   }
@@ -67,7 +69,9 @@ public class ChatController {
     return telegramChatService.findAll(filter, pageable);
   }
 
-  @GetMapping(value = "/api/v1/telegram_chat", params = { "chatId" })
+  @GetMapping(
+      value = "/api/v1/telegram_chat",
+      params = {"chatId"})
   public ChatDTO getChatById(
       @RequestParam("chatId") long chatId,
       @RequestParam(value = "messageThreadId", required = false) Integer messageThreadId) {
@@ -91,6 +95,5 @@ public class ChatController {
     var dto = chatMapper.fromChatUpdateDTO(chatDTO);
 
     return telegramChatService.update(dto);
-
   }
 }
