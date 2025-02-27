@@ -9,8 +9,8 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.Chat;
 @FeignClient(contextId = "telegram-chat", name = "telegram-chat-service")
 public interface TelegramChatServiceFeign {
 
-    @GetMapping(path = "/api/v1/telegram_chat", params = { "page", "size", "sort", "search" })
-    Chat getAllTelegramChats(
-            Pageable pageable,
-            @RequestParam("search") String search);
+  @GetMapping(
+      path = "/api/v1/telegram_chat",
+      params = {"page", "size", "sort", "search"})
+  Chat getAllTelegramChats(Pageable pageable, @RequestParam("search") String search);
 }
