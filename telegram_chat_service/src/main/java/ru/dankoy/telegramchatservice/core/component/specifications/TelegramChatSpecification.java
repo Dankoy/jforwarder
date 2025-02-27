@@ -1,8 +1,8 @@
-package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat;
+package ru.dankoy.telegramchatservice.core.component.specifications;
 
 import org.springframework.data.jpa.domain.Specification;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
 
 public class TelegramChatSpecification {
 

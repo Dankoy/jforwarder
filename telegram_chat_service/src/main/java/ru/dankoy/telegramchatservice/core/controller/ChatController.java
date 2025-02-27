@@ -18,11 +18,11 @@ import ru.dankoy.telegramchatservice.core.domain.dto.ChatCreateDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatUpdateDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.search.DtoSearchCriteria;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
+import ru.dankoy.telegramchatservice.core.mapper.ChatSearchCriteriaToFilter;
 import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
-import ru.dankoy.telegramchatservice.core.service.searchparser.SearchCriteriaParser;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.TelegramChatSearchCriteria;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.mapper.ChatSearchCriteriaToFilter;
+import ru.dankoy.telegramchatservice.core.service.searchparser.RegexSearchCriteriaParser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class ChatController {
 
   private final TelegramChatService telegramChatService;
   private final ChatSearchCriteriaToFilter mapper;
-  private final SearchCriteriaParser searchCriteriaParser;
+  private final RegexSearchCriteriaParser searchCriteriaParser;
   private final ChatMapper chatMapper;
 
   /**
@@ -64,7 +64,7 @@ public class ChatController {
   }
 
   @GetMapping(value = "/api/v1/telegram_chat")
-  public Page<ChatDTO> getChats(Pageable pageable, TelegramChatSearchCriteria searchCriteria) {
+  public Page<ChatDTO> getChats(Pageable pageable, DtoSearchCriteria searchCriteria) {
 
     // implemented filter by spring specifications
 

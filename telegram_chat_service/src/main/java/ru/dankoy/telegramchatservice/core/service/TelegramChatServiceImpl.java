@@ -5,14 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
+
+import ru.dankoy.telegramchatservice.core.component.specifications.TelegramChatSpecification;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.TelegramChatSpecification;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
 
 /**
  * @deprecated because DDD and microservice separation. For working example see subscription_holder
@@ -27,7 +28,7 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   private final ChatMapper chatMapper;
 
   @Override
-  public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
+  public Page<ChatWithSubs> findAllChatsWithSubs(List<RegexSearchCriteria> search, Pageable pageable) {
 
     return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
   }

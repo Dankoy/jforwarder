@@ -1,11 +1,11 @@
-package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat;
+package ru.dankoy.telegramchatservice.core.domain.search;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class TelegramChatSearchCriteria {
+public class DtoSearchCriteria {
 
   private Long chatId;
 

@@ -16,13 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
-import ru.dankoy.telegramchatservice.core.service.condition.SearchQueryConditionConsumer;
-import ru.dankoy.telegramchatservice.core.service.jooqfieldparser.JooqFieldParser;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.repository.condition.RegexSearchQueryConditionConsumer;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,7 +35,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
   private final JooqFieldParser parser;
 
   @Override
-  public Page<ChatDTO> findAll(List<SearchCriteria> searchParams, Pageable pageable) {
+  public Page<ChatDTO> findAll(List<RegexSearchCriteria> searchParams, Pageable pageable) {
 
     var offset = pageable.getOffset();
     var limit = pageable.getPageSize();
@@ -43,8 +44,8 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
 
     Table<ChatsRecord> table = Chats.CHATS.asTable();
 
-    SearchQueryConditionConsumer<ChatsRecord> conditionConsumer =
-        new SearchQueryConditionConsumer<>(condition, parser, table);
+    RegexSearchQueryConditionConsumer<ChatsRecord> conditionConsumer =
+        new RegexSearchQueryConditionConsumer<>(condition, parser, table);
 
     searchParams.forEach(conditionConsumer::accept);
 

@@ -7,21 +7,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
+import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 import ru.dankoy.telegramchatservice.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatDao;
-import ru.dankoy.telegramchatservice.core.service.searchparser.SearchCriteriaParser;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.filter.TelegramChatFilter;
+import ru.dankoy.telegramchatservice.core.service.searchparser.RegexSearchCriteriaParser;
 
 @Service
 @RequiredArgsConstructor
 public class TelegramChatServiceJooq implements TelegramChatService {
 
   private final TelegramChatDao dao;
-  private final SearchCriteriaParser searchCriteriaParser;
+  private final RegexSearchCriteriaParser searchCriteriaParser;
 
   @Override
-  public Page<ChatWithSubs> findAllChatsWithSubs(List<SearchCriteria> search, Pageable pageable) {
+  public Page<ChatWithSubs> findAllChatsWithSubs(List<RegexSearchCriteria> search, Pageable pageable) {
     throw new UnsupportedOperationException("Unimplemented method 'findAllChatsWithSubs'");
   }
 

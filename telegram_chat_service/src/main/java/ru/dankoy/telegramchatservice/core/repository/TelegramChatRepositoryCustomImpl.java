@@ -26,8 +26,8 @@ import org.springframework.data.jpa.repository.query.QueryUtils;
 import ru.dankoy.telegramchatservice.core.domain.Chat;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.domain.dto.SubscriptionWithoutChatDTO;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchQueryCriteriaConsumer;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
+import ru.dankoy.telegramchatservice.core.repository.specifications.SearchQueryCriteriaConsumer;
 
 /**
  * @deprecated because DDD and microservice separation. For working example see subscription_holder
@@ -121,7 +121,7 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
 
   @Override
   public Page<ChatWithSubs> findAllWithSubsByCriteria(
-      List<SearchCriteria> search, Pageable pageable) {
+      List<RegexSearchCriteria> search, Pageable pageable) {
 
     CriteriaBuilder builder = em.getCriteriaBuilder();
     CriteriaQuery<Chat> query = builder.createQuery(Chat.class);

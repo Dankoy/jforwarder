@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria;
+package ru.dankoy.telegramchatservice.core.domain.search;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.ToString;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchCriteria {
+public class RegexSearchCriteria {
   private String key;
   private String operation;
   private Object value;

@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
 public interface TelegramChatDao {
 
-  Page<ChatDTO> findAll(List<SearchCriteria> searchParams, Pageable pageable);
+  Page<ChatDTO> findAll(List<RegexSearchCriteria> searchParams, Pageable pageable);
 
   Optional<ChatDTO> findByChatId(long chatId);
 

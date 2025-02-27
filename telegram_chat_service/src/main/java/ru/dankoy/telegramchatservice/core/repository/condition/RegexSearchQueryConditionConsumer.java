@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.service.condition;
+package ru.dankoy.telegramchatservice.core.repository.condition;
 
 import static org.jooq.impl.DSL.*;
 
@@ -10,13 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.Record;
 import org.jooq.Table;
-import ru.dankoy.telegramchatservice.core.service.jooqfieldparser.JooqFieldParser;
-import ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria.SearchCriteria;
+
+import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
 @Slf4j
 @Getter
 @AllArgsConstructor
-public class SearchQueryConditionConsumer<R extends Record> implements Consumer<SearchCriteria> {
+public class RegexSearchQueryConditionConsumer<R extends Record> implements Consumer<RegexSearchCriteria> {
 
   private Condition condition;
   private JooqFieldParser parser;
@@ -26,7 +27,7 @@ public class SearchQueryConditionConsumer<R extends Record> implements Consumer<
   private static final String LIKE_SQL = "%s like '%%%s%%'";
 
   @Override
-  public void accept(SearchCriteria param) {
+  public void accept(RegexSearchCriteria param) {
 
     var tableField = param.getKey();
     var value = param.getValue().toString();

@@ -1,4 +1,4 @@
-package ru.dankoy.telegramchatservice.core.service.jooqfieldparser;
+package ru.dankoy.telegramchatservice.core.component.jooqfieldparser;
 
 import java.util.ArrayList;
 import java.util.Arrays;

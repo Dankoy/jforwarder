@@ -1,5 +1,6 @@
-package ru.dankoy.telegramchatservice.core.service.specifications.telegramchat.criteria;
+package ru.dankoy.telegramchatservice.core.repository.specifications;
 
+import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -9,29 +10,26 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class SearchQueryCriteriaConsumer<T> implements Consumer<SearchCriteria> {
+public class SearchQueryCriteriaConsumer<T> implements Consumer<RegexSearchCriteria> {
 
   private Predicate predicate;
   private CriteriaBuilder builder;
   private Root<T> r;
 
   @Override
-  public void accept(SearchCriteria param) {
+  public void accept(RegexSearchCriteria param) {
     if (param.getOperation().equalsIgnoreCase(">")) {
-      predicate =
-          builder.and(
-              predicate,
-              builder.greaterThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
+      predicate = builder.and(
+          predicate,
+          builder.greaterThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
     } else if (param.getOperation().equalsIgnoreCase("<")) {
-      predicate =
-          builder.and(
-              predicate,
-              builder.lessThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
+      predicate = builder.and(
+          predicate,
+          builder.lessThanOrEqualTo(r.get(param.getKey()), param.getValue().toString()));
     } else if (param.getOperation().equalsIgnoreCase(":")) {
       if (r.get(param.getKey()).getJavaType() == String.class) {
-        predicate =
-            builder.and(
-                predicate, builder.like(r.get(param.getKey()), "%" + param.getValue() + "%"));
+        predicate = builder.and(
+            predicate, builder.like(r.get(param.getKey()), "%" + param.getValue() + "%"));
       } else if (r.get(param.getKey()).getJavaType() == Boolean.class) {
         if (param.getValue().equals("true")) {
           predicate = builder.and(predicate, builder.isTrue(r.get(param.getKey())));
