@@ -60,6 +60,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
                 Chats.CHATS.FIRST_NAME,
                 Chats.CHATS.LAST_NAME,
                 Chats.CHATS.USERNAME,
+                Chats.CHATS.ACTIVE,
                 Chats.CHATS.MESSAGE_THREAD_ID,
                 Chats.CHATS.DATE_CREATED,
                 Chats.CHATS.DATE_MODIFIED)
@@ -70,7 +71,6 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
             .limit(limit)
             .fetchInto(CHATS);
 
-    // TODO: should have condition too
     var total = dsl.select(count()).from(CHATS).where(condition).fetchOne().into(long.class);
 
     List<ChatDTO> chats = records.stream().map(r -> chatMapper.toChatDTO(r)).toList();
