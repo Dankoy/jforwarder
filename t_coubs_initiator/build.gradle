@@ -1,12 +1,12 @@
 plugins {
-    id 'multimodule-config'
-    id 'spring-conventions'
-    id 'spring-web-conventions'
-    id 'spring-feign-conventions'
-    id 'micrometer-conventions'
-    id 'loki-conventions'
-    id 'spring-cache-conventions'
-    id 'spring-resilience4j-conventions'
+	id 'multimodule-config'
+	id 'spring-conventions'
+	id 'spring-web-conventions'
+	id 'spring-feign-conventions'
+	id 'micrometer-conventions'
+	id 'loki-conventions'
+	id 'spring-cache-conventions'
+	id 'spring-resilience4j-conventions'
 }
 
 group = 'ru.dankoy.tcoubsinitiator'
@@ -14,11 +14,10 @@ group = 'ru.dankoy.tcoubsinitiator'
 
 dependencies {
 
-    // web
-    implementation 'org.springframework.data:spring-data-commons' // necessary for pagination
+	// web
+	implementation 'org.springframework.data:spring-data-commons' // necessary for pagination
 
-    // eureka for service discovery
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
+	// eureka for service discovery
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 }
 

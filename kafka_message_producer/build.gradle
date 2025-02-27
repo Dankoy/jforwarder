@@ -1,11 +1,11 @@
 plugins {
-    id 'multimodule-config'
-    id 'spring-conventions'
-    id 'spring-cache-conventions'
-    id 'spring-web-conventions'
-    id 'spring-feign-conventions'
-    id 'micrometer-conventions'
-    id 'loki-conventions'
+	id 'multimodule-config'
+	id 'spring-conventions'
+	id 'spring-cache-conventions'
+	id 'spring-web-conventions'
+	id 'spring-feign-conventions'
+	id 'micrometer-conventions'
+	id 'loki-conventions'
 }
 
 // version comes from root project
@@ -13,18 +13,17 @@ group = 'ru.dankoy.kafkamessageproducer'
 
 dependencies {
 
-    // eureka for service discovery
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// eureka for service discovery
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    // integration with kafka
-//    implementation 'org.springframework.boot:spring-boot-starter-integration'
-//    implementation 'org.springframework.integration:spring-integration-kafka'
-    implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.springframework.kafka:spring-kafka-test'
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+	// integration with kafka
+	//    implementation 'org.springframework.boot:spring-boot-starter-integration'
+	//    implementation 'org.springframework.integration:spring-integration-kafka'
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'org.springframework.kafka:spring-kafka-test'
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-    testImplementation 'org.testcontainers:kafka'
-
+	testImplementation 'org.testcontainers:kafka'
 }
 
 

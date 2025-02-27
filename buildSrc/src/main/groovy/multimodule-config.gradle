@@ -1,48 +1,47 @@
 plugins {
-    id 'java'
-    id 'idea'
+	id 'java'
+	id 'idea'
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 idea {
-    module {
-        //if you love browsing Javadoc
-        downloadJavadoc = true
+	module {
+		//if you love browsing Javadoc
+		downloadJavadoc = true
 
-        //and hate reading sources :)
-        downloadSources = true
-    }
+		//and hate reading sources :)
+		downloadSources = true
+	}
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 test {
-    useJUnitPlatform()
-    testLogging.showStandardStreams = true
-    afterTest { desc, result ->
-        logger.quiet "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
-    }
+	useJUnitPlatform()
+	testLogging.showStandardStreams = true
+	afterTest { desc, result ->
+		logger.quiet "Executing test ${desc.name} [${desc.className}] with result: ${result.resultType}"
+	}
 }
 
 configurations {
-//    developmentOnly
+	//    developmentOnly
 
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 // shared between all projects as plugin
 dependencies {
 
-    // lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }

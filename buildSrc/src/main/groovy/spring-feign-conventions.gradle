@@ -2,10 +2,9 @@
 
 dependencies {
 
-    // feign
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-
+	// feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 

@@ -2,9 +2,8 @@
 
 dependencies {
 
-    // logging
-    implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
-
+	// logging
+	implementation 'com.github.loki4j:loki-logback-appender:1.4.1'
 }
 
 
