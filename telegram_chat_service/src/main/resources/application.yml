@@ -16,11 +16,6 @@ spring:
     sql-dialect: postgres
 
 server:
-  error:
-    include-message: always
-    include-binding-errors: always
-    include-stacktrace: on-param
-    include-exception: false
   port: 8088
 
 
@@ -79,5 +74,9 @@ management:
 logging:
   level:
     root: INFO
+    org:
+      jooq:
+        tools:
+          LoggerListener: DEBUG
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
