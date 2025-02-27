@@ -16,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
 import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;

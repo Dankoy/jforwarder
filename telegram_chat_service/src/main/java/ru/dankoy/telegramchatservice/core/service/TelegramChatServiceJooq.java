@@ -21,7 +21,8 @@ public class TelegramChatServiceJooq implements TelegramChatService {
   private final RegexSearchCriteriaParser searchCriteriaParser;
 
   @Override
-  public Page<ChatWithSubs> findAllChatsWithSubs(List<RegexSearchCriteria> search, Pageable pageable) {
+  public Page<ChatWithSubs> findAllChatsWithSubs(
+      List<RegexSearchCriteria> search, Pageable pageable) {
     throw new UnsupportedOperationException("Unimplemented method 'findAllChatsWithSubs'");
   }
 

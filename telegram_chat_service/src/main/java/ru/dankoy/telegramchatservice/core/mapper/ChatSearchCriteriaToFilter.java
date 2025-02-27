@@ -3,7 +3,6 @@ package ru.dankoy.telegramchatservice.core.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
-
 import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
 import ru.dankoy.telegramchatservice.core.domain.search.DtoSearchCriteria;
 

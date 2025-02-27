@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
-
 import ru.dankoy.telegramchatservice.core.component.specifications.TelegramChatSpecification;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
@@ -28,7 +27,8 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   private final ChatMapper chatMapper;
 
   @Override
-  public Page<ChatWithSubs> findAllChatsWithSubs(List<RegexSearchCriteria> search, Pageable pageable) {
+  public Page<ChatWithSubs> findAllChatsWithSubs(
+      List<RegexSearchCriteria> search, Pageable pageable) {
 
     return telegramChatRepository.findAllWithSubsByCriteria(search, pageable);
   }

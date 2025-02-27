@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Service;
-
 import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
 @Service

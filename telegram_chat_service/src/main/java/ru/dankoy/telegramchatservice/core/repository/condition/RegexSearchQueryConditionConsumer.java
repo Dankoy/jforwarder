@@ -10,14 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jooq.Condition;
 import org.jooq.Record;
 import org.jooq.Table;
-
 import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
 import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
 @Slf4j
 @Getter
 @AllArgsConstructor
-public class RegexSearchQueryConditionConsumer<R extends Record> implements Consumer<RegexSearchCriteria> {
+public class RegexSearchQueryConditionConsumer<R extends Record>
+    implements Consumer<RegexSearchCriteria> {
 
   private Condition condition;
   private JooqFieldParser parser;
