@@ -15,16 +15,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
-
 import ru.dankoy.telegramchatservice.core.controller.ChatController;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
-
 import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
 
 @DisplayName("Test default context ")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(exclude = { EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class })
-class SubscriptionsHolderApplicationTests {
+@EnableAutoConfiguration(
+    exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
+class TelegramChatServiceApplicationTests {
 
   static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
 
@@ -45,8 +44,7 @@ class SubscriptionsHolderApplicationTests {
     registry.add("spring.datasource.password", postgres::getPassword);
   }
 
-  @Autowired
-  ApplicationContext context;
+  @Autowired ApplicationContext context;
 
   @DisplayName("all default necessary repository beans should be created")
   @Test
@@ -57,7 +55,6 @@ class SubscriptionsHolderApplicationTests {
     var telegramChatRepository = context.getBean(TelegramChatRepository.class);
 
     assertNotNull(telegramChatRepository);
-
   }
 
   @DisplayName("all default necessary services beans should be created")
@@ -80,6 +77,5 @@ class SubscriptionsHolderApplicationTests {
     var chatController = context.getBean(ChatController.class);
 
     assertNotNull(chatController);
-
   }
 }
