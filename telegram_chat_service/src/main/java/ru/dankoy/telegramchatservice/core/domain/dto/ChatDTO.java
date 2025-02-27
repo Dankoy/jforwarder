@@ -1,6 +1,7 @@
 package ru.dankoy.telegramchatservice.core.domain.dto;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ChatDTO {
 
-  private Long id;
+  private UUID id;
   private Long chatId;
   private String type;
   private String title;

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jooq.DSLContext;
@@ -124,7 +125,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
   }
 
   @Override
-  public Optional<ChatDTO> findForUpdateById(long id) {
+  public Optional<ChatDTO> findForUpdateById(UUID id) {
 
     var condition = noCondition();
     condition = condition.and(CHATS.ID.eq(id));
@@ -164,7 +165,6 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
     condition = condition.and(CHATS.ID.eq(chat.getId()));
 
     var jooqPojo = chatMapper.toJooqPojo(chat);
-    jooqPojo.setId(null);
 
     // same as below
     var chatsRecord = new ChatsRecord(jooqPojo);

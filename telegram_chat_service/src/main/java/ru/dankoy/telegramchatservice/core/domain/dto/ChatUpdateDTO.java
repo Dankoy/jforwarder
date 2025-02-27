@@ -1,5 +1,6 @@
 package ru.dankoy.telegramchatservice.core.domain.dto;
 
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class ChatUpdateDTO {
 
-  @Setter private long id;
+  @Setter private UUID id;
 
   private long chatId;
 

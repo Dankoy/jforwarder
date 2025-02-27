@@ -1,6 +1,7 @@
 package ru.dankoy.telegramchatservice.core.controller;
 
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -92,7 +93,7 @@ public class ChatController {
 
   @PutMapping("/api/v1/telegram_chat/{id}")
   public ChatDTO updateChat(
-      @PathVariable("id") long id, @RequestBody @Valid ChatUpdateDTO chatDTO) {
+      @PathVariable("id") UUID id, @RequestBody @Valid ChatUpdateDTO chatDTO) {
 
     chatDTO.setId(id);
 

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.dankoy.telegramchatservice.core.component.uuidgenerator.UUIDGenerator;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
 import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
@@ -19,6 +20,7 @@ public class TelegramChatServiceJooq implements TelegramChatService {
 
   private final TelegramChatDao dao;
   private final RegexSearchCriteriaParser searchCriteriaParser;
+  private final UUIDGenerator uuidgenerator;
 
   @Override
   public Page<ChatWithSubs> findAllChatsWithSubs(
@@ -48,6 +50,8 @@ public class TelegramChatServiceJooq implements TelegramChatService {
 
   @Override
   public ChatDTO save(ChatDTO chat) {
+
+    chat.setId(uuidgenerator.randomUUID());
 
     return dao.save(chat);
   }

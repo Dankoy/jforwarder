@@ -5,9 +5,9 @@ package ru.dankoy.telegramchatservice.core.domain.jooq.tables;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.UUID;
 import org.jooq.Condition;
 import org.jooq.Field;
-import org.jooq.Identity;
 import org.jooq.Name;
 import org.jooq.PlainSQL;
 import org.jooq.QueryPart;
@@ -22,6 +22,7 @@ import org.jooq.UniqueKey;
 import org.jooq.impl.DSL;
 import org.jooq.impl.SQLDataType;
 import org.jooq.impl.TableImpl;
+import ru.dankoy.telegramchatservice.core.component.converter.UUIDConverterJooq;
 import ru.dankoy.telegramchatservice.core.domain.jooq.Keys;
 import ru.dankoy.telegramchatservice.core.domain.jooq.Public;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord;
@@ -42,8 +43,13 @@ public class Chats extends TableImpl<ChatsRecord> {
   }
 
   /** The column <code>public.chats.id</code>. */
-  public final TableField<ChatsRecord, Long> ID =
-      createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "");
+  public final TableField<ChatsRecord, UUID> ID =
+      createField(
+          DSL.name("id"),
+          SQLDataType.VARCHAR(40).nullable(false),
+          this,
+          "",
+          new UUIDConverterJooq());
 
   /** The column <code>public.chats.chat_id</code>. */
   public final TableField<ChatsRecord, Long> CHAT_ID =
@@ -111,11 +117,6 @@ public class Chats extends TableImpl<ChatsRecord> {
   @Override
   public Schema getSchema() {
     return aliased() ? null : Public.PUBLIC;
-  }
-
-  @Override
-  public Identity<ChatsRecord, Long> getIdentity() {
-    return (Identity<ChatsRecord, Long>) super.getIdentity();
   }
 
   @Override

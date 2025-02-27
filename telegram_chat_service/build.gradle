@@ -172,6 +172,26 @@ jooq {
                         inputSchema = "public"
                     }
                 }
+
+                forcedTypes {
+                    forcedType {
+
+          // Specify the Java type of your custom type. This corresponds to the Converter's <U> type.
+          userType = "java.util.UUID"
+
+          // Associate that custom type with your converter.
+          
+          converter = "ru.dankoy.telegramchatservice.core.component.converter.UUIDConverterJooq"
+
+          // Optionally specify whether the converter receives <T, U> type variables
+          // and Class<T>, Class<U> constructor arguments. Default is false.
+          genericConverter = false
+
+          // A Java regex matching fully-qualified columns, attributes, parameters. Use the pipe to separate several expressions.
+          includeExpression = "id"
+        }
+      }
+
             }
             generate {
                 pojos true

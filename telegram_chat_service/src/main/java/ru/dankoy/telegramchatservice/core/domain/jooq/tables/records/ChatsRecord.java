@@ -4,6 +4,7 @@
 package ru.dankoy.telegramchatservice.core.domain.jooq.tables.records;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import org.jooq.Record1;
 import org.jooq.impl.UpdatableRecordImpl;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
@@ -15,13 +16,13 @@ public class ChatsRecord extends UpdatableRecordImpl<ChatsRecord> {
   private static final long serialVersionUID = 1L;
 
   /** Setter for <code>public.chats.id</code>. */
-  public void setId(Long value) {
+  public void setId(UUID value) {
     set(0, value);
   }
 
   /** Getter for <code>public.chats.id</code>. */
-  public Long getId() {
-    return (Long) get(0);
+  public UUID getId() {
+    return (UUID) get(0);
   }
 
   /** Setter for <code>public.chats.chat_id</code>. */
@@ -129,7 +130,7 @@ public class ChatsRecord extends UpdatableRecordImpl<ChatsRecord> {
   // -------------------------------------------------------------------------
 
   @Override
-  public Record1<Long> key() {
+  public Record1<UUID> key() {
     return (Record1) super.key();
   }
 
@@ -144,7 +145,7 @@ public class ChatsRecord extends UpdatableRecordImpl<ChatsRecord> {
 
   /** Create a detached, initialised ChatsRecord */
   public ChatsRecord(
-      Long id,
+      UUID id,
       Long chatId,
       String type,
       String title,

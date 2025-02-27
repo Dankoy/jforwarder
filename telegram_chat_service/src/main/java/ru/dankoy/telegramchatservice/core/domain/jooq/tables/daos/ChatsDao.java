@@ -6,6 +6,7 @@ package ru.dankoy.telegramchatservice.core.domain.jooq.tables.daos;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.jooq.Configuration;
 import org.jooq.impl.DAOImpl;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
@@ -15,7 +16,7 @@ import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord
 @SuppressWarnings({"all", "unchecked", "rawtypes", "this-escape"})
 public class ChatsDao
     extends DAOImpl<
-        ChatsRecord, ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats, Long> {
+        ChatsRecord, ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats, UUID> {
 
   /** Create a new ChatsDao without any configuration */
   public ChatsDao() {
@@ -31,7 +32,7 @@ public class ChatsDao
   }
 
   @Override
-  public Long getId(ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats object) {
+  public UUID getId(ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats object) {
     return object.getId();
   }
 
@@ -40,25 +41,25 @@ public class ChatsDao
    * upperInclusive</code>
    */
   public List<ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats> fetchRangeOfId(
-      Long lowerInclusive, Long upperInclusive) {
+      UUID lowerInclusive, UUID upperInclusive) {
     return fetchRange(Chats.CHATS.ID, lowerInclusive, upperInclusive);
   }
 
   /** Fetch records that have <code>id IN (values)</code> */
   public List<ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats> fetchById(
-      Long... values) {
+      UUID... values) {
     return fetch(Chats.CHATS.ID, values);
   }
 
   /** Fetch a unique record that has <code>id = value</code> */
   public ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats fetchOneById(
-      Long value) {
+      UUID value) {
     return fetchOne(Chats.CHATS.ID, value);
   }
 
   /** Fetch a unique record that has <code>id = value</code> */
   public Optional<ru.dankoy.telegramchatservice.core.domain.jooq.tables.pojos.Chats>
-      fetchOptionalById(Long value) {
+      fetchOptionalById(UUID value) {
     return fetchOptional(Chats.CHATS.ID, value);
   }
 

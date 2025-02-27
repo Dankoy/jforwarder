@@ -7,13 +7,13 @@ databaseChangeLog:
         tableName: chats
         columns:
         - column:
-            autoIncrement: true
+            autoIncrement: false
             constraints:
               nullable: false
               primaryKey: true
               primaryKeyName: chats_pkey
             name: id
-            type: BIGINT
+            type: VARCHAR(40)
         - column:
             constraints:
               nullable: false

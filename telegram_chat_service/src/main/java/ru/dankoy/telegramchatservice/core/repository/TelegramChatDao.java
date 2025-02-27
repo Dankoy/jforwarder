@@ -2,6 +2,7 @@ package ru.dankoy.telegramchatservice.core.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
@@ -17,7 +18,7 @@ public interface TelegramChatDao {
 
   Optional<ChatDTO> findForUpdateByChatIdAndMessageThreadId(long chatId, Integer threadId);
 
-  Optional<ChatDTO> findForUpdateById(long id);
+  Optional<ChatDTO> findForUpdateById(UUID id);
 
   ChatDTO save(ChatDTO chat);
 
