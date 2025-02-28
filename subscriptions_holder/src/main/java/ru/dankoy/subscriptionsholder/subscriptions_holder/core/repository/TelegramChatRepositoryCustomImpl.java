@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -93,7 +94,7 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
                   .map(
                       s -> {
                         return new SubscriptionWithoutChatDTO(
-                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                            s.id, s.lastPermalink, s.getChatUuid(), s.createdAt, s.modifiedAt);
                       })
                   .toList();
 
@@ -179,7 +180,7 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
                   .map(
                       s -> {
                         return new SubscriptionWithoutChatDTO(
-                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                            s.id, s.lastPermalink, s.getChatUuid(), s.createdAt, s.modifiedAt);
                       })
                   .toList();
 
@@ -205,15 +206,22 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
   private static class SubscriptionDTOForNativeQuery {
     private long id;
     private long chatId;
+    private UUID chatUuid;
     private String lastPermalink;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
     SubscriptionDTOForNativeQuery(
-        long id, long chatId, String lastPermalink, Timestamp createdAt, Timestamp modifiedAt) {
+        long id,
+        long chatId,
+        UUID chatUuid,
+        String lastPermalink,
+        Timestamp createdAt,
+        Timestamp modifiedAt) {
 
       this.id = id;
       this.chatId = chatId;
+      this.chatUuid = chatUuid;
       this.lastPermalink = lastPermalink;
       this.createdAt = createdAt != null ? createdAt.toLocalDateTime() : null;
       this.modifiedAt = modifiedAt != null ? modifiedAt.toLocalDateTime() : null;

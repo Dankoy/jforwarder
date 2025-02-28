@@ -1,5 +1,7 @@
 package ru.dankoy.subscriptions_scheduler.core.feign;
 
+import java.util.List;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,7 +31,7 @@ public interface SubscriptionsHolderFeign {
 
   @GetMapping(
       path = "/api/v1/subscriptions",
-      params = {"page", "size", "sort", "search"})
+      params = {"page", "size", "sort", "chatUuids"})
   Page<SubscriptionDTO> getSubscriptionsFiltered(
-      @RequestParam(value = "search", required = true) String search, Pageable pageable);
+      @RequestParam(value = "chatUuids", required = true) List<UUID> chatUuids, Pageable pageable);
 }

@@ -52,6 +52,9 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.jpalisteners.Subs
             @NamedAttributeNode("type"),
           })
     })
+@NamedEntityGraph(
+    name = "subscription-parent-only",
+    attributeNodes = {@NamedAttributeNode("id")})
 @Table(name = "subscriptions")
 @Data
 @SuperBuilder

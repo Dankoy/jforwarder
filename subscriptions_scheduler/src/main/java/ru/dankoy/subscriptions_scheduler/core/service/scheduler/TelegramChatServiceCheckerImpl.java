@@ -1,6 +1,8 @@
 package ru.dankoy.subscriptions_scheduler.core.service.scheduler;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +45,11 @@ public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecke
 
       var chatsPage = telegramChatService.findAll(pageable);
 
-      var search = "active:true";
+      List<UUID> chatUuids =
+          chatsPage.getContent().stream().map(ChatWithUUID::getId).collect(Collectors.toList());
+
       var subscriptions =
-          subscriptionsHolderService.getAllSubscriptionsWithFilter(search, pageable);
+          subscriptionsHolderService.getAllSubscriptionsByChatUuids(chatUuids, pageable);
 
       var chats = chatsPage.getContent();
 

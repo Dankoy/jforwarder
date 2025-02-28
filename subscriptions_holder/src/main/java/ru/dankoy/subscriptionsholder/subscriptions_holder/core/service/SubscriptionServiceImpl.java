@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   @Override
   public Page<Subscription> findAll(Pageable pageable) {
     return subscriptionRepository.findAll(pageable);
+  }
+
+  @Override
+  public Page<Subscription> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
+
+    var list = chatUuids.stream().map(UUID::toString).toList();
+
+    return subscriptionRepository.findAllBychatUuidIsIn(list, pageable);
   }
 
   @Override
