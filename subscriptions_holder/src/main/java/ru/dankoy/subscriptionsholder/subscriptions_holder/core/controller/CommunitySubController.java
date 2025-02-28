@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.CommunitySubService;
@@ -69,5 +71,16 @@ public class CommunitySubController {
     var subscription = CommunitySubCreateDTO.fromDTO(dto);
 
     communitySubService.unsubscribeChatFromCommunity(subscription);
+  }
+
+  @GetMapping(
+      value = "/api/v1/community_subscriptions",
+      params = {"chatUuids"})
+  public Page<SubscriptionWithoutChatDTO> getChats(
+      @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable) {
+
+    var page = communitySubService.findAllByChatsUUID(chatUuids, pageable);
+
+    return page.map(SubscriptionWithoutChatDTO::toDTO);
   }
 }

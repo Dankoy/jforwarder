@@ -39,4 +39,8 @@ public interface ChannelSubRepository extends JpaRepository<ChannelSub, Long> {
       @Param("messageThreadId") Integer messageThreadId,
       @Param("channelPermalink") String channelPermalink,
       @Param("orderValue") String orderValue);
+
+  @EntityGraph(value = "channel-subscription-full-inherited", type = EntityGraphType.LOAD)
+  Page<ChannelSub> findAllBychatUuidIsIn(
+      @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
 }

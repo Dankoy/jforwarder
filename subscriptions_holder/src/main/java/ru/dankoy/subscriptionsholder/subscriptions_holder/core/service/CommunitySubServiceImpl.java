@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -155,5 +156,11 @@ public class CommunitySubServiceImpl implements CommunitySubService {
             communitySubscription.getSection().getName());
 
     subscriptionFoundOptional.ifPresent(communitySubRepository::delete);
+  }
+
+  @Override
+  public Page<CommunitySub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
+    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return communitySubRepository.findAllBychatUuidIsIn(uuids, pageable);
   }
 }

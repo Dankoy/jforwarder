@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -123,5 +124,11 @@ public class ChannelSubServiceImpl implements ChannelSubService {
             channelSub.getOrder().getValue());
 
     optional.ifPresent(channelSubRepository::delete);
+  }
+
+  @Override
+  public Page<ChannelSub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
+    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return channelSubRepository.findAllBychatUuidIsIn(uuids, pageable);
   }
 }

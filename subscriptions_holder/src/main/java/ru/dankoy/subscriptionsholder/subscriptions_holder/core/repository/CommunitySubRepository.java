@@ -39,4 +39,8 @@ public interface CommunitySubRepository extends JpaRepository<CommunitySub, Long
       @Param("messageThreadId") Integer messageThreadId,
       @Param("communityName") String communityName,
       @Param("sectionName") String sectionName);
+
+  @EntityGraph(value = "community-subscription-full-inherited", type = EntityGraphType.LOAD)
+  Page<CommunitySub> findAllBychatUuidIsIn(
+      @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
 }

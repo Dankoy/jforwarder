@@ -22,7 +22,6 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
   List<Subscription> findByChatIsIn(List<Chat> chats);
 
-  // fetch type is not fixing problem with n+1 for chats.
   @EntityGraph(value = "subscription-parent-only", type = EntityGraphType.FETCH)
   Page<Subscription> findAllBychatUuidIsIn(
       @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
