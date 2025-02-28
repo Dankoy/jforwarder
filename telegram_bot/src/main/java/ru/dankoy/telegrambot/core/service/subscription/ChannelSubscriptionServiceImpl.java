@@ -12,7 +12,9 @@ import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
+import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 import ru.dankoy.telegrambot.core.service.channel.ChannelService;
+import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 
@@ -26,6 +28,10 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
 
   private final OrderService orderService;
 
+  private final TelegramChatService telegramChatService;
+
+  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+
   /**
    * @deprecated for topics support via messageThreadId
    */
@@ -35,10 +41,23 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
     return channelService.getAllSubscriptionsByChat(chatId);
   }
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @Override
   public List<ChannelSubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
     return channelService.getAllSubscriptionsByChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
+
+  @Override
+  public List<ChannelSubscription> getSubsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
+    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -67,6 +86,9 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
     // 2. find tag in db
     var optionalChannelByPermalink = channelService.findChannelByPermalink(channelPermalink);
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
     if (optionalChannelByPermalink.isPresent()) {
       var channel = optionalChannelByPermalink.get();
       var channelSubscription =
@@ -75,6 +97,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
                   .id(0)
                   .channel(channel)
                   .chat(new Chat(chatId, messageThreadId))
+                  .chatUuid(chat.getId())
                   .order(order)
                   .scope(new Scope(scopeName))
                   .type(new Type(typeName))
@@ -99,6 +122,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
                     .id(0)
                     .channel(new Channel(created.getPermalink()))
                     .chat(new Chat(chatId, messageThreadId))
+                    .chatUuid(chat.getId())
                     .order(order)
                     .scope(new Scope(scopeName))
                     .type(new Type(typeName))

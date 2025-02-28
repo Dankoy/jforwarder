@@ -10,6 +10,9 @@ public interface CommunitySubscriptionService {
   List<CommunitySubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId);
 
+  List<CommunitySubscription> getSubsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId);
+
   CommunitySubscription subscribe(
       String communityName, String sectionName, long chatId, Integer messageThreadId);
 

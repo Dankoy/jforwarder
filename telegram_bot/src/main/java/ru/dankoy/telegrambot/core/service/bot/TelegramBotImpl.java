@@ -24,7 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScope
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 import ru.dankoy.telegrambot.config.bot.configuration.deprecated.BotConfiguration;
-import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
@@ -239,8 +239,8 @@ public class TelegramBotImpl extends TelegramLongPollingBot implements TelegramB
     } catch (NotFound e) {
 
       var newChat =
-          new Chat(
-              0,
+          new ChatWithUUID(
+              null,
               tChat.getId(),
               tChat.getType(),
               tChat.getTitle(),

@@ -1,14 +1,12 @@
 package ru.dankoy.telegrambot.core.service.chat;
 
-import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 
 public interface TelegramChatService {
 
-  Chat getChatById(long chatId);
+  ChatWithUUID getChatByIdAndMessageThreadId(long chatId, Integer messageThreadId);
 
-  Chat getChatByIdAndMessageThreadId(long chatId, Integer messageThreadId);
+  ChatWithUUID createChat(ChatWithUUID chat);
 
-  Chat createChat(Chat chat);
-
-  Chat update(Chat chat);
+  ChatWithUUID update(ChatWithUUID chat);
 }

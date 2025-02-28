@@ -4,7 +4,7 @@ import feign.FeignException.NotFound;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import ru.dankoy.telegrambot.core.domain.Chat;
+import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 
 @Slf4j
@@ -32,8 +32,8 @@ public class StartCommand extends BotCommand {
     } catch (NotFound e) {
 
       var newChat =
-          new Chat(
-              0,
+          new ChatWithUUID(
+              null,
               tChat.getId(),
               tChat.getType(),
               tChat.getTitle(),
