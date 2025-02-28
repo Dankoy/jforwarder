@@ -5,30 +5,30 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
-import ru.dankoy.subscriptions_scheduler.core.feign.SubscriptionsHolderFeign;
+import ru.dankoy.subscriptions_scheduler.core.domain.telegramchatservice.ChatWithUUID;
+import ru.dankoy.subscriptions_scheduler.core.feign.TelegramChatServiceFeign;
 import ru.dankoy.subscriptions_scheduler.core.mapper.ChatWithSubsMapper;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ChatServiceImpl implements ChatService {
+public class TelegramChatServiceImpl implements TelegramChatService {
 
-  private final SubscriptionsHolderFeign chatFeign;
+  private final TelegramChatServiceFeign chatFeign;
   private final ChatWithSubsMapper chatMapper;
   private static final String SEARCH = "active:true";
 
   @Override
-  public Page<Chat> findAll(boolean withSubs, Pageable pageable) {
+  public Page<ChatWithUUID> findAll(Pageable pageable) {
 
-    var dtosPage = chatFeign.getAllChats(withSubs, SEARCH, pageable);
+    var dtosPage = chatFeign.getAllChats(SEARCH, pageable);
 
     return dtosPage.map(chatMapper::fromDto);
   }
 
   @Override
-  public void update(Chat chat) {
-    var withoutSubs = chatMapper.toDtoWithoutSubs(chat);
+  public void update(ChatWithUUID chat) {
+    var withoutSubs = chatMapper.toDto(chat);
     chatFeign.updateChat(chat.getId(), withoutSubs);
   }
 }

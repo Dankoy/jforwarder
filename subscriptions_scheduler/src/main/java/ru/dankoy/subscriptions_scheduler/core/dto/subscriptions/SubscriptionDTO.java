@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -22,4 +23,6 @@ public class SubscriptionDTO {
 
   @NotNull(message = "ModifiedAt must not be null")
   private LocalDateTime modifiedAt;
+
+  private UUID chatUuid;
 }

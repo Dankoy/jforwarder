@@ -5,8 +5,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.Chat;
+import ru.dankoy.subscriptions_scheduler.core.domain.telegramchatservice.ChatWithUUID;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatDTO;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatWithSubsDTO;
+import ru.dankoy.subscriptions_scheduler.core.dto.telegramchatservice.ChatWithUuidDTO;
 
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
@@ -22,4 +24,8 @@ public interface ChatWithSubsMapper {
   Chat updateActive(Chat chat, boolean active);
 
   Chat fromDto(ChatWithSubsDTO dto);
+
+  ChatWithUUID fromDto(ChatWithUuidDTO dto);
+
+  ChatWithUuidDTO toDto(ChatWithUUID chat);
 }
