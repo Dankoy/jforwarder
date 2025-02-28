@@ -1,6 +1,9 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.tagsubscription;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +23,8 @@ public class TagSubscriptionDTO {
 
   private ChatDTO chat;
 
+  @Valid @NotNull private UUID chatUuid;
+
   private OrderDTO order;
 
   private ScopeDTO scope;
@@ -38,6 +43,7 @@ public class TagSubscriptionDTO {
         tagSubscription.getId(),
         TagDTO.toDTO(tagSubscription.getTag()),
         ChatDTO.toDTO(tagSubscription.getChat()),
+        tagSubscription.getChatUuid(),
         OrderDTO.toDTO(tagSubscription.getOrder()),
         ScopeDTO.toDTO(tagSubscription.getScope()),
         TypeDTO.toDTO(tagSubscription.getType()),
@@ -52,6 +58,7 @@ public class TagSubscriptionDTO {
         .id(0)
         .tag(TagDTO.fromDTO(dto.getTag()))
         .chat(ChatDTO.fromDTO(dto.getChat()))
+        .chatUuid(dto.getChatUuid())
         .order(OrderDTO.fromDTO(dto.getOrder()))
         .scope(ScopeDTO.fromDTO(dto.getScope()))
         .type(TypeDTO.fromDTO(dto.getType()))

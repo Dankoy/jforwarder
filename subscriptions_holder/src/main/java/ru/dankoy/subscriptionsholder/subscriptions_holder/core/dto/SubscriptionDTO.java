@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,8 @@ public class SubscriptionDTO {
 
   @NotNull private ChatDTO chat;
 
+  private UUID chatUuid;
+
   @NotNull private LocalDateTime createdAt;
 
   @NotNull private LocalDateTime modifiedAt;
@@ -34,6 +37,7 @@ public class SubscriptionDTO {
         subs.getId(),
         subs.getLastPermalink(),
         ChatDTO.toDTO(subs.getChat()),
+        subs.getChatUuid(),
         subs.getCreatedAt(),
         subs.getModifiedAt());
   }
@@ -44,6 +48,7 @@ public class SubscriptionDTO {
         .id(dto.getId())
         .lastPermalink(dto.getLastPermalink())
         .chat(ChatDTO.fromDTO(dto.getChat()))
+        .chatUuid(dto.getChatUuid())
         .createdAt(dto.getCreatedAt())
         .modifiedAt(dto.getModifiedAt())
         .build();

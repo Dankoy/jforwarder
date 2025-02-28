@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -15,10 +16,12 @@ import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedSubgraph;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.jpaconverter.JpaStringToUuidConverter;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.jpalisteners.SubscriptionListener;
 
 @EntityListeners({SubscriptionListener.class})
@@ -65,6 +68,10 @@ public class Subscription {
   @ManyToOne
   @JoinColumn(name = "chat_id")
   private Chat chat;
+
+  @Convert(converter = JpaStringToUuidConverter.class)
+  @Column(name = "chat_uuid")
+  private UUID chatUuid;
 
   @Column(name = "last_permalink")
   private String lastPermalink;

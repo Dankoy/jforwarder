@@ -117,6 +117,7 @@ public class CommunitySubServiceImpl implements CommunitySubService {
               .community(foundCommunity)
               .section(foundSection)
               .chat(chat)
+              .chatUuid(communitySubscription.getChatUuid())
               .lastPermalink(null)
               .build();
 
@@ -134,6 +135,7 @@ public class CommunitySubServiceImpl implements CommunitySubService {
               .community(foundCommunity)
               .section(foundSection)
               .chat(createdChat)
+              .chatUuid(communitySubscription.getChatUuid())
               .lastPermalink(null)
               .build();
 
