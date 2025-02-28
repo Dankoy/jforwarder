@@ -10,8 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
+import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.Chat;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
+import ru.dankoy.tcoubsinitiator.core.service.telegramchat.TelegramChatService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
   protected final CoubFinderService coubFinderService;
   protected final FilterByRegistryService filter;
+  protected final TelegramChatService telegramChatService;
 
   @Override
   public void scheduledOperation() {
@@ -36,7 +39,10 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<T> allSubscriptionsWithActiveChats = getActiveSubscriptions(pageable);
+      Page<Chat> chats = getAllActiveChats(pageable, "active:true");
+
+      Page<T> allSubscriptionsWithActiveChats =
+          getActiveSubscriptions(chats.getContent(), pageable);
 
       totalPages = allSubscriptionsWithActiveChats.getTotalPages() - 1;
 
@@ -56,11 +62,15 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
     }
   }
 
-  protected abstract Page<T> getActiveSubscriptions(Pageable pageable);
+  protected abstract Page<T> getActiveSubscriptions(List<Chat> chats, Pageable pageable);
 
   protected abstract void send(List<T> toSend);
 
   protected abstract List<Coub> findUnsentCoubsForSubscription(T subscription);
+
+  protected Page<Chat> getAllActiveChats(Pageable pageable, String search) {
+    return telegramChatService.getAllChats(pageable, search);
+  }
 
   protected void findLastPermalinkSubs(Page<T> page) {
 

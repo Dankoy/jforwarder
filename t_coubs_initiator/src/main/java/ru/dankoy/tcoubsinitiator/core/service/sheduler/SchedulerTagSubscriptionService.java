@@ -8,10 +8,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
+import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.Chat;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice.MessageProducerTagSubscriptionService;
 import ru.dankoy.tcoubsinitiator.core.service.tagsubscription.TagSubscriptionService;
+import ru.dankoy.tcoubsinitiator.core.service.telegramchat.TelegramChatService;
 
 @Slf4j
 @Service
@@ -25,8 +27,9 @@ public class SchedulerTagSubscriptionService
       TagSubscriptionService tagSubscriptionService,
       MessageProducerTagSubscriptionService messageProducerTagSubscriptionService,
       CoubFinderService coubFinderService,
-      FilterByRegistryService filter) {
-    super(coubFinderService, filter);
+      FilterByRegistryService filter,
+      TelegramChatService telegramChatService) {
+    super(coubFinderService, filter, telegramChatService);
     this.tagSubscriptionService = tagSubscriptionService;
     this.messageProducerTagSubscriptionService = messageProducerTagSubscriptionService;
   }
@@ -38,8 +41,11 @@ public class SchedulerTagSubscriptionService
   }
 
   @Override
-  protected Page<TagSubscription> getActiveSubscriptions(Pageable pageable) {
-    return tagSubscriptionService.getAllSubscriptionsWithActiveChats(pageable);
+  protected Page<TagSubscription> getActiveSubscriptions(List<Chat> chats, Pageable pageable) {
+
+    var uuids = chats.stream().map(Chat::getId).toList();
+
+    return tagSubscriptionService.getAllSubscriptionsByChatUuid(uuids, pageable);
   }
 
   @Override

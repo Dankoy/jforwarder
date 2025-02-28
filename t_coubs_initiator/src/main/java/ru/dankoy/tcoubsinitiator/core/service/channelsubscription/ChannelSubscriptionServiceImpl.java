@@ -1,5 +1,7 @@
 package ru.dankoy.tcoubsinitiator.core.service.channelsubscription;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,5 +18,11 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
   @Override
   public Page<ChannelSubscription> getAllSubscriptionsWithActiveChats(Pageable pageable) {
     return subscriptionFeign.getAllChannelSubscriptionsWithActiveChats(true, pageable);
+  }
+
+  @Override
+  public Page<ChannelSubscription> getAllSubscriptionsByChatUuid(
+      List<UUID> chatUuids, Pageable pageable) {
+    return subscriptionFeign.getChannelSubscriptionByChatUuids(chatUuids, pageable);
   }
 }

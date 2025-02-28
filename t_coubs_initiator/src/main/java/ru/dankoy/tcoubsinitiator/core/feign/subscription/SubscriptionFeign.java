@@ -1,6 +1,8 @@
 package ru.dankoy.tcoubsinitiator.core.feign.subscription;
 
+import jakarta.websocket.server.PathParam;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,4 +45,22 @@ public interface SubscriptionFeign {
       params = {"active", "page", "size", "sort"})
   Page<ChannelSubscription> getAllChannelSubscriptionsWithActiveChats(
       @RequestParam boolean active, Pageable pageable);
+
+  @GetMapping(
+      path = "/api/v1/channel_subscriptions",
+      params = {"chatUuids", "page", "size", "sort"})
+  Page<ChannelSubscription> getChannelSubscriptionByChatUuids(
+      @PathParam(value = "chatUuids") List<UUID> uuids, Pageable pageable);
+
+  @GetMapping(
+      path = "/api/v1/community_subscriptions",
+      params = {"chatUuids", "page", "size", "sort"})
+  Page<CommunitySubscription> getCommunitySubscriptionByChatUuids(
+      @PathParam(value = "chatUuids") List<UUID> uuids, Pageable pageable);
+
+  @GetMapping(
+      path = "/api/v1/tag_subscriptions",
+      params = {"chatUuids", "page", "size", "sort"})
+  Page<TagSubscription> getTagSubscriptionByChatUuids(
+      @PathParam(value = "chatUuids") List<UUID> uuids, Pageable pageable);
 }

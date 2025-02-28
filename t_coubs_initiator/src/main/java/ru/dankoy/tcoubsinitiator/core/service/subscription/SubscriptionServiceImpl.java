@@ -1,5 +1,7 @@
 package ru.dankoy.tcoubsinitiator.core.service.subscription;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,5 +23,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   @Override
   public Page<CommunitySubscription> getAllSubscriptionsWithActiveChats(Pageable pageable) {
     return subscriptionFeign.getAllSubscriptionsWithActiveChats(true, pageable);
+  }
+
+  @Override
+  public Page<CommunitySubscription> getAllSubscriptionsByChatUuid(
+      List<UUID> chatUuids, Pageable pageable) {
+    return subscriptionFeign.getCommunitySubscriptionByChatUuids(chatUuids, pageable);
   }
 }
