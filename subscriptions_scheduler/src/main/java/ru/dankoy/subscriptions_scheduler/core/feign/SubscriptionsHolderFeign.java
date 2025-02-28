@@ -15,7 +15,7 @@ import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatDTO;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatWithSubsDTO;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.SubscriptionDTO;
 
-@FeignClient(contextId = "telegram-chat", name = "subscriptions-holder")
+@FeignClient(contextId = "subscriptions-holder", name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
 
   @GetMapping(

@@ -35,7 +35,6 @@ public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecke
     var currentPage = INITIAL_PAGE;
     var size = INITIAL_PAGE_SIZE;
     var total = Integer.MAX_VALUE;
-    var withSubs = true;
 
     var sort = Sort.by("id").ascending();
 
@@ -45,11 +44,9 @@ public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecke
 
       var chatsPage = telegramChatService.findAll(pageable);
 
-      List<UUID> chatUuids =
-          chatsPage.getContent().stream().map(ChatWithUUID::getId).collect(Collectors.toList());
+      List<UUID> chatUuids = chatsPage.getContent().stream().map(ChatWithUUID::getId).toList();
 
-      var subscriptions =
-          subscriptionsHolderService.getAllSubscriptionsByChatUuids(chatUuids, pageable);
+      var subscriptions = subscriptionsHolderService.getAllSubscriptionsByChatUuids(chatUuids);
 
       var chats = chatsPage.getContent();
 
@@ -60,17 +57,15 @@ public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecke
       // if chat doesn't have subs and is older than retention days then disable it
       var now = LocalDateTime.now();
       var thresholdDate = now.minusDays(schedulerProperties.getRetention());
+      log.info("Threshold date: {}", thresholdDate);
 
       var chatsToDisable =
           chats.stream()
               .filter(ChatWithUUID::isActive)
               .filter(
                   chat -> {
-                    var subs = map.get(chat);
-                    if (subs == null || subs.isEmpty()) {
-                      return true;
-                    }
-                    return false;
+                    var subs = map.get(chat.getId());
+                    return (subs == null || subs.isEmpty());
                   })
               .filter(c -> c.getDateCreated() != null && c.getDateCreated().isBefore(thresholdDate))
               .map(
@@ -87,7 +82,7 @@ public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecke
                           c.getMessageThreadId(),
                           c.getDateCreated(),
                           c.getDateModified()))
-              .collect(Collectors.toList());
+              .toList();
 
       log.info("Found {} chats to disable", chatsToDisable.size());
 

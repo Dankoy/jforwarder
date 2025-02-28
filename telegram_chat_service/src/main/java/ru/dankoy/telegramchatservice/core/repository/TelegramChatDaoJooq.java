@@ -58,6 +58,7 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
                 Chats.CHATS.ID,
                 Chats.CHATS.CHAT_ID,
                 Chats.CHATS.TYPE,
+                Chats.CHATS.TITLE,
                 Chats.CHATS.FIRST_NAME,
                 Chats.CHATS.LAST_NAME,
                 Chats.CHATS.USERNAME,
