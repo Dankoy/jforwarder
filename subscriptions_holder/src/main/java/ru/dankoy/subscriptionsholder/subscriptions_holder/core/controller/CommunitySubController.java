@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.communitysub.CommunitySubDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.CommunitySubService;
@@ -76,11 +75,11 @@ public class CommunitySubController {
   @GetMapping(
       value = "/api/v1/community_subscriptions",
       params = {"chatUuids"})
-  public Page<SubscriptionWithoutChatDTO> getChats(
+  public Page<CommunitySubDTO> getChats(
       @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable) {
 
     var page = communitySubService.findAllByChatsUUID(chatUuids, pageable);
 
-    return page.map(SubscriptionWithoutChatDTO::toDTO);
+    return page.map(CommunitySubDTO::toDTO);
   }
 }

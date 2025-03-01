@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.SubscriptionWithoutChatDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub.ChannelSubscriptionCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub.ChannelSubscriptionDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.ChannelSubService;
@@ -68,11 +67,11 @@ public class ChannelSubController {
   @GetMapping(
       value = "/api/v1/channel_subscriptions",
       params = {"chatUuids"})
-  public Page<SubscriptionWithoutChatDTO> getChats(
+  public Page<ChannelSubscriptionDTO> getChats(
       @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable) {
 
     var page = channelSubService.findAllByChatsUUID(chatUuids, pageable);
 
-    return page.map(SubscriptionWithoutChatDTO::toDTO);
+    return page.map(ChannelSubscriptionDTO::toDTO);
   }
 }
