@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.Chat;
+import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.filter.TelegramChatFilter;
 import ru.dankoy.tcoubsinitiator.core.service.coubfinder.CoubFinderService;
 import ru.dankoy.tcoubsinitiator.core.service.filter.FilterByRegistryService;
 import ru.dankoy.tcoubsinitiator.core.service.telegramchat.TelegramChatService;
@@ -39,7 +40,9 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      Page<Chat> chats = getAllActiveChats(pageable, "active:true");
+      var filter = TelegramChatFilter.builder().active(true).build();
+
+      Page<Chat> chats = getAllActiveChats(pageable, filter);
 
       if (chats.isEmpty()) {
         log.info("no active chats found");
@@ -89,8 +92,8 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
   protected abstract List<Coub> findUnsentCoubsForSubscription(T subscription);
 
-  protected Page<Chat> getAllActiveChats(Pageable pageable, String search) {
-    return telegramChatService.getAllChats(pageable, search);
+  protected Page<Chat> getAllActiveChats(Pageable pageable, TelegramChatFilter filter) {
+    return telegramChatService.getAllChats(pageable, filter);
   }
 
   protected void findLastPermalinkSubs(Page<T> page) {

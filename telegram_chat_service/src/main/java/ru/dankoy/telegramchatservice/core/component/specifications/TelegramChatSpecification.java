@@ -35,7 +35,7 @@ public class TelegramChatSpecification {
         chatId == null ? cb.conjunction() : cb.equal(root.get(CHAT_ID), chatId));
   }
 
-  private static Specification<Chat> hasMessageThreadId(Long messageThreadId) {
+  private static Specification<Chat> hasMessageThreadId(Integer messageThreadId) {
     return ((root, query, cb) ->
         messageThreadId == null
             ? cb.conjunction()

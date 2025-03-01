@@ -1,12 +1,18 @@
 package ru.dankoy.telegramchatservice.core.domain.search;
 
-import lombok.Data;
+import java.util.UUID;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class DtoSearchCriteria {
 
+  private UUID id;
   private Long chatId;
 
   private String type;
@@ -21,5 +27,5 @@ public class DtoSearchCriteria {
 
   private Boolean active;
 
-  private Long messageThreadId;
+  private Integer messageThreadId;
 }

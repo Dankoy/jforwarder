@@ -19,11 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
+import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.Chats;
 import ru.dankoy.telegramchatservice.core.domain.jooq.tables.records.ChatsRecord;
 import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 import ru.dankoy.telegramchatservice.core.mapper.ChatMapper;
 import ru.dankoy.telegramchatservice.core.repository.condition.RegexSearchQueryConditionConsumer;
+import ru.dankoy.telegramchatservice.core.repository.conditionscreator.TelegramChatConditions;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,6 +52,45 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
     searchParams.forEach(conditionConsumer::accept);
 
     condition = conditionConsumer.getCondition();
+
+    var sort = parser.getSortFields(table, pageable.getSort());
+
+    List<ChatsRecord> records =
+        dsl.select(
+                Chats.CHATS.ID,
+                Chats.CHATS.CHAT_ID,
+                Chats.CHATS.TYPE,
+                Chats.CHATS.TITLE,
+                Chats.CHATS.FIRST_NAME,
+                Chats.CHATS.LAST_NAME,
+                Chats.CHATS.USERNAME,
+                Chats.CHATS.ACTIVE,
+                Chats.CHATS.MESSAGE_THREAD_ID,
+                Chats.CHATS.DATE_CREATED,
+                Chats.CHATS.DATE_MODIFIED)
+            .from(Chats.CHATS)
+            .where(condition)
+            .orderBy(sort)
+            .offset(offset)
+            .limit(limit)
+            .fetchInto(CHATS);
+
+    var total = dsl.select(count()).from(CHATS).where(condition).fetchOne().into(long.class);
+
+    List<ChatDTO> chats = records.stream().map(r -> chatMapper.toChatDTO(r)).toList();
+
+    return new PageImpl<>(chats, pageable, total);
+  }
+
+  @Override
+  public Page<ChatDTO> findAllFiltered(TelegramChatFilter filter, Pageable pageable) {
+
+    var offset = pageable.getOffset();
+    var limit = pageable.getPageSize();
+
+    Table<ChatsRecord> table = Chats.CHATS.asTable();
+
+    var condition = TelegramChatConditions.filterBy(filter);
 
     var sort = parser.getSortFields(table, pageable.getSort());
 

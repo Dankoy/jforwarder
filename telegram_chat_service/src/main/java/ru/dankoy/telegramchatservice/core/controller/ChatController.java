@@ -67,7 +67,7 @@ public class ChatController {
   @GetMapping(value = "/api/v1/telegram_chat")
   public Page<ChatDTO> getChats(Pageable pageable, DtoSearchCriteria searchCriteria) {
 
-    // implemented filter by spring specifications
+    // implemented filter by jooq conditions
 
     var filter = mapper.toFilter(searchCriteria);
 

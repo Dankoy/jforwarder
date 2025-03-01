@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.Chat;
+import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.filter.TelegramChatFilter;
 import ru.dankoy.tcoubsinitiator.core.feign.telegramchat.TelegramChatServiceFeign;
 
 @Service
@@ -14,8 +15,8 @@ public class TelegramChatServiceImpl implements TelegramChatService {
   private final TelegramChatServiceFeign telegramChatServiceFeign;
 
   @Override
-  public Page<Chat> getAllChats(Pageable pageable, String search) {
+  public Page<Chat> getAllChats(Pageable pageable, TelegramChatFilter filter) {
 
-    return telegramChatServiceFeign.getAllTelegramChats(pageable, search);
+    return telegramChatServiceFeign.getAllTelegramChats(pageable, filter);
   }
 }

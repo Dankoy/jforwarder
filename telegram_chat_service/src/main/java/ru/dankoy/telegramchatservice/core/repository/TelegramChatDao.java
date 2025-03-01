@@ -6,11 +6,14 @@ import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
+import ru.dankoy.telegramchatservice.core.domain.filter.TelegramChatFilter;
 import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
 public interface TelegramChatDao {
 
   Page<ChatDTO> findAll(List<RegexSearchCriteria> searchParams, Pageable pageable);
+
+  Page<ChatDTO> findAllFiltered(TelegramChatFilter filter, Pageable pageable);
 
   Optional<ChatDTO> findByChatId(long chatId);
 

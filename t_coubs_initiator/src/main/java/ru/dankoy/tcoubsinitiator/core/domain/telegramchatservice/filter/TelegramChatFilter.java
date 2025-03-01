@@ -1,7 +1,9 @@
-package ru.dankoy.telegramchatservice.core.domain.filter;
+package ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.filter;
 
 import java.util.UUID;
+import lombok.Builder;
 
+@Builder
 public record TelegramChatFilter(
     UUID id,
     Long chatId,

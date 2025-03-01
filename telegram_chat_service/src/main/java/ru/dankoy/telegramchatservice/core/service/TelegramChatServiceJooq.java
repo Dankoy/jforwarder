@@ -40,8 +40,8 @@ public class TelegramChatServiceJooq implements TelegramChatService {
 
   @Override
   public Page<ChatDTO> findAll(TelegramChatFilter filter, Pageable pageable) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+
+    return dao.findAllFiltered(filter, pageable);
   }
 
   @Override

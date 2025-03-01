@@ -13,6 +13,11 @@ import org.jooq.Table;
 import ru.dankoy.telegramchatservice.core.component.jooqfieldparser.JooqFieldParser;
 import ru.dankoy.telegramchatservice.core.domain.search.RegexSearchCriteria;
 
+/**
+ * Regex creates more problems than fixes search pattern.
+ *
+ * <p>Switched to DTO
+ */
 @Slf4j
 @Getter
 @AllArgsConstructor
@@ -40,26 +45,26 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
 
   private void check(String tableField, Object value, String operation) {
 
-    if (operation.equalsIgnoreCase(">")) {
+    // if (operation.equalsIgnoreCase(">")) {
 
-      condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
+    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
 
-    } else if (operation.equalsIgnoreCase("<")) {
+    // } else if (operation.equalsIgnoreCase("<")) {
 
-      condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
+    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
 
-    } else if (operation.equalsIgnoreCase(":")) {
+    // } else if (operation.equalsIgnoreCase(":")) {
 
-      var f = table.field(tableField);
+    //   var f = table.field(tableField);
 
-      if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
+    //   if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
 
-        condition = condition.and(condition(String.format(LIKE_SQL, tableField, value)));
+    //     condition = condition.and(condition(String.format(LIKE_SQL, tableField, value)));
 
-      } else {
+    //   } else {
 
-        condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=", value)));
-      }
-    }
+    //     condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=", value)));
+    //   }
+    // }
   }
 }
