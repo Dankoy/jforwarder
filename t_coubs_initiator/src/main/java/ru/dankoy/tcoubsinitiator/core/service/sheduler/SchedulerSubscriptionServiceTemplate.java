@@ -44,7 +44,7 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
       if (chats.isEmpty()) {
         log.info("no active chats found");
         totalPages = chats.getTotalPages();
-        page = chats.getTotalPages();
+        page++;
         continue;
       }
 
