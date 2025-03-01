@@ -41,6 +41,12 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
       Page<Chat> chats = getAllActiveChats(pageable, "active:true");
 
+      if (chats.isEmpty()) {
+        log.info("no active chats found");
+        page = chats.getTotalPages();
+        continue;
+      }
+
       Page<T> allSubscriptionsWithActiveChats =
           getActiveSubscriptions(chats.getContent(), pageable);
 
