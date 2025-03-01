@@ -48,28 +48,42 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
         continue;
       }
 
-      Page<T> allSubscriptionsWithActiveChats =
-          getActiveSubscriptions(chats.getContent(), pageable);
+      processChats(chats.getContent());
 
-      totalPages = allSubscriptionsWithActiveChats.getTotalPages() - 1;
-
-      logPageContent(allSubscriptionsWithActiveChats);
-
-      findLastPermalinkSubs(allSubscriptionsWithActiveChats);
-
-      filterByRegistry(allSubscriptionsWithActiveChats);
-
-      List<T> toSend = removeSubscriptionsWithEmptyCoubs(allSubscriptionsWithActiveChats);
-
-      send(toSend);
-
-      logDone(page, totalPages, allSubscriptionsWithActiveChats);
+      totalPages = chats.getTotalPages() - 1;
 
       page++;
     }
   }
 
-  protected abstract Page<T> getActiveSubscriptions(List<Chat> chats, Pageable pageable);
+  protected void processChats(List<Chat> chats) {
+
+    int page = FIRST_PAGE;
+    int totalPages = Integer.MAX_VALUE;
+
+    var sort = Sort.by("id").ascending();
+    var pageable = PageRequest.of(page, PAGE_SIZE, sort);
+
+    do {
+
+      var p = getActiveSubscriptions(chats, pageable);
+
+      totalPages = p.getTotalPages() - 1;
+      page++;
+
+      logPageContent(p);
+      findLastPermalinkSubs(p);
+      filterByRegistry(p);
+
+      List<T> toSend = removeSubscriptionsWithEmptyCoubs(p);
+
+      send(toSend);
+      logDone(page, totalPages, p);
+
+    } while (page <= totalPages);
+  }
+
+  protected abstract Page<T> getActiveSubscriptions(List<Chat> chats, Pageable page);
 
   protected abstract void send(List<T> toSend);
 
