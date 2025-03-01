@@ -2,7 +2,6 @@ package ru.dankoy.telegramchatservice.core.repository.condition;
 
 import static org.jooq.impl.DSL.*;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -47,11 +46,13 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
 
     // if (operation.equalsIgnoreCase(">")) {
 
-    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
+    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation,
+    // value)));
 
     // } else if (operation.equalsIgnoreCase("<")) {
 
-    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation, value)));
+    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation,
+    // value)));
 
     // } else if (operation.equalsIgnoreCase(":")) {
 
