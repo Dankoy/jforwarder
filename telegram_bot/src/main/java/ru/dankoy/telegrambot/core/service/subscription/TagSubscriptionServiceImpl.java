@@ -91,6 +91,19 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     // get chat from separate microservice
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
+    var jpaChat =
+        Chat.builder()
+            .id(0)
+            .chatId(chatId)
+            .messageThreadId(messageThreadId)
+            .active(true)
+            .firstName(chat.getFirstName())
+            .lastName(chat.getLastName())
+            .username(chat.getUsername())
+            .type(chat.getType())
+            .title(chat.getTitle())
+            .build();
+
     if (optionalTagFromDb.isPresent()) {
       var tag = optionalTagFromDb.get();
       var tagSubscription =
@@ -98,7 +111,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
               TagSubscription.builder()
                   .id(0)
                   .tag(tag)
-                  .chat(new Chat(chatId, messageThreadId))
+                  .chat(jpaChat)
                   .chatUuid(chat.getId())
                   .order(order)
                   .scope(new Scope(scopeName))

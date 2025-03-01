@@ -87,16 +87,31 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
     var optionalChannelByPermalink = channelService.findChannelByPermalink(channelPermalink);
 
     // get chat from separate microservice
+    // chat is present in db in that point.
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
     if (optionalChannelByPermalink.isPresent()) {
+
+      var jpaChat =
+          Chat.builder()
+              .id(0)
+              .chatId(chatId)
+              .messageThreadId(messageThreadId)
+              .active(true)
+              .firstName(chat.getFirstName())
+              .lastName(chat.getLastName())
+              .username(chat.getUsername())
+              .type(chat.getType())
+              .title(chat.getTitle())
+              .build();
+
       var channel = optionalChannelByPermalink.get();
       var channelSubscription =
           (ChannelSubscription)
               ChannelSubscription.builder()
                   .id(0)
                   .channel(channel)
-                  .chat(new Chat(chatId, messageThreadId))
+                  .chat(jpaChat)
                   .chatUuid(chat.getId())
                   .order(order)
                   .scope(new Scope(scopeName))

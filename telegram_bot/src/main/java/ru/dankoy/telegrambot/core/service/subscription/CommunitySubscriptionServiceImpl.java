@@ -82,12 +82,25 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
     // get chat from separate microservice
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
+    var jpaChat =
+        Chat.builder()
+            .id(0)
+            .chatId(chatId)
+            .messageThreadId(messageThreadId)
+            .active(true)
+            .firstName(chat.getFirstName())
+            .lastName(chat.getLastName())
+            .username(chat.getUsername())
+            .type(chat.getType())
+            .title(chat.getTitle())
+            .build();
+
     var subscription =
         (CommunitySubscription)
             CommunitySubscription.builder()
                 .id(0)
                 .community(community)
-                .chat(new Chat(chatId, messageThreadId))
+                .chat(jpaChat)
                 .chatUuid(chat.getId())
                 .section(section)
                 .build();
