@@ -48,7 +48,8 @@ scrape_configs:
                    'spring-gateway:8760',
                    't-coubs-initiator:8081',
                    'telegram-bot:8084',
-                   'subscriptions-scheduler:8087'
+                   'subscriptions-scheduler:8087',
+                   'telegram-chat-service:8088'
       ]
 
   # - job_name: 'prometheus'
