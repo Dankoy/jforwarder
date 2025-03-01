@@ -242,7 +242,10 @@ dependencies {
 	jooqCodegen 'org.postgresql:postgresql'
 	jooqCodegen 'org.testcontainers:postgresql'
 	// jooqCodegen 'org.liquibase:liquibase-core'
-	implementation 'org.testcontainers:postgresql'
+	// brings junit4 that breaks tests
+	implementation ('org.testcontainers:postgresql')  {
+		exclude group: 'junit', module: 'junit'
+	}
 
 	// jackson
 	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
@@ -265,8 +268,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
+	testImplementation ("org.testcontainers:junit-jupiter")
+	testImplementation ('org.testcontainers:postgresql')
 	testImplementation 'org.junit.jupiter:junit-jupiter-params'
 	testImplementation 'org.liquibase:liquibase-core'
 }
