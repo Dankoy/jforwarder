@@ -169,7 +169,6 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
 
     // same as below
     var chatsRecord = new ChatsRecord(jooqPojo);
-    chatsRecord.setDateModified(LocalDateTime.now(ZoneOffset.UTC));
 
     var result =
         dsl.update(CHATS)

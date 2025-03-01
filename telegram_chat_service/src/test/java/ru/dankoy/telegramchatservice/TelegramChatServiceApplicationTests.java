@@ -16,8 +16,9 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.dankoy.telegramchatservice.core.controller.ChatController;
+import ru.dankoy.telegramchatservice.core.repository.TelegramChatDaoJooq;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
-import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
+import ru.dankoy.telegramchatservice.core.service.TelegramChatServiceJooq;
 
 @DisplayName("Test default context ")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,7 +26,7 @@ import ru.dankoy.telegramchatservice.core.service.TelegramChatService;
     exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
 class TelegramChatServiceApplicationTests {
 
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
+  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
   @BeforeAll
   static void beforeAll() {
@@ -54,7 +55,10 @@ class TelegramChatServiceApplicationTests {
 
     var telegramChatRepository = context.getBean(TelegramChatRepository.class);
 
+    var telegramChatDaoJooq = context.getBean(TelegramChatDaoJooq.class);
+
     assertNotNull(telegramChatRepository);
+    assertNotNull(telegramChatDaoJooq);
   }
 
   @DisplayName("all default necessary services beans should be created")
@@ -63,7 +67,7 @@ class TelegramChatServiceApplicationTests {
 
     // services
 
-    var telegramChatService = context.getBean(TelegramChatService.class);
+    var telegramChatService = context.getBean(TelegramChatServiceJooq.class);
 
     assertNotNull(telegramChatService);
   }

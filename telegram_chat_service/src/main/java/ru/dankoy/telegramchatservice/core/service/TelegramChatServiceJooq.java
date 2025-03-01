@@ -1,5 +1,7 @@
 package ru.dankoy.telegramchatservice.core.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -69,6 +71,7 @@ public class TelegramChatServiceJooq implements TelegramChatService {
 
     // get created date from the existing chat and set it to the new chat
     chat.setDateCreated(found.getDateCreated());
+    chat.setDateModified(LocalDateTime.now(ZoneOffset.UTC));
 
     return dao.update(chat);
   }
