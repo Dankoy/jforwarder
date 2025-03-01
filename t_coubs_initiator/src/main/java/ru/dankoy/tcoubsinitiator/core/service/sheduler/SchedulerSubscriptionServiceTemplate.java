@@ -40,9 +40,9 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
       var sort = Sort.by("id").ascending();
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
-      var filter = TelegramChatFilter.builder().active(true).build();
+      var f = TelegramChatFilter.builder().active(true).build();
 
-      Page<Chat> chats = getAllActiveChats(pageable, filter);
+      Page<Chat> chats = getAllActiveChats(pageable, f);
 
       if (chats.isEmpty()) {
         log.info("no active chats found");
