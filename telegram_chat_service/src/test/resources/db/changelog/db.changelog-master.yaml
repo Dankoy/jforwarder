@@ -1,5 +1,0 @@
-databaseChangeLog:
-  - logicalFilePath: db/changelog/db.changelog-master.yaml
-  - includeAll:
-      path: included
-      relativeToChangelogFile: true

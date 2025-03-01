@@ -3,3 +3,8 @@ databaseChangeLog:
   - includeAll:
       path: included
       relativeToChangelogFile: true
+      context: prod
+  - includeAll:
+      path: included-tests
+      relativeToChangelogFile: true
+      context: test

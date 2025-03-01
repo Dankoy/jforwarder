@@ -1,0 +1,28 @@
+databaseChangeLog:
+  - changeSet:
+      id: "delete-everything-from-chats-table"
+      author: Dankoy
+      comment: "Clean up the chats table"
+      context: test
+      runOnChange: true
+      changes:
+        - delete:
+            tableName: chats
+
+  - changeSet:
+      id: add-test-fixtures-to-chats-table2
+      author: Dankoy
+      context: test
+      runOnChange: true
+      loadUpdateData:
+        primaryKey: id
+        file: data/2025-02-25--0001-chats.csv
+        relativeToChangelogFile: true
+        separator: ;
+        quotChar: '"'
+        encoding: UTF-8
+        tableName: chats
+      rollback:
+        - delete:
+            tableName: chats
+            where: id = 01955063-b1c2-7939-86f8-ec0fbddb9666

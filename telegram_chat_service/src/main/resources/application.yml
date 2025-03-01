@@ -11,6 +11,8 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/db.changelog-master.yaml
+    contexts:
+    - prod
 
   jooq:
     sql-dialect: postgres
@@ -77,6 +79,6 @@ logging:
     org:
       jooq:
         tools:
-          LoggerListener: DEBUG
+          LoggerListener: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

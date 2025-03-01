@@ -2,6 +2,7 @@ databaseChangeLog:
 - changeSet:
     id: "create-chats-table"
     author: Evgeny (generated)
+    context: prod
     changes:
     - createTable:
         tableName: chats
