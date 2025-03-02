@@ -2,6 +2,7 @@ package ru.dankoy.telegramchatservice.core.repository.condition;
 
 import static org.jooq.impl.DSL.*;
 
+import java.util.Objects;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,9 +28,10 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
   private JooqFieldParser parser;
   private Table<R> table;
 
-  private static final String PLAIN_SQL = "%s%s%s";
-  private static final String LIKE_SQL = "%s like '%%%s%%'";
+  // private static final String PLAIN_SQL = "%s%s%s";
+  // private static final String LIKE_SQL = "%s like '%%%s%%'";
 
+  // This thing doesn't work. Works only with strings
   @Override
   public void accept(RegexSearchCriteria param) {
 
@@ -37,6 +39,7 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
     var value = param.getValue().toString();
     var operation = param.getOperation();
 
+    // checks if field exist in table
     parser.getTableField(table, tableField);
 
     check(tableField, value, operation);
@@ -44,28 +47,36 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
 
   private void check(String tableField, Object value, String operation) {
 
-    // if (operation.equalsIgnoreCase(">")) {
+    if (operation.equalsIgnoreCase(">")) {
 
-    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation,
-    // value)));
+      // plain sql is bad
+      // condition = condition.and(condition(String.format(PLAIN_SQL, tableField,
+      // operation, value)));
 
-    // } else if (operation.equalsIgnoreCase("<")) {
+      condition = condition.and(field(tableField).gt(val(value)));
 
-    //   condition = condition.and(condition(String.format(PLAIN_SQL, tableField, operation,
-    // value)));
+    } else if (operation.equalsIgnoreCase("<")) {
 
-    // } else if (operation.equalsIgnoreCase(":")) {
+      condition = condition.and(field(tableField).lt(val(value)));
 
-    //   var f = table.field(tableField);
+    } else if (operation.equalsIgnoreCase(":")) {
 
-    //   if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
+      var f = table.field(tableField);
+      Class<?> clazz = f.getType();
 
-    //     condition = condition.and(condition(String.format(LIKE_SQL, tableField, value)));
+      if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
 
-    //   } else {
+        // condition = condition.and(condition(String.format(LIKE_SQL, tableField,
+        // value)));
 
-    //     condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=", value)));
-    //   }
-    // }
+        condition = condition.and(field(tableField).like("%" + value + "%"));
+
+      } else {
+
+        // condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=",
+        // value)));
+        condition = condition.and(field(tableField).eq(val(value)));
+      }
+    }
   }
 }
