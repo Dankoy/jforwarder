@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,6 +83,7 @@ public class TagSubServiceImpl implements TagSubService {
               .id(0)
               .tag(tag)
               .chat(chat)
+              .chatUuid(tagSubscription.getChatUuid())
               .order(order)
               .scope(scope)
               .type(type)
@@ -99,6 +101,7 @@ public class TagSubServiceImpl implements TagSubService {
               .id(0)
               .tag(tag)
               .chat(createdChat)
+              .chatUuid(tagSubscription.getChatUuid())
               .order(order)
               .scope(scope)
               .type(type)
@@ -121,5 +124,11 @@ public class TagSubServiceImpl implements TagSubService {
             tagSubscription.getOrder().getValue());
 
     optional.ifPresent(tagSubRepository::delete);
+  }
+
+  @Override
+  public Page<TagSub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
+    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return tagSubRepository.findAllBychatUuidIsIn(uuids, pageable);
   }
 }

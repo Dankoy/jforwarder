@@ -1,0 +1,10 @@
+databaseChangeLog:
+  - logicalFilePath: db/changelog/db.changelog-master-test.yaml
+  - includeAll:
+      path: include
+      context: test
+  - includeAll:
+      path: included-tests
+      relativeToChangelogFile: true
+      context: test
+  

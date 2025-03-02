@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -93,7 +94,11 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
                   .map(
                       s -> {
                         return new SubscriptionWithoutChatDTO(
-                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                            s.id,
+                            s.lastPermalink,
+                            UUID.fromString(s.getChatUuid()),
+                            s.createdAt,
+                            s.modifiedAt);
                       })
                   .toList();
 
@@ -155,9 +160,11 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
     Query subQuery =
         em.createNativeQuery(
                 """
-                select * from subscriptions s
-                where s.chat_id in :chats
-                """,
+select s.id, s.chat_id, s.last_permalink,
+s.created_at, s.modified_at, s.chat_uuid
+from subscriptions s
+where s.chat_id in :chats
+""",
                 SubscriptionDTOForNativeQuery.class)
             .setParameter("chats", chatIds);
 
@@ -179,7 +186,11 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
                   .map(
                       s -> {
                         return new SubscriptionWithoutChatDTO(
-                            s.id, s.lastPermalink, s.createdAt, s.modifiedAt);
+                            s.id,
+                            s.lastPermalink,
+                            UUID.fromString(s.getChatUuid()),
+                            s.createdAt,
+                            s.modifiedAt);
                       })
                   .toList();
 
@@ -208,12 +219,19 @@ public class TelegramChatRepositoryCustomImpl implements TelegramChatRepositoryC
     private String lastPermalink;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
+    private String chatUuid;
 
     SubscriptionDTOForNativeQuery(
-        long id, long chatId, String lastPermalink, Timestamp createdAt, Timestamp modifiedAt) {
+        long id,
+        long chatId,
+        String lastPermalink,
+        Timestamp createdAt,
+        Timestamp modifiedAt,
+        String chatUuid) {
 
       this.id = id;
       this.chatId = chatId;
+      this.chatUuid = chatUuid;
       this.lastPermalink = lastPermalink;
       this.createdAt = createdAt != null ? createdAt.toLocalDateTime() : null;
       this.modifiedAt = modifiedAt != null ? modifiedAt.toLocalDateTime() : null;

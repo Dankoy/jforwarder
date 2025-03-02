@@ -10,6 +10,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.Section;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 
 @Service
@@ -20,6 +21,8 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
 
   private final CommunityService communityService;
 
+  private final TelegramChatService telegramChatService;
+
   /**
    * @deprecated for topics support via messageThreadId
    */
@@ -29,11 +32,24 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
     return subscriptionsHolderFeign.getAllSubscriptionsByChatId(chatId);
   }
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   public List<CommunitySubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
 
     return subscriptionsHolderFeign.getAllSubscriptionsByChatIdAndMessageThreadId(
         chatId, messageThreadId);
+  }
+
+  @Override
+  public List<CommunitySubscription> getSubsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
+    return subscriptionsHolderFeign.getAllCommunitySubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -63,12 +79,29 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
                     sectionName,
                     String.format("Section with name '%s' not found", sectionName)));
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
+    var jpaChat =
+        Chat.builder()
+            .id(0)
+            .chatId(chatId)
+            .messageThreadId(messageThreadId)
+            .active(true)
+            .firstName(chat.getFirstName())
+            .lastName(chat.getLastName())
+            .username(chat.getUsername())
+            .type(chat.getType())
+            .title(chat.getTitle())
+            .build();
+
     var subscription =
         (CommunitySubscription)
             CommunitySubscription.builder()
                 .id(0)
                 .community(community)
-                .chat(new Chat(chatId, messageThreadId))
+                .chat(jpaChat)
+                .chatUuid(chat.getId())
                 .section(section)
                 .build();
 
@@ -79,12 +112,16 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
   public void unsubscribe(
       String communityName, String sectionName, long chatId, Integer messageThreadId) {
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
     var subscription =
         (CommunitySubscription)
             CommunitySubscription.builder()
                 .id(0)
                 .community(new Community(communityName))
                 .chat(new Chat(chatId, messageThreadId))
+                .chatUuid(chat.getId())
                 .section(new Section(sectionName))
                 .build();
 

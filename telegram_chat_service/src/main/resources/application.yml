@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: telegram-chat-service
+
+  datasource:
+    url: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL:ENC(ds1GutZesnYcnb5sqodbUVzA/f1Kq8JqDLKNEZ1lhtw4DLfggd1CvhKbHdQaG1ec)}
+    username: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER:ENC(X7Of8LVQj1JLolc/rWZKw/RFBZglFRtB)}
+    password: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD:ENC(CZnZexiQmdW3AujGaYfc9DLf3q4Ep/4SVN11m9LOOcQ=)}
+    driver-class-name: org.postgresql.Driver
+    
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    contexts:
+      - prod
+
+  jooq:
+    sql-dialect: postgres
+
+server:
+  port: 8088
+
+
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+    password: ${TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD:pass}
+
+eureka:
+  client:
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+    healthcheck:
+      enabled: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 30
+    lease-expiration-duration-in-seconds: 90
+  #    instance-id: "${spring.application.name}:${server.port}"
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    diskspace:
+      enabled: true
+  zipkin:
+    tracing:
+      connect-timeout: 1s
+      read-timeout: 10s
+      endpoint: ${ZIPKIN_SERVER:http://localhost:9411/api/v2/spans}
+  tracing:
+    sampling:
+      probability: 1.0
+
+  # For Exemplars to work we need histogram buckets
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+
+logging:
+  level:
+    root: INFO
+    org:
+      jooq:
+        tools:
+          LoggerListener: TRACE
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"

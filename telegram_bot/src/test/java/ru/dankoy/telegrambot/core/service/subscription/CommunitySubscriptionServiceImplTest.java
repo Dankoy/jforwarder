@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +17,19 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 
 @DisplayName("CommunitySubscriptionServiceImpl tests")
 @ExtendWith(MockitoExtension.class)
-class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, CommunityMaker, ChatMaker {
+class CommunitySubscriptionServiceImplTest
+    implements CommunitySubMaker, CommunityMaker, ChatMaker, ChatWithUUIDMaker {
 
   @Mock private SubscriptionsHolderFeign subscriptionsHolderFeign;
 
   @Mock private CommunityService communityService;
+
+  @Mock private TelegramChatService telegramChatService;
 
   @InjectMocks private CommunitySubscriptionServiceImpl communitySubscriptionService;
 
@@ -51,6 +56,33 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
     assertThat(expected).isEqualTo(subs);
   }
 
+  @DisplayName("getSubscriptionsByChatId expects correct list")
+  @Test
+  void getSubscriptionsByChatUuidTest() {
+
+    var chatId = 123L;
+    var messageThreadId = 1;
+
+    var community = correctCommunities().getFirst();
+    var chat = makeChat(chatId);
+    var chatWithUuid = makeChat(chat);
+
+    var subs = makeCorrectCommunitySubs(community, chat);
+
+    given(
+            telegramChatService.getChatByIdAndMessageThreadId(
+                chat.getChatId(), chat.getMessageThreadId()))
+        .willReturn(chatWithUuid);
+
+    given(subscriptionsHolderFeign.getAllCommunitySubscriptionsByChatUuid(chatWithUuid.getId()))
+        .willReturn(subs);
+
+    var expected =
+        communitySubscriptionService.getSubsByChatIdAndMessageThreadId(chatId, messageThreadId);
+
+    assertThat(expected).isEqualTo(subs);
+  }
+
   @DisplayName("subscribe expects correct response")
   @Test
   void subscribeTest_expectsCorrectResponse() {
@@ -62,7 +94,13 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
 
     var community = correctCommunities().getFirst();
     var chat = makeChat(chatId);
+    var chatWithUuid = makeChat(chat);
     var sub = makeCorrectCommunitySubs(community, chat).getFirst();
+
+    given(
+            telegramChatService.getChatByIdAndMessageThreadId(
+                chat.getChatId(), chat.getMessageThreadId()))
+        .willReturn(chatWithUuid);
 
     given(communityService.getByName(communityName)).willReturn(Optional.of(community));
     given(
@@ -127,6 +165,10 @@ class CommunitySubscriptionServiceImplTest implements CommunitySubMaker, Communi
     var messageThreadId = 1;
     var communityName = "memes";
     var sectionName = "blah";
+    var chatWithUuid = makeChat(UUID.randomUUID(), chatId);
+
+    given(telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId))
+        .willReturn(chatWithUuid);
 
     communitySubscriptionService.unsubscribe(communityName, sectionName, chatId, messageThreadId);
 

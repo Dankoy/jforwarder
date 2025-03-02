@@ -1,11 +1,11 @@
 plugins {
-    id 'multimodule-config'
-    id 'spring-conventions'
-    id 'spring-web-conventions'
-    id 'spring-feign-conventions'
-    id 'spring-cache-conventions'
-    id 'micrometer-conventions'
-    id 'loki-conventions'
+	id 'multimodule-config'
+	id 'spring-conventions'
+	id 'spring-web-conventions'
+	id 'spring-feign-conventions'
+	id 'spring-cache-conventions'
+	id 'micrometer-conventions'
+	id 'loki-conventions'
 }
 
 group = 'ru.dankoy.telegrambot'
@@ -13,27 +13,26 @@ group = 'ru.dankoy.telegrambot'
 
 dependencies {
 
-    // eureka for service discovery
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// eureka for service discovery
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    // jackson
-    implementation 'com.fasterxml.jackson.core:jackson-databind'
+	// jackson
+	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
-    // bot - doesn't work with eureka client
-//    implementation 'org.telegram:telegrambots-spring-boot-starter:6.7.0'
-//    implementation 'org.telegram:telegrambots-abilities:6.7.0' // 5.3.0'
-    implementation('org.telegram:telegrambots:6.9.7.1') {
-        exclude group: 'org.glassfish.jersey.containers'
-        exclude group: 'org.glassfish.jersey.core'
-        exclude group: 'org.glassfish.jersey.inject'
-        exclude group: 'org.glassfish.jersey.media'
-    }
+	// bot - doesn't work with eureka client
+	//    implementation 'org.telegram:telegrambots-spring-boot-starter:6.7.0'
+	//    implementation 'org.telegram:telegrambots-abilities:6.7.0' // 5.3.0'
+	implementation('org.telegram:telegrambots:6.9.7.1') {
+		exclude group: 'org.glassfish.jersey.containers'
+		exclude group: 'org.glassfish.jersey.core'
+		exclude group: 'org.glassfish.jersey.inject'
+		exclude group: 'org.glassfish.jersey.media'
+	}
 
-    // freemarker
-    implementation 'org.freemarker:freemarker'
+	// freemarker
+	implementation 'org.freemarker:freemarker'
 
-    implementation 'org.springframework.boot:spring-boot-starter-integration'
-    implementation "io.github.resilience4j:resilience4j-ratelimiter"
-
+	implementation 'org.springframework.boot:spring-boot-starter-integration'
+	implementation "io.github.resilience4j:resilience4j-ratelimiter"
 }
 

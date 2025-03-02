@@ -47,6 +47,10 @@ public class ChannelServiceImpl implements ChannelService {
     return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatId(chatId);
   }
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @Override
   public List<ChannelSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {

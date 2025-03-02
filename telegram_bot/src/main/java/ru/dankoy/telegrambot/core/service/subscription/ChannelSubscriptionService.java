@@ -10,6 +10,8 @@ public interface ChannelSubscriptionService {
   List<ChannelSubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId);
 
+  List<ChannelSubscription> getSubsByChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
+
   ChannelSubscription subscribe(
       String channelPermalink,
       String orderValue,

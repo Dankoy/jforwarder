@@ -1,7 +1,7 @@
 plugins {
-    id 'multimodule-config'
-    id 'spring-conventions'
-    id 'loki-conventions'
+	id 'multimodule-config'
+	id 'spring-conventions'
+	id 'loki-conventions'
 }
 
 group = 'ru.dankoy'
@@ -9,11 +9,9 @@ group = 'ru.dankoy'
 
 dependencies {
 
-    // eureka
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
+	// eureka
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
 
-    // actuator
-    implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
-
-
+	// actuator
+	implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
 }

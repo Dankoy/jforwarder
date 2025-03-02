@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.core.service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.Chat;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.domain.subscriptions.ChannelSub;
@@ -27,6 +28,7 @@ public interface ChannelSubMaker extends ScopeMaker, TypeMaker, OrderMaker {
             .type(type)
             .order(order)
             .chat(chat)
+            .chatUuid(UUID.randomUUID())
             .lastPermalink(lastPermalink)
             .build();
 

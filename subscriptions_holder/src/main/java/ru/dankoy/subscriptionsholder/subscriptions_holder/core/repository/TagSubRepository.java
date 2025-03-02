@@ -43,4 +43,8 @@ public interface TagSubRepository extends JpaRepository<TagSub, Long> {
       @Param("messageThreadId") Integer messageThreadId,
       @Param("tagTitle") String tagTitle,
       @Param("orderValue") String orderValue);
+
+  @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
+  Page<TagSub> findAllBychatUuidIsIn(
+      @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
 }

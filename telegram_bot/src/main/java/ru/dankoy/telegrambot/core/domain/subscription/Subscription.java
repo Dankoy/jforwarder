@@ -2,6 +2,7 @@ package ru.dankoy.telegrambot.core.domain.subscription;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,6 +23,8 @@ public class Subscription {
   private long id;
 
   private Chat chat;
+
+  private UUID chatUuid;
 
   private String lastPermalink;
 

@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptions_scheduler.core.domain.subscribtionsholder.subscription;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,4 +20,6 @@ public class Subscription {
   private LocalDateTime createdAt;
 
   private LocalDateTime modifiedAt;
+
+  private UUID chatUuid;
 }

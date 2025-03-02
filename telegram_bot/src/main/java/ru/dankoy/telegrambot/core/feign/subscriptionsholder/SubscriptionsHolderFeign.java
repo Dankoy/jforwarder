@@ -1,6 +1,7 @@
 package ru.dankoy.telegrambot.core.feign.subscriptionsholder;
 
 import java.util.List;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +34,22 @@ public interface SubscriptionsHolderFeign {
   List<CommunitySubscription> getAllSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @GetMapping(
       path = "/api/v1/community_subscriptions",
       params = {"telegramChatId", "messageThreadId"})
   List<CommunitySubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
       @RequestParam("telegramChatId") long telegramChatId,
       @RequestParam("messageThreadId") Integer messageThreadId);
+
+  @GetMapping(
+      path = "/api/v1/community_subscriptions",
+      params = {"chatUuid"})
+  List<CommunitySubscription> getAllCommunitySubscriptionsByChatUuid(
+      @RequestParam("chatUuid") UUID chatUuid);
 
   @PostMapping(path = "/api/v1/community_subscriptions")
   CommunitySubscription subscribe(@RequestBody CommunitySubscription communitySubscription);
@@ -63,12 +74,21 @@ public interface SubscriptionsHolderFeign {
   List<TagSubscription> getAllTagSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @GetMapping(
       path = "/api/v1/tag_subscriptions",
       params = {"telegramChatId", "messageThreadId"})
   List<TagSubscription> getAllTagSubscriptionsByChatIdAndMessageThreadId(
       @RequestParam("telegramChatId") long telegramChatId,
       @RequestParam("messageThreadId") Integer messageThreadId);
+
+  @GetMapping(
+      path = "/api/v1/tag_subscriptions",
+      params = {"chatUuid"})
+  List<TagSubscription> getAllTagSubscriptionsByChatUuid(@RequestParam("chatUuid") UUID chatUuid);
 
   @PostMapping(path = "/api/v1/tag_subscriptions")
   TagSubscription subscribeByTag(@RequestBody TagSubscription tagSubscription);
@@ -87,6 +107,10 @@ public interface SubscriptionsHolderFeign {
       params = {"chatId"})
   Chat getChatById(@PathVariable("chatId") long chatId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @GetMapping(
       path = "/api/v1/telegram_chat",
       params = {"chatId", "messageThreadId"})
@@ -94,9 +118,17 @@ public interface SubscriptionsHolderFeign {
       @RequestParam("chatId") long chatId,
       @RequestParam("messageThreadId") Integer messageThreadId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @PostMapping(path = "/api/v1/telegram_chat")
   Chat createChat(@RequestBody Chat chat);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @PutMapping(path = "/api/v1/telegram_chat/{id}")
   Chat updateChat(@PathVariable("id") long id, @RequestBody Chat chat);
 
@@ -149,12 +181,22 @@ public interface SubscriptionsHolderFeign {
   List<ChannelSubscription> getAllChannelSubscriptionsByChatId(
       @RequestParam("telegramChatId") long telegramChatId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @GetMapping(
       path = "/api/v1/channel_subscriptions",
       params = {"telegramChatId", "messageThreadId"})
   List<ChannelSubscription> getAllChannelSubscriptionsByChatIdAndMessageThreadId(
       @RequestParam("telegramChatId") long telegramChatId,
       @RequestParam("messageThreadId") Integer messageThreadId);
+
+  @GetMapping(
+      path = "/api/v1/channel_subscriptions",
+      params = {"chatUuid"})
+  List<ChannelSubscription> getAllChannelSubscriptionsByChatUuid(
+      @RequestParam("chatUuid") UUID chatUuid);
 
   @PostMapping(path = "/api/v1/channel_subscriptions")
   ChannelSubscription subscribeByChannel(@RequestBody ChannelSubscription channelSubscription);

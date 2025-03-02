@@ -84,16 +84,19 @@ Open coub channel in browser. Find the last word in URL. Use it.
 4. Spring Cloud Netflix Eureka
 5. Spring Cloud Loadbalancer
 6. Spring Cloud Gateway
-7. Open feign
-8. Caffeine Cache
-9. PostgreSQL
-10. Flyway
-11. Micrometer tracing
-12. Zipkin reporter brave
-13. Zipkin
-14. Docker compose
-15. Telegrambots
-16. Resilience4j
+7. Spring Data Jpa
+8. JOOQ
+9. Open feign
+10. Caffeine Cache
+11. PostgreSQL
+12. Flyway
+13. Liquibase
+14. Micrometer tracing
+15. Zipkin reporter brave
+16. Zipkin
+17. Docker compose
+18. Telegrambots
+19. Resilience4j
 
 ## Monitoring stack
 
@@ -101,6 +104,8 @@ Open coub channel in browser. Find the last word in URL. Use it.
 2. Grafana
 3. Prometheus node exporter
 4. Prometheus postgres exporter
+5. Loki (logs)
+6. Mimir + minio (metrics storage)
 
 ## Microservice architecture
 
@@ -124,6 +129,11 @@ TELEGRAM_BOT_NAME=name
 TELEGRAM_BOT_API_TOKEN=token
 JAR_VERSION=x.x.x-SNAPSHOT
 DOCKER_HUB_USER=user
+TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL=jdbc:postgresql://container_name:5432/db
+TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER=user
+TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD=pass
+TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_DB=db
+TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD=pass
 ```
 
 Variable **JAR_VERSION** is used only when building through command line docker compose build or

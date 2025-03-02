@@ -12,6 +12,8 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
+import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
 import ru.dankoy.telegrambot.core.service.tag.TagService;
@@ -26,6 +28,10 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
   private final OrderService orderService;
 
+  private final TelegramChatService telegramChatService;
+
+  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+
   /**
    * @deprecated for topics support via messageThreadId
    */
@@ -35,10 +41,23 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     return tagService.getAllSubscriptionsByChat(chatId);
   }
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @Override
   public List<TagSubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
     return tagService.getAllSubscriptionsByChatIdAndMessageThreadId(chatId, messageThreadId);
+  }
+
+  @Override
+  public List<TagSubscription> getSubsByChatIdAndMessageThreadId(
+      long chatId, Integer messageThreadId) {
+
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
+    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -69,6 +88,22 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     // 2. find tag in db
     var optionalTagFromDb = tagService.findTagByTitle(tagName);
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
+    var jpaChat =
+        Chat.builder()
+            .id(0)
+            .chatId(chatId)
+            .messageThreadId(messageThreadId)
+            .active(true)
+            .firstName(chat.getFirstName())
+            .lastName(chat.getLastName())
+            .username(chat.getUsername())
+            .type(chat.getType())
+            .title(chat.getTitle())
+            .build();
+
     if (optionalTagFromDb.isPresent()) {
       var tag = optionalTagFromDb.get();
       var tagSubscription =
@@ -76,7 +111,8 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
               TagSubscription.builder()
                   .id(0)
                   .tag(tag)
-                  .chat(new Chat(chatId, messageThreadId))
+                  .chat(jpaChat)
+                  .chatUuid(chat.getId())
                   .order(order)
                   .scope(new Scope(scopeName))
                   .type(new Type(typeName))
@@ -100,6 +136,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
                     .id(0)
                     .tag(created)
                     .chat(new Chat(chatId, messageThreadId))
+                    .chatUuid(chat.getId())
                     .order(order)
                     .scope(new Scope(scopeName))
                     .type(new Type(typeName))

@@ -2,16 +2,15 @@
 
 dependencies {
 
-    // micrometer + zipkin bridge
-    implementation 'io.micrometer:micrometer-observation' // observation enable
-    implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
-    implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
-    implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
+	// micrometer + zipkin bridge
+	implementation 'io.micrometer:micrometer-observation' // observation enable
+	implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
 
-    if (plugins.findPlugin("spring-feign-conventions")) {
-        implementation 'io.github.openfeign:feign-micrometer'
-    }
-
+	if (plugins.findPlugin("spring-feign-conventions")) {
+		implementation 'io.github.openfeign:feign-micrometer'
+	}
 }
 
 

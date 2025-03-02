@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,5 +62,16 @@ public class ChannelSubController {
     var ts = ChannelSubscriptionCreateDTO.fromDTO(dto);
 
     channelSubService.deleteSubscription(ts);
+  }
+
+  @GetMapping(
+      value = "/api/v1/channel_subscriptions",
+      params = {"chatUuids"})
+  public Page<ChannelSubscriptionDTO> getChats(
+      @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable) {
+
+    var page = channelSubService.findAllByChatsUUID(chatUuids, pageable);
+
+    return page.map(ChannelSubscriptionDTO::toDTO);
   }
 }

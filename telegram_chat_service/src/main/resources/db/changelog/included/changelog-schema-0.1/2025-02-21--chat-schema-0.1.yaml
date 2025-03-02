@@ -1,0 +1,56 @@
+databaseChangeLog:
+- changeSet:
+    id: "create-chats-table"
+    author: Evgeny (generated)
+    context: prod
+    changes:
+    - createTable:
+        tableName: chats
+        columns:
+        - column:
+            autoIncrement: false
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: chats_pkey
+            name: id
+            type: VARCHAR(40)
+        - column:
+            constraints:
+              nullable: false
+            name: chat_id
+            type: BIGINT
+        - column:
+            name: type
+            type: VARCHAR(50)
+        - column:
+            name: title
+            type: VARCHAR(80)
+        - column:
+            name: first_name
+            type: VARCHAR(50)
+        - column:
+            name: last_name
+            type: VARCHAR(50)
+        - column:
+            name: username
+            type: VARCHAR(50)
+        - column:
+            constraints:
+              nullable: false
+            name: active
+            type: BOOLEAN
+        - column:
+            name: message_thread_id
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            # defaultValueComputed: timezone('UTC', now()) # postgresql things, not compatible with other dbs
+            name: date_created
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: date_modified
+            type: TIMESTAMP WITHOUT TIME ZONE
+        
+

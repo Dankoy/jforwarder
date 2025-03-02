@@ -2,53 +2,58 @@
 // dependabot probably wont work with such configuration
 
 plugins {
-    id 'spotless-conventions'
+	id 'spotless-conventions'
 }
 
 ext {
-    set("PROJECT_VERSION", "1.5.0")
+	set("PROJECT_VERSION", "1.6.0")
 }
 
 // doesn't work in build.gradle in buildSrc project
 ext {
-    springCloudDependencies = "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+	springCloudDependencies = "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
 }
 
 //share project version between all projects
 allprojects {
-    version = "${PROJECT_VERSION}-SNAPSHOT"
+	version = "${PROJECT_VERSION}-SNAPSHOT"
 }
 
 tasks.register('printVersion') {
-    // any code that goes here is part of configuring the task
-    // this code will always get run, even if the task is not executed
-    doLast { // add a task action
-        // any code that goes here is part of executing the task
-        // this code will only get run if and when the task gets executed
-        println project.version
-    }
+	// any code that goes here is part of configuring the task
+	// this code will always get run, even if the task is not executed
+	doLast {
+		// add a task action
+		// any code that goes here is part of executing the task
+		// this code will only get run if and when the task gets executed
+		println project.version
+	}
 }
 
 spotless {
-    java {
-        target fileTree('.') {
-            include '**/*.java'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        toggleOffOn()
-        googleJavaFormat('1.24.0')
-                .reflowLongStrings()
-                .formatJavadoc(true)
-                .reorderImports(false)
-                .groupArtifact('com.google.googlejavaformat:google-java-format')
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    json {
-        target 'monitoring/**/*.json', '**/*.json'
-        jackson()
-    }
+	java {
+		target fileTree('.') {
+			include '**/*.java'
+			exclude '**/build/**', '**/build-*/**'
+		}
+		toggleOffOn()
+		googleJavaFormat('1.24.0')
+				.reflowLongStrings()
+				.formatJavadoc(true)
+				.reorderImports(false)
+				.groupArtifact('com.google.googlejavaformat:google-java-format')
+		removeUnusedImports()
+		trimTrailingWhitespace()
+		endWithNewline()
+	}
+	json {
+		target 'monitoring/**/*.json', '**/*.json'
+		jackson()
+	}
+	groovyGradle {
+		target '**/*.gradle' // default target of groovyGradle
+		greclipse()
+	}
 }
 
 

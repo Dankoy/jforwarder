@@ -11,6 +11,7 @@ import ru.dankoy.telegrambot.core.service.bot.commands.OrdersCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.StartCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.SubscribeCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.UnsubscribeCommand;
+import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
@@ -27,7 +28,8 @@ public record BotCommandsFactoryImpl(
     ChannelSubscriptionService channelSubscriptionService,
     TelegramChatService telegramChatService,
     CommunityService communityService,
-    OrderService orderService)
+    OrderService orderService,
+    SubscriptionsHolderChatService subscriptionsHolderChatService)
     implements BotCommandsFactory {
 
   @Override
@@ -86,7 +88,8 @@ public record BotCommandsFactoryImpl(
     var description =
         localisationService.getLocalizedMessage("startCommandDescription", null, locale);
 
-    return new StartCommand(command, description, telegramChatService);
+    return new StartCommand(
+        command, description, telegramChatService, subscriptionsHolderChatService);
   }
 
   @Override

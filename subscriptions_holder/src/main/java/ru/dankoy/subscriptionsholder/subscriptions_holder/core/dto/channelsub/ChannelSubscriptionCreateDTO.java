@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,8 @@ public class ChannelSubscriptionCreateDTO {
 
   @Valid @NotNull private ChatCreateDTO chat;
 
+  @Valid @NotNull private UUID chatUuid;
+
   @Valid @NotNull private OrderCreateDTO order;
 
   @Valid @NotNull private ScopeCreateDTO scope;
@@ -34,6 +37,7 @@ public class ChannelSubscriptionCreateDTO {
     return new ChannelSubscriptionCreateDTO(
         ChannelCreateDTO.toDTO(channelSub.getChannel()),
         ChatCreateDTO.toDTO(channelSub.getChat()),
+        channelSub.getChatUuid(),
         OrderCreateDTO.toDTO(channelSub.getOrder()),
         ScopeCreateDTO.toDTO(channelSub.getScope()),
         TypeCreateDTO.toDTO(channelSub.getType()),
@@ -45,6 +49,7 @@ public class ChannelSubscriptionCreateDTO {
         .id(0)
         .channel(ChannelCreateDTO.fromDTO(dto.getChannel()))
         .chat(ChatCreateDTO.fromDTO(dto.getChat()))
+        .chatUuid(dto.getChatUuid())
         .order(OrderCreateDTO.fromDTO(dto.getOrder()))
         .scope(ScopeCreateDTO.fromDTO(dto.getScope()))
         .type(TypeCreateDTO.fromDTO(dto.getType()))

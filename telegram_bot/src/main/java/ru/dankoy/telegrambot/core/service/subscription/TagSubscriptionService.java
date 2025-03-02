@@ -10,6 +10,8 @@ public interface TagSubscriptionService {
   List<TagSubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId);
 
+  List<TagSubscription> getSubsByChatIdAndMessageThreadId(long chatId, Integer messageThreadId);
+
   TagSubscription subscribe(
       String tagName,
       String orderValue,

@@ -20,6 +20,7 @@ import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfiguration;
 import ru.dankoy.telegrambot.core.exceptions.BotException;
 import ru.dankoy.telegrambot.core.exceptions.BotSendMessageException;
 import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
+import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 
 @Slf4j
@@ -30,6 +31,8 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
 
   private final TelegramChatService telegramChatService;
 
+  private final SubscriptionsHolderChatService subscriptionsHolderChatService;
+
   private final BotMessageGateway botMessageGateway;
 
   public TelegramBotIntegrationFlowImpl(BotConfiguration botConfiguration) {
@@ -39,6 +42,7 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
     this.botName = botConfiguration.fullBotProperties().getName();
     this.telegramChatService = botConfiguration.telegramChatService();
     this.botMessageGateway = botConfiguration.botMessageGateway();
+    this.subscriptionsHolderChatService = botConfiguration.subscriptionsHolderChatService();
 
     try {
 
@@ -144,9 +148,15 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
             telegramChatService.getChatByIdAndMessageThreadId(
                 Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
 
+        var found2 =
+            subscriptionsHolderChatService.getChatByIdAndMessageThreadId(
+                Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+
         if (found.isActive()) {
           found.setActive(false);
+          found2.setActive(false);
           telegramChatService.update(found);
+          subscriptionsHolderChatService.update(found2);
         }
       } else {
         // some other exception in api

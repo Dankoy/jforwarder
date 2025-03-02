@@ -1,8 +1,8 @@
 plugins {
-    id 'multimodule-config'
-    id 'spring-conventions'
-    id 'micrometer-conventions'
-    id 'loki-conventions'
+	id 'multimodule-config'
+	id 'spring-conventions'
+	id 'micrometer-conventions'
+	id 'loki-conventions'
 }
 
 group = 'ru.dankoy'
@@ -10,18 +10,17 @@ group = 'ru.dankoy'
 
 dependencies {
 
-    // gateway
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+	// gateway
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
-    // eureka
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	// eureka
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    //rate limiter
-//    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	//rate limiter
+	//    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 
-    // necessary for gateway cache
-//    implementation 'com.github.ben-manes.caffeine:caffeine'
-//    implementation 'org.springframework.boot:spring-boot-starter-cache'
-
+	// necessary for gateway cache
+	//    implementation 'com.github.ben-manes.caffeine:caffeine'
+	//    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }

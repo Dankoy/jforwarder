@@ -381,6 +381,67 @@ services:
 
   #### subscriptions scheduler end ####
 
+  #### telegram chat service start ####
+  telegram-chat-service-postgres:
+    env_file:
+      - .env
+    image: 'postgres:16.2'
+    container_name: telegram-chat-service-postgres-db
+    environment: 
+      POSTGRES_DB: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_DB}
+      POSTGRES_PASSWORD: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD}
+      POSTGRES_USER: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER}
+      PGUSER: ${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER}
+    ports:
+      - '5433:5432'
+    networks:
+      - jforwarder-network
+    volumes:
+      - telegram_chat_service_postgres_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  telegram-chat-service:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile.telegram_chat_service
+      args:
+        - JAR_VERSION=${JAR_VERSION}
+    image: ${DOCKER_HUB_USER}/telegram_chat_service:${JAR_VERSION}
+    container_name: telegram-chat-service
+    ports:
+      - "8088:8088"
+    networks:
+      - jforwarder-network
+    depends_on:
+      telegram-chat-service-postgres:
+        condition: service_healthy
+      spring-eureka-registry:
+        condition: service_healthy
+      spring-gateway:
+        condition: service_healthy
+      zipkin:
+        condition: service_healthy
+    environment:
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL=${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL}
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER=${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER}
+      - TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD=${TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD}
+      - TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD=${TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD}
+      - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
+      - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
+    healthcheck:
+      test: [ "CMD-SHELL", "curl localhost:8082/actuator" ]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
+  #### telegram chat service end ####
+
 
 
   #  redis-rate-limiter:
@@ -398,6 +459,8 @@ volumes:
   subscriptions_holder_postgres_volume:
     driver: local
   cassandra_volume:
+    driver: local
+  telegram_chat_service_postgres_volume:
     driver: local
 
 networks:
