@@ -47,7 +47,7 @@ jobs:
     - name: if result does not contains buildSrc
       id: individual
       if: ${{ ! contains(steps.filter.outputs.changes, 'buildSrc') }}
-      run: echo "individual=${{steps.filter.outputs.changes}}" >> $GITHUB_OUTPUT
+      run: echo "individual=${{ toJson(steps.filter.outputs.changes) }}" >> $GITHUB_OUTPUT
 
 
     - name: if result contains buildSrc
