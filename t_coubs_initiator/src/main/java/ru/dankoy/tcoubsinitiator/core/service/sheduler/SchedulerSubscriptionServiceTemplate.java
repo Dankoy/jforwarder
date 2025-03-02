@@ -65,9 +65,10 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
     int totalPages = Integer.MAX_VALUE;
 
     var sort = Sort.by("id").ascending();
-    var pageable = PageRequest.of(page, PAGE_SIZE, sort);
-
+    
     do {
+
+      var pageable = PageRequest.of(page, PAGE_SIZE, sort);
 
       var p = getActiveSubscriptions(chats, pageable);
 
