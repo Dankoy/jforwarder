@@ -15,7 +15,8 @@ jobs:
       matrix:
         docker-file: [ "coub_smart_searcher", "kafka_message_consumer", "kafka_message_producer",
                        "spring_eureka_registry", "spring_gateway", "subscriptions_holder",
-                       "t_coubs_initiator", "coub_forwarder_telegram_bot", "subscriptions_scheduler"
+                       "t_coubs_initiator", "coub_forwarder_telegram_bot", "subscriptions_scheduler",
+                       "telegram_chat_service"
         ]
 
     steps:

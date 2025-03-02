@@ -39,6 +39,8 @@ jobs:
             - 'telegram_bot/**'
           subscriptions_scheduler: 
             - 'subscriptions_scheduler/**'
+          telegram_chat_service: 
+            - 'telegram_chat_service/**'
           buildSrc:
             - 'buildSrc/**'
 
@@ -58,6 +60,7 @@ jobs:
              \"kafka_message_producer\", \
              \"kafka_message_consumer\", \
              \"telegram_bot\", \
+             \"telegram_chat_service\", \
              \"subscriptions_scheduler\"]" \
             >> $GITHUB_OUTPUT
 
