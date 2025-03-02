@@ -3,8 +3,8 @@ import com.github.jasypt.encrypt.JasyptPlugin
 buildscript {
 	dependencies {
 		classpath files('jasypt-encrypt-plugin-1.3.3.jar')
-		classpath files('jooq-codegen-gradle-3.19.18.jar')
-		classpath("org.testcontainers:postgresql:1.20.4")
+		classpath files('jooq-codegen-gradle-3.19.19.jar') // update only if starter updated it
+		classpath("org.testcontainers:postgresql:1.20.5")
 		classpath("org.postgresql:postgresql:42.7.5")
 		classpath("org.liquibase:liquibase-gradle-plugin:3.0.1")
 		classpath('org.liquibase:liquibase-core:4.31.1')
@@ -19,7 +19,7 @@ plugins {
 	id 'spring-web-conventions'
 	id 'spring-feign-conventions'
 	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
-	id "org.jooq.jooq-codegen-gradle" version "3.19.18"
+	id "org.jooq.jooq-codegen-gradle" version "3.19.19" // update only if starter updated jooq version
 	id 'org.liquibase.gradle' version '3.0.1'
 }
 
@@ -228,7 +228,7 @@ dependencies {
 	// liquibase
 	implementation 'org.liquibase:liquibase-core:4.31.1'
 	liquibaseRuntime "org.liquibase:liquibase-core:4.31.1"
-	liquibaseRuntime "org.yaml:snakeyaml:2.3"
+	liquibaseRuntime "org.yaml:snakeyaml:2.4"
 	// liquibaseRuntime 'info.picocli:picocli:4.6.1' // necessary to run command line AND used ONLY in liquibase plugin tasks
 
 	compileOnly 'org.liquibase:liquibase-gradle-plugin:3.0.1'
