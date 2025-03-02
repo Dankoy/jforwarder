@@ -66,6 +66,8 @@ public abstract class SchedulerSubscriptionServiceTemplate<T extends Subscriptio
 
     var sort = Sort.by("id").ascending();
 
+
+    
     do {
 
       var pageable = PageRequest.of(page, PAGE_SIZE, sort);
