@@ -39,6 +39,11 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
     var value = param.getValue().toString();
     var operation = param.getOperation();
 
+    // Validate tableField against allowed fields
+    if (!isValidField(tableField)) {
+        throw new IllegalArgumentException("Invalid field: " + tableField);
+    }
+
     // checks if field exist in table
     parser.getTableField(table, tableField);
 
@@ -78,5 +83,11 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
         condition = condition.and(field(tableField).eq(val(value)));
       }
     }
+  }
+
+  private boolean isValidField(String field) {
+      // Define a list of allowed fields
+      List<String> allowedFields = List.of("field1", "field2", "field3"); // Add all allowed fields here
+      return allowedFields.contains(field);
   }
 }
