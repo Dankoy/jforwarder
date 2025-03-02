@@ -118,9 +118,17 @@ public interface SubscriptionsHolderFeign {
       @RequestParam("chatId") long chatId,
       @RequestParam("messageThreadId") Integer messageThreadId);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @PostMapping(path = "/api/v1/telegram_chat")
   Chat createChat(@RequestBody Chat chat);
 
+  /**
+   * @deprecated chat is in separate microservice and db
+   */
+  @Deprecated(since = "2025-02-28", forRemoval = false)
   @PutMapping(path = "/api/v1/telegram_chat/{id}")
   Chat updateChat(@PathVariable("id") long id, @RequestBody Chat chat);
 

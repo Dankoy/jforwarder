@@ -18,6 +18,7 @@ import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
+import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localeprovider.LocaleProvider;
@@ -90,7 +91,8 @@ public class TelegramBotConfig {
       ChannelSubscriptionService channelSubscriptionService,
       TelegramChatService telegramChatService,
       CommunityService communityService,
-      OrderService orderService) {
+      OrderService orderService,
+      SubscriptionsHolderChatService subscriptionsHolderChatService) {
 
     List<BotCommandsFactory> factories = new ArrayList<>();
 
@@ -104,7 +106,8 @@ public class TelegramBotConfig {
               channelSubscriptionService,
               telegramChatService,
               communityService,
-              orderService));
+              orderService,
+              subscriptionsHolderChatService));
     }
 
     return factories;

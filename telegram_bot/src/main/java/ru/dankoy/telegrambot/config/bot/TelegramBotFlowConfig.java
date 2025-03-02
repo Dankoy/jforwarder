@@ -19,6 +19,7 @@ import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotIntegrationFlowImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
+import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 import ru.dankoy.telegrambot.core.service.localization.LocalisationService;
@@ -46,6 +47,7 @@ public class TelegramBotFlowConfig {
       FullBotProperties properties,
       CommandsHolder commandsHolder,
       TelegramChatService telegramChatService,
+      SubscriptionsHolderChatService subscriptionsHolderChatService,
       BotMessageGateway botMessageGateway) {
 
     return BotConfigurationImpl.builder()
@@ -53,6 +55,7 @@ public class TelegramBotFlowConfig {
         .commandsHolder(commandsHolder)
         .telegramChatService(telegramChatService)
         .botMessageGateway(botMessageGateway)
+        .subscriptionsHolderChatService(subscriptionsHolderChatService)
         .build();
   }
 
@@ -71,7 +74,8 @@ public class TelegramBotFlowConfig {
       ChannelSubscriptionService channelSubscriptionService,
       TelegramChatService telegramChatService,
       CommunityService communityService,
-      OrderService orderService) {
+      OrderService orderService,
+      SubscriptionsHolderChatService subscriptionsHolderChatService) {
 
     List<BotCommandsFactory> factories = new ArrayList<>();
 
@@ -85,7 +89,8 @@ public class TelegramBotFlowConfig {
               channelSubscriptionService,
               telegramChatService,
               communityService,
-              orderService));
+              orderService,
+              subscriptionsHolderChatService));
     }
 
     return factories;
