@@ -6,6 +6,8 @@ repositories {
 	mavenCentral()
 }
 
+
+
 // dependency for spring boot gradle plugin and dependency management.
 // It is necessary to share it between conventions as plugins
 dependencies {
