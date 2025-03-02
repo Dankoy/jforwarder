@@ -2,7 +2,6 @@ package ru.dankoy.telegramchatservice.core.repository.condition;
 
 import static org.jooq.impl.DSL.*;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,11 +38,6 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
     var value = param.getValue().toString();
     var operation = param.getOperation();
 
-    // Validate tableField against allowed fields
-    if (!isValidField(tableField)) {
-        throw new IllegalArgumentException("Invalid field: " + tableField);
-    }
-
     // checks if field exist in table
     parser.getTableField(table, tableField);
 
@@ -52,42 +46,35 @@ public class RegexSearchQueryConditionConsumer<R extends Record>
 
   private void check(String tableField, Object value, String operation) {
 
-    if (operation.equalsIgnoreCase(">")) {
+    // if (operation.equalsIgnoreCase(">")) {
 
-      // plain sql is bad
-      // condition = condition.and(condition(String.format(PLAIN_SQL, tableField,
-      // operation, value)));
+    //   // plain sql is bad
+    //   // condition = condition.and(condition(String.format(PLAIN_SQL, tableField,
+    //   // operation, value)));
 
-      condition = condition.and(field(tableField).gt(val(value)));
+    //   condition = condition.and(field(tableField).gt(val(value)));
 
-    } else if (operation.equalsIgnoreCase("<")) {
+    // } else if (operation.equalsIgnoreCase("<")) {
 
-      condition = condition.and(field(tableField).lt(val(value)));
+    //   condition = condition.and(field(tableField).lt(val(value)));
 
-    } else if (operation.equalsIgnoreCase(":")) {
+    // } else if (operation.equalsIgnoreCase(":")) {
 
-      var f = table.field(tableField);
-      Class<?> clazz = f.getType();
+    //   var f = table.field(tableField);
 
-      if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
+    //   if (Objects.nonNull(f) && f.getDataType().getType() == String.class) {
 
-        // condition = condition.and(condition(String.format(LIKE_SQL, tableField,
-        // value)));
+    //     // condition = condition.and(condition(String.format(LIKE_SQL, tableField,
+    //     // value)));
 
-        condition = condition.and(field(tableField).like("%" + value + "%"));
+    //     condition = condition.and(field(tableField).like(val("%" + value + "%")));
 
-      } else {
+    //   } else {
 
-        // condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=",
-        // value)));
-        condition = condition.and(field(tableField).eq(val(value)));
-      }
-    }
-  }
-
-  private boolean isValidField(String field) {
-      // Define a list of allowed fields
-      List<String> allowedFields = List.of("field1", "field2", "field3"); // Add all allowed fields here
-      return allowedFields.contains(field);
+    //     // condition = condition.and(condition(String.format(PLAIN_SQL, tableField, "=",
+    //     // value)));
+    //     condition = condition.and(field(tableField).eq(val(value)));
+    //   }
+    // }
   }
 }
