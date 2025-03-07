@@ -13,6 +13,7 @@ import ru.dankoy.coubtagssearcher.core.feign.CoubSearchFeign;
 public class ChannelServiceImpl implements ChannelService {
 
   private static final int PER_PAGE = 25;
+  private static final int PAGES_LIMIT = 10;
 
   private final CoubSearchFeign searchFeign;
 
@@ -25,7 +26,7 @@ public class ChannelServiceImpl implements ChannelService {
     while (page <= maxPage) {
 
       var wrapper = searchFeign.getChannels(permalink, page, PER_PAGE);
-      maxPage = wrapper.getTotalPages();
+      maxPage = wrapper.getTotalPages() < PAGES_LIMIT ? wrapper.getTotalPages() : PAGES_LIMIT;
 
       log.info("wrapper {}", wrapper);
 
