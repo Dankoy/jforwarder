@@ -12,6 +12,8 @@ import ru.dankoy.coubtagssearcher.core.feign.CoubSmartSearchFeign;
 @Service
 public class TagServiceImpl implements TagService {
 
+  private static final int PAGES_LIMIT = 10;
+
   private final CoubSmartSearchFeign coubSmartSearchFeign;
 
   @Override
@@ -20,6 +22,7 @@ public class TagServiceImpl implements TagService {
     int page = 1;
     var wrapper = coubSmartSearchFeign.getTags(title, page);
     var maxPage = wrapper.getMeta().getTotalPages();
+    maxPage = maxPage < PAGES_LIMIT ? maxPage : PAGES_LIMIT;
 
     while (page <= maxPage) {
 
