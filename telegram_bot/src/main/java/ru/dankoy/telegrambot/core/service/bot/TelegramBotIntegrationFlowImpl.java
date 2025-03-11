@@ -125,10 +125,13 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
     send(sendMessage);
   }
 
-  // the send message with chat service can't be integrated flawlessly in spring integration.
-  // I can throw here 'exceptions' which are going to propagate in errorChannel (are they?) and then
+  // the send message with chat service can't be integrated flawlessly in spring
+  // integration.
+  // I can throw here 'exceptions' which are going to propagate in errorChannel
+  // (are they?) and then
   // do logic in services.
-  // But then bot is going to be highly coupled with spring integration, which is not that good
+  // But then bot is going to be highly coupled with spring integration, which is
+  // not that good
   private void send(SendMessage sendMessage) {
     try {
       execute(sendMessage);
@@ -144,20 +147,14 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
 
         log.warn("User blocked bot. Make it not active");
 
-        var found =
-            telegramChatService.getChatByIdAndMessageThreadId(
-                Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+        blockChat(sendMessage);
 
-        var found2 =
-            subscriptionsHolderChatService.getChatByIdAndMessageThreadId(
-                Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+      } else if (e.getErrorCode() == 400) {
 
-        if (found.isActive()) {
-          found.setActive(false);
-          found2.setActive(false);
-          telegramChatService.update(found);
-          subscriptionsHolderChatService.update(found2);
-        }
+        log.warn("User deleted chat. Disabling it.");
+
+        blockChat(sendMessage);
+
       } else {
         // some other exception in api
         log.error("Something went wrong: {}", e.getMessage());
@@ -166,6 +163,23 @@ public class TelegramBotIntegrationFlowImpl extends TelegramLongPollingBot imple
     } catch (TelegramApiException e) {
       log.error("Error sending message - {}", e.getMessage());
       throw new BotSendMessageException(e.getMessage(), e);
+    }
+  }
+
+  private void blockChat(SendMessage sendMessage) {
+    var found =
+        telegramChatService.getChatByIdAndMessageThreadId(
+            Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+
+    var found2 =
+        subscriptionsHolderChatService.getChatByIdAndMessageThreadId(
+            Long.parseLong(sendMessage.getChatId()), sendMessage.getMessageThreadId());
+
+    if (found.isActive()) {
+      found.setActive(false);
+      found2.setActive(false);
+      telegramChatService.update(found);
+      subscriptionsHolderChatService.update(found2);
     }
   }
 }
