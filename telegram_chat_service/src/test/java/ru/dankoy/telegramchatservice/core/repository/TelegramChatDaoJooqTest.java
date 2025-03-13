@@ -65,9 +65,6 @@ class TelegramChatDaoJooqTest extends TestContainerBase implements ChatMaker {
 
     var actual = telegramChatDao.findByChatId(chat.getChatId());
 
-    System.out.println(chat);
-    System.out.println(actual);
-
     assertThat(actual.get()).isNotNull().isEqualTo(chat);
   }
 
@@ -94,9 +91,6 @@ class TelegramChatDaoJooqTest extends TestContainerBase implements ChatMaker {
 
     var actual =
         telegramChatDao.findByChatIdAndMessageThreadId(chat.getChatId(), chat.getMessageThreadId());
-
-    System.out.println(chat);
-    System.out.println(actual);
 
     assertThat(actual.get()).isNotNull().isEqualTo(chat);
   }
