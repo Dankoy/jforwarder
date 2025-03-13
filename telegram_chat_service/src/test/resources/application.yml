@@ -22,5 +22,9 @@ server:
 logging:
   level:
     root: INFO
+    org:
+      jooq:
+        tools:
+          LoggerListener: TRACE
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
