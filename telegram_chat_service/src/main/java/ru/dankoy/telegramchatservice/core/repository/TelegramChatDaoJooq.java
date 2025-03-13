@@ -137,13 +137,19 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
   @Override
   public Optional<ChatDTO> findByChatIdAndMessageThreadId(long chatId, Integer threadId) {
 
-    var condition = noCondition();
-    condition =
-        condition
+    var conditionLeft = noCondition();
+    var conditionRight = noCondition();
+
+    conditionLeft =
+        conditionLeft.and(CHATS.CHAT_ID.eq(chatId)).and(CHATS.MESSAGE_THREAD_ID.eq(threadId));
+
+    conditionRight =
+        conditionRight
             .and(CHATS.CHAT_ID.eq(chatId))
-            .and(CHATS.MESSAGE_THREAD_ID.eq(threadId))
-            .or(CHATS.MESSAGE_THREAD_ID.isNull())
-            .and(CHATS.CHAT_ID.eq(chatId));
+            .and(CHATS.MESSAGE_THREAD_ID.isNull())
+            .and(val(threadId).isNull());
+
+    var condition = or(conditionLeft, conditionRight);
 
     ChatsRecord chatsRecord = dsl.fetchOne(CHATS, condition);
 
@@ -155,13 +161,19 @@ public class TelegramChatDaoJooq implements TelegramChatDao {
   @Override
   public Optional<ChatDTO> findForUpdateByChatIdAndMessageThreadId(long chatId, Integer threadId) {
 
-    var condition = noCondition();
-    condition =
-        condition
+    var conditionLeft = noCondition();
+    var conditionRight = noCondition();
+
+    conditionLeft =
+        conditionLeft.and(CHATS.CHAT_ID.eq(chatId)).and(CHATS.MESSAGE_THREAD_ID.eq(threadId));
+
+    conditionRight =
+        conditionRight
             .and(CHATS.CHAT_ID.eq(chatId))
-            .and(CHATS.MESSAGE_THREAD_ID.eq(threadId))
-            .or(CHATS.MESSAGE_THREAD_ID.isNull())
-            .and(CHATS.CHAT_ID.eq(chatId));
+            .and(CHATS.MESSAGE_THREAD_ID.isNull())
+            .and(val(threadId).isNull());
+
+    var condition = or(conditionLeft, conditionRight);
 
     Optional<Record> chatsRecord =
         dsl.select().from(CHATS).where(condition).forUpdate().wait(3).fetchOptional();
