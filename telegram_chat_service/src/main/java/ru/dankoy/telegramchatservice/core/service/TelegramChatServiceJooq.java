@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.dankoy.telegramchatservice.core.component.uuidgenerator.UUIDGenerator;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatDTO;
 import ru.dankoy.telegramchatservice.core.domain.dto.ChatWithSubs;
@@ -45,12 +46,14 @@ public class TelegramChatServiceJooq implements TelegramChatService {
   }
 
   @Override
+  @Transactional
   public List<ChatDTO> saveAll(List<ChatDTO> chats) {
     // TODO Auto-generated method stub
     throw new UnsupportedOperationException("Unimplemented method 'saveAll'");
   }
 
   @Override
+  @Transactional
   public ChatDTO save(ChatDTO chat) {
 
     chat.setId(uuidgenerator.randomUUID());
@@ -59,6 +62,7 @@ public class TelegramChatServiceJooq implements TelegramChatService {
   }
 
   @Override
+  @Transactional
   public ChatDTO update(ChatDTO chat) {
     // get the existing chat by id
 
@@ -77,6 +81,7 @@ public class TelegramChatServiceJooq implements TelegramChatService {
   }
 
   @Override
+  @Transactional
   public void deleteChats(List<ChatDTO> chats) {
     dao.deleteBatch(chats);
   }
