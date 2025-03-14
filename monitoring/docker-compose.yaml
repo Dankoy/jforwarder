@@ -87,15 +87,29 @@ services:
     networks:
       - jforwarder-network
 
-  prometheus-postgres-exporter:
+  prometheus-postgres-exporter-subscriptions-holder:
     env_file:
-      - .env
-    image: 'bitnami/postgres-exporter:0.15.0'
-    container_name: prometheus-postgres-exporter
+    - ".env"
+    image: "bitnami/postgres-exporter:0.17.1"
+    container_name: "prometheus-postgres-exporter-subscriptions-holder"
+    ports:
+    - "9187:9187"
     environment:
-      - DATA_SOURCE_NAME=${DATA_SOURCE_NAME}
+    - "DATA_SOURCE_NAME=${SUBSCRIPTIONS_HOLDER_DATA_SOURCE}"
     networks:
-      - jforwarder-network
+    - "jforwarder-network"
+
+  prometheus-postgres-exporter-telegram-chat:
+    env_file:
+    - ".env"
+    image: "bitnami/postgres-exporter:0.17.1"
+    container_name: "prometheus-postgres-exporter-telegram-chat"
+    ports:
+    - "9188:9187"
+    environment:
+    - "DATA_SOURCE_NAME=${TELEGRAM_CHAT_DATA_SOURCE}"
+    networks:
+    - "jforwarder-network"
 
   prometheus-alertmanager:
     image: 'prom/alertmanager:v0.27.0'

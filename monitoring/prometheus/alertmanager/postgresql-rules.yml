@@ -141,14 +141,14 @@ groups:
           summary: postgresql too many dead tuples (instance {{ $labels.instance }})
           description: "postgresql dead tuples is too large\n  value = {{ $value }}\n  labels = {{ $labels }}"
 
-      - alert: postgresqlconfigurationchanged
-        expr: '{__name__=~"pg_settings_.*"} != on(__name__) {__name__=~"pg_settings_([^t]|t[^r]|tr[^a]|tra[^n]|tran[^s]|trans[^a]|transa[^c]|transac[^t]|transact[^i]|transacti[^o]|transactio[^n]|transaction[^_]|transaction_[^r]|transaction_r[^e]|transaction_re[^a]|transaction_rea[^d]|transaction_read[^_]|transaction_read_[^o]|transaction_read_o[^n]|transaction_read_on[^l]|transaction_read_onl[^y]).*"} offset 5m'
-        for: 0m
-        labels:
-          severity: info
-        annotations:
-          summary: postgresql configuration changed (instance {{ $labels.instance }})
-          description: "postgres database configuration change has occurred\n  value = {{ $value }}\n  labels = {{ $labels }}"
+      # - alert: postgresqlconfigurationchanged
+      #   expr: '{__name__=~"pg_settings_.*"} != on(y, __name__) {__name__=~"pg_settings_([^t]|t[^r]|tr[^a]|tra[^n]|tran[^s]|trans[^a]|transa[^c]|transac[^t]|transact[^i]|transacti[^o]|transactio[^n]|transaction[^_]|transaction_[^r]|transaction_r[^e]|transaction_re[^a]|transaction_rea[^d]|transaction_read[^_]|transaction_read_[^o]|transaction_read_o[^n]|transaction_read_on[^l]|transaction_read_onl[^y]).*"} offset 5m'
+      #   for: 0m
+      #   labels:
+      #     severity: info
+      #   annotations:
+      #     summary: postgresql configuration changed (instance {{ $labels.instance }})
+      #     description: "postgres database configuration change has occurred\n  value = {{ $value }}\n  labels = {{ $labels }}"
 
       - alert: postgresqlsslcompressionactive
         expr: 'sum(pg_stat_ssl_compression) > 0'
