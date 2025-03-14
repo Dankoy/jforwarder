@@ -27,7 +27,9 @@ scrape_configs:
 
   - job_name: 'postgres'
     static_configs:
-      - targets: [ 'prometheus-postgres-exporter:9187' ]
+      - targets: [ 'prometheus-postgres-exporter-subscriptions-holder:9187',
+                   'prometheus-postgres-exporter-telegram-chat:9187'
+        ]
 
   - job_name: 'node'
     static_configs:
