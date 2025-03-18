@@ -2,6 +2,7 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/dankoy/jforwarder)](https://github.com/Dankoy/jforwarder/releases/latest)
 ![GitHub Release Date](https://img.shields.io/github/release-date/dankoy/jforwarder)
+![Commits since last release](https://img.shields.io/github/commits-since/Dankoy/jforwarder/latest/main)
 
 ![GitHub tag checks state](https://img.shields.io/github/checks-status/dankoy/jforwarder/v1.1.3)
 ![GitHub CI](https://github.com/dankoy/jforwarder/actions/workflows/test.yml/badge.svg)
