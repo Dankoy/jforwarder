@@ -46,3 +46,12 @@ providers:
     options:
       path: /etc/grafana/provisioning/dashboards/18276_rev1.json
   
+  - name: 'CAdvisor everything'
+    orgId: 1
+    folder: ''
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10 #how often Grafana will scan for changed dashboards
+    options:
+      path: /etc/grafana/provisioning/dashboards/19792_rev6.json
+  
