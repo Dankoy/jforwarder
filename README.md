@@ -107,6 +107,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 4. Prometheus postgres exporter
 5. Loki (logs)
 6. Mimir + minio (metrics storage)
+7. cAdvisor (metrics)
 
 ## Microservice architecture
 

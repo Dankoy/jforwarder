@@ -6,7 +6,7 @@
 2) Loki tempo can't get tracing data. That's why project uses loki as a log holder, and zipkin as
    tracing visualizer.
 3) Somehow logback appender for loki sometimes gets incorrect traceID
-4) -cAdvisor can't pull from gcr.io. Permission denied- Added cadvisor. Works great.
+4) ~~cAdvisor can't pull from gcr.io. Permission denied~~ Added cadvisor. Works great.
 5) Cron in zipkin-dependencies container doesn't work. So i made cron on server for dependencies
    generation
    ```cronexp
