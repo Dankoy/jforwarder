@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CoubProtos";
+
+package ru.dankoy.kafkamessageproducer.protos.domain.coub;
+
+import "google/protobuf/timestamp.proto";
+
+message Coub {
+  int64 id = 1;
+  string title = 2;
+  string permalink = 3;
+  string url = 4;
+  google.protobuf.Timestamp published_at = 5;
+}

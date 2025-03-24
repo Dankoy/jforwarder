@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CommunitySubscriptionProtos";
+
+package ru.dankoy.kafkamessageproducer.protos.domain.subscription.community;
+
+import "telegram_chat.proto";
+import "coub.proto";
+
+
+message CommunitySubscription {
+    int64 id = 1;
+    ru.dankoy.kafkamessageproducer.protos.domain.chat.Chat chat = 2;
+    ru.dankoy.kafkamessageproducer.protos.domain.coub.Coub coub = 3;
+    optional string last_permalink = 4;
+    Community community = 5;
+    Section section = 6;
+}
+
+message Community {
+    int64 id = 1;
+    int64 external_id = 2;
+    string name = 3;
+}
+
+message Section {
+    int64 id = 1;
+    string name = 2;
+}
