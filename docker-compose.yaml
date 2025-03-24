@@ -7,17 +7,18 @@ services:
     image: docker.io/bitnami/kafka:3.5
     container_name: kafka
     ports:
-      - "9092:9092"
+      - "9092:9092" # for connects from docker internal network
+      - "9094:9094" # for connects from outside network (debug)
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
 #      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 # 1 for local dev tests w/o compose
 #      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@localhost:9093 # 1 for local dev tests w/o compose
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 # 2 for ui and compose
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093 # 2 for ui and compose
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094 # 2 for ui and compose
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093,1@localhost:9093 # 2 for ui and compose
       - KAFKA_CFG_NODE_ID=1
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_KRAFT_CLUSTER_ID=L0ZEQh1yTbGhNNUE7-6wSQ
@@ -35,6 +36,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  kafka-schema-registry:
+    image: docker.io/bitnami/kafka-schema-registry:7.9.0
+    container_name: kafka-schema-registry
+    hostname: kafka-schema-registry
 
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.2
