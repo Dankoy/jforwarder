@@ -19,6 +19,10 @@ allprojects {
 	version = "${PROJECT_VERSION}-SNAPSHOT"
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
+
 tasks.register('printVersion') {
 	// any code that goes here is part of configuring the task
 	// this code will always get run, even if the task is not executed
