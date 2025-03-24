@@ -5,25 +5,20 @@ option java_outer_classname = "TagSubscriptionProtos";
 
 package ru.dankoy.kafkamessageproducer.protos.domain.subscription.tag;
 
-import "telegram_chat.proto";
-import "coub.proto";
-import "scope.proto";
-import "type.proto";
-import "order.proto";
+import "chat/telegram_chat.proto";
+import "coub/coub.proto";
+import "subscription/scope.proto";
+import "subscription/type.proto";
+import "subscription/order.proto";
+import "subscription/tag/tag.proto";
 
 message TagSubscription {
     int64 id = 1;
     ru.dankoy.kafkamessageproducer.protos.domain.chat.Chat chat = 2;
     ru.dankoy.kafkamessageproducer.protos.domain.coub.Coub coub = 3;
     optional string last_permalink = 4;
-    Tag tag = 5;
+    ru.dankoy.kafkamessageproducer.protos.domain.subscription.tag.Tag tag = 5;
     ru.dankoy.kafkamessageproducer.protos.domain.subscription.Order order = 6;
     ru.dankoy.kafkamessageproducer.protos.domain.subscription.Scope scope = 7;
     ru.dankoy.kafkamessageproducer.protos.domain.subscription.Type type = 8;
 }
-
-message Tag {
-    int64 id = 1;
-    string title = 2;
-}
-

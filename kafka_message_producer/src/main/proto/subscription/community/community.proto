@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "CommunityProtos";
+
+package ru.dankoy.kafkamessageproducer.protos.domain.subscription.community;
+
+message Community {
+    int64 id = 1;
+    int64 external_id = 2;
+    string name = 3;
+}

@@ -5,26 +5,16 @@ option java_outer_classname = "CommunitySubscriptionProtos";
 
 package ru.dankoy.kafkamessageproducer.protos.domain.subscription.community;
 
-import "telegram_chat.proto";
-import "coub.proto";
-
+import "chat/telegram_chat.proto";
+import "coub/coub.proto";
+import "subscription/community/community.proto";
+import "subscription/community/section.proto";
 
 message CommunitySubscription {
     int64 id = 1;
     ru.dankoy.kafkamessageproducer.protos.domain.chat.Chat chat = 2;
     ru.dankoy.kafkamessageproducer.protos.domain.coub.Coub coub = 3;
     optional string last_permalink = 4;
-    Community community = 5;
-    Section section = 6;
-}
-
-message Community {
-    int64 id = 1;
-    int64 external_id = 2;
-    string name = 3;
-}
-
-message Section {
-    int64 id = 1;
-    string name = 2;
+    ru.dankoy.kafkamessageproducer.protos.domain.subscription.community.Community community = 5;
+    ru.dankoy.kafkamessageproducer.protos.domain.subscription.community.Section section = 6;
 }
