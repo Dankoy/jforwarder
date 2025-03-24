@@ -13,7 +13,7 @@ spring:
   application:
     name: kafka-message-producer
   kafka:
-    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092} # common bootstrap server for every producer
+    bootstrap-servers: ${KAFKA_SERVER:localhost:9094} # common bootstrap server for every producer
     producer:
       client-id: "coubs-producer"
       retries: 5

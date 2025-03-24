@@ -23,9 +23,9 @@ spring:
   application:
     name: kafka-message-consumer
   kafka:
-    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092}
+    bootstrap-servers: ${KAFKA_SERVER:localhost:9094}
     consumer:
-      bootstrap-servers: ${KAFKA_SERVER:http://127.0.0.1:9092}
+      bootstrap-servers: ${KAFKA_SERVER:http://localhost:9094}
       client-id: "coubs-consumer" # default one
       group-id: "coubs_group"
     listener:
