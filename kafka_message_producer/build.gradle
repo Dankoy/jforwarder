@@ -6,6 +6,7 @@ plugins {
 	id 'spring-feign-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
+	id 'protobuf-conventions'
 }
 
 // version comes from root project
