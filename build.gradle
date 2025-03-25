@@ -20,7 +20,7 @@ allprojects {
 }
 
 tasks.withType(JavaCompile).configureEach {
-    options.compilerArgs.add("-parameters")
+	options.compilerArgs.add("-parameters")
 }
 
 tasks.register('printVersion') {

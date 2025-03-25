@@ -6,6 +6,7 @@ plugins {
 	id 'spring-feign-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
+	id 'lombok-conventions'
 }
 
 group = 'ru.dankoy.kafkamessageconsumer'
@@ -22,6 +23,9 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.kafka:spring-kafka-test'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// protobuf schemas
+	implementation project(":protobuf_schemas")
 
 	testImplementation 'org.testcontainers:kafka'
 }

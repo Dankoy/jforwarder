@@ -13,6 +13,7 @@ plugins {
 	id 'loki-conventions'
 	id 'spring-web-conventions'
 	id 'spring-feign-conventions'
+	id 'lombok-conventions'
 	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
 }
 

@@ -6,6 +6,7 @@ plugins {
 	id 'spring-cache-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
+	id 'lombok-conventions'
 }
 
 group = 'ru.dankoy.telegrambot'

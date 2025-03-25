@@ -7,6 +7,7 @@ plugins {
 	id 'micrometer-conventions'
 	id 'loki-conventions'
 	id 'protobuf-conventions'
+	id 'lombok-conventions'
 }
 
 // version comes from root project
@@ -23,6 +24,9 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.kafka:spring-kafka-test'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// protobuf schemas
+	implementation project(":protobuf_schemas")
 
 	testImplementation 'org.testcontainers:kafka'
 }
