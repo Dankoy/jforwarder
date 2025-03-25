@@ -1,0 +1,7 @@
+plugins {
+	id 'multimodule-config'
+	id 'protobuf-conventions'
+}
+
+// version comes from root project
+group = 'ru.dankoy.protobufschemas'

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_outer_classname = "TagSubscriptionProtos";
+
+package ru.dankoy.protobufschemas.protos.domain.subscription.tag;
+
+import "chat/telegram_chat.proto";
+import "coub/coub.proto";
+import "subscription/scope.proto";
+import "subscription/type.proto";
+import "subscription/order.proto";
+import "subscription/tag/tag.proto";
+
+message TagSubscription {
+    int64 id = 1;
+    ru.dankoy.protobufschemas.protos.domain.chat.Chat chat = 2;
+    ru.dankoy.protobufschemas.protos.domain.coub.Coub coub = 3;
+    optional string last_permalink = 4;
+    ru.dankoy.protobufschemas.protos.domain.subscription.tag.Tag tag = 5;
+    ru.dankoy.protobufschemas.protos.domain.subscription.Order order = 6;
+    ru.dankoy.protobufschemas.protos.domain.subscription.Scope scope = 7;
+    ru.dankoy.protobufschemas.protos.domain.subscription.Type type = 8;
+}
