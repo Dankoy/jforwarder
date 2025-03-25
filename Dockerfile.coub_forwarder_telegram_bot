@@ -3,7 +3,6 @@ ARG BUILD_HOME=/app
 FROM gradle:8.7.0-jdk21-jammy AS build
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
-ARG SERVICE_NAME=telegram_chat_service
 ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
