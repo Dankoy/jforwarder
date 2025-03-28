@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.config;
+package ru.dankoy.kafkamessageproducer.config.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.charset.StandardCharsets;
@@ -18,11 +18,10 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessageImpl;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateGeneric;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateGenericImpl;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.MessageProducerServiceKafka;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.MessageProducerServiceKafkaImpl;
-
 
 @Slf4j
 @Configuration
@@ -93,14 +92,15 @@ public class KafkaTwoTopicsOneFactoryConfig {
   }
 
   @Bean
-  public KafkaTemplateCoubMessage kafkaTemplateCoubMessage(
+  public KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage(
       KafkaTemplate<String, CoubMessage> kafkaTemplate) {
-    return new KafkaTemplateCoubMessageImpl(kafkaTemplate);
+    return new KafkaTemplateGenericImpl<>(kafkaTemplate);
   }
 
   @Bean
   public MessageProducerServiceKafka channelMessageProducerServiceKafka(
-      NewTopic topicCoubChannelMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+      NewTopic topicCoubChannelMessage,
+      KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage) {
     return new MessageProducerServiceKafkaImpl(
         topicCoubChannelMessage.name(),
         kafkaTemplateCoubMessage,
@@ -109,7 +109,8 @@ public class KafkaTwoTopicsOneFactoryConfig {
 
   @Bean
   public MessageProducerServiceKafka communityMessageProducerServiceKafka(
-      NewTopic topicCoubCommunityMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+      NewTopic topicCoubCommunityMessage,
+      KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage) {
     return new MessageProducerServiceKafkaImpl(
         topicCoubCommunityMessage.name(),
         kafkaTemplateCoubMessage,
@@ -118,7 +119,8 @@ public class KafkaTwoTopicsOneFactoryConfig {
 
   @Bean
   public MessageProducerServiceKafka tagMessageProducerServiceKafka(
-      NewTopic topicCoubTagMessage, KafkaTemplateCoubMessage kafkaTemplateCoubMessage) {
+      NewTopic topicCoubTagMessage,
+      KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage) {
     return new MessageProducerServiceKafkaImpl(
         topicCoubTagMessage.name(),
         kafkaTemplateCoubMessage,

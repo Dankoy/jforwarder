@@ -4,15 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
-import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 @Slf4j
 @RequiredArgsConstructor
-public class KafkaTemplateCoubMessageImpl implements KafkaTemplateCoubMessage {
+public class KafkaTemplateGenericImpl<K, V> implements KafkaTemplateGeneric<K, V> {
 
-  private final KafkaTemplate<String, CoubMessage> kafkaTemplate;
+  private final KafkaTemplate<K, V> kafkaTemplate;
 
-  public void send(ProducerRecord<String, CoubMessage> producerRecord) {
+  public void send(ProducerRecord<K, V> producerRecord) {
 
     kafkaTemplate
         .send(producerRecord)
@@ -21,11 +20,11 @@ public class KafkaTemplateCoubMessageImpl implements KafkaTemplateCoubMessage {
               if (ex == null) {
                 log.info(
                     "message id: {} was sent, offset: {}",
-                    producerRecord.value().getId(),
+                    producerRecord.key(),
                     result.getRecordMetadata().offset());
                 log.info("acknowledgement sent for {}", producerRecord.value());
               } else {
-                log.error("message id:{} was not sent", producerRecord.value().getId(), ex);
+                log.error("message id:{} was not sent", producerRecord.key(), ex);
               }
             });
   }

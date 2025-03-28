@@ -12,7 +12,7 @@ public class MessageProducerServiceKafkaImpl implements MessageProducerServiceKa
 
   private final String topic;
 
-  private final KafkaTemplateCoubMessage kafkaTemplateCoubMessage;
+  private final KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage;
 
   private final Consumer<ProducerRecord<String, CoubMessage>> recordConsumer;
 

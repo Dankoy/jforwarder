@@ -13,6 +13,12 @@ plugins {
 // version comes from root project
 group = 'ru.dankoy.kafkamessageproducer'
 
+repositories {
+	maven {
+        url "https://packages.confluent.io/maven"
+    }
+}
+
 dependencies {
 
 	// eureka for service discovery
@@ -27,6 +33,7 @@ dependencies {
 
 	// protobuf schemas
 	implementation project(":protobuf_schemas")
+	implementation 'io.confluent:kafka-protobuf-serializer:7.9.0'
 
 	testImplementation 'org.testcontainers:kafka'
 }
