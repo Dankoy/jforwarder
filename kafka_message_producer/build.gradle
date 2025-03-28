@@ -15,8 +15,8 @@ group = 'ru.dankoy.kafkamessageproducer'
 
 repositories {
 	maven {
-        url "https://packages.confluent.io/maven"
-    }
+		url "https://packages.confluent.io/maven"
+	}
 }
 
 dependencies {
