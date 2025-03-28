@@ -8,6 +8,8 @@ application:
     producers:
       coubs:
         client-id: "coubs-producer" # custom props configuration in factory
+    schema-registry:
+      url: http://localhost:9081
 
 spring:
   application:

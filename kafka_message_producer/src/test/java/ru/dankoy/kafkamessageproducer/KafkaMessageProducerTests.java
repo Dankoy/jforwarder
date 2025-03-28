@@ -15,7 +15,6 @@ import ru.dankoy.kafkamessageproducer.core.controller.ChannelSubscriptionControl
 import ru.dankoy.kafkamessageproducer.core.controller.CommunitySubscriptionController;
 import ru.dankoy.kafkamessageproducer.core.controller.TagSubscriptionController;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverterImpl;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateGenericImpl;
 
 @DisplayName("Test default context ")
 @SpringBootTest
@@ -32,7 +31,7 @@ class KafkaMessageProducerTests {
   void contextLoads() {
 
     var messageConverter = context.getBean(MessageConverterImpl.class);
-    var kafkaTemplateCoubMessage = context.getBean(KafkaTemplateGenericImpl.class);
+    var kafkaTemplateCoubMessage = context.getBean("kafkaTemplateCoubMessage");
     var messageProducerServiceKafka = context.getBean("channelMessageProducerServiceKafka");
     var communityMessageProducerServiceKafka =
         context.getBean("communityMessageProducerServiceKafka");

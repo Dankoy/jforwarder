@@ -8,14 +8,14 @@ import java.util.function.Consumer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 
 class MessageProducerServiceKafkaImplTest implements MessageMaker {
 
-  @Mock private KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage;
+  private KafkaTemplateGeneric<String, CoubMessage> kafkaTemplateCoubMessage;
 
-  @Mock private Consumer<ProducerRecord<String, CoubMessage>> consumer;
+  private Consumer<ProducerRecord<String, CoubMessage>> consumer;
 
   private MessageProducerServiceKafkaImpl messageProducerServiceKafka;
 
@@ -23,6 +23,8 @@ class MessageProducerServiceKafkaImplTest implements MessageMaker {
 
   @BeforeEach
   void setUp() {
+    consumer = Mockito.mock(Consumer.class);
+    kafkaTemplateCoubMessage = Mockito.mock(KafkaTemplateGeneric.class);
 
     messageProducerServiceKafka =
         new MessageProducerServiceKafkaImpl(TOPIC, kafkaTemplateCoubMessage, consumer);
