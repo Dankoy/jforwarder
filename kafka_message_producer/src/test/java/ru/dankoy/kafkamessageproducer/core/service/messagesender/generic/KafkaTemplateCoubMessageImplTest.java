@@ -35,7 +35,7 @@ import org.testcontainers.utility.DockerImageName;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
 import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessageImplTest.KafkaTestContainersConfiguration;
 
-@SpringBootTest(classes = {KafkaTemplateCoubMessageImpl.class})
+@SpringBootTest(classes = {KafkaTemplateGenericImpl.class})
 @Import(KafkaTestContainersConfiguration.class)
 @DirtiesContext
 class KafkaTemplateCoubMessageImplTest implements MessageMaker {
@@ -58,7 +58,7 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
 
   @Autowired private KafkaConsumer<String, CoubMessage> kafkaConsumer;
 
-  @Autowired private KafkaTemplateCoubMessageImpl kafkaTemplateCoubMessage;
+  @Autowired private KafkaTemplateGenericImpl kafkaTemplateCoubMessage;
 
   @Test
   void send() {
