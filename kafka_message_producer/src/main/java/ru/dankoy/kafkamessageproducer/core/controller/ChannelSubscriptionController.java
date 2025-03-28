@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.ChannelSubscription;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverter;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.MessageProducerServiceKafka;
 
 @Slf4j
 @RestController

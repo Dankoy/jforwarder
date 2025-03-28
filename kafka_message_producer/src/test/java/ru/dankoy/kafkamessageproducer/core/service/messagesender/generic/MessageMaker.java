@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.service.messagesender;
+package ru.dankoy.kafkamessageproducer.core.service.messagesender.generic;
 
 import ru.dankoy.kafkamessageproducer.core.domain.coub.Coub;
 import ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage;

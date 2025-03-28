@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.service.messagesender;
+package ru.dankoy.kafkamessageproducer.core.service.messagesender.generic;
 
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;

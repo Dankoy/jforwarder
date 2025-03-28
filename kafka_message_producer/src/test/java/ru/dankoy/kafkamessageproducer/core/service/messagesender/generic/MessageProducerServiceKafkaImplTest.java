@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.service.messagesender;
+package ru.dankoy.kafkamessageproducer.core.service.messagesender.generic;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;

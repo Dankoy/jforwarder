@@ -18,10 +18,11 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessageImpl;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafka;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.MessageProducerServiceKafkaImpl;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessage;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessageImpl;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.MessageProducerServiceKafka;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.MessageProducerServiceKafkaImpl;
+
 
 @Slf4j
 @Configuration

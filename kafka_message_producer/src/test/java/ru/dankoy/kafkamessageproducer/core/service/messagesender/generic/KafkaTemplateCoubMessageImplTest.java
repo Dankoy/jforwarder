@@ -1,4 +1,4 @@
-package ru.dankoy.kafkamessageproducer.core.service.messagesender;
+package ru.dankoy.kafkamessageproducer.core.service.messagesender.generic;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +33,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import ru.dankoy.kafkamessageproducer.core.domain.message.CoubMessage;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessageImplTest.KafkaTestContainersConfiguration;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessageImplTest.KafkaTestContainersConfiguration;
 
 @SpringBootTest(classes = {KafkaTemplateCoubMessageImpl.class})
 @Import(KafkaTestContainersConfiguration.class)

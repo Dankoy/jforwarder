@@ -15,7 +15,7 @@ import ru.dankoy.kafkamessageproducer.core.controller.ChannelSubscriptionControl
 import ru.dankoy.kafkamessageproducer.core.controller.CommunitySubscriptionController;
 import ru.dankoy.kafkamessageproducer.core.controller.TagSubscriptionController;
 import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverterImpl;
-import ru.dankoy.kafkamessageproducer.core.service.messagesender.KafkaTemplateCoubMessageImpl;
+import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.KafkaTemplateCoubMessageImpl;
 
 @DisplayName("Test default context ")
 @SpringBootTest
