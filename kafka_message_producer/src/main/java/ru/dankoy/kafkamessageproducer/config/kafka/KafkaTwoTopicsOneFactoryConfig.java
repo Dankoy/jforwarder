@@ -11,7 +11,6 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
@@ -29,19 +28,10 @@ public class KafkaTwoTopicsOneFactoryConfig {
 
   private static final String HEADER_NAME = "subscription_type";
 
-  private final String coubCommunityTopicName;
-  private final String coubTagTopicName;
-  private final String coubChannelTopicName;
   private final String communityProducerClientId;
 
   public KafkaTwoTopicsOneFactoryConfig(
-      @Value("${application.kafka.topic.coub-com-subs}") String coubCommunityTopicName,
-      @Value("${application.kafka.topic.coub-tag-subs}") String coubTagTopicName,
-      @Value("${application.kafka.topic.coub-channel-subs}") String coubChannelTopicName,
       @Value("${application.kafka.producers.coubs.client-id}") String coubsProducerClientId) {
-    this.coubCommunityTopicName = coubCommunityTopicName;
-    this.coubTagTopicName = coubTagTopicName;
-    this.coubChannelTopicName = coubChannelTopicName;
     this.communityProducerClientId = coubsProducerClientId;
   }
 
@@ -74,21 +64,6 @@ public class KafkaTwoTopicsOneFactoryConfig {
   public KafkaTemplate<String, CoubMessage> kafkaTemplate(
       ProducerFactory<String, CoubMessage> producerFactory) {
     return new KafkaTemplate<>(producerFactory);
-  }
-
-  @Bean
-  public NewTopic topicCoubCommunityMessage() {
-    return TopicBuilder.name(coubCommunityTopicName).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public NewTopic topicCoubTagMessage() {
-    return TopicBuilder.name(coubTagTopicName).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public NewTopic topicCoubChannelMessage() {
-    return TopicBuilder.name(coubChannelTopicName).partitions(2).replicas(1).build();
   }
 
   @Bean
