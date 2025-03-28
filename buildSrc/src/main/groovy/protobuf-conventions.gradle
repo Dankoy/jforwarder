@@ -17,14 +17,19 @@ sourceSets {
 }
 
 ext {
-	protobufVersion = '4.30.1'
+	// something is wrong with latest versions of protobuf-java-util, so we use an older version
+	// new version is 4.30.1, but protobuf-java-util that is coming from io.confluent:kafka-protobuf-serializer:7.9.0
+	// (the latest version btw), is not compatible and still depends on 3.25.5. Weird stuff ain't it?
+	// exception - https://github.com/protocolbuffers/protobuf/issues/16398
+	// more on compatibility issues - https://github.com/confluentinc/schema-registry/issues/3047
+	protobufVersion = '3.25.5'
 }
 
 protobuf {
 	// Configure the protoc executable
 	protoc {
 		// Download from repositories
-		artifact = 'com.google.protobuf:protoc:4.30.1'
+		artifact = 'com.google.protobuf:protoc:3.25.5'
 	}
 
 	// generateProtoTasks.generatedFilesBaseDir = 'generated-sources'
@@ -46,4 +51,6 @@ protobuf {
 dependencies {
 	// https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
 	implementation("com.google.protobuf:protobuf-java:${protobufVersion}")
+	implementation "com.google.protobuf:protobuf-java-util:${protobufVersion}"
+
 }
