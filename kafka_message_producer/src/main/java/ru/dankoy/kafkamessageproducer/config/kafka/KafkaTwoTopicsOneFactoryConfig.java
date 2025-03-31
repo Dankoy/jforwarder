@@ -27,6 +27,7 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.generic.Message
 public class KafkaTwoTopicsOneFactoryConfig {
 
   private static final String HEADER_NAME = "subscription_type";
+  private static final String HEADER_NAME_TYPE = "OBJECT_TYPE";
 
   private final String communityProducerClientId;
 
@@ -79,7 +80,10 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubChannelMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "POJO".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -89,7 +93,10 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubCommunityMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "POJO".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -99,7 +106,10 @@ public class KafkaTwoTopicsOneFactoryConfig {
     return new MessageProducerServiceKafkaImpl(
         topicCoubTagMessage.name(),
         kafkaTemplateCoubMessage,
-        r -> r.headers().add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "POJO".getBytes(StandardCharsets.UTF_8)));
   }
 
   //  @Bean

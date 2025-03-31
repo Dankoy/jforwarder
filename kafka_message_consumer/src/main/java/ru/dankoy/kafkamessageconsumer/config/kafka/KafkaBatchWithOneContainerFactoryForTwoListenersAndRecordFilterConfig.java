@@ -3,12 +3,11 @@ package ru.dankoy.kafkamessageconsumer.config.kafka;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException.NotFound;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -17,11 +16,10 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
-import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
-import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.JacksonUtils;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -53,19 +51,6 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @Slf4j
 @Configuration
 public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig {
-
-  public final String coubCommunitySubscriptions;
-  public final String coubTagSubscriptions;
-  public final String coubChannelSubscriptions;
-
-  public KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig(
-      @Value("${application.kafka.topic.coub-com-subs}") String coubCommunitySubscriptions,
-      @Value("${application.kafka.topic.coub-tag-subs}") String coubTagSubscriptions,
-      @Value("${application.kafka.topic.coub-channel-subs}") String coubChannelSubscriptions) {
-    this.coubCommunitySubscriptions = coubCommunitySubscriptions;
-    this.coubTagSubscriptions = coubTagSubscriptions;
-    this.coubChannelSubscriptions = coubChannelSubscriptions;
-  }
 
   @Bean
   public ObjectMapper objectMapper() {
@@ -157,10 +142,10 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
   }
 
   @Bean
-  public DefaultErrorHandler errorHandler() {
+  public KafkaErrorHandler errorHandler() {
     BackOff fixedBackOff = new FixedBackOff(1000L, 5);
-    DefaultErrorHandler errorHandler =
-        new DefaultErrorHandler(
+    KafkaErrorHandler errorHandler =
+        new KafkaErrorHandler(
             (consumerRecord, e) -> {
               // logic to execute when all the retry attemps are exhausted
             },
@@ -172,18 +157,9 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
   }
 
   @Bean
-  public NewTopic topicCoubCommunitySubs() {
-    return TopicBuilder.name(coubCommunitySubscriptions).partitions(2).replicas(1).build();
-  }
+  public RecordFilterStrategy<String, CoubMessage> recordFilterStrategyByObjectType() {
 
-  @Bean
-  public NewTopic topicCoubTagSubs() {
-    return TopicBuilder.name(coubTagSubscriptions).partitions(2).replicas(1).build();
-  }
-
-  @Bean
-  public NewTopic topicCoubChannelSubs() {
-    return TopicBuilder.name(coubChannelSubscriptions).partitions(2).replicas(1).build();
+    return r -> Arrays.equals(r.headers().lastHeader("OBJECT_TYPE").value(), "PROTOBUF".getBytes());
   }
 
   @Bean
@@ -253,7 +229,8 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
         topics = "${application.kafka.topic.coub-com-subs}",
         groupId = "${application.kafka.consumers.community-coubs-consumer.group-id}",
         clientIdPrefix = "${application.kafka.consumers.community-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
+        containerFactory = "jsonKafkaListenerContainerFactory",
+        filter = "recordFilterStrategyByObjectType")
     public void listenCommunityMessages(@Payload List<CommunitySubscriptionMessage> values) {
       log.info(LOG_MESSAGE, values.size());
       coubCommunityMessageConsumer.accept(values);
@@ -263,7 +240,8 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
         topics = "${application.kafka.topic.coub-tag-subs}",
         groupId = "${application.kafka.consumers.tag-coubs-consumer.group-id}",
         clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
+        containerFactory = "jsonKafkaListenerContainerFactory",
+        filter = "recordFilterStrategyByObjectType")
     public void listenTagMessages(@Payload List<TagSubscriptionMessage> values) {
       log.info(LOG_MESSAGE, values.size());
       coubTagMessageConsumer.accept(values);
@@ -273,7 +251,8 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
         topics = "${application.kafka.topic.coub-channel-subs}",
         groupId = "${application.kafka.consumers.channel-coubs-consumer.group-id}",
         clientIdPrefix = "${application.kafka.consumers.channel-coubs-consumer.client-id}",
-        containerFactory = "jsonKafkaListenerContainerFactory")
+        containerFactory = "jsonKafkaListenerContainerFactory",
+        filter = "recordFilterStrategyByObjectType")
     public void listenChannelMessages(@Payload List<ChannelSubscriptionMessage> values) {
       log.info(LOG_MESSAGE, values.size());
       coubChannelMessageConsumer.accept(values);

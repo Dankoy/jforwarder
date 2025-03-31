@@ -27,6 +27,7 @@ import ru.dankoy.kafkamessageproducer.core.service.messagesender.protobuf.Messag
 public class KafkaWithProtobuf {
 
   private static final String HEADER_NAME = "subscription_type";
+  private static final String HEADER_NAME_TYPE = "OBJECT_TYPE";
 
   private final String producerClientId;
   private final String schemaRegistryUrl;
@@ -78,7 +79,10 @@ public class KafkaWithProtobuf {
     return new MessageProducerServiceKafkaProtobufImpl(
         topicCoubChannelMessage.name(),
         kafkaTemplateProtobuf,
-        r -> r.headers().add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_CHANNEL".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "PROTOBUF".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -88,7 +92,10 @@ public class KafkaWithProtobuf {
     return new MessageProducerServiceKafkaProtobufImpl(
         topicCoubCommunityMessage.name(),
         kafkaTemplateProtobuf,
-        r -> r.headers().add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_COMMUNITY".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "PROTOBUF".getBytes(StandardCharsets.UTF_8)));
   }
 
   @Bean
@@ -97,6 +104,9 @@ public class KafkaWithProtobuf {
     return new MessageProducerServiceKafkaProtobufImpl(
         topicCoubTagMessage.name(),
         kafkaTemplateProtobuf,
-        r -> r.headers().add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8)));
+        r ->
+            r.headers()
+                .add(HEADER_NAME, "BY_TAG".getBytes(StandardCharsets.UTF_8))
+                .add(HEADER_NAME_TYPE, "PROTOBUF".getBytes(StandardCharsets.UTF_8)));
   }
 }
