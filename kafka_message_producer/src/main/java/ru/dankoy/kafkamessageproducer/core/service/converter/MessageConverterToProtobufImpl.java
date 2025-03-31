@@ -51,22 +51,27 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
 
     return communitySubscription.getCoubs().stream()
         .map(
-            c ->
-                ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription
-                    .newBuilder()
-                    .setId(communitySubscription.getId())
-                    .setChat(chat)
-                    .setCommunity(community)
-                    .setSection(section)
-                    .setCoub(
-                        Coub.newBuilder()
-                            .setId(c.getId())
-                            .setTitle(c.getTitle())
-                            .setPermalink(c.getPermalink())
-                            .setUrl(c.getUrl())
-                            .build())
-                    .setLastPermalink(communitySubscription.getLastPermalink())
-                    .build())
+            c -> {
+              var b =
+                  ru.dankoy.protobufschemas.protos.domain.subscription.community
+                      .CommunitySubscription.newBuilder();
+
+              Optional.ofNullable(communitySubscription.getLastPermalink())
+                  .ifPresent(b::setLastPermalink);
+
+              return b.setId(communitySubscription.getId())
+                  .setChat(chat)
+                  .setCommunity(community)
+                  .setSection(section)
+                  .setCoub(
+                      Coub.newBuilder()
+                          .setId(c.getId())
+                          .setTitle(c.getTitle())
+                          .setPermalink(c.getPermalink())
+                          .setUrl(c.getUrl())
+                          .build())
+                  .build();
+            })
         .toList();
   }
 
@@ -111,24 +116,29 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
 
     return tagSubscription.getCoubs().stream()
         .map(
-            c ->
-                ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription
-                    .newBuilder()
-                    .setId(tagSubscription.getId())
-                    .setChat(chat)
-                    .setOrder(order)
-                    .setType(type)
-                    .setScope(scope)
-                    .setTag(tag)
-                    .setCoub(
-                        Coub.newBuilder()
-                            .setId(c.getId())
-                            .setTitle(c.getTitle())
-                            .setPermalink(c.getPermalink())
-                            .setUrl(c.getUrl())
-                            .build())
-                    .setLastPermalink(tagSubscription.getLastPermalink())
-                    .build())
+            c -> {
+              var b =
+                  ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription
+                      .newBuilder();
+
+              Optional.ofNullable(tagSubscription.getLastPermalink())
+                  .ifPresent(b::setLastPermalink);
+
+              return b.setId(tagSubscription.getId())
+                  .setChat(chat)
+                  .setOrder(order)
+                  .setType(type)
+                  .setScope(scope)
+                  .setTag(tag)
+                  .setCoub(
+                      Coub.newBuilder()
+                          .setId(c.getId())
+                          .setTitle(c.getTitle())
+                          .setPermalink(c.getPermalink())
+                          .setUrl(c.getUrl())
+                          .build())
+                  .build();
+            })
         .toList();
   }
 
@@ -177,24 +187,29 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
 
     return channelSubscription.getCoubs().stream()
         .map(
-            c ->
-                ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription
-                    .newBuilder()
-                    .setId(channelSubscription.getId())
-                    .setChat(chat)
-                    .setOrder(order)
-                    .setType(type)
-                    .setScope(scope)
-                    .setChannel(channel)
-                    .setCoub(
-                        Coub.newBuilder()
-                            .setId(c.getId())
-                            .setTitle(c.getTitle())
-                            .setPermalink(c.getPermalink())
-                            .setUrl(c.getUrl())
-                            .build())
-                    .setLastPermalink(channelSubscription.getLastPermalink())
-                    .build())
+            c -> {
+              var b =
+                  ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription
+                      .newBuilder();
+
+              Optional.ofNullable(channelSubscription.getLastPermalink())
+                  .ifPresent(b::setLastPermalink);
+
+              return b.setId(channelSubscription.getId())
+                  .setChat(chat)
+                  .setOrder(order)
+                  .setType(type)
+                  .setScope(scope)
+                  .setChannel(channel)
+                  .setCoub(
+                      Coub.newBuilder()
+                          .setId(c.getId())
+                          .setTitle(c.getTitle())
+                          .setPermalink(c.getPermalink())
+                          .setUrl(c.getUrl())
+                          .build())
+                  .build();
+            })
         .toList();
   }
 }
