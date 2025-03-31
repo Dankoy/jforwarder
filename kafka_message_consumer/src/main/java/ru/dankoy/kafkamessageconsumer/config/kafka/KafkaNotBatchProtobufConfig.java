@@ -6,8 +6,8 @@ import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializerConfig;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.errors.RecordDeserializationException;
@@ -26,7 +26,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.util.backoff.BackOff;
@@ -65,21 +64,14 @@ public class KafkaNotBatchProtobufConfig {
     this.schemaRegistryUrl = schemaRegistryUrl;
   }
 
-  // This bean name should be different than consumerFactory.
   @Bean
-  public ConsumerFactory<String, Message> consumerFactoryProtobufMessage(
+  public Map<String, Object> kafkaCommonProperties(
       KafkaProperties kafkaProperties, SslBundles sslBundles) {
-
     var props = kafkaProperties.buildProducerProperties(sslBundles);
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
     props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
-    props.put(
-        ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS,
-        KafkaProtobufDeserializer.class.getName());
-    props.put(
-        KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
-        TagSubscription.class.getName());
+
     // props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
     // ChannelSubscription.class.getName());
     // props.put(KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
@@ -96,7 +88,43 @@ public class KafkaNotBatchProtobufConfig {
     // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
 
-    return new DefaultKafkaConsumerFactory<>(props);
+    return props;
+  }
+
+  // This bean name should be different than consumerFactory.
+  @Bean
+  public ConsumerFactory<String, Message> consumerFactoryProtobufTagMessage(
+      Map<String, Object> kafkaCommonProperties) {
+
+    kafkaCommonProperties.put(
+        KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
+        TagSubscription.class.getName());
+
+    return new DefaultKafkaConsumerFactory<>(kafkaCommonProperties);
+  }
+
+  // This bean name should be different than consumerFactory.
+  @Bean
+  public ConsumerFactory<String, Message> consumerFactoryProtobufCommunityMessage(
+      Map<String, Object> kafkaCommonProperties) {
+
+    kafkaCommonProperties.put(
+        KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
+        CommunitySubscription.class.getName());
+
+    return new DefaultKafkaConsumerFactory<>(kafkaCommonProperties);
+  }
+
+  // This bean name should be different than consumerFactory.
+  @Bean
+  public ConsumerFactory<String, Message> consumerFactoryProtobufChannelMessage(
+      Map<String, Object> kafkaCommonProperties) {
+
+    kafkaCommonProperties.put(
+        KafkaProtobufDeserializerConfig.SPECIFIC_PROTOBUF_VALUE_TYPE,
+        ChannelSubscription.class.getName());
+
+    return new DefaultKafkaConsumerFactory<>(kafkaCommonProperties);
   }
 
   @Bean
@@ -119,13 +147,71 @@ public class KafkaNotBatchProtobufConfig {
   // The bean name should be different from kafkaListenerContainerFactory
   // Because spring then think that he tries to make circular dependency
   @Bean
-  public KafkaListenerContainerFactory<?> protobufKafkaListenerContainerFactory(
-      ConsumerFactory<String, Message> consumerFactoryProtobufMessage) {
+  public KafkaListenerContainerFactory<?> protobufTagMessageKafkaListenerContainerFactory(
+      ConsumerFactory<String, Message> consumerFactoryProtobufTagMessage) {
 
     // this all applied only for spring boot starter
 
-    var factory = new ConcurrentKafkaListenerContainerFactory<String, Message>();
-    factory.setConsumerFactory(consumerFactoryProtobufMessage);
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, TagSubscription>();
+    factory.setConsumerFactory(consumerFactoryProtobufTagMessage);
+    factory.setBatchListener(false);
+
+    // if you have one consumer but two topics or partitions, then set to two, etc.
+    factory.setConcurrency(2);
+    factory.getContainerProperties().setIdleBetweenPolls(5_000); // polling interval
+    factory
+        .getContainerProperties()
+        .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+
+    factory.getContainerProperties().setAckMode(AckMode.MANUAL);
+    factory.setCommonErrorHandler(errorHandlerProtobuf());
+
+    // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
+    // somehow these settings make (idleBetweenPolls=30_000 and
+    // maxPollInterval=20_000) consumer
+    // consume messages every 15 seconds
+
+    factory.getContainerProperties().setListenerTaskExecutor(protobufConcurrentTaskExecutor());
+    return factory;
+  }
+
+  @Bean
+  public KafkaListenerContainerFactory<?> protobufCommunityMessageKafkaListenerContainerFactory(
+      ConsumerFactory<String, Message> consumerFactoryProtobufCommunityMessage) {
+
+    // this all applied only for spring boot starter
+
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, CommunitySubscription>();
+    factory.setConsumerFactory(consumerFactoryProtobufCommunityMessage);
+    factory.setBatchListener(false);
+
+    // if you have one consumer but two topics or partitions, then set to two, etc.
+    factory.setConcurrency(2);
+    factory.getContainerProperties().setIdleBetweenPolls(5_000); // polling interval
+    factory
+        .getContainerProperties()
+        .setPollTimeout(1_000); // wait in kafka for messages if queue is empty
+
+    factory.getContainerProperties().setAckMode(AckMode.MANUAL);
+    factory.setCommonErrorHandler(errorHandlerProtobuf());
+
+    // idlebeetweenpolls - in pair with maxPollInterval make time between two polls
+    // somehow these settings make (idleBetweenPolls=30_000 and
+    // maxPollInterval=20_000) consumer
+    // consume messages every 15 seconds
+
+    factory.getContainerProperties().setListenerTaskExecutor(protobufConcurrentTaskExecutor());
+    return factory;
+  }
+
+  @Bean
+  public KafkaListenerContainerFactory<?> protobufChannelMessageKafkaListenerContainerFactory(
+      ConsumerFactory<String, Message> consumerFactoryProtobufChannelMessage) {
+
+    // this all applied only for spring boot starter
+
+    var factory = new ConcurrentKafkaListenerContainerFactory<String, ChannelSubscription>();
+    factory.setConsumerFactory(consumerFactoryProtobufChannelMessage);
     factory.setBatchListener(false);
 
     // if you have one consumer but two topics or partitions, then set to two, etc.
@@ -168,16 +254,17 @@ public class KafkaNotBatchProtobufConfig {
     return new KafkaErrorHandler();
   }
 
-  // RecordFilterStrategy doesn't filter anything, because consumer first trying to deserialize
+  // RecordFilterStrategy doesn't filter anything, because consumer first trying
+  // to deserialize
   // record
-  // Then it gets deserialization exception (if any), then commits (see KafkaErrorHandler)
+  // Then it gets deserialization exception (if any), then commits (see
+  // KafkaErrorHandler)
   @Bean
   public RecordFilterStrategy<String, Message> recordFilterStrategyByObjectTypeProtobuf() {
 
-    return r -> {
-      log.warn(Arrays.toString(r.headers().lastHeader("OBJECT_TYPE").value()));
-      return Objects.equals(Arrays.toString(r.headers().lastHeader("OBJECT_TYPE").value()), "POJO");
-    };
+    return r ->
+        new String(r.headers().lastHeader("OBJECT_TYPE").value(), StandardCharsets.UTF_8)
+            .equals("POJO");
   }
 
   @Bean
@@ -260,7 +347,7 @@ public class KafkaNotBatchProtobufConfig {
         groupId = "${application.kafka.consumers.community-coubs-consumer-protobuf.group-id}",
         clientIdPrefix =
             "${application.kafka.consumers.community-coubs-consumer-protobuf.client-id}",
-        containerFactory = "protobufKafkaListenerContainerFactory",
+        containerFactory = "protobufCommunityMessageKafkaListenerContainerFactory",
         filter = "recordFilterStrategyByObjectTypeProtobuf")
     public void listenCommunityMessages(
         @Payload CommunitySubscription value, Acknowledgment acknowledgment) {
@@ -274,7 +361,7 @@ public class KafkaNotBatchProtobufConfig {
         topics = "${application.kafka.topic.coub-tag-subs}",
         groupId = "${application.kafka.consumers.tag-coubs-consumer-protobuf.group-id}",
         clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer-protobuf.client-id}",
-        containerFactory = "protobufKafkaListenerContainerFactory",
+        containerFactory = "protobufTagMessageKafkaListenerContainerFactory",
         filter = "recordFilterStrategyByObjectTypeProtobuf")
     public void listenTagMessages(@Payload TagSubscription value, Acknowledgment acknowledgment) {
       log.info(LOG_MESSAGE, value);
@@ -287,7 +374,7 @@ public class KafkaNotBatchProtobufConfig {
         topics = "${application.kafka.topic.coub-channel-subs}",
         groupId = "${application.kafka.consumers.channel-coubs-consumer-protobuf.group-id}",
         clientIdPrefix = "${application.kafka.consumers.channel-coubs-consumer-protobuf.client-id}",
-        containerFactory = "protobufKafkaListenerContainerFactory",
+        containerFactory = "protobufChannelMessageKafkaListenerContainerFactory",
         filter = "recordFilterStrategyByObjectTypeProtobuf")
     public void listenChannelMessages(
         @Payload ChannelSubscription value, Acknowledgment acknowledgment) {
