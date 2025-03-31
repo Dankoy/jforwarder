@@ -94,6 +94,7 @@ services:
         condition: service_healthy
     environment:
       - KAFKA_SERVER=kafka:9092
+      - SCHEMA_REGISTRY=http://schema-registry:8081
       - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
       - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
       - |
@@ -130,6 +131,7 @@ services:
       - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
       - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
       - KAFKA_SERVER=http://kafka:9092
+      - SCHEMA_REGISTRY=http://schema-registry:8081
       - |
         JVM_PARAMS=
         -Xms200m -Xmx200m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m 
