@@ -36,7 +36,6 @@ import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumerI
 import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverterProtobuf;
 import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverterProtobufImpl;
 import ru.dankoy.kafkamessageconsumer.core.service.registry.SentCoubsRegistryService;
-import ru.dankoy.kafkamessageconsumer.core.service.registry.SentCoubsRegistryServiceImpl;
 import ru.dankoy.kafkamessageconsumer.core.service.subscription.SubscriptionService;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 import ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription;
@@ -59,15 +58,11 @@ import ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription;
 @Configuration
 public class KafkaNotBatchProtobufConfig {
 
-  private final SentCoubsRegistryServiceImpl sentCoubsRegistryServiceImpl;
-
   private final String schemaRegistryUrl;
 
   public KafkaNotBatchProtobufConfig(
-      @Value("${application.kafka.schema-registry.url}") String schemaRegistryUrl,
-      SentCoubsRegistryServiceImpl sentCoubsRegistryServiceImpl) {
+      @Value("${application.kafka.schema-registry.url}") String schemaRegistryUrl) {
     this.schemaRegistryUrl = schemaRegistryUrl;
-    this.sentCoubsRegistryServiceImpl = sentCoubsRegistryServiceImpl;
   }
 
   // This bean name should be different than consumerFactory.
