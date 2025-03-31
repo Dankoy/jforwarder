@@ -16,6 +16,6 @@ public class MessageProducerTagSubscriptionServiceImpl
   @Override
   public void sendTagSubscriptionsData(List<TagSubscription> tagSubscriptions) {
 
-    messageProducerFeign.sendTagSubscriptions(tagSubscriptions);
+    messageProducerFeign.sendTagSubscriptionsProtobuf(tagSubscriptions);
   }
 }
