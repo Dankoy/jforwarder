@@ -32,6 +32,7 @@ jobs:
       - name: Lint Code Base
         uses: super-linter/super-linter/slim@v7.3.0
         env:
+          LINTER_RULES_PATH: config/lint
           VALIDATE_ALL_CODEBASE: false
           VALIDATE_DOCKERFILE_HADOLINT: false
           VALIDATE_CHECKOV: false # make true somaday
