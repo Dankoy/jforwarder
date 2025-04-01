@@ -11,7 +11,7 @@ ext {
 
 // doesn't work in build.gradle in buildSrc project
 ext {
-	springCloudDependencies = "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+	springCloudDependencies = "org.springframework.cloud:spring-cloud-dependencies:2024.0.1"
 }
 
 //share project version between all projects
