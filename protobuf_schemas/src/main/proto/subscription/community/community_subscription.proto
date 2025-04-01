@@ -1,7 +1,7 @@
 /* (C) 2025 */
 syntax = "proto3";
 
-package ru.dankoy.protobufschemas.protos.domain.subscription.community;
+package ru.dankoy.protobufschemas.protos.domain.subscription.community.v1;
 
 import "chat/telegram_chat.proto";
 import "coub/coub.proto";
@@ -13,9 +13,9 @@ option java_outer_classname = "CommunitySubscriptionProtos";
 
 message CommunitySubscription {
   int64 id = 1;
-  ru.dankoy.protobufschemas.protos.domain.chat.Chat chat = 2;
-  ru.dankoy.protobufschemas.protos.domain.coub.Coub coub = 3;
+  ru.dankoy.protobufschemas.protos.domain.chat.v1.Chat chat = 2;
+  ru.dankoy.protobufschemas.protos.domain.coub.v1.Coub coub = 3;
   optional string last_permalink = 4;
-  ru.dankoy.protobufschemas.protos.domain.subscription.community.Community community = 5;
-  ru.dankoy.protobufschemas.protos.domain.subscription.community.Section section = 6;
+  ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.Community community = 5;
+  ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.Section section = 6;
 }

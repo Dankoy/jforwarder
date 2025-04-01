@@ -28,7 +28,7 @@ public class TagSubscriptionProtobufController {
 
     log.info("{}", tagSubscriptions);
 
-    List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription> converted =
+    List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription> converted =
         tagSubscriptions.stream().map(converter::convert).flatMap(Collection::stream).toList();
 
     converted.forEach(tagMessageProducerServiceKafkaProtobuf::send);

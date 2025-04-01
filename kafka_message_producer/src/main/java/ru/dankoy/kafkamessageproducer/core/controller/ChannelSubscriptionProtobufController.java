@@ -28,7 +28,7 @@ public class ChannelSubscriptionProtobufController {
 
     log.info("{}", channelSubscriptions);
 
-    List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription>
+    List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription>
         converted =
             channelSubscriptions.stream()
                 .map(converter::convert)

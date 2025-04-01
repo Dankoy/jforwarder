@@ -1,7 +1,7 @@
 /* (C) 2025 */
 syntax = "proto3";
 
-package ru.dankoy.protobufschemas.protos.domain.coub;
+package ru.dankoy.protobufschemas.protos.domain.coub.v1;
 
 import "google/protobuf/timestamp.proto";
 

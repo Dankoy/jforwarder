@@ -19,7 +19,7 @@ public class MessageConverterProtobufImpl implements MessageConverterProtobuf {
 
   @Override
   public CommunitySubscriptionMessage convert(
-      ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription
+      ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription
           communitySubscription) {
 
     var chat =
@@ -62,7 +62,7 @@ public class MessageConverterProtobufImpl implements MessageConverterProtobuf {
 
   @Override
   public TagSubscriptionMessage convert(
-      ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription tagSubscription) {
+      ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription tagSubscription) {
 
     var chat =
         new Chat(
@@ -107,7 +107,7 @@ public class MessageConverterProtobufImpl implements MessageConverterProtobuf {
 
   @Override
   public ChannelSubscriptionMessage convert(
-      ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription
+      ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription
           channelSubscription) {
     var chat =
         new Chat(

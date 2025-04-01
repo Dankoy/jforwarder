@@ -7,21 +7,22 @@ import org.springframework.stereotype.Component;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.channelsubscription.ChannelSubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.communitysubscription.CommunitySubscription;
 import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.TagSubscription;
-import ru.dankoy.protobufschemas.protos.domain.chat.Chat;
-import ru.dankoy.protobufschemas.protos.domain.coub.Coub;
-import ru.dankoy.protobufschemas.protos.domain.subscription.Order;
-import ru.dankoy.protobufschemas.protos.domain.subscription.Scope;
-import ru.dankoy.protobufschemas.protos.domain.subscription.Type;
-import ru.dankoy.protobufschemas.protos.domain.subscription.channel.Channel;
-import ru.dankoy.protobufschemas.protos.domain.subscription.community.Community;
-import ru.dankoy.protobufschemas.protos.domain.subscription.community.Section;
-import ru.dankoy.protobufschemas.protos.domain.subscription.tag.Tag;
+import ru.dankoy.protobufschemas.protos.domain.chat.v1.Chat;
+import ru.dankoy.protobufschemas.protos.domain.coub.v1.Coub;
+import ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.Channel;
+import ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.Community;
+import ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.Section;
+import ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.Tag;
+import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Order;
+import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Scope;
+import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Type;
+
 
 @Component
 public class MessageConverterToProtobufImpl implements MessageConverterProtobuf {
 
   @Override
-  public List<ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription>
+  public List<ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription>
       convert(CommunitySubscription communitySubscription) {
 
     var builder =
@@ -53,7 +54,7 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
         .map(
             c -> {
               var b =
-                  ru.dankoy.protobufschemas.protos.domain.subscription.community
+                  ru.dankoy.protobufschemas.protos.domain.subscription.community.v1
                       .CommunitySubscription.newBuilder();
 
               Optional.ofNullable(communitySubscription.getLastPermalink())
@@ -76,7 +77,7 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
   }
 
   @Override
-  public List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription> convert(
+  public List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription> convert(
       TagSubscription tagSubscription) {
     var builder =
         Chat.newBuilder()
@@ -118,7 +119,7 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
         .map(
             c -> {
               var b =
-                  ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription
+                  ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription
                       .newBuilder();
 
               Optional.ofNullable(tagSubscription.getLastPermalink())
@@ -143,7 +144,7 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
   }
 
   @Override
-  public List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription>
+  public List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription>
       convert(ChannelSubscription channelSubscription) {
 
     var builder =
@@ -189,7 +190,7 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
         .map(
             c -> {
               var b =
-                  ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription
+                  ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription
                       .newBuilder();
 
               Optional.ofNullable(channelSubscription.getLastPermalink())

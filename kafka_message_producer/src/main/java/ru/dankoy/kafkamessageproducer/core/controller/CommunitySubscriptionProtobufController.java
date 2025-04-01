@@ -28,7 +28,7 @@ public class CommunitySubscriptionProtobufController {
 
     log.info("{}", communitySubscriptions);
 
-    List<ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription>
+    List<ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription>
         converted =
             communitySubscriptions.stream()
                 .map(converter::convert)

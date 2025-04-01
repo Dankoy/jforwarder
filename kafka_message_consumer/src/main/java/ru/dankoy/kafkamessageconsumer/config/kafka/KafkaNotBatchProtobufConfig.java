@@ -37,9 +37,9 @@ import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverterPro
 import ru.dankoy.kafkamessageconsumer.core.service.registry.SentCoubsRegistryService;
 import ru.dankoy.kafkamessageconsumer.core.service.subscription.SubscriptionService;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
-import ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription;
-import ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription;
-import ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription;
+import ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription;
+import ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription;
+import ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription;
 
 /**
  * Utilizes two single message listeners, deserialization uses protobuf deserializer.

@@ -7,12 +7,12 @@ import ru.dankoy.kafkamessageproducer.core.domain.subscription.tagsubscription.T
 
 public interface MessageConverterProtobuf {
 
-  List<ru.dankoy.protobufschemas.protos.domain.subscription.community.CommunitySubscription>
+  List<ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription>
       convert(CommunitySubscription communitySubscription);
 
-  List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.TagSubscription> convert(
+  List<ru.dankoy.protobufschemas.protos.domain.subscription.tag.v1.TagSubscription> convert(
       TagSubscription tagSubscription);
 
-  List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.ChannelSubscription> convert(
+  List<ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription> convert(
       ChannelSubscription channelSubscription);
 }
