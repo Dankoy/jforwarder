@@ -100,7 +100,8 @@ public class KafkaWithProtobuf {
 
   @Bean
   public MessageProducerServiceKafkaProtobuf tagMessageProducerServiceKafkaProtobuf(
-      NewTopic topicCoubTagMessageProtobuf, KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
+      NewTopic topicCoubTagMessageProtobuf,
+      KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
     return new MessageProducerServiceKafkaProtobufImpl(
         topicCoubTagMessageProtobuf.name(),
         kafkaTemplateProtobuf,

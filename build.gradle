@@ -35,6 +35,11 @@ tasks.register('printVersion') {
 }
 
 spotless {
+	protobuf {
+		// by default the target is every '.proto' file in the project
+		buf()
+		target 'protobuf_schemas/src/main/proto/**'
+	}
 	java {
 		target fileTree('.') {
 			include '**/*.java'
@@ -55,7 +60,7 @@ spotless {
 		jackson()
 	}
 	groovyGradle {
-		target '**/*.gradle' // default target of groovyGradle
+		target '**/*.gradle', 'build.gradle' // default target of groovyGradle
 		greclipse()
 	}
 }

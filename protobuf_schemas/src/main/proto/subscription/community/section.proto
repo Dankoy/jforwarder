@@ -1,11 +1,12 @@
+/* (C) 2025 */
 syntax = "proto3";
+
+package ru.dankoy.protobufschemas.protos.domain.subscription.community;
 
 option java_multiple_files = true;
 option java_outer_classname = "SectionProtos";
 
-package ru.dankoy.protobufschemas.protos.domain.subscription.community;
-
 message Section {
-    int64 id = 1;
-    string name = 2;
+  int64 id = 1;
+  string name = 2;
 }
