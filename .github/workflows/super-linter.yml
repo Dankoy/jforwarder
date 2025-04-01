@@ -45,6 +45,7 @@ jobs:
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_JSON_PRETTIER: false
+          PROTOBUF_CONFIG_FILE: protolint.yml
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
