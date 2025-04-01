@@ -1,0 +1,22 @@
+/* (C) 2025 */
+syntax = "proto3";
+
+package domain.subscription.community.v1;
+
+import "domain/chat/v1/telegram_chat.proto";
+import "domain/coub/v1/coub.proto";
+import "domain/subscription/community/v1/community.proto";
+import "domain/subscription/community/v1/section.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "CommunitySubscriptionProtos";
+option java_package = "ru.dankoy.protobufschemas.protos.domain.subscription.community.v1";
+
+message CommunitySubscription {
+  int64 id = 1;
+  domain.chat.v1.Chat chat = 2;
+  domain.coub.v1.Coub coub = 3;
+  optional string last_permalink = 4;
+  domain.subscription.community.v1.Community community = 5;
+  domain.subscription.community.v1.Section section = 6;
+}

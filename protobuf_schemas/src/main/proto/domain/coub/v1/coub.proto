@@ -1,12 +1,13 @@
 /* (C) 2025 */
 syntax = "proto3";
 
-package ru.dankoy.protobufschemas.protos.domain.coub.v1;
+package domain.coub.v1;
 
 import "google/protobuf/timestamp.proto";
 
 option java_multiple_files = true;
 option java_outer_classname = "CoubProtos";
+option java_package = "ru.dankoy.protobufschemas.protos.domain.coub.v1";
 
 message Coub {
   int64 id = 1;
