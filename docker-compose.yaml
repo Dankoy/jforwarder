@@ -61,8 +61,12 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
-      - KAFKA_CLUSTERS_0_NAME=kraft
+      kafka.clusters.0.bootstrapServers: kafka:9092
+      kafka.clusters.0.name: kraft
+      kafka.clusters.0.schemaRegistry: http://schema-registry:8081
+      kafka.clusters.0.defaultValueSerde: String # default value serde
+      kafka.clusters.0.serde.0.name: SchemaRegistry # specific serde 
+      kafka.clusters.0.serde.0.topicValuesPattern: ".*-protobuf" # apply specific serde to topic
     networks:
       - jforwarder-network
     depends_on:
@@ -551,6 +555,8 @@ volumes:
   cassandra_volume:
     driver: local
   telegram_chat_service_postgres_volume:
+    driver: local
+  kafka_ui_proto_volume:
     driver: local
 
 networks:
