@@ -5,15 +5,20 @@ application:
       coub-com-subs: "coub-com-sub"
       coub-tag-subs: "coub-tag-sub"
       coub-channel-subs: "coub-channel-sub"
+      protobuf-coub-com-subs: "coub-com-sub-protobuf"
+      protobuf-coub-tag-subs: "coub-tag-sub-protobuf"
+      protobuf-coub-channel-subs: "coub-channel-sub-protobuf"
     producers:
       coubs:
         client-id: "coubs-producer" # custom props configuration in factory
+    schema-registry:
+      url: ${SCHEMA_REGISTRY:http://localhost:9081}
 
 spring:
   application:
     name: kafka-message-producer
   kafka:
-    bootstrap-servers: ${KAFKA_SERVER:127.0.0.1:9092} # common bootstrap server for every producer
+    bootstrap-servers: ${KAFKA_SERVER:localhost:9094} # common bootstrap server for every producer
     producer:
       client-id: "coubs-producer"
       retries: 5

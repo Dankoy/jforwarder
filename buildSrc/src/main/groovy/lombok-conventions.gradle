@@ -1,0 +1,12 @@
+// lombok dependencies
+
+ext {
+	set("lombokVersion", "1.18.36")
+}
+
+dependencies {
+
+	// lombok
+	compileOnly "org.projectlombok:lombok:$lombokVersion"
+	annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}

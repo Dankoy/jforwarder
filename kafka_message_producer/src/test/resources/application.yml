@@ -5,9 +5,14 @@ application:
       coub-com-subs: "coub-com-sub"
       coub-tag-subs: "coub-tag-sub"
       coub-channel-subs: "coub-channel-sub"
+      protobuf-coub-com-subs: "coub-com-sub-protobuf"
+      protobuf-coub-tag-subs: "coub-tag-sub-protobuf"
+      protobuf-coub-channel-subs: "coub-channel-sub-protobuf"
     producers:
       coubs:
         client-id: "coubs-producer" # custom props configuration in factory
+    schema-registry:
+      url: http://localhost:9081
 
 spring:
   application:

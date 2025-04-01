@@ -1,9 +1,14 @@
 application:
   kafka:
+    schema-registry:
+      url: ${SCHEMA_REGISTRY:http://localhost:9081}
     topic:
       coub-com-subs: "coub-com-sub"
       coub-tag-subs: "coub-tag-sub"
       coub-channel-subs: "coub-channel-sub"
+      protobuf-coub-com-subs: "coub-com-sub-protobuf"
+      protobuf-coub-tag-subs: "coub-tag-sub-protobuf"
+      protobuf-coub-channel-subs: "coub-channel-sub-protobuf"
     consumers:
       community-coubs-consumer:
         group-id: "community-coubs-consumer-group"
@@ -14,6 +19,15 @@ application:
       channel-coubs-consumer:
         group-id: "channel-coubs-consumer-group"
         client-id: "channel-coubs-consumer-id"
+      community-coubs-consumer-protobuf:
+        group-id: "community-coubs-consumer-protobuf-group"
+        client-id: "community-coubs-consumer-protobuf-id" # custom props configuration in factory
+      tag-coubs-consumer-protobuf:
+        group-id: "tag-coubs-consumer-protobuf-group"
+        client-id: "tag-coubs-consumer-protobuf-id" # custom props configuration in factory
+      channel-coubs-consumer-protobuf:
+        group-id: "channel-coubs-consumer-protobuf-group"
+        client-id: "channel-coubs-consumer-protobuf-id"
 #      coubs-consumer: # for handlers in one listener
 #        group-id: "coubs-consumer-group"
 #        client-id: "coubs-consumer-id"

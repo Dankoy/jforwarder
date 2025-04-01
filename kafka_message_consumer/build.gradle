@@ -6,10 +6,18 @@ plugins {
 	id 'spring-feign-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
+	id 'lombok-conventions'
+	id 'protobuf-conventions'
 }
 
 group = 'ru.dankoy.kafkamessageconsumer'
 // version comes from root project
+
+repositories {
+	maven {
+		url "https://packages.confluent.io/maven"
+	}
+}
 
 dependencies {
 
@@ -22,6 +30,13 @@ dependencies {
 	implementation 'org.springframework.kafka:spring-kafka'
 	implementation 'org.springframework.kafka:spring-kafka-test'
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+	// protobuf schemas
+	implementation project(":protobuf_schemas")
+	implementation ("io.confluent:kafka-protobuf-serializer:7.9.0") {
+		exclude group: "com.google.protobuf", module: "protobuf-java"
+		exclude group: "com.google.protobuf", module: "protobuf-java-util"
+	}
 
 	testImplementation 'org.testcontainers:kafka'
 }

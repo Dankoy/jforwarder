@@ -16,6 +16,6 @@ public class MessageProducerChannelSubscriptionServiceImpl
   @Override
   public void sendChannelSubscriptionsData(List<ChannelSubscription> channelSubscriptions) {
 
-    messageProducerFeign.sendChannelSubscriptions(channelSubscriptions);
+    messageProducerFeign.sendChannelSubscriptionsProtobuf(channelSubscriptions);
   }
 }

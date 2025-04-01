@@ -4,6 +4,7 @@ plugins {
 
 repositories {
 	mavenCentral()
+	gradlePluginPortal()
 }
 
 // dependency for spring boot gradle plugin and dependency management.
@@ -13,4 +14,5 @@ dependencies {
 	implementation 'io.spring.gradle:dependency-management-plugin:1.1.7'
 	implementation 'com.diffplug.spotless:spotless-lib:3.1.0'
 	implementation 'com.diffplug.spotless:spotless-plugin-gradle:7.0.2'
+	runtimeOnly 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
 }

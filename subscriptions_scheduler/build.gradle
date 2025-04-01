@@ -6,6 +6,7 @@ plugins {
 	id 'micrometer-conventions'
 	id 'loki-conventions'
 	id 'spring-resilience4j-conventions'
+	id 'lombok-conventions'
 }
 
 group = 'ru.dankoy.subscriptions_scheduler'

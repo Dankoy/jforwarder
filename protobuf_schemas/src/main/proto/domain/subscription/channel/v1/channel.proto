@@ -1,0 +1,14 @@
+/* (C) 2025 */
+syntax = "proto3";
+
+package domain.subscription.channel.v1;
+
+option java_multiple_files = true;
+option java_outer_classname = "ChannelProtos";
+option java_package = "ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1";
+
+message Channel {
+  int64 id = 1;
+  string title = 2;
+  string permalink = 3;
+}

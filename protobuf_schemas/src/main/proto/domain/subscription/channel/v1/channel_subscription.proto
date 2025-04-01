@@ -1,0 +1,26 @@
+/* (C) 2025 */
+syntax = "proto3";
+
+package domain.subscription.channel.v1;
+
+import "domain/chat/v1/telegram_chat.proto";
+import "domain/coub/v1/coub.proto";
+import "domain/subscription/channel/v1/channel.proto";
+import "domain/subscription/v1/order.proto";
+import "domain/subscription/v1/scope.proto";
+import "domain/subscription/v1/type.proto";
+
+option java_multiple_files = true;
+option java_outer_classname = "ChannelSubscriptionProtos";
+option java_package = "ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1";
+
+message ChannelSubscription {
+  int64 id = 1;
+  domain.chat.v1.Chat chat = 2;
+  domain.coub.v1.Coub coub = 3;
+  optional string last_permalink = 4;
+  domain.subscription.channel.v1.Channel channel = 5;
+  domain.subscription.v1.Order order = 6;
+  domain.subscription.v1.Scope scope = 7;
+  domain.subscription.v1.Type type = 8;
+}

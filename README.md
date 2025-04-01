@@ -98,6 +98,9 @@ Open coub channel in browser. Find the last word in URL. Use it.
 17. Docker compose
 18. Telegrambots
 19. Resilience4j
+20. Kafka
+21. Kafka Schema Registry
+22. Protobuf
 
 ## Monitoring stack
 

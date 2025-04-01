@@ -15,6 +15,6 @@ public class MessageProducerCommunitySubscriptionServiceImpl
 
   public void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions) {
 
-    messageProducerFeign.sendCommunitySubscriptions(communitySubscriptions);
+    messageProducerFeign.sendCommunitySubscriptionsProtobuf(communitySubscriptions);
   }
 }

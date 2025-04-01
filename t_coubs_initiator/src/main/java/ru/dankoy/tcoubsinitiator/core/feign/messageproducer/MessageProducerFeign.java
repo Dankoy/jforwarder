@@ -19,4 +19,15 @@ public interface MessageProducerFeign {
 
   @PostMapping(path = "/api/v1/channel_subscriptions")
   void sendChannelSubscriptions(@RequestBody List<ChannelSubscription> channelSubscriptions);
+
+  @PostMapping(path = "/api/v1/subscriptions_protobuf")
+  void sendCommunitySubscriptionsProtobuf(
+      @RequestBody List<CommunitySubscription> communitySubscriptions);
+
+  @PostMapping(path = "/api/v1/tag_subscriptions_protobuf")
+  void sendTagSubscriptionsProtobuf(@RequestBody List<TagSubscription> tagSubscriptions);
+
+  @PostMapping(path = "/api/v1/channel_subscriptions_protobuf")
+  void sendChannelSubscriptionsProtobuf(
+      @RequestBody List<ChannelSubscription> channelSubscriptions);
 }
