@@ -343,7 +343,7 @@ public class KafkaNotBatchProtobufConfig {
     // If i want to have two listeners that reads the same topic and have filter
     // by type in them. Then these listeners have to be in different groups
     @KafkaListener(
-        topics = "${application.kafka.topic.coub-com-subs}",
+        topics = "${application.kafka.topic.protobuf-coub-com-subs}",
         groupId = "${application.kafka.consumers.community-coubs-consumer-protobuf.group-id}",
         clientIdPrefix =
             "${application.kafka.consumers.community-coubs-consumer-protobuf.client-id}",
@@ -358,7 +358,7 @@ public class KafkaNotBatchProtobufConfig {
     }
 
     @KafkaListener(
-        topics = "${application.kafka.topic.coub-tag-subs}",
+        topics = "${application.kafka.topic.protobuf-coub-tag-subs}",
         groupId = "${application.kafka.consumers.tag-coubs-consumer-protobuf.group-id}",
         clientIdPrefix = "${application.kafka.consumers.tag-coubs-consumer-protobuf.client-id}",
         containerFactory = "protobufTagMessageKafkaListenerContainerFactory",
@@ -371,7 +371,7 @@ public class KafkaNotBatchProtobufConfig {
     }
 
     @KafkaListener(
-        topics = "${application.kafka.topic.coub-channel-subs}",
+        topics = "${application.kafka.topic.protobuf-coub-channel-subs}",
         groupId = "${application.kafka.consumers.channel-coubs-consumer-protobuf.group-id}",
         clientIdPrefix = "${application.kafka.consumers.channel-coubs-consumer-protobuf.client-id}",
         containerFactory = "protobufChannelMessageKafkaListenerContainerFactory",

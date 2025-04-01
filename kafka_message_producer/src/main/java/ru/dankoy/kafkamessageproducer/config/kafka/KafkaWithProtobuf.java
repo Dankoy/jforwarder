@@ -74,10 +74,10 @@ public class KafkaWithProtobuf {
 
   @Bean
   public MessageProducerServiceKafkaProtobuf channelMessageProducerServiceKafkaProtobuf(
-      NewTopic topicCoubChannelMessage,
+      NewTopic topicCoubChannelMessageProtobuf,
       KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
     return new MessageProducerServiceKafkaProtobufImpl(
-        topicCoubChannelMessage.name(),
+        topicCoubChannelMessageProtobuf.name(),
         kafkaTemplateProtobuf,
         r ->
             r.headers()
@@ -87,10 +87,10 @@ public class KafkaWithProtobuf {
 
   @Bean
   public MessageProducerServiceKafkaProtobuf communityMessageProducerServiceKafkaProtobuf(
-      NewTopic topicCoubCommunityMessage,
+      NewTopic topicCoubCommunityMessageProtobuf,
       KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
     return new MessageProducerServiceKafkaProtobufImpl(
-        topicCoubCommunityMessage.name(),
+        topicCoubCommunityMessageProtobuf.name(),
         kafkaTemplateProtobuf,
         r ->
             r.headers()
@@ -100,9 +100,9 @@ public class KafkaWithProtobuf {
 
   @Bean
   public MessageProducerServiceKafkaProtobuf tagMessageProducerServiceKafkaProtobuf(
-      NewTopic topicCoubTagMessage, KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
+      NewTopic topicCoubTagMessageProtobuf, KafkaTemplateGeneric<String, Message> kafkaTemplateProtobuf) {
     return new MessageProducerServiceKafkaProtobufImpl(
-        topicCoubTagMessage.name(),
+        topicCoubTagMessageProtobuf.name(),
         kafkaTemplateProtobuf,
         r ->
             r.headers()
