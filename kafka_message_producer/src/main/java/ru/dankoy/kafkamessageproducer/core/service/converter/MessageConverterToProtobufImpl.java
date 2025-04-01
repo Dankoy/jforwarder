@@ -17,12 +17,12 @@ import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Order;
 import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Scope;
 import ru.dankoy.protobufschemas.protos.domain.subscription.v1.Type;
 
-
 @Component
 public class MessageConverterToProtobufImpl implements MessageConverterProtobuf {
 
   @Override
-  public List<ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription>
+  public List<
+          ru.dankoy.protobufschemas.protos.domain.subscription.community.v1.CommunitySubscription>
       convert(CommunitySubscription communitySubscription) {
 
     var builder =
@@ -190,8 +190,8 @@ public class MessageConverterToProtobufImpl implements MessageConverterProtobuf 
         .map(
             c -> {
               var b =
-                  ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1.ChannelSubscription
-                      .newBuilder();
+                  ru.dankoy.protobufschemas.protos.domain.subscription.channel.v1
+                      .ChannelSubscription.newBuilder();
 
               Optional.ofNullable(channelSubscription.getLastPermalink())
                   .ifPresent(b::setLastPermalink);
