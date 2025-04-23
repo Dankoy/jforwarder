@@ -531,7 +531,7 @@ services:
       - EUREKA_SERVER=http://spring-eureka-registry:8761/eureka
       - ZIPKIN_SERVER=http://zipkin:9411/api/v2/spans
     healthcheck:
-      test: [ "CMD-SHELL", "curl localhost:8082/actuator" ]
+      test: [ "CMD-SHELL", "curl localhost:8088/actuator" ]
       interval: 5s
       timeout: 2s
       retries: 10
