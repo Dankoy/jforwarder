@@ -55,7 +55,11 @@ services:
     command:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+      - '--collector.processes'
+      - '--collector.systemd'
+      - '--collector.interrupts'
     networks:
       - jforwarder-network
 
