@@ -3,6 +3,10 @@ apiVersion: 1
 deleteDatasources:
   - name: Prometheus
     orgId: 1
+  - name: Loki
+    orgId: 1
+  - name: Zipkin
+    orgId: 1
 
 datasources:
 
@@ -64,9 +68,62 @@ datasources:
     version: 1
     editable: false
     apiVersion: 1
-#    jsonData:
-#      derivedFields:
-#        - datasourceUid: tempo
-#          matcherRegex: \[.+,(.+?),
-#          name: traceID
-#          url: $${__value.raw}
+    # Doesn't work. Correct regex should be provided
+    # jsonData:
+    #   maxLines: 1000
+    #   derivedFields:
+    #     # Field with internal link pointing to data source in Grafana.
+    #     # datasourceUid value can be anything, but it should be unique across all defined data source uids.
+    #     - datasourceUid: zipkin
+    #       matcherRegex: "traceID=(\\w+)"
+    #       name: TraceID
+    #       # url will be interpreted as query for the datasource
+    #       url: '$${__value.raw}'
+    #       # optional for URL Label to set a custom display label for the link.
+    #       urlDisplayLabel: 'View Trace'
+
+    #     # Field with external link.
+    #     - matcherRegex: "traceID=(\\w+)"
+    #       name: TraceID_External
+    #       url: 'http://localhost:9411/zipkin/traces/$${__value.raw}'
+
+  - id: Zipkin
+    uid: zipkin
+    type: zipkin
+    name: Zipkin
+    editable: false                        # whether it should be editable
+    isDefault: false                      # whether this should be the default DS
+    org_id: 1                             # id of the organization to tie this datasource to
+    access: proxy
+    url: "http://zipkin:9411/"
+    basicAuth: false
+    readOnly: true
+    jsonData:
+      tracesToLogsV2:
+        # Field with an internal link pointing to a logs data source in Grafana.
+        # datasourceUid value must match the uid value of the logs data source.
+        datasourceUid: 'loki'
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+        tags: ['job', 'instance', 'pod', 'namespace']
+        filterByTraceID: false
+        filterBySpanID: true
+        customQuery: true
+        query: '{traceID="$${__span.traceId}"} |= "$${__span.spanId}"'
+      tracesToMetrics:
+        datasourceUid: 'prometheus'
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+        tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
+        queries:
+          - name: 'Sample query'
+            query: 'sum(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m]))'
+      nodeGraph:
+        enabled: true
+      traceQuery:
+        timeShiftEnabled: true
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+      spanBar:
+        type: 'None'
+    version: 1                            # well, versioning
