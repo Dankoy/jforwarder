@@ -68,24 +68,19 @@ datasources:
     version: 1
     editable: false
     apiVersion: 1
-    # Doesn't work. Correct regex should be provided
-    # jsonData:
-    #   maxLines: 1000
-    #   derivedFields:
-    #     # Field with internal link pointing to data source in Grafana.
-    #     # datasourceUid value can be anything, but it should be unique across all defined data source uids.
-    #     - datasourceUid: zipkin
-    #       matcherRegex: "traceID=(\\w+)"
-    #       name: TraceID
-    #       # url will be interpreted as query for the datasource
-    #       url: '$${__value.raw}'
-    #       # optional for URL Label to set a custom display label for the link.
-    #       urlDisplayLabel: 'View Trace'
-
-    #     # Field with external link.
-    #     - matcherRegex: "traceID=(\\w+)"
-    #       name: TraceID_External
-    #       url: 'http://localhost:9411/zipkin/traces/$${__value.raw}'
+    jsonData:
+        maxLines: 1000
+        derivedFields:
+          # Field with internal link pointing to data source in Grafana.
+          # datasourceUid value can be anything, but it should be unique across all defined data source uids.
+          - datasourceUid: zipkin
+            matcherRegex: '.+ --- \[.+\] \[.+\] \[(\w*)-\w*\] .+'
+            name: TraceID
+            url: $${__value.raw}
+          # Field with external link.
+          - matcherRegex: '.+ --- \[.+\] \[.+\] \[(\w*)-\w*\] .+'
+            name: TraceID_External
+            url: 'http://localhost:9411/zipkin/traces/$${__value.raw}'  
 
   - id: Zipkin
     uid: zipkin
@@ -103,8 +98,8 @@ datasources:
         # Field with an internal link pointing to a logs data source in Grafana.
         # datasourceUid value must match the uid value of the logs data source.
         datasourceUid: 'loki'
-        spanStartTimeShift: '-1h'
-        spanEndTimeShift: '1h'
+        spanStartTimeShift: '-30m'
+        spanEndTimeShift: '30m'
         tags: ['job', 'instance', 'pod', 'namespace']
         filterByTraceID: false
         filterBySpanID: true
@@ -112,8 +107,8 @@ datasources:
         query: '{traceID="$${__span.traceId}"} |= "$${__span.spanId}"'
       tracesToMetrics:
         datasourceUid: 'prometheus'
-        spanStartTimeShift: '-1h'
-        spanEndTimeShift: '1h'
+        spanStartTimeShift: '-30m'
+        spanEndTimeShift: '30m'
         tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
         queries:
           - name: 'Sample query'
