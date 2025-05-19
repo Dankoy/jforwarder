@@ -39,23 +39,42 @@ datasources:
       httpHeaderValue1: "jforwarder"
     version: 1                            # well, versioning
 
-#  - id: Tempo
-#    name: Tempo
-#    type: tempo
-#    access: proxy
-#    orgId: 1
-#    url: http://grafana-tempo:3200
-#    basicAuth: false
-#    isDefault: false
-#    version: 1
-#    editable: false
-#    apiVersion: 1
-#    uid: tempo
-#    jsonData:
-#      httpMethod: GET
-#      tracesToLogs:
-#        datasourceUid: 'loki'
-#
+  # - id: Tempo
+  #   name: Tempo
+  #   type: tempo
+  #   access: proxy
+  #   orgId: 1
+  #   url: http://grafana-tempo:3200
+  #   basicAuth: false
+  #   isDefault: false
+  #   version: 1
+  #   editable: false
+  #   apiVersion: 1
+  #   uid: tempo
+  #   jsonData:
+  #     httpMethod: GET
+  #     tracesToLogsV2:
+  #       datasourceUid: 'loki'
+  #       spanStartTimeShift: '-1h'
+  #       spanEndTimeShift: '1h'
+  #       filterByTraceID: true
+  #       filterBySpanID: true
+  #     tracesToMetrics:
+  #       datasourceUid: Prometheus
+  #     tracesToLogs:
+  #       datasourceUid: loki
+  #       mapTagNamesEnabled: true
+  #       filterByTraceID: true
+  #       filterBySpanID: true
+  #       spanStartTimeShift: '-10m'
+  #       spanEndTimeShift: '10m'
+  #     lokiSearch:
+  #       datasourceUid: loki
+  #     serviceMap:
+  #       datasourceUid: Prometheus
+  #     nodeGraph:
+  #       enabled: true
+
   - id: Loki
     name: Loki
     type: loki
