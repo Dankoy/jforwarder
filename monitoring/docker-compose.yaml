@@ -16,19 +16,18 @@ services:
      networks:
        - jforwarder-network
 
-  #  tempo:
-  #    image: grafana/tempo
-  #    container_name: grafana-tempo
-  #    command: [ "-config.file=/etc/tempo.yaml" ]
-  #    volumes:
-  #      - ./tempo/tempo-local.yml:/etc/tempo.yaml
-  #      - tempo_volume:/tmp/tempo
-  #    ports:
-  #      - "14268"  # jaeger ingest
-  #      - "9411:9411" # zipkin
-  #    networks:
-  #      - jforwarder-network
-  #
+  # tempo:
+  #   image: grafana/tempo:main-17e20a4
+  #   container_name: grafana-tempo
+  #   command: [ "-config.file=/etc/tempo.yml" ]
+  #   volumes:
+  #     - ./tempo/tempo-local.yml:/etc/tempo.yml:ro
+  #     - tempo_volume:/tmp/tempo
+  #   ports:
+  #     - "3200:3200"
+  #   networks:
+  #     - jforwarder-network
+
   loki:
     image: grafana/loki:3.2.0
     container_name: grafana-loki
