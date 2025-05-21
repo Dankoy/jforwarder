@@ -35,6 +35,7 @@ ingester:
 limits:
   # Delete from storage metrics data older than 1 year.
   compactor_blocks_retention_period: 1y
+  max_label_names_per_series: 60
 
 usage_stats:
   enabled: false
