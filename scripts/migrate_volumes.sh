@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 ./dvs.sh monitoring_minio_volume jforwarder_monitoring_minio_volume
 
