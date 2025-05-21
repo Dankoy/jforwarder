@@ -15,10 +15,11 @@ NEW_VOLUME_NAME="$2"
 echo "== From '$OLD_VOLUME_NAME' to '$NEW_VOLUME_NAME' =="
 
 function isVolumeExists {
-    local isOldExists=$(docker volume inspect "$1" 2>/dev/null | grep '"Name":')
-    local isOldExists=${isOldExists#*'"Name": "'}
-    local isOldExists=${isOldExists%'",'}
-    local isOldExists=${isOldExists##*( )}
+    local isOldExists
+    isOldExists=$(docker volume inspect "$1" 2>/dev/null | grep '"Name":')
+    isOldExists=${isOldExists#*'"Name": "'}
+    isOldExists=${isOldExists%'",'}
+    isOldExists=${isOldExists##*( )}
     if [[ "$isOldExists" == "$1" ]]; then
         return 1
     else
