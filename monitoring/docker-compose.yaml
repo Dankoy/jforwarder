@@ -1,4 +1,4 @@
-version: "3.9"
+name: jforwarder_monitoring
 
 services:
 
@@ -193,6 +193,44 @@ services:
   #   networks:
   #     - jforwarder-network
 
+  ###### zipkin related start #####
+
+  zipkin-cassandra:
+    image: openzipkin/zipkin-cassandra:2.22.2
+    container_name: zipkin-cassandra
+    volumes:
+      - cassandra_volume:/cassandra
+    networks:
+      - jforwarder-network
+
+  zipkin-dependencies:
+    image: openzipkin/zipkin-dependencies:3.1.5
+    container_name: zipkin-dependencies
+    entrypoint: crond -f
+    environment:
+      - STORAGE_TYPE=cassandra3
+      - CASSANDRA_CONTACT_POINTS=zipkin-cassandra
+    depends_on:
+      - zipkin-cassandra
+    networks:
+      - jforwarder-network
+
+  zipkin:
+    image: openzipkin/zipkin:3.1.1
+    container_name: zipkin
+    environment:
+      - STORAGE_TYPE=cassandra3
+      - CASSANDRA_ENSURE_SCHEMA=false
+      - CASSANDRA_CONTACT_POINTS=zipkin-cassandra
+    ports:
+      - '9411:9411'
+    depends_on:
+      - zipkin-cassandra
+    networks:
+      - jforwarder-network
+
+  ###### zipkin related end #####
+
 volumes:
   prometheus_volume:
     driver: local
@@ -204,6 +242,8 @@ volumes:
     driver: local
   minio_volume:
   mimir_volume:
+    driver: local
+  cassandra_volume:
     driver: local
 
 networks:
