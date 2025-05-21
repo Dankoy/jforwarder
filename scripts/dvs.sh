@@ -28,18 +28,20 @@ function isVolumeExists {
 }
 
 # check if old volume exists
-isVolumeExists ${OLD_VOLUME_NAME}
-if [[ "$?" -eq 0 ]]; then
+
+if ! isVolumeExists "${OLD_VOLUME_NAME}"
+then
     echo "Volume $OLD_VOLUME_NAME doesn't exist"
     exit 2
 fi
 
 # check if new volume exists
-isVolumeExists ${NEW_VOLUME_NAME}
-if [[ "$?" -eq 0 ]]; then
+
+if ! isVolumeExists "${NEW_VOLUME_NAME}"
+then
     echo "creating '$NEW_VOLUME_NAME' ..."
-    docker volume create ${NEW_VOLUME_NAME} 2>/dev/null 1>/dev/null
-    isVolumeExists ${NEW_VOLUME_NAME}
+    docker volume create "${NEW_VOLUME_NAME}" 2>/dev/null 1>/dev/null
+    isVolumeExists "${NEW_VOLUME_NAME}"
     if [[ "$?" -eq 0 ]]; then
         echo "Cannot create new volume"
         exit 3
@@ -49,9 +51,10 @@ if [[ "$?" -eq 0 ]]; then
 fi
 
 # most important part, data migration
-docker run --rm --volume ${OLD_VOLUME_NAME}:/source --volume ${NEW_VOLUME_NAME}:/destination ubuntu:latest bash -c "echo 'copying volume ...'; cp -Rp /source/* /destination/"
+#docker run --rm --volume "${OLD_VOLUME_NAME}":/source --volume "${NEW_VOLUME_NAME}":/destination ubuntu:latest bash -c "echo 'copying volume ...'; cp -Rp /source/* /destination/"
 
-if [[ "$?" -eq 0 ]]; then
+if ! docker run --rm --volume "${OLD_VOLUME_NAME}":/source --volume "${NEW_VOLUME_NAME}":/destination ubuntu:latest bash -c "echo 'copying volume ...'; cp -Rp /source/* /destination/"
+then
     echo "Done successfuly 🎉"
 else
     echo "Some error occured 😭"
