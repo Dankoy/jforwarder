@@ -14,6 +14,10 @@
 ![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub_forwarder_bot)
 ![GitHub search hit counter](https://img.shields.io/github/search/dankoy/jforwarder/coub)
 
+## Discuss or ask questions here
+
+[https://discord.gg/mApKQEF8Kn](https://discord.gg/kDTumB6fEk)
+
 # Trademark disclaimer
 
 Coub and the Coub logo are trademarks of Coub.com Ltd and its affiliates. All rights reserved.    
