@@ -249,4 +249,3 @@ volumes:
 networks:
   jforwarder-network:
     name: jforwarder-network
-    external: true
