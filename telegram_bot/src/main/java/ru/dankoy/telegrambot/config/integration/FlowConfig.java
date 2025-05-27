@@ -266,11 +266,13 @@ public class FlowConfig {
 
     return IntegrationFlow.from(startChannel())
         .handle(command, "start")
-        .publishSubscribeChannel(sub -> 
-          sub.subscribe(subflow -> subflow
-            .handle(replyCreatorService, "createReplyStart")
-            .channel(sendMessageChannel())
-        ))
+        .publishSubscribeChannel(
+            sub ->
+                sub.subscribe(
+                    subflow ->
+                        subflow
+                            .handle(replyCreatorService, "createReplyStart")
+                            .channel(sendMessageChannel())))
         .handle(replyCreatorService, "createReplyHelp")
         .channel(sendMessageChannel())
         .get();
