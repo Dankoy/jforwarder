@@ -1,16 +1,22 @@
 Here you can subscribe to coub.com communities and/or tags and receive updates directly in chat.
 
-Please make sure to run /start command first.
-
 Commands references:
 
 1) /my_subscriptions - returns all your active subscriptions in chat or group chat
 
 2) /subscribe {subscription_type} {field1} {field2}
 
+  where:
+    {subscription_type} - is the type of subscription. Could be: ${subscription_types?lower_case}.
+    Contents of {field1} and {field2} depend on subscription_type. Please refer to example below.
+    To see available tag orders run /orders command
+    To see available communities run /communities command
+
 3) /unsubscribe {subscription_type} {field1} {field2}
-    Available {subscription_type}: ${subscription_types?lower_case}.
-    Contents of field1 and field2 depend on subscription_type. Please refer to example below.
+    
+  where:
+    {subscription_type} - is the type of subscription. Could be: ${subscription_types?lower_case}.
+    Contents of {field1} and {field2} depend on subscription_type. Please refer to example below.
     To see available tag orders run /orders command
     To see available communities run /communities command
 
@@ -18,6 +24,8 @@ Commands references:
     {field1} - один из ${subscription_types?lower_case}
 
 5) /communities - shows available communities and sections for community subscriptions
+
+---
 
 Subscription example:
 
