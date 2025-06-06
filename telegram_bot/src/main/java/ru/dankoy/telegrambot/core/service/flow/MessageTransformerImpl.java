@@ -2,7 +2,7 @@ package ru.dankoy.telegrambot.core.service.flow;
 
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 @Component
 public class MessageTransformerImpl implements MessageTransformer {

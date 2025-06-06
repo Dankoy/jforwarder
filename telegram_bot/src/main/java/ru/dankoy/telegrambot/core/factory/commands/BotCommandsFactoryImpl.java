@@ -32,6 +32,8 @@ public record BotCommandsFactoryImpl(
     SubscriptionsHolderChatService subscriptionsHolderChatService)
     implements BotCommandsFactory {
 
+  // TODO: commands should not be used as logic container. Special services should be created
+
   @Override
   public List<BotCommand> allKnownCommands() {
 

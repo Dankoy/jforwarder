@@ -21,14 +21,14 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// bot - doesn't work with eureka client
-	//    implementation 'org.telegram:telegrambots-spring-boot-starter:6.7.0'
-	//    implementation 'org.telegram:telegrambots-abilities:6.7.0' // 5.3.0'
-	implementation('org.telegram:telegrambots:6.9.7.1') {
+	// adds core bot functionality
+	implementation('org.telegram:telegrambots-longpolling:8.3.0') {
 		exclude group: 'org.glassfish.jersey.containers'
 		exclude group: 'org.glassfish.jersey.core'
 		exclude group: 'org.glassfish.jersey.inject'
 		exclude group: 'org.glassfish.jersey.media'
 	}
+	implementation('org.telegram:telegrambots-client:8.3.0') // adds client to communicate with telegram api
 
 	// freemarker
 	implementation 'org.freemarker:freemarker'

@@ -1,7 +1,7 @@
 package ru.dankoy.telegrambot.core.service.localeprovider;
 
 import java.util.Locale;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 /**
  * @author turtality

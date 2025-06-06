@@ -6,9 +6,8 @@ import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfiguration;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfigurationImpl;
 import ru.dankoy.telegrambot.config.bot.properties.FullBotProperties;
@@ -16,7 +15,6 @@ import ru.dankoy.telegrambot.config.bot.properties.LocaleConfig;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
 import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotIntegrationFlowImpl;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
@@ -33,36 +31,26 @@ import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 public class TelegramBotFlowConfig {
 
   @Bean
-  public TelegramBotsApi telegramBotsApi(TelegramBot telegramBot) throws TelegramApiException {
+  public TelegramBotsLongPollingApplication telegramBotsLongPollingApplication(
+      BotConfiguration botConfiguration, BotMessageGateway botMessageGateway)
+      throws TelegramApiException {
 
-    var api = new TelegramBotsApi(DefaultBotSession.class);
+    // Commands registration should be done after bot start
 
-    api.registerBot(telegramBot);
+    // bot should be autoclosed by spring
+    var botsApplication = new TelegramBotsLongPollingApplication();
+    var bot = new TelegramBotIntegrationFlowImpl(botMessageGateway);
 
-    return api;
+    botsApplication.registerBot(botConfiguration.fullBotProperties().getToken(), bot);
+
+    return botsApplication;
   }
 
   @Bean
   public BotConfiguration botConfiguration(
-      FullBotProperties properties,
-      CommandsHolder commandsHolder,
-      TelegramChatService telegramChatService,
-      SubscriptionsHolderChatService subscriptionsHolderChatService,
-      BotMessageGateway botMessageGateway) {
+      FullBotProperties properties, CommandsHolder commandsHolder) {
 
-    return BotConfigurationImpl.builder()
-        .fullBotProperties(properties)
-        .commandsHolder(commandsHolder)
-        .telegramChatService(telegramChatService)
-        .botMessageGateway(botMessageGateway)
-        .subscriptionsHolderChatService(subscriptionsHolderChatService)
-        .build();
-  }
-
-  @Bean
-  public TelegramBot telegramBot(BotConfiguration botConfiguration) {
-
-    return new TelegramBotIntegrationFlowImpl(botConfiguration);
+    return new BotConfigurationImpl(properties, commandsHolder);
   }
 
   @Bean

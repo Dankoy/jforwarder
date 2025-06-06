@@ -7,13 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
 import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfigurationImpl;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
+import ru.dankoy.telegrambot.core.service.bot.TelegramClientService;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.channel.ChannelServiceImpl;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatServiceImpl;
@@ -37,9 +37,9 @@ class TelegramBotAppTests {
   @Autowired private ApplicationContext context;
 
   // Mock telegrambots beans that actually connects to telegram api external service
-  @MockBean private TelegramBotsApi telegramBotsApi;
+  @MockitoBean private TelegramClientService telegramClientService;
 
-  @MockBean private TelegramBot telegramBot;
+  @MockitoBean private TelegramBotsLongPollingApplication telegramBotsLongPollingApplication;
 
   @Test
   void contextLoads() {
@@ -73,5 +73,7 @@ class TelegramBotAppTests {
     assertNotNull(tagService);
     assertNotNull(templateBuilder);
     assertNotNull(botConfiguration);
+    assertNotNull(telegramClientService);
+    assertNotNull(telegramBotsLongPollingApplication);
   }
 }

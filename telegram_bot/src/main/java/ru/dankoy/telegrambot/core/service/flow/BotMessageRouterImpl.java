@@ -3,7 +3,7 @@ package ru.dankoy.telegrambot.core.service.flow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsExtractorService;
 import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
 

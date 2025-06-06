@@ -1,6 +1,6 @@
 package ru.dankoy.telegrambot.core.service.flow;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 
 public interface ChatFlowHandler {
 
