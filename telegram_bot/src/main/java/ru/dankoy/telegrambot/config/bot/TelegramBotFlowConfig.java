@@ -16,7 +16,6 @@ import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactory;
 import ru.dankoy.telegrambot.core.factory.commands.BotCommandsFactoryImpl;
 import ru.dankoy.telegrambot.core.gateway.BotMessageGateway;
 import ru.dankoy.telegrambot.core.service.bot.TelegramBotIntegrationFlowImpl;
-import ru.dankoy.telegrambot.core.service.bot.TelegramClientService;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
@@ -31,10 +30,8 @@ import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 @RequiredArgsConstructor
 public class TelegramBotFlowConfig {
 
-  private final TelegramClientService telegramClientService;
-
-  @Bean(initMethod = "registerBotCommands")
-  public TelegramBotsLongPollingApplication telegramBotsApi(
+  @Bean
+  public TelegramBotsLongPollingApplication telegramBotsLongPollingApplication(
       BotConfiguration botConfiguration, BotMessageGateway botMessageGateway)
       throws TelegramApiException {
 
@@ -47,12 +44,6 @@ public class TelegramBotFlowConfig {
     botsApplication.registerBot(botConfiguration.fullBotProperties().getToken(), bot);
 
     return botsApplication;
-  }
-
-  public void registerBotCommands(BotConfiguration botConfiguration) throws TelegramApiException {
-
-    telegramClientService.deregisterCommands(botConfiguration);
-    telegramClientService.registerCommands(botConfiguration);
   }
 
   @Bean
