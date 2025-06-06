@@ -19,8 +19,7 @@ public class TelegramClientConfig {
 
   @Bean
   public TelegramClient telegramClient() {
-    var tokenString = botCredentialsConfig.getName() + ":" + botCredentialsConfig.getToken();
-    return new OkHttpTelegramClient(tokenString);
+    return new OkHttpTelegramClient(botCredentialsConfig.getToken());
   }
 
   @Bean
