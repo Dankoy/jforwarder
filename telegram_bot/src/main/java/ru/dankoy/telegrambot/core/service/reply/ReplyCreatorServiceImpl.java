@@ -9,6 +9,7 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage.SendMessageBuilder;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
@@ -64,9 +65,9 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         templateBuilder.writeTemplate(
             templateData, "subscriptions.ftl", localeProvider.getLocale(inputMessage));
 
-    sendMessage.setText(text);
+    sendMessage.text(text);
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -83,10 +84,9 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         templateBuilder.writeTemplate(
             templateData, "communities.ftl", localeProvider.getLocale(inputMessage));
 
-    sendMessage.setText(text);
-    sendMessage.setParseMode(ParseMode.MARKDOWN);
+    sendMessage.text(text).parseMode(ParseMode.MARKDOWN);
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -103,10 +103,9 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         templateBuilder.writeTemplate(
             templateData, "orders.ftl", localeProvider.getLocale(inputMessage));
 
-    sendMessage.setText(text);
-    sendMessage.setParseMode(ParseMode.MARKDOWN);
+    sendMessage.text(text).parseMode(ParseMode.MARKDOWN);
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -117,13 +116,13 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var sendMessage = createSendMessage(inputMessage);
     var s = (CommunitySubscription) createReplySubscribeDto.subscriptionDto().subscription();
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             TEMPLATE_SUBSCRIPTION_SUCCESS,
             new Object[] {s.getCommunity().getName(), s.getSection().getName()},
             localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -134,13 +133,13 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var sendMessage = createSendMessage(inputMessage);
     var s = (TagSubscription) createReplySubscribeDto.subscriptionDto().subscription();
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             TEMPLATE_SUBSCRIPTION_SUCCESS,
             new Object[] {s.getTag().getTitle(), s.getOrder().getName()},
             localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -151,13 +150,13 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var sendMessage = createSendMessage(inputMessage);
     var s = (ChannelSubscription) createReplySubscribeDto.subscriptionDto().subscription();
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             TEMPLATE_SUBSCRIPTION_SUCCESS,
             new Object[] {s.getChannel().getPermalink(), s.getOrder().getName()},
             localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -168,11 +167,11 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var sendMessage = createSendMessage(inputMessage);
     var objects = createReplyUnsubscribeDto.objects();
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             TEMPLATE_UNSUBSCRIBE_SUCCESS, objects, localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -180,11 +179,11 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
 
     var sendMessage = createSendMessage(inputMessage);
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             "startFinish", null, localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -198,9 +197,10 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var text =
         templateBuilder.writeTemplate(
             templateData, "help.ftl", localeProvider.getLocale(inputMessage));
-    sendMessage.setText(text);
 
-    return sendMessage;
+    sendMessage.text(text);
+
+    return sendMessage.build();
   }
 
   @Override
@@ -226,8 +226,9 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         message.getCommunity().getName(),
         message.getSection().getName());
 
-    sendMessage.setText(text);
-    return sendMessage;
+    sendMessage.text(text);
+
+    return sendMessage.build();
   }
 
   @Override
@@ -238,11 +239,6 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var tagName = message.getTag().getTitle();
     var orderValue = message.getOrder().getValue();
     var coubUrl = message.getCoub().getUrl();
-    var chatId = message.getChat().getChatId();
-    var messageThreadId = message.getChat().getMessageThreadId();
-
-    sendMessage.setChatId(chatId);
-    sendMessage.setMessageThreadId(messageThreadId);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("tagName", tagName);
@@ -250,7 +246,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     templateData.put("url", coubUrl);
     var text = templateBuilder.writeTemplate(templateData, "tag_subscription_message.ftl");
 
-    sendMessage.setText(text);
+    sendMessage.text(text);
 
     log.info(
         "Created message to chat '{}'-{} for tag subscription '{}' {}",
@@ -259,7 +255,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         message.getId(),
         message.getTag().getTitle());
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -270,11 +266,6 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     var channelTitle = message.getChannel().getTitle();
     var orderValue = message.getOrder().getValue();
     var coubUrl = message.getCoub().getUrl();
-    var chatId = message.getChat().getChatId();
-    var messageThreadId = message.getChat().getMessageThreadId();
-
-    sendMessage.setChatId(chatId);
-    sendMessage.setMessageThreadId(messageThreadId);
 
     Map<String, Object> templateData = new HashMap<>();
     templateData.put("channelTitle", channelTitle);
@@ -282,7 +273,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
     templateData.put("url", coubUrl);
     var text = templateBuilder.writeTemplate(templateData, "channel_subscription_message.ftl");
 
-    sendMessage.setText(text);
+    sendMessage.text(text);
 
     log.info(
         "Created message to chat '{}'-{} for channel subscription '{}' {}",
@@ -291,7 +282,7 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         message.getId(),
         message.getChannel().getPermalink());
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -302,13 +293,13 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
 
     var sendMessage = createSendMessage(inputMessage);
 
-    sendMessage.setText(
+    sendMessage.text(
         localisationService.getLocalizedMessage(
             botException.getLocalizedSourceMessage(),
             botException.getObjects(),
             localeProvider.getLocale(inputMessage)));
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -328,10 +319,9 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         templateBuilder.writeTemplate(
             templateData, helpType, localeProvider.getLocale(inputMessage));
 
-    sendMessage.setText(text);
-    sendMessage.enableMarkdown(true);
+    sendMessage.text(text).parseMode(ParseMode.MARKDOWN);
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
   @Override
@@ -357,25 +347,22 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
         templateBuilder.writeTemplate(
             templateData, TEMPLATE_SUBSCRIPTION_EXCEPTION, localeProvider.getLocale(inputMessage));
 
-    sendMessage.setText(text);
-    sendMessage.enableMarkdown(true);
+    sendMessage.text(text).parseMode(ParseMode.MARKDOWN);
 
-    return sendMessage;
+    return sendMessage.build();
   }
 
-  private SendMessage createSendMessage(Message inputMessage) {
+  private SendMessageBuilder<?, ?> createSendMessage(Message inputMessage) {
     return SendMessage.builder()
         .chatId(inputMessage.getChat().getId())
         .messageThreadId(inputMessage.getMessageThreadId())
-        .replyToMessageId(inputMessage.getMessageId())
-        .build();
+        .replyToMessageId(inputMessage.getMessageId());
   }
 
-  private SendMessage createSendMessageForSubscription(CoubMessage subscription) {
+  private SendMessageBuilder<?, ?> createSendMessageForSubscription(CoubMessage subscription) {
 
     return SendMessage.builder()
         .chatId(subscription.getChat().getChatId())
-        .messageThreadId(subscription.getChat().getMessageThreadId())
-        .build();
+        .messageThreadId(subscription.getChat().getMessageThreadId());
   }
 }
