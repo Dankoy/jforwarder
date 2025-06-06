@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.config.bot.properties.LocaleConfig;
 
 @Service

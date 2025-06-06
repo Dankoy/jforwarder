@@ -9,7 +9,7 @@ import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CoubMessage;
@@ -364,18 +364,18 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
   }
 
   private SendMessage createSendMessage(Message inputMessage) {
-    var sendMessage = new SendMessage();
-    sendMessage.setChatId(inputMessage.getChat().getId());
-    sendMessage.setMessageThreadId(inputMessage.getMessageThreadId());
-    sendMessage.setReplyToMessageId(inputMessage.getMessageId());
-    return sendMessage;
+    return SendMessage.builder()
+        .chatId(inputMessage.getChat().getId())
+        .messageThreadId(inputMessage.getMessageThreadId())
+        .replyToMessageId(inputMessage.getMessageId())
+        .build();
   }
 
   private SendMessage createSendMessageForSubscription(CoubMessage subscription) {
 
-    var sendMessage = new SendMessage();
-    sendMessage.setChatId(subscription.getChat().getChatId());
-    sendMessage.setMessageThreadId(subscription.getChat().getMessageThreadId());
-    return sendMessage;
+    return SendMessage.builder()
+        .chatId(subscription.getChat().getChatId())
+        .messageThreadId(subscription.getChat().getMessageThreadId())
+        .build();
   }
 }

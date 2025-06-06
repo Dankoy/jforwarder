@@ -13,7 +13,7 @@ import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfigurati
 import org.springframework.context.ApplicationContext;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import ru.dankoy.telegrambot.config.bot.configuration.botflow.BotConfigurationImpl;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
+import ru.dankoy.telegrambot.core.service.bot.TelegramClientService;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsHolder;
 import ru.dankoy.telegrambot.core.service.channel.ChannelServiceImpl;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatServiceImpl;
@@ -39,7 +39,7 @@ class TelegramBotAppTests {
   // Mock telegrambots beans that actually connects to telegram api external service
   @MockBean private TelegramBotsApi telegramBotsApi;
 
-  @MockBean private TelegramBot telegramBot;
+  @MockBean private TelegramClientService telegramBot;
 
   @Test
   void contextLoads() {

@@ -13,7 +13,7 @@ import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CoubMessage;
 import ru.dankoy.telegrambot.core.domain.message.TagSubscriptionMessage;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
+import ru.dankoy.telegrambot.core.service.bot.TelegramClientService;
 import ru.dankoy.telegrambot.core.service.reply.ReplyCreatorService;
 
 /**
@@ -63,7 +63,7 @@ public class FlowSyncConfig {
   }
 
   @Bean
-  public IntegrationFlow sendMessageSyncFlow(TelegramBot telegramBot) {
+  public IntegrationFlow sendMessageSyncFlow(TelegramClientService telegramBot) {
     return IntegrationFlow.from(sendMessageDirectChannel())
         .handle(
             telegramBot,

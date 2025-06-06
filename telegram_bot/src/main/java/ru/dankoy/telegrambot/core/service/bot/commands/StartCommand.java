@@ -2,8 +2,9 @@ package ru.dankoy.telegrambot.core.service.bot.commands;
 
 import feign.FeignException.NotFound;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
+
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 import ru.dankoy.telegrambot.core.service.chat.SubscriptionsHolderChatService;

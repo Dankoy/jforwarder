@@ -3,7 +3,7 @@ package ru.dankoy.telegrambot.core.service.bot.commands;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplyUnsubscribeDto;

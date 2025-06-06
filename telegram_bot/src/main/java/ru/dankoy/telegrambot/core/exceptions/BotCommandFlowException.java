@@ -1,7 +1,8 @@
 package ru.dankoy.telegrambot.core.exceptions;
 
+import org.telegram.telegrambots.meta.api.objects.message.Message;
+
 import lombok.Getter;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
 @Getter
 public class BotCommandFlowException extends BotException {

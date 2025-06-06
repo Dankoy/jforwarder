@@ -2,7 +2,7 @@ package ru.dankoy.telegrambot.core.service.bot.commands;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscription;
