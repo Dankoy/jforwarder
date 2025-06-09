@@ -21,7 +21,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.dto.flow.CreateReplySubscribeDto;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
-import ru.dankoy.telegrambot.core.service.bot.TelegramBot;
+import ru.dankoy.telegrambot.core.service.bot.TelegramClientService;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommandsExtractorService;
 import ru.dankoy.telegrambot.core.service.bot.commands.CommunitiesCommand;
 import ru.dankoy.telegrambot.core.service.bot.commands.HelpCommand;
@@ -222,7 +222,7 @@ public class FlowConfig {
   }
 
   @Bean
-  public IntegrationFlow sendMessageFlow(TelegramBot telegramBot) {
+  public IntegrationFlow sendMessageFlow(TelegramClientService telegramBot) {
     return IntegrationFlow.from(sendMessageChannel())
         .handle(telegramBot, "sendMessage", c -> c.advice(rateLimiterRequestHandlerAdvice()))
         .get();

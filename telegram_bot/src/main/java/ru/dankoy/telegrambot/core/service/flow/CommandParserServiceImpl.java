@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.exceptions.BotCommandFlowException;
 import ru.dankoy.telegrambot.core.exceptions.BotFlowException;
