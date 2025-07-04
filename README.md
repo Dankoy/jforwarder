@@ -71,6 +71,9 @@ that has been published after last sent coub to chat.
    > Community subscriptions:    
    1: animals-pets weekly
 
+> [!NOTE]
+> If you have questions about running this utility then feel free to ask it in [github discusstions](https://github.com/Dankoy/jforwarder/discussions) or in [discord server](https://discord.gg/kDTumB6fEk)
+
 ## Where to find channel identification?
 
 Open coub channel in browser. Find the last word in URL. Use it.
