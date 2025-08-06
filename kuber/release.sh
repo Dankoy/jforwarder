@@ -68,7 +68,7 @@ function main() {
     ## Make deployments from template files
 
     # find templates without extension and folder
-    templates_without_extension=($(find ./$TEMPLATE_DIR -type f -name "*.template" -exec basename {} .template ';'))
+    templates_without_extension=($(find ./"$TEMPLATE_DIR" -type f -name "*.template" -exec basename {} .template ';'))
 
     for template in "${templates_without_extension[@]}"; do
         printf "Processing %s\n" "$template"

@@ -31,7 +31,9 @@ application:
 #      coubs-consumer: # for handlers in one listener
 #        group-id: "coubs-consumer-group"
 #        client-id: "coubs-consumer-id"
-
+  logs:
+    loki:
+      url: ${LOKI_URL:http://loki-gateway.monitoring/loki/api/v1/push}
 
 spring:
   application:
