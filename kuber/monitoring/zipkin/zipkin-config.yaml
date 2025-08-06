@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zipkin-config
+data:
+  STORAGE_TYPE: cassandra3
+  CASSANDRA_ENSURE_SCHEMA: "false"
+  CASSANDRA_CONTACT_POINTS: "zipkin-cassandra"

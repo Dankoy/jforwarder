@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zipkin-cassandra
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin-cassandra
+  template:
+    metadata:
+      labels:
+        app: zipkin-cassandra
+    spec:
+      containers:
+        - name: zipkin-cassandra
+          image: ghcr.io/openzipkin/zipkin-cassandra:3.5.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9042
+          volumeMounts:
+            - mountPath: /var/lib/cassandra
+              name: zipkin-cassandra-pv
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 100m
+              memory: 512Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: zipkin-cassandra-pv
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: 2Gi

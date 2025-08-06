@@ -1,0 +1,247 @@
+
+metaMonitoring:
+  serviceMonitor:
+    enabled: false
+    labels:
+      release: kube-prometheus-stack
+
+useExternalConfig: false
+global:
+  extraEnvFrom:
+    - secretRef:
+        name: mimir-secret
+  podAnnotations:
+    bucketSecretVersion: "0"
+
+mimir:
+  structuredConfig:
+    common:
+      storage:
+        backend: s3
+        s3:
+          access_key_id: ${MINIO_ACCESS_KEY_ID}
+          secret_access_key: ${MINIO_SECRET_ACCESS_KEY}
+          bucket_name: ${MINIO_BUCKET_NAME}
+          endpoint: ${MINIO_ENDPOINT} #minio.minio:443
+          insecure: false
+          http:
+            insecure_skip_verify: true
+    blocks_storage:
+      backend: s3
+      storage_prefix: blocks # used prefix in one bucket mimir
+      bucket_store:
+        sync_dir: /data/tsdb-sync
+      tsdb:
+        dir: /data/tsdb
+      # s3:
+      #   access_key_id: k
+      #   bucket_name: mimir-blocks
+      #   endpoint: minio.minio:443
+      #   insecure: false
+      #   secret_access_key: pass
+      #   http:
+      #     insecure_skip_verify: true
+    ruler_storage:
+      backend: s3
+      storage_prefix: ruler
+      # s3:
+      #   access_key_id: k
+      #   bucket_name: mimir-ruler
+      #   endpoint: minio.minio:443
+      #   insecure: false
+      #   secret_access_key: pass
+      #   http:
+      #     insecure_skip_verify: true
+    usage_stats:
+      enabled: false
+      installation_mode: helm
+    compactor:
+      data_dir: /data/tsdb
+    multitenancy_enabled: false
+    frontend:
+      log_queries_longer_than: 10s
+    ingester:
+      instance_limits:
+        max_ingestion_rate: 0
+      ring:
+        final_sleep: 0s
+        num_tokens: 512
+    ingester_client:
+      grpc_client_config:
+        max_recv_msg_size: 104857600
+        max_send_msg_size: 104857600
+    server:
+      log_level: info
+      grpc_server_max_concurrent_streams: 1000
+      grpc_server_max_recv_msg_size: 104857600
+      grpc_server_max_send_msg_size: 104857600
+    limits:
+      ingestion_rate: 200000
+      ingestion_burst_size: 500000
+      max_global_series_per_metric: 0
+      max_global_series_per_user: 150000
+      max_label_names_per_series: 400
+      align_queries_with_step: true
+      compactor_blocks_retention_period: 200d
+    memberlist:
+      abort_if_cluster_join_fails: false
+      compression_enabled: false
+
+# these configs should not have comments in settings
+runtimeConfig:
+  ingester_limits: # limits that each ingester replica enforces
+    max_ingestion_rate: 40000
+    max_series: 1500000
+    max_tenants: 1000
+    max_inflight_push_requests: 30000
+  distributor_limits: # limits that each distributor replica enforces
+    max_ingestion_rate: 60000
+    max_inflight_push_requests: 30000
+    max_inflight_push_requests_bytes: 50000000
+  overrides:
+    jforwarder: # prometheus should add this header for tenant
+      ingestion_tenant_shard_size: 9
+      max_global_series_per_user: 2000000
+      max_fetched_series_per_query: 100000
+      ingestion_rate: 250000
+      ingestion_burst_size: 500000
+    anonymous: # prometheus should add this header for tenant
+      ingestion_tenant_shard_size: 9
+      max_global_series_per_user: 2000000
+      max_fetched_series_per_query: 100000
+      ingestion_rate: 250000
+      ingestion_burst_size: 500000
+
+
+alertmanager:
+  enabled: false
+
+compactor:
+  persistentVolume:
+    size: 2Gi
+    enabled: true
+  resources:
+    limits:
+      memory: 256Gi
+    requests:
+      cpu: 80m
+      memory: 128Mi
+
+distributor:
+  replicas: 1
+  resources:
+    limits:
+      memory: 256Gi
+    requests:
+      cpu: 80m
+      memory: 128Mi
+
+ingester:
+  persistentVolume:
+    size: 20Gi
+    enabled: true
+  replicas: 2
+  resources:
+    limits:
+      memory: 512Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  topologySpreadConstraints: {}
+  affinity: { }
+
+  zoneAwareReplication:
+    enabled: false
+    topologyKey: 'kubernetes.io/hostname'
+
+admin-cache:
+  enabled: false
+  replicas: 1
+
+chunks-cache:
+  enabled: false
+  replicas: 1
+
+index-cache:
+  enabled: false
+  replicas: 1
+
+metadata-cache:
+  enabled: false
+  replicas: 1
+
+results-cache:
+  enabled: false
+  replicas: 1
+
+minio:
+  enabled: false
+
+overrides_exporter:
+  replicas: 1
+  resources:
+    limits:
+      memory: 128Mi
+    requests:
+      cpu: 60m
+      memory: 100Mi
+
+querier:
+  replicas: 1
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+query_frontend:
+  replicas: 1
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 80m
+      memory: 100Mi
+
+ruler:
+  replicas: 1
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 80m
+      memory: 100Mi
+
+store_gateway:
+  zoneAwareReplication:
+    enabled: false
+    topologyKey: 'kubernetes.io/hostname'
+
+nginx:
+  replicas: 1
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 80m
+      memory: 100Mi
+
+# Grafana Enterprise Metrics feature related
+admin_api:
+  replicas: 1
+  resources:
+    limits:
+      memory: 128Mi
+    requests:
+      cpu: 80m
+      memory: 64Mi
+
+gateway:
+  replicas: 1
+  resources:
+    limits:
+      memory: 200Mi
+    requests:
+      cpu: 80m
+      memory: 100Mi

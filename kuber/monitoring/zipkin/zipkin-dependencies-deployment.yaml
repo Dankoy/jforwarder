@@ -1,0 +1,29 @@
+breakit.notneededfornow
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zipkin-dependencies
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zipkin-dependencies
+  template:
+    metadata:
+      labels:
+        app: zipkin-dependencies
+    spec:
+      containers:
+        - name: zipkin-dependencies
+          image: openzipkin/zipkin-dependencies:3.2.1
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: zipkin-config
+          resources:
+            requests:
+              cpu: 80m
+              memory: 100Mi
+            limits:
+              cpu: 150m
+              memory: 200Mi
