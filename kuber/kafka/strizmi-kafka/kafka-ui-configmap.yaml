@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-ui-config
+data:
+  kafka.clusters.0.bootstrapServers: my-cluster-kafka-bootstrap:9092
+  kafka.clusters.0.schemaRegistry: http://kafka-schema-registry:8081
+  kafka.clusters.0.defaultValueSerde: String # default value serde
+  kafka.clusters.0.serde.0.name: SchemaRegistry # specific serde 
+  kafka.clusters.0.serde.0.topicValuesPattern: ".*-protobuf" # apply specific serde to topic

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: telegram-chat-service
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack # matches kube-prometheus-stack release label
+spec:
+  namespaceSelector:
+    matchNames:
+    - jforwarder # namespace where the service is located
+  selector:
+    matchLabels:
+      app: telegram-chat-service-service # service label to match
+  endpoints:
+  - targetPort: 8088
+    path: /actuator/prometheus
+    interval: 15s

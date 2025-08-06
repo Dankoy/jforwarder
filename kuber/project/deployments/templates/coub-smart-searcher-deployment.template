@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coub-smart-searcher-app
+  labels:
+    app: coub-smart-searcher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: coub-smart-searcher
+  template:
+    metadata:
+      labels:
+        app: coub-smart-searcher
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: coub-smart-searcher
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8086
+          envFrom:
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: coub-smart-searcher-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi

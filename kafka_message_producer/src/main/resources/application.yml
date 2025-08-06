@@ -13,7 +13,10 @@ application:
         client-id: "coubs-producer" # custom props configuration in factory
     schema-registry:
       url: ${SCHEMA_REGISTRY:http://localhost:9081}
-
+  logs:
+    loki:
+      url: ${LOKI_URL:http://loki-gateway.monitoring/loki/api/v1/push}
+    
 spring:
   application:
     name: kafka-message-producer

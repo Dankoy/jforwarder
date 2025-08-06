@@ -1,0 +1,1002 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    grafana_dashboard: "1"
+  name: spring-boot-dashboard-configmap
+data:
+  spring-boot-dashboard.json: |-
+    {
+      "graphTooltip": 0,
+      "panels": [ {
+        "timeFrom": "24h",
+        "pluginVersion": "9.1.7",
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "reduceOptions": {
+            "values": false,
+            "fields": "",
+            "calcs": [ "lastNotNull" ]
+          },
+          "textMode": "auto"
+        },
+        "id": 4,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              } ]
+            },
+            "unit": "short"
+          },
+          "overrides": [ ]
+        },
+        "title": "Total Requests",
+        "type": "stat",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "",
+          "range": true,
+          "expr": "sum(http_server_requests_seconds_count{application=\"$app_name\", uri!=\"/actuator/prometheus\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 4,
+          "h": 6,
+          "x": 0,
+          "y": 0
+        }
+      }, {
+        "timeFrom": "24h",
+        "pluginVersion": "9.1.7",
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "reduceOptions": {
+            "values": false,
+            "fields": "",
+            "calcs": [ "lastNotNull" ]
+          },
+          "textMode": "value_and_name"
+        },
+        "id": 16,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              } ]
+            },
+            "unit": "short"
+          },
+          "overrides": [ ]
+        },
+        "title": "Requests Count",
+        "type": "stat",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{method}} {{uri}}",
+          "range": true,
+          "expr": "sum by(uri) (http_server_requests_seconds_count{application=\"$app_name\", uri!=\"/actuator/prometheus\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 8,
+          "h": 6,
+          "x": 4,
+          "y": 0
+        }
+      }, {
+        "pluginVersion": "9.1.7",
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "minVizHeight": 10,
+          "orientation": "horizontal",
+          "minVizWidth": 0,
+          "reduceOptions": {
+            "values": false,
+            "fields": "",
+            "calcs": [ "lastNotNull" ]
+          },
+          "displayMode": "lcd",
+          "showUnfilled": true
+        },
+        "id": 6,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "unit": "s",
+            "color": {
+              "mode": "continuous-GrYlRd"
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "Requests Average Duration",
+        "type": "bargauge",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{method}} {{uri}}",
+          "range": true,
+          "expr": "sum by(uri)(http_server_requests_seconds_sum{application=\"$app_name\"}) / sum by(uri)(http_server_requests_seconds_count{application=\"$app_name\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 12,
+          "h": 6,
+          "x": 12,
+          "y": 0
+        }
+      }, {
+        "timeFrom": "24h",
+        "pluginVersion": "9.1.7",
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "colorMode": "value",
+          "graphMode": "area",
+          "reduceOptions": {
+            "values": false,
+            "fields": "",
+            "calcs": [ "lastNotNull" ]
+          },
+          "textMode": "auto"
+        },
+        "id": 22,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "color": {
+              "mode": "thresholds"
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "Total Exceptions",
+        "type": "stat",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "",
+          "range": true,
+          "expr": "sum(http_server_requests_seconds_count{application=\"$app_name\", outcome=\"SERVER_ERROR\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 4,
+          "h": 7,
+          "x": 0,
+          "y": 6
+        }
+      }, {
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 18,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "red",
+                "value": null
+              }, {
+                "color": "green",
+                "value": 0.8
+              } ]
+            },
+            "unit": "percentunit",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "area"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "axisSoftMax": 1,
+              "spanNulls": false,
+              "drawStyle": "line",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "Percent of 2xx Requests",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{path}}",
+          "range": true,
+          "expr": "sum by(uri) (http_server_requests_seconds_count{application=\"$app_name\", status=~\"2.*\", uri!=\"/actuator/prometheus\"}) / sum by(uri) (http_server_requests_seconds_count{application=\"$app_name\", uri!=\"/actuator/prometheus\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 10,
+          "h": 7,
+          "x": 4,
+          "y": 6
+        }
+      }, {
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 20,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 0.1
+              } ]
+            },
+            "unit": "percentunit",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "area"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "axisSoftMax": 1,
+              "spanNulls": false,
+              "drawStyle": "line",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "Percent of 5xx Requests",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{uri}}",
+          "range": true,
+          "expr": "sum by(uri) (http_server_requests_seconds_count{application=\"$app_name\", status=~\"5.*\", uri!=\"/actuator/prometheus\"}) / sum by(uri) (http_server_requests_seconds_count{application=\"$app_name\", uri!=\"/actuator/prometheus\"})",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 10,
+          "h": 7,
+          "x": 14,
+          "y": 6
+        }
+      }, {
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 8,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "unit": "s",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "off"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "spanNulls": false,
+              "drawStyle": "line",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "PR 99 Requests Duration",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{uri}}",
+          "range": true,
+          "expr": "histogram_quantile(.99,sum(rate(http_server_requests_seconds_bucket{application=\"$app_name\", uri!=\"/actuator/prometheus\"}[1m])) by(uri, le))",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 8,
+          "h": 8,
+          "x": 0,
+          "y": 13
+        }
+      }, {
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 23,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "unit": "s",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "off"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "spanNulls": false,
+              "drawStyle": "line",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "PR 95 Requests Duration",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{uri}}",
+          "range": true,
+          "expr": "histogram_quantile(.95,sum(rate(http_server_requests_seconds_bucket{application=\"$app_name\", uri!=\"/actuator/prometheus\"}[1m])) by(uri, le))",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 8,
+          "h": 8,
+          "x": 8,
+          "y": 13
+        }
+      }, {
+        "datasource": {
+          "uid": "${DS_PROMETHEUS}",
+          "type": "prometheus"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 12,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "unit": "reqps",
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "off"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "spanNulls": false,
+              "drawStyle": "line",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "none",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ ]
+        },
+        "title": "Request Per Sec",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "legendFormat": "{{uri}}",
+          "range": true,
+          "expr": "sum by(uri)(rate(http_server_requests_seconds_count{application=\"$app_name\"}[1m]))",
+          "interval": "",
+          "refId": "A"
+        } ],
+        "gridPos": {
+          "w": 8,
+          "h": 8,
+          "x": 16,
+          "y": 13
+        }
+      }, {
+        "pluginVersion": "8.4.3",
+        "datasource": {
+          "uid": "${DS_LOKI}",
+          "type": "loki"
+        },
+        "options": {
+          "legend": {
+            "showLegend": true,
+            "placement": "bottom",
+            "calcs": [ ],
+            "displayMode": "list"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "id": 14,
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [ ],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [ {
+                "color": "green",
+                "value": null
+              }, {
+                "color": "red",
+                "value": 80
+              } ]
+            },
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisPlacement": "auto",
+              "axisCenteredZero": false,
+              "fillOpacity": 0,
+              "showPoints": "auto",
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "thresholdsStyle": {
+                "mode": "off"
+              },
+              "axisLabel": "",
+              "hideFrom": {
+                "legend": false,
+                "viz": false,
+                "tooltip": false
+              },
+              "pointSize": 5,
+              "axisColorMode": "text",
+              "spanNulls": false,
+              "drawStyle": "bars",
+              "gradientMode": "none",
+              "barAlignment": 0,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "stacking": {
+                "mode": "normal",
+                "group": "A"
+              }
+            }
+          },
+          "overrides": [ {
+            "matcher": {
+              "options": "ERROR",
+              "id": "byName"
+            },
+            "properties": [ {
+              "id": "color",
+              "value": {
+                "fixedColor": "red",
+                "mode": "fixed"
+              }
+            } ]
+          }, {
+            "matcher": {
+              "options": "INFO",
+              "id": "byName"
+            },
+            "properties": [ {
+              "id": "color",
+              "value": {
+                "fixedColor": "green",
+                "mode": "fixed"
+              }
+            } ]
+          }, {
+            "matcher": {
+              "options": "CRITICAL",
+              "id": "byName"
+            },
+            "properties": [ {
+              "id": "color",
+              "value": {
+                "fixedColor": "purple",
+                "mode": "fixed"
+              }
+            } ]
+          } ]
+        },
+        "title": "Log Type Rate",
+        "type": "timeseries",
+        "targets": [ {
+          "datasource": {
+            "uid": "${DS_LOKI}",
+            "type": "loki"
+          },
+          "editorMode": "code",
+          "legendFormat": "{{level}}",
+          "expr": "sum by(level) (rate({app=~\".+\"} | pattern `<date>:<time> <_> [<app>,<trace_id>,<span_id>] <msg>`  | level != \"\" |= \"$log_keyword\" [1m]))",
+          "refId": "A",
+          "queryType": "range"
+        } ],
+        "gridPos": {
+          "w": 6,
+          "h": 9,
+          "x": 0,
+          "y": 21
+        }
+      }, {
+        "pluginVersion": "8.4.3",
+        "datasource": {
+          "uid": "${DS_LOKI}",
+          "type": "loki"
+        },
+        "options": {
+          "dedupStrategy": "none",
+          "showLabels": false,
+          "showCommonLabels": false,
+          "enableLogDetails": true,
+          "showTime": false,
+          "sortOrder": "Descending",
+          "prettifyLogMessage": false,
+          "wrapLogMessage": true
+        },
+        "id": 2,
+        "title": "Log of All Spring Boot Apps",
+        "type": "logs",
+        "targets": [ {
+          "hide": false,
+          "datasource": {
+            "uid": "${DS_LOKI}",
+            "type": "loki"
+          },
+          "editorMode": "code",
+          "expr": "{app=~\".+\"} | pattern `<date>:<time> <_> [<app>,<trace_id>,<span_id>] <msg>` |= \"$log_keyword\"",
+          "refId": "A",
+          "queryType": "range"
+        } ],
+        "gridPos": {
+          "w": 18,
+          "h": 9,
+          "x": 6,
+          "y": 21
+        }
+      } ],
+      "timezone": "",
+      "annotations": {
+        "list": [ {
+          "hide": true,
+          "datasource": {
+            "uid": "grafana",
+            "type": "datasource"
+          },
+          "enable": true,
+          "builtIn": 1,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard",
+          "target": {
+            "matchAny": false,
+            "limit": 100,
+            "type": "dashboard",
+            "tags": [ ]
+          }
+        } ]
+      },
+      "description": "Observe Spring Boot application with three pillars of observability: Traces (Tempo), Metrics (Prometheus), Logs (Loki) on Grafana through OpenTelemetry and OpenMetrics.",
+      "title": "Spring Boot Observability",
+      "templating": {
+        "list": [ {
+          "hide": 0,
+          "regex": "",
+          "query": "loki",
+          "name": "DS_LOKI",
+          "options": [ ],
+          "refresh": 1,
+          "label": "datasource",
+          "type": "datasource"
+        }, {
+          "hide": 0,
+          "regex": "",
+          "query": "prometheus",
+          "name": "DS_PROMETHEUS",
+          "options": [ ],
+          "refresh": 1,
+          "label": "datasource",
+          "type": "datasource"
+        }, {
+          "query": {
+            "query": "label_values(application)",
+            "refId": "StandardVariableQuery"
+          },
+          "refresh": 1,
+          "includeAll": false,
+          "label": "Application Name",
+          "sort": 0,
+          "type": "query",
+          "multi": false,
+          "current": { },
+          "hide": 0,
+          "regex": "",
+          "datasource": {
+            "uid": "${DS_PROMETHEUS}",
+            "type": "prometheus"
+          },
+          "name": "app_name",
+          "options": [ ],
+          "definition": "label_values(application)",
+          "skipUrlSync": false
+        }, {
+          "current": {
+            "text": "",
+            "value": "",
+            "selected": false
+          },
+          "hide": 0,
+          "query": "",
+          "name": "log_keyword",
+          "options": [ {
+            "text": "",
+            "value": "",
+            "selected": true
+          } ],
+          "description": "query with keyword",
+          "label": "Log Query",
+          "skipUrlSync": false,
+          "type": "textbox"
+        } ]
+      },
+      "uid": "dLsDQIUnzb",
+      "gnetId": 17175,
+      "weekStart": "",
+      "fiscalYearStartMonth": 0,
+      "links": [ ],
+      "id": null,
+      "schemaVersion": 37,
+      "__inputs": [ {
+        "pluginName": "Prometheus",
+        "pluginId": "prometheus",
+        "name": "DS_PROMETHEUS",
+        "description": "",
+        "label": "Prometheus",
+        "type": "datasource"
+      }, {
+        "pluginName": "Loki",
+        "pluginId": "loki",
+        "name": "DS_LOKI",
+        "description": "",
+        "label": "Loki",
+        "type": "datasource"
+      } ],
+      "editable": true,
+      "refresh": "5s",
+      "version": 2,
+      "tags": [ ],
+      "__elements": { },
+      "liveNow": false,
+      "timepicker": { },
+      "__requires": [ {
+        "name": "Bar gauge",
+        "id": "bargauge",
+        "type": "panel",
+        "version": ""
+      }, {
+        "name": "Grafana",
+        "id": "grafana",
+        "type": "grafana",
+        "version": "9.1.7"
+      }, {
+        "name": "Logs",
+        "id": "logs",
+        "type": "panel",
+        "version": ""
+      }, {
+        "name": "Loki",
+        "id": "loki",
+        "type": "datasource",
+        "version": "1.0.0"
+      }, {
+        "name": "Prometheus",
+        "id": "prometheus",
+        "type": "datasource",
+        "version": "1.0.0"
+      }, {
+        "name": "Stat",
+        "id": "stat",
+        "type": "panel",
+        "version": ""
+      }, {
+        "name": "Time series",
+        "id": "timeseries",
+        "type": "panel",
+        "version": ""
+      } ],
+      "style": "dark",
+      "time": {
+        "from": "now-5m",
+        "to": "now"
+      }
+    }

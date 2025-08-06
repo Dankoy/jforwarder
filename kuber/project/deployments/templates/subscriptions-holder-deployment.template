@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: subscriptions-holder-app
+  labels:
+    app: subscriptions-holder
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriptions-holder
+  template:
+    metadata:
+      labels:
+        app: subscriptions-holder
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: subscriptions-holder
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          envFrom:
+          - secretRef:
+             name: subscriptions-holder-secret
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: subscriptions-holder-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+              

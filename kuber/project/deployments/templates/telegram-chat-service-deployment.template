@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-chat-service-app
+  labels:
+    app: telegram-chat-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-chat-service
+  template:
+    metadata:
+      labels:
+        app: telegram-chat-service
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: telegram-chat-service
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8088
+          envFrom:
+          - secretRef:
+             name: telegram-chat-service-secret
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: telegram-chat-service-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+              

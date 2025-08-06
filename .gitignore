@@ -48,3 +48,9 @@ coub_connector
 
 ### vscode liquibase ###
 data/liquibase
+
+### kuber ###
+kuber/.all_secrets
+kuber/project/deployments/*.yaml
+# Ignore .secret-stack folder
+.secret-stack

@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: monitoring-ingress
+  labels:
+    app.kubernetes.io/name: monitoring-ingress
+spec:
+  rules:
+  - host: grafana
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: kube-prometheus-stack-grafana 
+            port: 
+              number: 80
+  - host: zipkin
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: zipkin
+            port: 
+              number: 9411
