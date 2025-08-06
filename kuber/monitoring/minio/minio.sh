@@ -11,6 +11,8 @@ helm install \
   --create-namespace \
   operator minio-operator/operator
 
+sleep 30
+
 helm install \
 --namespace minio \
 --create-namespace \
