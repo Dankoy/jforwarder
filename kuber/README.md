@@ -146,6 +146,38 @@ Services should have clusterip type
 
 In etc hosts should be added hostnames to access services
 
+## k3d remote access
+
+To access k3d cluster from remote machine, you have to use ssh tunneling mechanism. Because k3d doesn't allow users to access it remotely. Tried to change hostIP in k3d config file to 0.0.0.0 and give it a hostname. Nothing worked. 
+
+So to access k3d cluster from remote it is necessary:
+
+Write in /etc/hosts file (same stuff as for local cluster): 
+
+```text
+127.0.0.1 grafana
+127.0.0.1 zipkin
+127.0.0.1 kubernetes-dashboard
+```
+
+Then make ssh tunnel to host:
+
+```shell
+ssh -L 8888:localhost:8443 user@remote_ip
+```
+
+where 
+8888 - port on local machine
+8443 - port on remote machine
+
+Then it should be possible to connect to dashboard, grafana and etc in browser with `https://grafana:8888/`and `https://kubernetes-dashboard:8888/`
+
+
+## Remote access with kubectl 
+
+Same stuff. Do ssh tunneling, but for port 6445
+
+
 ## Install dashboard
 
 ```shell
