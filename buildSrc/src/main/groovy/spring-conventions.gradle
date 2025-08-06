@@ -16,6 +16,10 @@ dependencies {
 	// actuator
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+	// logger
+	implementation 'org.springframework.boot:spring-boot-starter-logging'
+	testImplementation 'org.springframework.boot:spring-boot-starter-logging'
+
 	// development
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
