@@ -10,6 +10,23 @@ sleep 30 # wait for cluster to be ready
 
 printf "\n------- Kubernetes cluster created and ready ------- \n\n"
 
+## Add repos
+
+printf "\n------- Adding repos ------- \n\n"
+
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+
+helm repo add strimzi https://strimzi.io/charts/
+
+helm repo add prometheus-community \
+    https://prometheus-community.github.io/helm-charts
+
+helm repo add grafana https://grafana.github.io/helm-charts
+
+printf "\n------- Adding repos complete ------- \n\n"
+
+sleep 30
+
 ## setup cluster namespaces
 
 printf "\n------- Setup namespaces ------- \n\n"
