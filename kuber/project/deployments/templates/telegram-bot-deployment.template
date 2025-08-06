@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot-app
+  labels:
+    app: telegram-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: telegram-bot
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8084
+          envFrom:
+          - secretRef:
+             name: telegram-bot-secret
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: telegram-bot-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+              

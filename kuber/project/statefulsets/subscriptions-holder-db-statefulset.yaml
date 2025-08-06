@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: subscriptions-holder-postgres-db
+  labels:
+    app: subscriptions-holder-postgres-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: subscriptions-holder-postgres-db
+  serviceName: subscriptions-holder-postgres-db
+  template:
+    metadata:
+      labels:
+        app: subscriptions-holder-postgres-db
+    spec:
+      containers:
+        - image: "postgres:16.2"
+          name: subscriptions-holder-postgres-db
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: subscriptions-holder-pv-for-pg
+          ports:
+            - containerPort: 5432
+          envFrom:
+          - secretRef:
+             name: subscriptions-holder-db-secret
+          resources:
+            requests:
+              cpu: 60m
+              memory: 128Mi
+            limits:
+              cpu: 100m
+              memory: 256Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: subscriptions-holder-pv-for-pg
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: 4Gi
+              

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spring-gateway
+  namespace: jforwarder
+  labels:
+    app: spring-gateway-service
+spec:
+  type: ClusterIP
+  selector:
+    app: spring-gateway
+  ports:
+    - port: 8760
+      targetPort: 8760

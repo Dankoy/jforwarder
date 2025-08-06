@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-message-producer-app
+  labels:
+    app: kafka-message-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-message-producer
+  template:
+    metadata:
+      labels:
+        app: kafka-message-producer
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: kafka-message-producer
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: kafka-message-producer-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi

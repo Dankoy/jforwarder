@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-message-consumer-app
+  labels:
+    app: kafka-message-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-message-consumer
+  template:
+    metadata:
+      labels:
+        app: kafka-message-consumer
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: kafka-message-consumer
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8085
+          envFrom:
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: kafka-message-consumer-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi

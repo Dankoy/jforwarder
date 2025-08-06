@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-eureka-registry-app
+  labels:
+    app: spring-eureka-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-eureka-registry
+  template:
+    metadata:
+      labels:
+        app: spring-eureka-registry
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: spring-eureka-registry
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8761
+          envFrom:
+          - configMapRef:
+              name: spring-eureka-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi

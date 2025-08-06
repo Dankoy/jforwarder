@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: t-coubs-initiator-app
+  labels:
+    app: t-coubs-initiator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: t-coubs-initiator
+  template:
+    metadata:
+      labels:
+        app: t-coubs-initiator
+    spec:
+      containers:
+        - image: "__REGISTRY__/__USER__/__IMAGE__:__TAG__"
+          name: t-coubs-initiator
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          envFrom:
+          - configMapRef:
+              name: default-config
+          - configMapRef:
+              name: t-coubs-initiator-config
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi

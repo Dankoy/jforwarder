@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: telegram-chat-service-pv-for-pg
+  labels:
+    type: local
+spec:
+  capacity:
+    storage: 4Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+    path: /data/tg-chat-service-db/postgresql
