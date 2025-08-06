@@ -15,7 +15,9 @@ application:
   scheduler:
     cron: "0 0 0 * * *" # every midnight
     retention: 14 # in days
-
+  logs:
+    loki:
+      url: ${LOKI_URL:http://loki-gateway.monitoring/loki/api/v1/push}
 eureka:
   client:
     registerWithEureka: true
