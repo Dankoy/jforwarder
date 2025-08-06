@@ -2,8 +2,6 @@
 
 ## creates namespaces for development and production environments
 
-kubectl config use-context minio
-
 kubectl apply -f monitoring/minio/minio-env-secret.yaml -n minio
 kubectl apply -f monitoring/minio/minio-pv.yaml -n minio
 

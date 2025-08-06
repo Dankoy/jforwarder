@@ -19,8 +19,6 @@ helm install loki grafana/loki -f monitoring/loki/values.yaml -n monitoring
 
 sleep 60
 
-kubectl config use-context monitoring
-
 kubectl apply -f monitoring/grafana/dashboards -n monitoring
 kubectl apply -f monitoring/grafana/secrets -n monitoring
 kubectl apply -f monitoring/ingress/ingress.yaml -n monitoring

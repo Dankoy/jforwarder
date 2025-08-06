@@ -17,6 +17,6 @@ kubectl -n kube-system create token admin-user
 
 #kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard-kong-proxy 10443:443 --address 0.0.0.0 &
 
-kubectl apply -f dashboard/ingress/ingress.yaml
+kubectl apply -f dashboard/ingress/ingress.yaml -n kubernetes-dashboard
 
 
