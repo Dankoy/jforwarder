@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <include resource="org/springframework/boot/logging/logback/base.xml" />
-  <springProperty scope="context" name="appName" source="spring.application.name" />
+  <property resource="application.yml" />
+  <springProperty scope="context" name="appName" source="spring.application.name"/>
+  <springProperty scope="context" name="loki_url" source="application.logs.loki.url"/>
+
+  <property name="LOKI_URL" value="${loki_url}"/>
 
   <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
     <http>
-      <url>http://grafana-loki:3100/loki/api/v1/push</url>
-      <!--      <url>http://localhost:3100/loki/api/v1/push</url>-->
+      <url>${LOKI_URL}</url>
+      <!-- <url>http://grafana-loki:3100/loki/api/v1/push</url> -->
+<!--      <url>http://localhost:3100/loki/api/v1/push</url>-->
     </http>
     <format>
       <label>
@@ -20,6 +25,6 @@
   </appender>
 
   <root level="INFO">
-    <appender-ref ref="LOKI" />
+    <appender-ref ref="LOKI"/>
   </root>
 </configuration>
