@@ -2,9 +2,34 @@
 
 ## setup cluster
 
+OPTSTRING=":c:"
+
+while getopts ${OPTSTRING} opt; do
+  case ${opt} in
+    c)
+      printf "k3d cluster name: %s \n" "${OPTARG}"
+      CLUSTER=${OPTARG}
+      ;;
+    :)
+      printf "Option -%s requires an argument. \n" "${OPTARG}"
+      exit 1
+      ;;
+    ?)
+      printf "Invalid option: -%s. \n" "${OPTARG}"
+      exit 1
+      ;;
+  esac
+done
+
+if [ -z "$CLUSTER" ]; then
+  echo "Error: Cluster name must be provided as a command-line argument with -c"
+  exit 1
+fi
+
+
 printf "\n------- Setting up Kubernetes cluster -------  \n\n"
 
-k3d cluster create mycluster --config k3d/k3d-default.yaml
+k3d cluster create "$CLUSTER" --config k3d/k3d-default.yaml
 
 sleep 30 # wait for cluster to be ready
 
