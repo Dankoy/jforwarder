@@ -7,6 +7,7 @@ spec:
   selector:
     matchLabels:
       app: zipkin-cassandra
+  serviceName: zipkin-cassandra
   template:
     metadata:
       labels:
@@ -19,7 +20,7 @@ spec:
           ports:
             - containerPort: 9042
           volumeMounts:
-            - mountPath: /var/lib/cassandra
+            - mountPath: /cassandra/data
               name: zipkin-cassandra-pv
           resources:
             requests:
