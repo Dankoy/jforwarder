@@ -24,11 +24,11 @@ spec:
               name: zipkin-cassandra-pv
           resources:
             requests:
-              cpu: 150m
-              memory: 256Mi
+              cpu: 250m
+              memory: 300Mi
             limits:
-              cpu: 200m
-              memory: 512Mi
+              cpu: 500m
+              memory: 800Mi
   volumeClaimTemplates:
   - metadata:
       name: zipkin-cassandra-pv
