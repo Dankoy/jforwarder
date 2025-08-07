@@ -5,7 +5,7 @@ metadata:
 servers: 1
 agents: 0
 kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would resolve to 127.0.0.1)
-  hostIP: "0.0.0.0" # where the Kubernetes API will be listening on
+  hostIP: "127.0.0.1" # where the Kubernetes API will be listening on
   hostPort: "6445" # where the Kubernetes API listening port will be mapped to on your host system
 ports:
   - port: 8443:443
