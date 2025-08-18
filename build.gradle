@@ -6,7 +6,7 @@ plugins {
 }
 
 ext {
-	set("PROJECT_VERSION", "1.8.1")
+	set("PROJECT_VERSION", "1.8.2")
 }
 
 // doesn't work in build.gradle in buildSrc project
