@@ -9,6 +9,7 @@ helm repo add minio-operator https://operator.min.io
 helm install \
   --namespace minio-operator \
   --create-namespace \
+  --values monitoring/minio/operator-values.yaml \
   operator minio-operator/operator
 
 sleep 30
@@ -16,7 +17,7 @@ sleep 30
 helm install \
 --namespace minio \
 --create-namespace \
---values monitoring/minio/values.yaml \
+--values monitoring/minio/tenant-values.yaml \
 minio minio-operator/tenant
 
 
