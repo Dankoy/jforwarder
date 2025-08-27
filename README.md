@@ -104,6 +104,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 20. Kafka
 21. Kafka Schema Registry
 22. Protobuf
+23. Kubernetes
 
 ## Monitoring stack
 
