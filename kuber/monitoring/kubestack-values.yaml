@@ -1,5 +1,15 @@
 alertmanager:
   enabled: true
+  alertmanagerSpec:
+  ## AlertmanagerConfigs to be selected to merge and configure Alertmanager with.
+  ##
+    alertmanagerConfigSelector:
+      matchLabels:
+        alertmanagerConfig: alertmanager-telegram # it is the same label in the AlertmanagerConfig.
+    alertmanagerConfigMatcherStrategy:
+      type: OnNamespace # Make only one AlertmanagerConfig match alerts only from namespaces
+      # type: None # Make only one AlertmanagerConfig match all alerts
+
 
 grafana:
   enabled: true

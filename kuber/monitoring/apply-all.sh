@@ -30,6 +30,22 @@ helm install kube-prometheus-stack \
     prometheus-community/kube-prometheus-stack \
     -n monitoring --create-namespace -f monitoring/kubestack-values.yaml
 
+kubectl apply -f monitoring/alertmanager/rules -n monitoring
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n monitoring
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n jforwarder
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n kafka
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n minio
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n mimir
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n minio-operator
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n kubernetes-dashboard
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n monitoring
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n jforwarder
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n kafka
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n minio
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n mimir
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n minio-operator
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n kubernetes-dashboard
+
 kubectl apply -f monitoring/podmonitor -n monitoring
 kubectl apply -f monitoring/servicemonitor -n monitoring
 kubectl apply -f monitoring/zipkin -n monitoring

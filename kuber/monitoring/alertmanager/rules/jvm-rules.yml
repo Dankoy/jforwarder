@@ -1,0 +1,44 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+    app.kubernetes.io/instance: kube-prometheus-stack
+    release: kube-prometheus-stack
+  name: jvm-monitoring-rules
+spec:
+  groups:
+  - name: jvm-rules
+    rules:
+      - alert: FeignResponseErrorsIrate
+        expr: irate(feign_Client_http_response_code_total{status_group="5xx"}[1m]) / irate(feign_Client_http_response_code_total[1m]) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Feign client gets too many 5xx response codes
+
+      - alert: KafkaListenerFailures
+        expr: rate(spring_kafka_listener_seconds_count{result="failure"}[5m]) > 1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: Kafka listener failure
+
+      - alert: SpringCloudGatewayErrorRate
+        expr: irate(spring_cloud_gateway_requests_seconds_count{status!="OK"}[5m]) / irate(spring_cloud_gateway_requests_seconds_count[5m]) * 100 > 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Spring cloud gateway errors rate is high
+
+      - alert: SpringRepositoryErrorRate
+        expr: irate(spring_data_repository_invocations_seconds_count{state!="SUCCESS"}[2m]) / irate(spring_data_repository_invocations_seconds_count[2m]) * 100 > 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: Spring repositories errors rate is high
