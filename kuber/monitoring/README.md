@@ -47,6 +47,14 @@ Password could be applied in first deploy with secrets and linkage to it in valu
     passwordKey: admin-password
 ```
 
+## Alertmanager
+
+Alertmanager configuration is done by kind AlertmanagerConfig file. It can contain receiver. Receiver is bound to namespace by default and it is the feature. So if you want to add same receiver into multiple namespaces you should apply same file into all needed namespaces. It is possible to configure only one receiver to send all alerts with `alertmanager.alertmanagerSpec.alertmanagerConfigMatcherStrategy.type: None`, but it is not recommended. Look [here](https://github.com/prometheus-community/helm-charts/issues/4999)
+
+Rules could be applied into only one namespace, preferably monitoring.
+
+Secrets for receiver should also be applied into all necessary namespaces.
+
 ## Kafka monitoring
 
 Instructions [here](https://piotrminkowski.com/2023/11/06/apache-kafka-on-kubernetes-with-strimzi/)
