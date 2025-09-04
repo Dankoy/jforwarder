@@ -42,7 +42,6 @@ public class LogFilter implements GlobalFilter {
           log.debug("{}: {}", h, val);
         });
 
-    return chain
-        .filter(exchange);
+    return chain.filter(exchange);
   }
 }
