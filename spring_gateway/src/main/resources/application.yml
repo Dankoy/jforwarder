@@ -1,7 +1,7 @@
 application:
   logs:
     loki:
-      url: ${LOKI_URL:http://loki-gateway.monitoring/loki/api/v1/push}
+      url: ${LOKI_URL:http://localhost:3100/loki/api/v1/push}
 
 server:
   port: 8760
@@ -9,73 +9,67 @@ server:
 spring:
   application:
     name: spring-gateway
-
-#  data:
-#    redis:
-#      database: 0
-#      host: localhost
-#      port: 6379
-#      password: mypass
-#      timeout: 60000
-
+  reactor:
+    context-propagation: AUTO # tracing
   cloud:
     gateway:
-      httpclient:
-        pool:
-          type: elastic
-          max-connections: 1000
-          acquire-timeout: 80000
-          max-life-time: 300s
-          max-idle-time: 20000
-        connect-timeout: 30000
-        response-timeout: 60s
-      default-filters:
-        - name: Retry
-          args:
-            methods: GET,PUT,POST,DELETE
-            exceptions:
-              - reactor.netty.http.client.PrematureCloseException
-      discovery:
-        locator:
+      server:
+        webflux:
+          httpclient:
+            pool:
+              type: elastic
+              max-connections: 1000
+              acquire-timeout: 80000
+              max-life-time: 300s
+              max-idle-time: 20000
+            connect-timeout: 30000
+            response-timeout: 60s
+          default-filters:
+            - name: Retry
+              args:
+                methods: GET,PUT,POST,DELETE
+                exceptions:
+                  - reactor.netty.http.client.PrematureCloseException
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: coub-com
+              uri: https://coub.com/
+              predicates:
+                - Path=/cc/**
+              filters:
+                - StripPrefix=1
+                - AddRequestHeader=Accept-Encoding, 'gzip, deflate, br'
+                - AddRequestHeader=User-Agent, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0'
+            - id: spring-eureka-registry
+              uri: lb://spring-eureka-registry
+              predicates:
+                - Path=/registry/**
+              filters:
+                - StripPrefix=1
+            - id: eureka
+              uri: lb://spring-eureka-registry
+              predicates:
+                - Path=/eureka/**
+            - id: subscriptions-holder
+              uri: lb://subscriptions-holder
+              predicates:
+                - Path=/sh/**
+              filters:
+                - StripPrefix=1
+            - id: kafka-message-producer
+              uri: lb://kafka-message-producer
+              predicates:
+                - Path=/kmp/**
+              filters:
+                - StripPrefix=1
+        metrics:
           enabled: true
-          lower-case-service-id: true
-      routes:
-        - id: coub-com
-          uri: https://coub.com/
-          predicates:
-            - Path=/cc/**
-          filters:
-            - StripPrefix=1
-            - AddRequestHeader=Accept-Encoding, 'gzip, deflate, br'
-            - AddRequestHeader=User-Agent, 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/115.0'
-#            - name: RequestRateLimiter
-#              args:
-#                redis-rate-limiter.replenishRate: 2
-#                redis-rate-limiter.burstCapacity: 5
-#                redis-rate-limiter.requestedTokens: 10
-        - id: spring-eureka-registry
-          uri: lb://spring-eureka-registry
-          predicates:
-            - Path=/registry/**
-          filters:
-            - StripPrefix=1
-        - id: eureka
-          uri: lb://spring-eureka-registry
-          predicates:
-            - Path=/eureka/**
-        - id: subscriptions-holder
-          uri: lb://subscriptions-holder
-          predicates:
-            - Path=/sh/**
-          filters:
-            - StripPrefix=1
-        - id: kafka-message-producer
-          uri: lb://kafka-message-producer
-          predicates:
-            - Path=/kmp/**
-          filters:
-            - StripPrefix=1
-
+          tags:
+            path:
+              enabled: true
 info:
   app:
     name: ${spring.application.name}
@@ -105,7 +99,7 @@ management:
     health:
       show-details: always
     gateway:
-      enabled: true
+      access: read-only
   health:
     defaults:
       enabled: true
@@ -131,5 +125,11 @@ management:
 logging:
   level:
     root: INFO
+    reactor:
+      netty: INFO
+    org:
+      springframework:
+        cloud:
+          gateway: INFO
   pattern:
     level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
