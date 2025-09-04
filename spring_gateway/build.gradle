@@ -3,6 +3,7 @@ plugins {
 	id 'spring-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
+	id 'lombok-conventions'
 }
 
 group = 'ru.dankoy'
