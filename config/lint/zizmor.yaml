@@ -11,3 +11,6 @@ rules:
     ignore:
       - publish.yml
       - test.yml
+  artipacked:
+    ignore:
+      - rebase_dependencies.yml
