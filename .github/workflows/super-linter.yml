@@ -47,6 +47,8 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_JSON_PRETTIER: false
           PROTOBUF_CONFIG_FILE: protolint.yml
+          GITHUB_ACTIONS_CONFIG_FILE: actionlint.yml
+          GITHUB_ACTIONS_ZIZMOR_CONFIG_FILE: zizmor.yaml
           FILTER_REGEX_EXCLUDE: "gradlew"
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
