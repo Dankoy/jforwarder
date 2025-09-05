@@ -1,4 +1,9 @@
 rules:
   unpinned-uses:
     ignore:
-      - '*.yml'
+      - super-linter.yml
+      - codeql-advanced.yml
+      - publish.yml
+      - super-linter.yml
+      - rebase_dependencies.yml
+      - test.yml
