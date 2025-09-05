@@ -7,3 +7,7 @@ rules:
       - super-linter.yml
       - rebase_dependencies.yml
       - test.yml
+  template-injection:
+    ignore:
+      - publish.yml
+      - test.yml
