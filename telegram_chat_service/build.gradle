@@ -20,7 +20,7 @@ plugins {
 	id 'spring-feign-conventions'
 	id 'lombok-conventions'
 	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
-	id "org.jooq.jooq-codegen-gradle" version "3.19.27" // update only if starter updated jooq version
+	id "org.jooq.jooq-codegen-gradle" version "3.20.8" // update only if starter updated jooq version
 	id 'org.liquibase.gradle' version '3.0.2'
 }
 
