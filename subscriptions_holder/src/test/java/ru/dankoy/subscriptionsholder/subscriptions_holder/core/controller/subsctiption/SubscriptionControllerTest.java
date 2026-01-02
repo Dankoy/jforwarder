@@ -14,11 +14,11 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller.subscription.SubscriptionController;
@@ -39,7 +39,7 @@ class SubscriptionControllerTest implements CommunitySubMaker, ChatMaker, Commun
 
   @Autowired private ObjectMapper objectMapper;
 
-  @MockBean private SubscriptionService subscriptionService;
+  @MockitoBean private SubscriptionService subscriptionService;
 
   @DisplayName("updatePermalink should correctly update")
   @Test

@@ -14,7 +14,7 @@ import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfigurati
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller.channel.ChannelController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller.community.CommunityController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.controller.order.OrderController;
@@ -58,7 +58,7 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.type.Type
     exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
 class SubscriptionsHolderApplicationTests {
 
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15-alpine");
+  static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:15-alpine");
 
   @BeforeAll
   static void beforeAll() {
