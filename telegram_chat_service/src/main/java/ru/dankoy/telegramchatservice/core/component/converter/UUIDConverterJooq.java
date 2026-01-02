@@ -2,8 +2,8 @@ package ru.dankoy.telegramchatservice.core.component.converter;
 
 import java.util.Objects;
 import java.util.UUID;
-import org.jetbrains.annotations.NotNull;
 import org.jooq.Converter;
+import org.jspecify.annotations.NonNull;
 import ru.dankoy.telegramchatservice.core.exceptions.JooqConverterException;
 
 public class UUIDConverterJooq implements Converter<String, UUID> {
@@ -25,12 +25,12 @@ public class UUIDConverterJooq implements Converter<String, UUID> {
   }
 
   @Override
-  public @NotNull Class<String> fromType() {
+  public @NonNull Class<String> fromType() {
     return String.class;
   }
 
   @Override
-  public @NotNull Class<UUID> toType() {
+  public Class<UUID> toType() {
     return UUID.class;
   }
 

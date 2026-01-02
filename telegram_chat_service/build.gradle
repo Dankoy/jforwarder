@@ -237,6 +237,7 @@ dependencies {
 
 	// jooq
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jooq-test'
 	implementation 'org.jooq:jooq-codegen'
 	implementation 'org.jooq:jooq-meta'
 	// jooqCodegen 'org.jooq:jooq-meta-extensions-liquibase:3.20.1'
@@ -267,10 +268,11 @@ dependencies {
 
 	// data
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	testImplementation ("org.testcontainers:junit-jupiter")
-	testImplementation ('org.testcontainers:postgresql')
+	testImplementation ("org.testcontainers:testcontainers-junit-jupiter")
+	testImplementation ('org.testcontainers:testcontainers-postgresql')
 	testImplementation 'org.junit.jupiter:junit-jupiter-params'
 	testImplementation 'org.liquibase:liquibase-core'
 }
