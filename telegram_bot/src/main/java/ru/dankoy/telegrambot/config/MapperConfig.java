@@ -1,15 +1,18 @@
 package ru.dankoy.telegrambot.config;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MapperConfig {
 
-  @Bean
-  public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
-    return builder -> builder.featuresToEnable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
-  }
+  // @Bean
+  // public JsonMapperBuilderCustomizer jacksonCustomizer() {
+
+  //   //TODO: look if it even needed in jackson3. Maybe just remove it
+  // Although Jackson 3 uses tools.jackson
+  //   return builder -> builder
+  //   .enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
+  //   .enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
+  //   .build();
+  // }
 }
