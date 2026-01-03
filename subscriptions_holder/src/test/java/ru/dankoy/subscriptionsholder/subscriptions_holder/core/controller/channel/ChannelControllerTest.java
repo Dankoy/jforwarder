@@ -22,23 +22,23 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.ChannelCreateDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.channelsub.ChannelDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceConflictException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.exceptions.ResourceNotFoundException;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.channel.ChannelMaker;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.channel.ChannelService;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("ChannelController test ")
 @WebMvcTest(controllers = ChannelController.class)
 @AutoConfigureMockMvc
-@Import({ObjectMapper.class})
+@Import({JsonMapper.class})
 class ChannelControllerTest implements ChannelMaker {
 
   @Autowired private MockMvc mvc;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @MockitoBean private ChannelService channelService;
 

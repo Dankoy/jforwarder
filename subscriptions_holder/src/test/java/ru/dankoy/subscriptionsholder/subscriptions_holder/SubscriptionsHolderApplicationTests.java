@@ -7,10 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -54,11 +51,9 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.type.Type
 
 @DisplayName("Test default context ")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EnableAutoConfiguration(
-    exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
 class SubscriptionsHolderApplicationTests {
 
-  static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:15-alpine");
+  static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
   @BeforeAll
   static void beforeAll() {

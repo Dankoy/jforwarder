@@ -33,9 +33,12 @@ dependencies {
 	// Problem fixes by clean java workspace cache.
 	implementation 'org.springframework.boot:spring-boot-starter-flyway'
 	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
+	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
 
 	// jackson
-	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation 'org.springframework.boot:spring-boot-starter-jackson'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jackson-test'
+	// testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	// jasypt
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
