@@ -1,6 +1,8 @@
 package ru.dankoy.tcoubsinitiator.config;
 
 import feign.Logger.Level;
+import feign.codec.Encoder;
+import feign.form.spring.SpringFormEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,5 +12,10 @@ public class FeignConfig {
   @Bean
   Level feignLoggerLevel() {
     return Level.BASIC;
+  }
+
+  @Bean
+  Encoder encoder() {
+    return new SpringFormEncoder();
   }
 }

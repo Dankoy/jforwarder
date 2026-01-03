@@ -14,7 +14,7 @@ import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfigurati
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import ru.dankoy.telegramchatservice.core.controller.ChatController;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatDaoJooq;
 import ru.dankoy.telegramchatservice.core.repository.TelegramChatRepository;
@@ -26,7 +26,7 @@ import ru.dankoy.telegramchatservice.core.service.TelegramChatServiceJooq;
     exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
 class TelegramChatServiceApplicationTests {
 
-  static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+  static PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:16-alpine");
 
   @BeforeAll
   static void beforeAll() {

@@ -7,12 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration;
-import org.springframework.cloud.netflix.eureka.EurekaDiscoveryClientConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
 import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverterImpl;
@@ -22,11 +18,9 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 
 @DisplayName("Test default context ")
 @SpringBootTest
-@EnableAutoConfiguration(
-    exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
-@EmbeddedKafka(
-    partitions = 2,
-    brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+// @EnableAutoConfiguration(
+//     exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class}) //
+// disabled from resources
 class KafkaMessageConsumerTests {
 
   static KafkaContainer kafka =

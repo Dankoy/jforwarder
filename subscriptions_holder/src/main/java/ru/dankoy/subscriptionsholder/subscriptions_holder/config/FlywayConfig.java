@@ -1,6 +1,6 @@
 package ru.dankoy.subscriptionsholder.subscriptions_holder.config;
 
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
+import org.springframework.boot.flyway.autoconfigure.FlywayMigrationStrategy;
 
 // @Configuration
 public class FlywayConfig {

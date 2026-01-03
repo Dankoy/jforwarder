@@ -31,11 +31,14 @@ dependencies {
 	// 11.1.0, 11.0.1, 10.22.0 works perfect
 	// The problem is with vscode plugins or language server.
 	// Problem fixes by clean java workspace cache.
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation 'org.springframework.boot:spring-boot-starter-flyway'
+	testImplementation 'org.springframework.boot:spring-boot-starter-flyway-test'
+	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
 
 	// jackson
-	testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+	implementation 'org.springframework.boot:spring-boot-starter-jackson'
+	testImplementation 'org.springframework.boot:spring-boot-starter-jackson-test'
+	// testImplementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
 	// jasypt
 	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
@@ -44,7 +47,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	// aop
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'org.springframework.boot:spring-boot-starter-aspectj'
 
 	// mapstruct
 	implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -53,10 +56,11 @@ dependencies {
 
 	// data
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
 	runtimeOnly 'org.postgresql:postgresql'
 
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:postgresql'
+	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
 	testImplementation 'org.junit.jupiter:junit-jupiter-params'
-	testImplementation 'org.flywaydb:flyway-database-postgresql'
+	//testImplementation 'org.flywaydb:flyway-database-postgresql'
 }
