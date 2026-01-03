@@ -12,7 +12,7 @@ group = 'ru.dankoy'
 dependencies {
 
 	// gateway
-	implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+	implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
 	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
 	// eureka
