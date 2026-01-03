@@ -47,6 +47,7 @@ class KafkaListenerTest implements MessageMaker {
 
   @BeforeEach
   public void setUp() {
+
     Map<String, Object> configs =
         new HashMap<>(KafkaTestUtils.consumerProps(embeddedKafkaBroker, "consumer", false));
     var jsonDeserializer = new JacksonJsonDeserializer<CoubMessage>();
