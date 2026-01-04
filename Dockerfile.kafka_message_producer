@@ -3,20 +3,14 @@ ARG BUILD_HOME=/app
 FROM gradle:9.2.1-jdk21-jammy AS build
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
-ARG PROTOBUF_SUBMODULE=protobuf_schemas
 ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
 ARG SERVICE_NAME=kafka_message_producer
+COPY . ./
 
-COPY ./gradle ./gradle
-COPY ./build.gradle ./settings.gradle ./gradlew ./
-COPY ./buildSrc ./buildSrc
-COPY ./$SERVICE_NAME ./$SERVICE_NAME
-COPY ./$PROTOBUF_SUBMODULE ./$PROTOBUF_SUBMODULE
-
-RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
+RUN ["/bin/bash", "-c", "gradle :$SERVICE_NAME:clean :$SERVICE_NAME:bootJar -x test"]
 
 FROM eclipse-temurin:21.0.2_13-jre-alpine
 LABEL authors="turtality"
