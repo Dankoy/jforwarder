@@ -4,7 +4,7 @@ buildscript {
 	dependencies {
 		classpath files('jasypt-encrypt-plugin-1.3.3.jar')
 		classpath files('jooq-codegen-gradle-3.19.27.jar') // update only if starter updated it
-		classpath("org.testcontainers:testcontainers-postgresql:2.0.2") //todo: update version to 2.x.x
+		classpath("org.testcontainers:testcontainers-postgresql:2.0.3") //todo: update version to 2.x.x
 		classpath("org.postgresql:postgresql:42.7.8")
 		classpath("org.liquibase:liquibase-gradle-plugin:3.0.2")
 		classpath('org.liquibase:liquibase-core:5.0.1')
@@ -20,8 +20,8 @@ plugins {
 	id 'spring-feign-conventions'
 	id 'lombok-conventions'
 	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
-	id "org.jooq.jooq-codegen-gradle" version "3.19.27" // update only if starter updated jooq version
-	id 'org.liquibase.gradle' version '3.0.2'
+	id "org.jooq.jooq-codegen-gradle" version "3.20.10" // update only if starter updated jooq version
+	id 'org.liquibase.gradle' version '3.1.0'
 }
 
 apply plugin: JasyptPlugin
