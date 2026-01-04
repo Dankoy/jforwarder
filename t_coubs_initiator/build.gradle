@@ -3,6 +3,7 @@ plugins {
 	id 'spring-conventions'
 	id 'spring-web-conventions'
 	id 'spring-feign-conventions'
+	id 'spring-restclient-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
 	id 'spring-cache-conventions'
@@ -23,5 +24,8 @@ dependencies {
 
 	// eureka for service discovery
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// loadbalancer
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 }
 
