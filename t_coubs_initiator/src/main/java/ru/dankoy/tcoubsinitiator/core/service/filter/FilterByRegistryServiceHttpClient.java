@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.config.coub.CoubRegistryProperties;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.Coub;
@@ -14,16 +15,13 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCo
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.subscription.Subscription;
 import ru.dankoy.tcoubsinitiator.core.service.registry.SentCoubsRegistryService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
+@Primary
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class FilterByRegistryServiceImpl implements FilterByRegistryService {
+public class FilterByRegistryServiceHttpClient implements FilterByRegistryService {
 
-  private final SentCoubsRegistryService sentCoubsRegistryService;
+  private final SentCoubsRegistryService sentCoubsRegistryServiceHttpClient;
   private final CoubRegistryProperties coubRegistryProperties;
 
   @Override
@@ -34,7 +32,7 @@ public class FilterByRegistryServiceImpl implements FilterByRegistryService {
       log.info("Filter by registry");
       // filter subscriptions by registry
       Set<SentCoubsRegistry> registry =
-          sentCoubsRegistryService.getAllBySubscriptionIdAndDateTimeAfter(
+          sentCoubsRegistryServiceHttpClient.getAllBySubscriptionIdAndDateTimeAfter(
               sub.getId(), LocalDateTime.now().minusDays(coubRegistryProperties.filterDays()));
       log.debug("Found registry - {}", registry);
 

@@ -4,25 +4,23 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.registry.SentCoubsRegistry;
-import ru.dankoy.tcoubsinitiator.core.feign.registry.SentCoubsRegisrtyFeign;
+import ru.dankoy.tcoubsinitiator.core.httpservice.registry.SentCoubsRegistryHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
+@Primary
 @Service
 @RequiredArgsConstructor
-public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
+public class SentCoubsRegistryServiceHttpClient implements SentCoubsRegistryService {
 
   private static final int FIRST_PAGE = 0;
   private static final int PER_PAGE = 30;
 
-  private final SentCoubsRegisrtyFeign sentCoubsRegisrtyFeign;
+  private final SentCoubsRegistryHttpService sentCoubsRegistryHttpService;
 
   @Override
   public Set<SentCoubsRegistry> getAllBySubscriptionIdAndDateTimeAfter(
@@ -40,7 +38,7 @@ public class SentCoubsRegistryServiceImpl implements SentCoubsRegistryService {
       var pageable = PageRequest.of(currentPage, PER_PAGE, sort);
 
       Page<SentCoubsRegistry> page =
-          sentCoubsRegisrtyFeign.getAllBySubscriptionIdAndDateAfter(
+          sentCoubsRegistryHttpService.getAllBySubscriptionIdAndDateAfter(
               subscriptionId, dateTime, pageable);
 
       totalPages = page.getTotalPages() - 1;

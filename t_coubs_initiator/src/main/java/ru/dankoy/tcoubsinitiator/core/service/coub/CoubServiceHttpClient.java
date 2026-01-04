@@ -1,20 +1,18 @@
 package ru.dankoy.tcoubsinitiator.core.service.coub;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
-import ru.dankoy.tcoubsinitiator.core.feign.coub.CoubFeign;
+import ru.dankoy.tcoubsinitiator.core.httpservice.coub.CoubHttpService;
 import ru.dankoy.tcoubsinitiator.core.service.permalinkcreator.PermalinkCreatorService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
+@Primary
 @Service
 @RequiredArgsConstructor
-public class CoubServiceImpl implements CoubService {
+public class CoubServiceHttpClient implements CoubService {
 
-  private final CoubFeign coubFeign;
+  private final CoubHttpService coubHttpService;
   private final PermalinkCreatorService permalinkCreatorService;
 
   @Override
@@ -22,7 +20,8 @@ public class CoubServiceImpl implements CoubService {
       String communityName, String sectionName, long page, int perPage) {
 
     var wrapper =
-        coubFeign.getCoubsForCommunityWrapperPageable(communityName, sectionName, page, perPage);
+        coubHttpService.getCoubsForCommunityWrapperPageable(
+            communityName, sectionName, page, perPage);
 
     wrapper.getCoubs().forEach(permalinkCreatorService::createCoubPermalink);
 
@@ -33,7 +32,8 @@ public class CoubServiceImpl implements CoubService {
   public CoubWrapper getCoubsWrapperForTag(
       String tag, String orderBy, String type, String scope, long page, int perPage) {
 
-    var wrapper = coubFeign.getCoubsForTagWrapperPageable(tag, orderBy, type, scope, page, perPage);
+    var wrapper =
+        coubHttpService.getCoubsForTagWrapperPageable(tag, orderBy, type, scope, page, perPage);
 
     wrapper.getCoubs().forEach(permalinkCreatorService::createCoubPermalink);
 
@@ -45,7 +45,7 @@ public class CoubServiceImpl implements CoubService {
       String channelPermalink, String orderBy, String type, String scope, long page, int perPage) {
 
     var wrapper =
-        coubFeign.getCoubsForChannelWrapperPageable(
+        coubHttpService.getCoubsForChannelWrapperPageable(
             channelPermalink, orderBy, type, scope, page, perPage);
 
     wrapper.getCoubs().forEach(permalinkCreatorService::createCoubPermalink);

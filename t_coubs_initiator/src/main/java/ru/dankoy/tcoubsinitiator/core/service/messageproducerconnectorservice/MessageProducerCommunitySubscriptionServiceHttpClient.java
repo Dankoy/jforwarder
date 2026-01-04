@@ -2,23 +2,21 @@ package ru.dankoy.tcoubsinitiator.core.service.messageproducerconnectorservice;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
-import ru.dankoy.tcoubsinitiator.core.feign.messageproducer.MessageProducerFeign;
+import ru.dankoy.tcoubsinitiator.core.httpservice.messageproducer.MessageProducerHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
+@Primary
 @Service
 @RequiredArgsConstructor
-public class MessageProducerCommunitySubscriptionServiceImpl
+public class MessageProducerCommunitySubscriptionServiceHttpClient
     implements MessageProducerCommunitySubscriptionService {
 
-  private final MessageProducerFeign messageProducerFeign;
+  private final MessageProducerHttpService messageProducerHttpService;
 
   public void sendCommunitySubscriptionsData(List<CommunitySubscription> communitySubscriptions) {
 
-    messageProducerFeign.sendCommunitySubscriptionsProtobuf(communitySubscriptions);
+    messageProducerHttpService.sendCommunitySubscriptionsProtobuf(communitySubscriptions);
   }
 }
