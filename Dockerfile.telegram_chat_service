@@ -7,12 +7,10 @@ ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
 
-COPY ./gradle ./gradle
-COPY ./build.gradle ./settings.gradle ./gradlew ./
-COPY ./buildSrc ./buildSrc
-COPY ./$SERVICE_NAME ./$SERVICE_NAME
+ARG SERVICE_NAME=telegram_chat_service
+COPY . ./
 
-RUN ["/bin/bash", "-c", "gradle clean bootJar -x test"]
+RUN ["/bin/bash", "-c", "gradle :$SERVICE_NAME:clean :$SERVICE_NAME:bootJar -x test"]
 
 FROM eclipse-temurin:21.0.2_13-jre-alpine
 LABEL authors="turtality"
