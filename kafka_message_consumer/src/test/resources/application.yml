@@ -46,6 +46,9 @@ spring:
     listener:
       ack-mode: batch
 
+eureka:
+  client:
+    enabled: false
 
 
 server:

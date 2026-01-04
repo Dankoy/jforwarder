@@ -20,9 +20,7 @@ import ru.dankoy.kafkamessageproducer.core.service.converter.MessageConverterImp
 @SpringBootTest
 @EnableAutoConfiguration(
     exclude = {EurekaClientAutoConfiguration.class, EurekaDiscoveryClientConfiguration.class})
-@EmbeddedKafka(
-    partitions = 2,
-    brokerProperties = {"listeners=PLAINTEXT://localhost:9092", "port=9092"})
+@EmbeddedKafka
 class KafkaMessageProducerTests {
 
   @Autowired private ApplicationContext context;

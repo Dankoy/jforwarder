@@ -40,3 +40,7 @@ management:
       enabled: true
     diskspace:
       enabled: true
+
+eureka:
+  client:
+    enabled: false

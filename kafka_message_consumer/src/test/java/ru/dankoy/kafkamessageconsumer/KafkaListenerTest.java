@@ -22,8 +22,8 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.ContainerTestUtils;
@@ -47,9 +47,10 @@ class KafkaListenerTest implements MessageMaker {
 
   @BeforeEach
   public void setUp() {
+
     Map<String, Object> configs =
-        new HashMap<>(KafkaTestUtils.consumerProps("consumer", "false", embeddedKafkaBroker));
-    var jsonDeserializer = new JsonDeserializer<CoubMessage>();
+        new HashMap<>(KafkaTestUtils.consumerProps(embeddedKafkaBroker, "consumer", false));
+    var jsonDeserializer = new JacksonJsonDeserializer<CoubMessage>();
     jsonDeserializer.addTrustedPackages("*");
     DefaultKafkaConsumerFactory<String, CoubMessage> consumerFactory =
         new DefaultKafkaConsumerFactory<>(configs, new StringDeserializer(), jsonDeserializer);
@@ -73,7 +74,7 @@ class KafkaListenerTest implements MessageMaker {
     Map<String, Object> configs = new HashMap<>(KafkaTestUtils.producerProps(embeddedKafkaBroker));
     Producer<String, CoubMessage> producer =
         new DefaultKafkaProducerFactory<>(
-                configs, new StringSerializer(), new JsonSerializer<CoubMessage>())
+                configs, new StringSerializer(), new JacksonJsonSerializer<CoubMessage>())
             .createProducer();
 
     // Act

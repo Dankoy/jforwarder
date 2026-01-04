@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageconsumer.config.kafka;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException.NotFound;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
@@ -8,8 +7,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -20,8 +18,7 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
-import org.springframework.kafka.support.JacksonUtils;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.util.backoff.BackOff;
@@ -52,21 +49,16 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 @Configuration
 public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConfig {
 
-  @Bean
-  public ObjectMapper objectMapper() {
-    return JacksonUtils.enhancedObjectMapper();
-  }
-
   // This bean name should be different than consumerFactory.
   @Bean
   public ConsumerFactory<String, CoubMessage> consumerFactoryCoubMessage(
-      KafkaProperties kafkaProperties, SslBundles sslBundles, ObjectMapper mapper) {
+      KafkaProperties kafkaProperties) {
 
-    var props = kafkaProperties.buildProducerProperties(sslBundles);
+    var props = kafkaProperties.buildProducerProperties();
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
     props.put(
-        JsonDeserializer.TYPE_MAPPINGS,
+        JacksonJsonDeserializer.TYPE_MAPPINGS,
         "ru.dankoy.kafkamessageproducer.core.domain.message.CommunitySubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage,"
             + " ru.dankoy.kafkamessageproducer.core.domain.message.TagSubscriptionMessage:ru.dankoy.kafkamessageconsumer.core.domain.message.TagSubscriptionMessage,"
             + " ru.dankoy.kafkamessageproducer.core.domain.message.ChannelSubscriptionMessage:"
@@ -89,7 +81,7 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
 
     var kafkaProducerConsumer = new DefaultKafkaConsumerFactory<String, CoubMessage>(props);
-    kafkaProducerConsumer.setValueDeserializer(new JsonDeserializer<>(mapper));
+    kafkaProducerConsumer.setValueDeserializer(new JacksonJsonDeserializer<CoubMessage>());
 
     return kafkaProducerConsumer;
   }

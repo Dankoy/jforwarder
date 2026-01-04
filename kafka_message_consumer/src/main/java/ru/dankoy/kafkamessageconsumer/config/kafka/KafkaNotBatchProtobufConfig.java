@@ -13,8 +13,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
@@ -65,9 +64,8 @@ public class KafkaNotBatchProtobufConfig {
   }
 
   @Bean
-  public Map<String, Object> kafkaCommonProperties(
-      KafkaProperties kafkaProperties, SslBundles sslBundles) {
-    var props = kafkaProperties.buildProducerProperties(sslBundles);
+  public Map<String, Object> kafkaCommonProperties(KafkaProperties kafkaProperties) {
+    var props = kafkaProperties.buildProducerProperties();
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaProtobufDeserializer.class);
     props.put(AbstractKafkaSchemaSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);

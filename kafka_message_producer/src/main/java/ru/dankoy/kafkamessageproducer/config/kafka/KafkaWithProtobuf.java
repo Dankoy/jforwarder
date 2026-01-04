@@ -1,6 +1,5 @@
 package ru.dankoy.kafkamessageproducer.config.kafka;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.protobuf.Message;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufSerializer;
@@ -10,8 +9,7 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
-import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -40,9 +38,8 @@ public class KafkaWithProtobuf {
   }
 
   @Bean
-  public ProducerFactory<String, Message> protobufProducerFactory(
-      KafkaProperties kafkaProperties, ObjectMapper mapper, SslBundles sslBundles) {
-    var props = kafkaProperties.buildProducerProperties(sslBundles);
+  public ProducerFactory<String, Message> protobufProducerFactory(KafkaProperties kafkaProperties) {
+    var props = kafkaProperties.buildProducerProperties();
     props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
     props.put(ProducerConfig.ACKS_CONFIG, "all");
     props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, 5000);

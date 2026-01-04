@@ -17,6 +17,9 @@ dependencies {
 	// web
 	implementation 'org.springframework.data:spring-data-commons' // necessary for pagination
 
+	// jackson
+	implementation 'org.springframework.boot:spring-boot-starter-jackson'
+
 	// eureka for service discovery
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 

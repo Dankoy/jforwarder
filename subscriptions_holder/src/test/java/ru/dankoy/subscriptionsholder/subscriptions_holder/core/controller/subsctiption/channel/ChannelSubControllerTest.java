@@ -7,10 +7,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,8 +17,8 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -32,23 +30,19 @@ import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.channel.C
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.subscription.channel.ChannelSubMaker;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.subscription.channel.ChannelSubService;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.telegramchat.ChatMaker;
+import tools.jackson.databind.json.JsonMapper;
 
 @DisplayName("ChannelSubController test ")
 @WebMvcTest(controllers = ChannelSubController.class)
 @AutoConfigureMockMvc
-@Import({ObjectMapper.class})
+@Import({JsonMapper.class})
 class ChannelSubControllerTest implements ChannelMaker, ChatMaker, ChannelSubMaker {
 
   @Autowired private MockMvc mvc;
 
-  @Autowired private ObjectMapper objectMapper;
+  @Autowired private JsonMapper objectMapper;
 
   @MockitoBean private ChannelSubService channelSubService;
-
-  @BeforeEach
-  void setUpMapper() {
-    objectMapper.findAndRegisterModules();
-  }
 
   @DisplayName("create should correctly create")
   @Test

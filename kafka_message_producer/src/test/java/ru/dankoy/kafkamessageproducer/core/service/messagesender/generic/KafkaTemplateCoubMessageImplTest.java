@@ -27,8 +27,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonSerializer;
 import org.springframework.test.annotation.DirtiesContext;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -58,7 +58,7 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
 
   @Autowired private KafkaConsumer<String, CoubMessage> kafkaConsumer;
 
-  @Autowired private KafkaTemplateGenericImpl kafkaTemplateCoubMessage;
+  @Autowired private KafkaTemplateGenericImpl<String, CoubMessage> kafkaTemplateCoubMessage;
 
   @Test
   void send() {
@@ -93,7 +93,7 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
     @Bean
     public KafkaConsumer<String, CoubMessage> kafkaConsumer() {
 
-      var jsonDeserializer = new JsonDeserializer<CoubMessage>(CoubMessage.class);
+      var jsonDeserializer = new JacksonJsonDeserializer<CoubMessage>(CoubMessage.class);
       jsonDeserializer.addTrustedPackages("*");
 
       return new KafkaConsumer<String, CoubMessage>(
@@ -107,7 +107,7 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
       props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
       props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
       props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+      props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
       return props;
     }
 
@@ -116,7 +116,7 @@ class KafkaTemplateCoubMessageImplTest implements MessageMaker {
       Map<String, Object> configProps = new HashMap<>();
       configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafka.getBootstrapServers());
       configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-      configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+      configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JacksonJsonSerializer.class);
       return new DefaultKafkaProducerFactory<>(configProps);
     }
 
