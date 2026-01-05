@@ -1,7 +1,7 @@
 package ru.dankoy.tcoubsinitiator.core.httpservice.telegramchat;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import ru.dankoy.tcoubsinitiator.core.domain.page.RestPageImpl;
@@ -13,5 +13,5 @@ public interface TelegramChatHttpService {
 
   @GetExchange(url = "/api/v1/telegram_chat")
   RestPageImpl<Chat> getAllTelegramChats(
-      @RequestAttribute Pageable pageable, @RequestAttribute TelegramChatFilter filter);
+      @RequestParam Pageable pageable, @RequestParam TelegramChatFilter filter);
 }
