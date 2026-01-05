@@ -54,11 +54,7 @@ public class ClientLoggerRequestInterceptor implements ClientHttpRequestIntercep
     headers.forEach(
         (key, value) -> {
           if (!value.isEmpty()) {
-            log.info(
-                key,
-                value.stream()
-                    .filter(v -> !v.isEmpty() || v.isBlank() || v != null)
-                    .collect(Collectors.joining(" ")));
+            log.info("Header: {}: {}", key, value.stream().collect(Collectors.joining(" ")));
           }
         });
   }
