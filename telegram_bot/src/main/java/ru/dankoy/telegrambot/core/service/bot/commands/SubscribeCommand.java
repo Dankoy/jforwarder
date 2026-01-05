@@ -1,9 +1,10 @@
 package ru.dankoy.telegrambot.core.service.bot.commands;
 
-import feign.FeignException.Conflict;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.client.HttpClientErrorException.Conflict;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
@@ -25,8 +26,13 @@ public class SubscribeCommand extends BotCommand {
   private static final String TEMPLATE_SUBSCRIPTION_EXISTS = "alreadySubscribed";
   private static final String TEMPLATE_SUBSCRIPTION_EXCEPTION = "subscription_exception.ftl";
 
+  @Qualifier("communitySubscriptionServiceHttpClient")
   private final transient CommunitySubscriptionService communitySubscriptionService;
+
+  @Qualifier("tagSubscriptionServiceHttpClient")
   private final transient TagSubscriptionService tagSubscriptionService;
+
+  @Qualifier("channelSubscriptionServiceHttpClient")
   private final transient ChannelSubscriptionService channelSubscriptionService;
 
   public SubscribeCommand(

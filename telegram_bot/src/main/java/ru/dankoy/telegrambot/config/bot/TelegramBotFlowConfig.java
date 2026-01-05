@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication;
@@ -57,13 +58,16 @@ public class TelegramBotFlowConfig {
   public List<BotCommandsFactory> botCommandsFactories(
       LocaleConfig localeConfig,
       LocalisationService localisationService,
-      CommunitySubscriptionService communitySubscriptionService,
-      TagSubscriptionService tagSubscriptionService,
-      ChannelSubscriptionService channelSubscriptionService,
-      TelegramChatService telegramChatService,
-      CommunityService communityService,
-      OrderService orderService,
-      SubscriptionsHolderChatService subscriptionsHolderChatService) {
+      @Qualifier("communitySubscriptionServiceHttpClient")
+          CommunitySubscriptionService communitySubscriptionService,
+      @Qualifier("tagSubscriptionServiceHttpClient") TagSubscriptionService tagSubscriptionService,
+      @Qualifier("channelSubscriptionServiceHttpClient")
+          ChannelSubscriptionService channelSubscriptionService,
+      @Qualifier("telegramChatServiceHttpClient") TelegramChatService telegramChatService,
+      @Qualifier("communityServiceHttpClient") CommunityService communityService,
+      @Qualifier("orderServiceHttpClient") OrderService orderService,
+      @Qualifier("subscriptionsHolderChatServiceHttpClient")
+          SubscriptionsHolderChatService subscriptionsHolderChatService) {
 
     List<BotCommandsFactory> factories = new ArrayList<>();
 

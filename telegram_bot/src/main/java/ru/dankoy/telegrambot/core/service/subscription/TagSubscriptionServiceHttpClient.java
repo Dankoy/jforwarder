@@ -13,7 +13,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderTagSubHttpService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
 import ru.dankoy.telegrambot.core.service.order.OrderService;
@@ -21,21 +21,21 @@ import ru.dankoy.telegrambot.core.service.tag.TagService;
 
 @RequiredArgsConstructor
 @Service
-public class TagSubscriptionServiceImpl implements TagSubscriptionService {
+public class TagSubscriptionServiceHttpClient implements TagSubscriptionService {
 
-  @Qualifier("coubSmartSearcherServiceImpl")
+  @Qualifier("coubSmartSearcherServiceHttpClient")
   private final CoubSmartSearcherService coubSmartSearcherService;
 
-  @Qualifier("tagServiceImpl")
+  @Qualifier("tagServiceHttpClient")
   private final TagService tagService;
 
-  @Qualifier("orderServiceImpl")
+  @Qualifier("orderServiceHttpClient")
   private final OrderService orderService;
 
-  @Qualifier("telegramChatServiceImpl")
+  @Qualifier("telegramChatServiceHttpClient")
   private final TelegramChatService telegramChatService;
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderTagSubHttpService tagSubsHttpService;
 
   /**
    * @deprecated for topics support via messageThreadId
@@ -62,7 +62,7 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
-    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatUuid(chat.getId());
+    return tagSubsHttpService.getAllTagSubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -170,12 +170,16 @@ public class TagSubscriptionServiceImpl implements TagSubscriptionService {
     var order = new Order(orderValue);
     order.setSubscriptionType(SubscriptionType.TAG);
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
     var tagSubscription =
         (TagSubscription)
             TagSubscription.builder()
                 .id(0)
                 .tag(new Tag(tagName))
                 .chat(new Chat(chatId, messageThreadId))
+                .chatUuid(chat.getId())
                 .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))

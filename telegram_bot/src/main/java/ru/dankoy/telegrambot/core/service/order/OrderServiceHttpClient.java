@@ -6,32 +6,29 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderOrderHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
-@Service
-public class OrderServiceImpl implements OrderService {
+@Service("orderServiceHttpClient")
+public class OrderServiceHttpClient implements OrderService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderOrderHttpService subscriptionsHolderOrderHttpService;
 
   @Override
   public List<Order> findAll() {
-    return subscriptionsHolderFeign.getAllOrders();
+    return subscriptionsHolderOrderHttpService.getAllOrders();
   }
 
   @Override
   public List<Order> findAllByType(SubscriptionType subscriptionType) {
-    return subscriptionsHolderFeign.getOrdersByType(subscriptionType.getType());
+    return subscriptionsHolderOrderHttpService.getOrdersByType(subscriptionType.getType());
   }
 
   @Override
   public Optional<Order> findByValue(String value, SubscriptionType type) {
     try {
-      return Optional.of(subscriptionsHolderFeign.getOrderByValueAndType(value, type.getType()));
+      return Optional.of(
+          subscriptionsHolderOrderHttpService.getOrderByValueAndType(value, type.getType()));
     } catch (Exception e) {
       return Optional.empty();
     }

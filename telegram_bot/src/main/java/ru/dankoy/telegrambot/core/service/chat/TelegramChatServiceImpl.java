@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 import ru.dankoy.telegrambot.core.feign.telegramchatservice.TelegramChatServiceFeign;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
 @Service
 public class TelegramChatServiceImpl implements TelegramChatService {

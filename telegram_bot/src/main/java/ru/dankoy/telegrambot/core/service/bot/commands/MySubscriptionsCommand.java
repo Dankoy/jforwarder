@@ -2,6 +2,7 @@ package ru.dankoy.telegrambot.core.service.bot.commands;
 
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
@@ -16,10 +17,13 @@ import ru.dankoy.telegrambot.core.service.subscription.TagSubscriptionService;
 @Slf4j
 public class MySubscriptionsCommand extends BotCommand {
 
+  @Qualifier("CommunitySubscriptionServiceHttpClient")
   private final transient CommunitySubscriptionService communitySubscriptionService;
 
+  @Qualifier("TagSubscriptionServiceHttpClient")
   private final transient TagSubscriptionService tagSubscriptionService;
 
+  @Qualifier("channelSubscriptionServiceHttpClient")
   private final transient ChannelSubscriptionService channelSubscriptionService;
 
   public MySubscriptionsCommand(

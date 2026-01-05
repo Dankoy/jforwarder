@@ -19,6 +19,10 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscri
 import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
 

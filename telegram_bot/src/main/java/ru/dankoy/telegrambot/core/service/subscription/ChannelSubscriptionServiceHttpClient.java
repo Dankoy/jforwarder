@@ -13,7 +13,7 @@ import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderChannelSubHttpService;
 import ru.dankoy.telegrambot.core.service.channel.ChannelService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.coubtags.CoubSmartSearcherService;
@@ -21,21 +21,21 @@ import ru.dankoy.telegrambot.core.service.order.OrderService;
 
 @Service
 @RequiredArgsConstructor
-public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionService {
+public class ChannelSubscriptionServiceHttpClient implements ChannelSubscriptionService {
 
-  @Qualifier("coubSmartSearcherServiceImpl")
+  @Qualifier("coubSmartSearcherServiceHttpClient")
   private final CoubSmartSearcherService coubSmartSearcherService;
 
-  @Qualifier("channelServiceImpl")
+  @Qualifier("channelServiceHttpClient")
   private final ChannelService channelService;
 
-  @Qualifier("orderServiceImpl")
+  @Qualifier("orderServiceHttpClient")
   private final OrderService orderService;
 
-  @Qualifier("telegramChatServiceImpl")
+  @Qualifier("telegramChatServiceHttpClient")
   private final TelegramChatService telegramChatService;
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderChannelSubHttpService channelSubHttpService;
 
   /**
    * @deprecated for topics support via messageThreadId
@@ -62,7 +62,7 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
 
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
-    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatUuid(chat.getId());
+    return channelSubHttpService.getAllChannelSubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -172,12 +172,16 @@ public class ChannelSubscriptionServiceImpl implements ChannelSubscriptionServic
     var order = new Order(orderValue);
     order.setSubscriptionType(SubscriptionType.CHANNEL);
 
+    // get chat from separate microservice
+    var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
+
     var channelSubscription =
         (ChannelSubscription)
             ChannelSubscription.builder()
                 .id(0)
                 .channel(new Channel(channelPermalink))
                 .chat(new Chat(chatId, messageThreadId))
+                .chatUuid(chat.getId())
                 .order(order)
                 .scope(new Scope(scopeName))
                 .type(new Type(typeName))

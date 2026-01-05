@@ -10,20 +10,20 @@ import ru.dankoy.telegrambot.core.domain.subscription.community.CommunitySubscri
 import ru.dankoy.telegrambot.core.domain.subscription.community.Section;
 import ru.dankoy.telegrambot.core.exceptions.ExceptionObjectType;
 import ru.dankoy.telegrambot.core.exceptions.NotFoundException;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderCommunitySubHttpService;
 import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 import ru.dankoy.telegrambot.core.service.community.CommunityService;
 
 @Service
 @RequiredArgsConstructor
-public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionService {
+public class CommunitySubscriptionServiceHttpClient implements CommunitySubscriptionService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderCommunitySubHttpService communitySubHttpService;
 
-  @Qualifier("communityServiceImpl")
+  @Qualifier("communityServiceHttpClient")
   private final CommunityService communityService;
 
-  @Qualifier("telegramChatServiceImpl")
+  @Qualifier("telegramChatServiceHttpClient")
   private final TelegramChatService telegramChatService;
 
   /**
@@ -32,7 +32,7 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
   @Deprecated(since = "2024-04-05", forRemoval = true)
   public List<CommunitySubscription> getSubscriptionsByChatId(long chatId) {
 
-    return subscriptionsHolderFeign.getAllSubscriptionsByChatId(chatId);
+    throw new UnsupportedOperationException("Deprecated method - getSubscriptionsByChatId");
   }
 
   /**
@@ -42,7 +42,7 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
   public List<CommunitySubscription> getSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
 
-    return subscriptionsHolderFeign.getAllSubscriptionsByChatIdAndMessageThreadId(
+    return communitySubHttpService.getAllSubscriptionsByChatIdAndMessageThreadId(
         chatId, messageThreadId);
   }
 
@@ -52,7 +52,7 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
 
     var chat = telegramChatService.getChatByIdAndMessageThreadId(chatId, messageThreadId);
 
-    return subscriptionsHolderFeign.getAllCommunitySubscriptionsByChatUuid(chat.getId());
+    return communitySubHttpService.getAllCommunitySubscriptionsByChatUuid(chat.getId());
   }
 
   @Override
@@ -108,7 +108,7 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
                 .section(section)
                 .build();
 
-    return subscriptionsHolderFeign.subscribe(subscription);
+    return communitySubHttpService.subscribe(subscription);
   }
 
   @Override
@@ -128,6 +128,6 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
                 .section(new Section(sectionName))
                 .build();
 
-    subscriptionsHolderFeign.unsubscribe(subscription);
+    communitySubHttpService.unsubscribe(subscription);
   }
 }

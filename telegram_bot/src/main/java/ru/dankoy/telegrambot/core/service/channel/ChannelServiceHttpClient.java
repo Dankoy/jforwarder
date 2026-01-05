@@ -7,23 +7,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.ChannelSubscription;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderChannelHttpService;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderChannelSubHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
-@Service
-public class ChannelServiceImpl implements ChannelService {
+@Service("channelServiceHttpClient")
+public class ChannelServiceHttpClient implements ChannelService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderChannelSubHttpService subHttpService;
+  private final SubscriptionsHolderChannelHttpService channelHttpService;
 
   @Override
   public Optional<Channel> findChannelByPermalink(String permalink) {
 
     try {
-      return Optional.of(subscriptionsHolderFeign.getChannelByPermalink(permalink));
+      return Optional.of(channelHttpService.getChannelByPermalink(permalink));
     } catch (NotFound e) {
       return Optional.empty();
     }
@@ -32,13 +30,13 @@ public class ChannelServiceImpl implements ChannelService {
   @Override
   public ChannelSubscription subscribeByChannel(ChannelSubscription channelSubscription) {
 
-    return subscriptionsHolderFeign.subscribeByChannel(channelSubscription);
+    return subHttpService.subscribeByChannel(channelSubscription);
   }
 
   @Override
   public void unsubscribeByChannel(ChannelSubscription channelSubscription) {
 
-    subscriptionsHolderFeign.unsubscribeByChannel(channelSubscription);
+    subHttpService.unsubscribeByChannel(channelSubscription);
   }
 
   /**
@@ -48,7 +46,7 @@ public class ChannelServiceImpl implements ChannelService {
   @Override
   public List<ChannelSubscription> getAllSubscriptionsByChat(long chatId) {
 
-    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatId(chatId);
+    throw new UnsupportedOperationException("This method is deprecated and should not be used");
   }
 
   /**
@@ -59,12 +57,12 @@ public class ChannelServiceImpl implements ChannelService {
   public List<ChannelSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
 
-    return subscriptionsHolderFeign.getAllChannelSubscriptionsByChatIdAndMessageThreadId(
+    return subHttpService.getAllChannelSubscriptionsByChatIdAndMessageThreadId(
         chatId, messageThreadId);
   }
 
   @Override
   public Channel create(Channel channel) {
-    return subscriptionsHolderFeign.createChannel(channel);
+    return channelHttpService.createChannel(channel);
   }
 }

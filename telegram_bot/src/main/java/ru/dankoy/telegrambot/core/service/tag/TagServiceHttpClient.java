@@ -7,23 +7,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderTagHttpService;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderTagSubHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
 @Service
-public class TagServiceImpl implements TagService {
+public class TagServiceHttpClient implements TagService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderTagHttpService subscriptionsHolderTagHttpService;
+
+  private final SubscriptionsHolderTagSubHttpService subscriptionsHolderTagSubHttpService;
 
   @Override
   public Optional<Tag> findTagByTitle(String title) {
 
     try {
-      return Optional.of(subscriptionsHolderFeign.getTagByTitle(title));
+      return Optional.of(subscriptionsHolderTagHttpService.getTagByTitle(title));
     } catch (NotFound e) {
       return Optional.empty();
     }
@@ -32,13 +31,13 @@ public class TagServiceImpl implements TagService {
   @Override
   public TagSubscription subscribeByTag(TagSubscription tagSubscription) {
 
-    return subscriptionsHolderFeign.subscribeByTag(tagSubscription);
+    return subscriptionsHolderTagSubHttpService.subscribeByTag(tagSubscription);
   }
 
   @Override
   public void unsubscribeByTag(TagSubscription tagSubscription) {
 
-    subscriptionsHolderFeign.unsubscribeByTag(tagSubscription);
+    subscriptionsHolderTagSubHttpService.unsubscribeByTag(tagSubscription);
   }
 
   /**
@@ -48,18 +47,18 @@ public class TagServiceImpl implements TagService {
   @Override
   public List<TagSubscription> getAllSubscriptionsByChat(long chatId) {
 
-    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatId(chatId);
+    throw new UnsupportedOperationException("Deprecated method");
   }
 
   @Override
   public List<TagSubscription> getAllSubscriptionsByChatIdAndMessageThreadId(
       long chatId, Integer messageThreadId) {
-    return subscriptionsHolderFeign.getAllTagSubscriptionsByChatIdAndMessageThreadId(
+    return subscriptionsHolderTagSubHttpService.getAllTagSubscriptionsByChatIdAndMessageThreadId(
         chatId, messageThreadId);
   }
 
   @Override
   public Tag create(Tag tag) {
-    return subscriptionsHolderFeign.createTag(tag);
+    return subscriptionsHolderTagHttpService.createTag(tag);
   }
 }

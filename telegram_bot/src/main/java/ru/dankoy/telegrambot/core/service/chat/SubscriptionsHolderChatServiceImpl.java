@@ -5,6 +5,10 @@ import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @Service
 @RequiredArgsConstructor
 public class SubscriptionsHolderChatServiceImpl implements SubscriptionsHolderChatService {

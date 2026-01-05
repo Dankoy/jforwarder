@@ -7,28 +7,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
-import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
+import ru.dankoy.telegrambot.core.httpservice.subscriptionsholder.SubscriptionsHolderCommunityHttpService;
 
-/**
- * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
- */
-@Deprecated(since = "2025-01-04", forRemoval = true)
 @Slf4j
 @RequiredArgsConstructor
-@Service("communityServiceImpl")
-public class CommunityServiceImpl implements CommunityService {
+@Service("communityServiceHttpClient")
+public class CommunityServiceHttpClient implements CommunityService {
 
-  private final SubscriptionsHolderFeign subscriptionsHolderFeign;
+  private final SubscriptionsHolderCommunityHttpService subscriptionsHolderCommunityHttpService;
 
   @Override
   public List<Community> getAll() {
-    return subscriptionsHolderFeign.getAllCommunities();
+    return subscriptionsHolderCommunityHttpService.getAllCommunities();
   }
 
   @Override
   public Optional<Community> getByName(String communityName) {
     try {
-      return Optional.of(subscriptionsHolderFeign.getCommunityByName(communityName));
+      return Optional.of(subscriptionsHolderCommunityHttpService.getCommunityByName(communityName));
     } catch (NotFound e) {
       return Optional.empty();
     }
