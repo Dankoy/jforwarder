@@ -3,6 +3,8 @@ plugins {
 	id 'spring-conventions'
 	id 'spring-web-conventions'
 	id 'spring-feign-conventions'
+	id 'spring-restclient-conventions'
+	id 'spring-loadbalancer-conventions'
 	id 'spring-cache-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
@@ -16,6 +18,10 @@ dependencies {
 
 	// eureka for service discovery
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+	// web
+	implementation 'org.springframework.data:spring-data-commons' // necessary for pagination
+
 
 	// jackson
 	implementation 'org.springframework.boot:spring-boot-starter-jackson'
