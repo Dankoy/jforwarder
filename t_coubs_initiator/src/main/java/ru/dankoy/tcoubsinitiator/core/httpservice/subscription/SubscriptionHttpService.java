@@ -20,32 +20,32 @@ public interface SubscriptionHttpService {
       @PathVariable(value = "communityName") String communityName);
 
   @GetExchange(url = "/api/v1/community_subscriptions")
-  RestPageImpl<CommunitySubscription> getAllSubscriptions(Pageable pageable);
+  RestPageImpl<CommunitySubscription> getAllSubscriptions(@RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/community_subscriptions")
   RestPageImpl<CommunitySubscription> getAllSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+      @RequestParam boolean active, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/tag_subscriptions/{tag}")
   List<TagSubscription> getSubscriptionsByTagTitle(@PathVariable(value = "tag") String tag);
 
   @GetExchange(url = "/api/v1/tag_subscriptions")
   RestPageImpl<TagSubscription> getAllTagSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+      @RequestParam boolean active, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/channel_subscriptions")
   RestPageImpl<ChannelSubscription> getAllChannelSubscriptionsWithActiveChats(
-      @RequestParam boolean active, Pageable pageable);
+      @RequestParam boolean active, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/channel_subscriptions")
   RestPageImpl<ChannelSubscription> getChannelSubscriptionByChatUuids(
-      @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable);
+      @RequestParam(value = "chatUuids") List<UUID> chatUuids, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/community_subscriptions")
   RestPageImpl<CommunitySubscription> getCommunitySubscriptionByChatUuids(
-      @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable);
+      @RequestParam(value = "chatUuids") List<UUID> chatUuids, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/tag_subscriptions")
   RestPageImpl<TagSubscription> getTagSubscriptionByChatUuids(
-      @RequestParam(value = "chatUuids") List<UUID> chatUuids, Pageable pageable);
+      @RequestParam(value = "chatUuids") List<UUID> chatUuids, @RequestParam Pageable pageable);
 }

@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import ru.dankoy.tcoubsinitiator.core.httpservice.argumentresolver.PageableArgumentResolver;
+import ru.dankoy.tcoubsinitiator.core.httpservice.argumentresolver.TelegramChatFilterArgumentResolver;
 import ru.dankoy.tcoubsinitiator.core.httpservice.coub.CoubHttpService;
 import ru.dankoy.tcoubsinitiator.core.httpservice.messageproducer.MessageProducerHttpService;
 import ru.dankoy.tcoubsinitiator.core.httpservice.registry.SentCoubsRegistryHttpService;
@@ -54,6 +55,7 @@ public class HttpClientConfig {
     return HttpServiceProxyFactory.builder()
         .exchangeAdapter(adapter)
         .customArgumentResolver(new PageableArgumentResolver())
+        .customArgumentResolver(new TelegramChatFilterArgumentResolver())
         .build();
   }
 

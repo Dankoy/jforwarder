@@ -21,13 +21,13 @@ public interface SentCoubsRegistryHttpService {
 
   @GetExchange(url = "/api/v1/sent_coubs_registry")
   RestPageImpl<SentCoubsRegistry> getAllBySubscriptionId(
-      @RequestParam long subscriptionId, Pageable pageable);
+      @RequestParam long subscriptionId, @RequestParam Pageable pageable);
 
   @GetExchange(url = "/api/v1/sent_coubs_registry")
   RestPageImpl<SentCoubsRegistry> getAllBySubscriptionIdAndDateAfter(
       @RequestParam long subscriptionId,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
-      Pageable pageable);
+      @RequestParam Pageable pageable);
 
   @PostExchange(url = "/api/v1/sent_coubs_registry")
   SentCoubsRegistry create(@RequestBody SentCoubsRegistry sentCoubsRegistry);
