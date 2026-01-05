@@ -1,7 +1,6 @@
 package ru.dankoy.kafkamessageconsumer.config.kafka;
 
 import com.google.protobuf.Message;
-import feign.FeignException.NotFound;
 import io.confluent.kafka.serializers.AbstractKafkaSchemaSerDeConfig;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializer;
 import io.confluent.kafka.serializers.protobuf.KafkaProtobufDeserializerConfig;
@@ -12,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumer;
 import ru.dankoy.kafkamessageconsumer.core.service.consumer.CoubMessageConsumerImpl;
 import ru.dankoy.kafkamessageconsumer.core.service.converter.MessageConverterProtobuf;
@@ -285,9 +286,10 @@ public class KafkaNotBatchProtobufConfig {
 
   @Bean
   public CoubMessageConsumer protobufCommunityMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendCommunityMessage,
         sentCoubsRegistryService::create,
@@ -296,9 +298,10 @@ public class KafkaNotBatchProtobufConfig {
 
   @Bean
   public CoubMessageConsumer protobufTagMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendTagMessage,
         sentCoubsRegistryService::create,
@@ -307,9 +310,10 @@ public class KafkaNotBatchProtobufConfig {
 
   @Bean
   public CoubMessageConsumer protobufChannelMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendChannelMessage,
         sentCoubsRegistryService::create,

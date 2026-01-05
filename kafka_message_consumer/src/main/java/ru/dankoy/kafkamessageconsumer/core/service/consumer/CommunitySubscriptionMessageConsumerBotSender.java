@@ -3,6 +3,7 @@ package ru.dankoy.kafkamessageconsumer.core.service.consumer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotService;
 
@@ -15,6 +16,7 @@ import ru.dankoy.kafkamessageconsumer.core.service.telegrambot.TelegramBotServic
 public class CommunitySubscriptionMessageConsumerBotSender
     implements CommunitySubscriptionMessageConsumer {
 
+  @Qualifier("telegramBotServiceHttpClient")
   private final TelegramBotService telegramBotService;
 
   @Override

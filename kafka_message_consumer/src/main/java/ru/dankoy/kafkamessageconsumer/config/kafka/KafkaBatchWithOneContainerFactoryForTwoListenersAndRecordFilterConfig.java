@@ -1,12 +1,12 @@
 package ru.dankoy.kafkamessageconsumer.config.kafka;
 
-import feign.FeignException.NotFound;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.kafka.autoconfigure.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +23,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
 import org.springframework.util.backoff.BackOff;
 import org.springframework.util.backoff.FixedBackOff;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CommunitySubscriptionMessage;
 import ru.dankoy.kafkamessageconsumer.core.domain.message.CoubMessage;
@@ -165,9 +166,10 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
 
   @Bean
   public CoubMessageConsumer coubCommunityMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendCommunityMessage,
         sentCoubsRegistryService::create,
@@ -176,9 +178,10 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
 
   @Bean
   public CoubMessageConsumer coubTagMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendTagMessage,
         sentCoubsRegistryService::create,
@@ -187,9 +190,10 @@ public class KafkaBatchWithOneContainerFactoryForTwoListenersAndRecordFilterConf
 
   @Bean
   public CoubMessageConsumer coubChannelMessageConsumer(
-      TelegramBotService telegramBotService,
-      SentCoubsRegistryService sentCoubsRegistryService,
-      SubscriptionService subscriptionService) {
+      @Qualifier("telegramBotServiceHttpClient") TelegramBotService telegramBotService,
+      @Qualifier("sentCoubsRegistryServiceHttpClient")
+          SentCoubsRegistryService sentCoubsRegistryService,
+      @Qualifier("subscriptionServiceHttpClient") SubscriptionService subscriptionService) {
     return new CoubMessageConsumerImpl(
         telegramBotService::sendChannelMessage,
         sentCoubsRegistryService::create,
