@@ -8,6 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 // GET
 //    https://coub.com/api/v2/timeline/community/anime/rising?page=1
 
