@@ -3,6 +3,8 @@ plugins {
 	id 'spring-conventions'
 	id 'spring-web-conventions'
 	id 'spring-feign-conventions'
+	id 'spring-restclient-conventions'
+	id 'spring-loadbalancer-conventions'
 	id 'micrometer-conventions'
 	id 'loki-conventions'
 	id 'spring-resilience4j-conventions'

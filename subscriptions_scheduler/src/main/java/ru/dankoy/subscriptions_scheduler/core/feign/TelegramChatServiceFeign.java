@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.subscriptions_scheduler.core.dto.telegramchatservice.ChatWithUuidDTO;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(contextId = "telegram-chat", name = "telegram-chat-service")
 public interface TelegramChatServiceFeign {
 

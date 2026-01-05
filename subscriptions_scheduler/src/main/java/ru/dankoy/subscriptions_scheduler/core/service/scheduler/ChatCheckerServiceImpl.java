@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,7 +18,9 @@ import ru.dankoy.subscriptions_scheduler.core.service.chat.ChatService;
 @Service
 public class ChatCheckerServiceImpl implements ChatCheckerService {
 
+  @Qualifier("chatServiceHttpClient")
   private final ChatService chatService;
+
   private final SchedulerProperties schedulerProperties;
 
   private static final int INITIAL_PAGE_SIZE = 10;

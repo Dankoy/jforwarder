@@ -1,6 +1,7 @@
 package ru.dankoy.subscriptions_scheduler.core.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +15,9 @@ import ru.dankoy.subscriptions_scheduler.core.service.chat.ChatService;
 @RequiredArgsConstructor
 public class ChatController {
 
+  @Qualifier("chatServiceHttpClient")
   private final ChatService chatService;
+
   private final ChatWithSubsMapper chatMapper;
 
   @GetMapping(
