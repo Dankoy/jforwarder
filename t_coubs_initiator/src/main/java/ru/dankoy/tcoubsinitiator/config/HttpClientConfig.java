@@ -5,6 +5,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
@@ -45,7 +46,8 @@ public class HttpClientConfig {
   HttpServiceProxyFactory httpServiceProxyFactory(
       @Qualifier("lbRestClientBuilder") RestClient.Builder lbRestClientBuilder,
       @Qualifier("clientLoggerRequestInterceptor")
-          ClientHttpRequestInterceptor clientLoggerRequestInterceptor) {
+          ClientHttpRequestInterceptor clientLoggerRequestInterceptor,
+      Environment env) {
 
     RestClient restClient =
         lbRestClientBuilder.requestInterceptor(clientLoggerRequestInterceptor).build();
@@ -54,6 +56,7 @@ public class HttpClientConfig {
 
     return HttpServiceProxyFactory.builder()
         .exchangeAdapter(adapter)
+        .embeddedValueResolver(env::resolvePlaceholders)
         .customArgumentResolver(new PageableArgumentResolver())
         .customArgumentResolver(new TelegramChatFilterArgumentResolver())
         .build();
