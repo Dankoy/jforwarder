@@ -24,5 +24,5 @@ public class Subscription {
 
   private String lastPermalink;
 
-  private final List<Coub> coubs = new ArrayList<>();
+  private List<Coub> coubs = new ArrayList<>();
 }
