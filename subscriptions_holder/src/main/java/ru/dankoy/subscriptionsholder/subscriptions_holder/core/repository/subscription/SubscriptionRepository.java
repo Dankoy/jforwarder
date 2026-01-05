@@ -4,6 +4,7 @@ import jakarta.persistence.LockModeType;
 import jakarta.persistence.QueryHint;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -24,7 +25,7 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
   @EntityGraph(value = "subscription-parent-only", type = EntityGraphType.FETCH)
   Page<Subscription> findAllBychatUuidIsIn(
-      @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
+      @Param(value = "chatUuid") List<UUID> chatUuid, Pageable pageable);
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)
   @QueryHints({@QueryHint(name = "jakarta.persistence.lock.timeout", value = "3000")})

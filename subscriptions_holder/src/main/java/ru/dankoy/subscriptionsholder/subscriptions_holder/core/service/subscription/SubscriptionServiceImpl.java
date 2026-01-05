@@ -32,9 +32,9 @@ public class SubscriptionServiceImpl implements SubscriptionService {
   @Override
   public Page<Subscription> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
 
-    var list = chatUuids.stream().map(UUID::toString).toList();
+    // var list = chatUuids.stream().map(UUID::toString).toList();
 
-    return subscriptionRepository.findAllBychatUuidIsIn(list, pageable);
+    return subscriptionRepository.findAllBychatUuidIsIn(chatUuids, pageable);
   }
 
   @Override
