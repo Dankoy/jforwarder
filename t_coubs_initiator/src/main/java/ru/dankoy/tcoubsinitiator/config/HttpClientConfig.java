@@ -5,6 +5,7 @@ import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -41,9 +42,13 @@ public class HttpClientConfig {
 
   @Bean
   HttpServiceProxyFactory httpServiceProxyFactory(
-      @Qualifier("lbRestClientBuilder") RestClient.Builder lbRestClientBuilder) {
+      @Qualifier("lbRestClientBuilder") RestClient.Builder lbRestClientBuilder,
+      @Qualifier("clientLoggerRequestInterceptor")
+          ClientHttpRequestInterceptor clientLoggerRequestInterceptor) {
 
-    RestClient restClient = lbRestClientBuilder.build();
+    RestClient restClient =
+        lbRestClientBuilder.requestInterceptor(clientLoggerRequestInterceptor).build();
+
     RestClientAdapter adapter = RestClientAdapter.create(restClient);
 
     return HttpServiceProxyFactory.builder()
