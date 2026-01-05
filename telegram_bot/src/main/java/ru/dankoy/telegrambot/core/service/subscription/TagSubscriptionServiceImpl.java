@@ -2,6 +2,7 @@ package ru.dankoy.telegrambot.core.service.subscription;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
@@ -22,12 +23,16 @@ import ru.dankoy.telegrambot.core.service.tag.TagService;
 @Service
 public class TagSubscriptionServiceImpl implements TagSubscriptionService {
 
+  @Qualifier("coubSmartSearcherServiceImpl")
   private final CoubSmartSearcherService coubSmartSearcherService;
 
+  @Qualifier("tagServiceImpl")
   private final TagService tagService;
 
+  @Qualifier("orderServiceImpl")
   private final OrderService orderService;
 
+  @Qualifier("telegramChatServiceImpl")
   private final TelegramChatService telegramChatService;
 
   private final SubscriptionsHolderFeign subscriptionsHolderFeign;

@@ -8,6 +8,10 @@ import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.channelsubscrip
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.communitysubscription.CommunitySubscription;
 import ru.dankoy.tcoubsinitiator.core.domain.subscribtionsholder.tagsubscription.TagSubscription;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(name = "kafka-message-producer")
 public interface MessageProducerFeign {
 

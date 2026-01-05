@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.telegram.telegrambots.meta.api.methods.commands.DeleteMyCommands;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -25,8 +26,10 @@ public class TelegramClientServiceImpl implements TelegramClientService {
 
   private final TelegramClient telegramClient;
 
+  @Qualifier("telegramChatServiceHttpClient")
   private final TelegramChatService telegramChatService;
 
+  @Qualifier("subscriptionsHolderChatServiceHttpClient")
   private final SubscriptionsHolderChatService subscriptionsHolderChatService;
 
   @Override

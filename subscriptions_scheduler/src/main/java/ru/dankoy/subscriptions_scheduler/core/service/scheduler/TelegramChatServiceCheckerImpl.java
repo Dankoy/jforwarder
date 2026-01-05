@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -21,8 +22,12 @@ import ru.dankoy.subscriptions_scheduler.core.service.subscriptions.Subscription
 @RequiredArgsConstructor
 public class TelegramChatServiceCheckerImpl implements TelegramChatServiceChecker {
 
+  @Qualifier("telegramChatServiceHttpClient")
   private final TelegramChatService telegramChatService;
+
+  @Qualifier("subscriptionsHolderServiceHttpClient")
   private final SubscriptionsHolderService subscriptionsHolderService;
+
   private final SchedulerProperties schedulerProperties;
 
   private static final int INITIAL_PAGE_SIZE = 10;

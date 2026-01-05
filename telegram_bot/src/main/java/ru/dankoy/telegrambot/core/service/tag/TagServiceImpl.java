@@ -1,14 +1,18 @@
 package ru.dankoy.telegrambot.core.service.tag;
 
-import feign.FeignException.NotFound;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.TagSubscription;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
 @Service
 public class TagServiceImpl implements TagService {

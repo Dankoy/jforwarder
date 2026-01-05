@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.telegrambot.core.domain.ChatWithUUID;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(name = "telegram-chat-service")
 public interface TelegramChatServiceFeign {
 

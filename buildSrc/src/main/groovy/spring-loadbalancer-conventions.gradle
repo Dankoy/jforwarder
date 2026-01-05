@@ -1,0 +1,10 @@
+// share spring boot and dependency management for other projects via plugin
+
+dependencies {
+
+	// loadbalancer
+	implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+}
+
+

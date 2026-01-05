@@ -83,14 +83,14 @@ Open coub channel in browser. Find the last word in URL. Use it.
 ## Stack
 
 1. Java 21
-2. Spring boot 3.4.0
+2. Spring boot ~~3.4.0~~ -> 4.0.0
 3. Spring Integration
 4. Spring Cloud Netflix Eureka
 5. Spring Cloud Loadbalancer
 6. Spring Cloud Gateway
 7. Spring Data Jpa
 8. JOOQ
-9. Open feign
+9. ~~Open feign~~ -> Spring RestClient Http Services
 10. Caffeine Cache
 11. PostgreSQL
 12. Flyway

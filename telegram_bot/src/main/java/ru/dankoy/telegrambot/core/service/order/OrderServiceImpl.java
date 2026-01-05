@@ -8,6 +8,10 @@ import ru.dankoy.telegrambot.core.domain.subscription.Order;
 import ru.dankoy.telegrambot.core.domain.subscription.SubscriptionType;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @RequiredArgsConstructor
 @Service
 public class OrderServiceImpl implements OrderService {

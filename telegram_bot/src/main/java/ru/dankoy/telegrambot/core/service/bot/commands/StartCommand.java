@@ -1,7 +1,8 @@
 package ru.dankoy.telegrambot.core.service.bot.commands;
 
-import feign.FeignException.NotFound;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.Chat;
@@ -12,7 +13,10 @@ import ru.dankoy.telegrambot.core.service.chat.TelegramChatService;
 @Slf4j
 public class StartCommand extends BotCommand {
 
+  @Qualifier("telegramChatServiceHttpClient")
   private final transient TelegramChatService telegramChatService;
+
+  @Qualifier("subscriptionsHolderChatServiceHttpClient")
   private final SubscriptionsHolderChatService subscriptionsHolderChatService;
 
   public StartCommand(

@@ -2,6 +2,7 @@ package ru.dankoy.telegrambot.core.service.subscription;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.dankoy.telegrambot.core.domain.Chat;
 import ru.dankoy.telegrambot.core.domain.subscription.community.Community;
@@ -19,8 +20,10 @@ public class CommunitySubscriptionServiceImpl implements CommunitySubscriptionSe
 
   private final SubscriptionsHolderFeign subscriptionsHolderFeign;
 
+  @Qualifier("communityServiceImpl")
   private final CommunityService communityService;
 
+  @Qualifier("telegramChatServiceImpl")
   private final TelegramChatService telegramChatService;
 
   /**

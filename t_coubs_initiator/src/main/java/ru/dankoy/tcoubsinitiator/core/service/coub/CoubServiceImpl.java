@@ -6,6 +6,10 @@ import ru.dankoy.tcoubsinitiator.core.domain.coubcom.coub.CoubWrapper;
 import ru.dankoy.tcoubsinitiator.core.feign.coub.CoubFeign;
 import ru.dankoy.tcoubsinitiator.core.service.permalinkcreator.PermalinkCreatorService;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @Service
 @RequiredArgsConstructor
 public class CoubServiceImpl implements CoubService {

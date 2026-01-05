@@ -133,7 +133,7 @@ public class ChannelSubServiceImpl implements ChannelSubService {
 
   @Override
   public Page<ChannelSub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
-    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
-    return channelSubRepository.findAllBychatUuidIsIn(uuids, pageable);
+    // List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return channelSubRepository.findAllBychatUuidIsIn(chatUuids, pageable);
   }
 }

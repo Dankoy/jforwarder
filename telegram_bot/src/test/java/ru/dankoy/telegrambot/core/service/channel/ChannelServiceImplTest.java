@@ -3,13 +3,13 @@ package ru.dankoy.telegrambot.core.service.channel;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
-import feign.FeignException.NotFound;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.HttpClientErrorException.NotFound;
 import ru.dankoy.telegrambot.core.feign.subscriptionsholder.SubscriptionsHolderFeign;
 
 @DisplayName("ChannelServiceImpl test ")

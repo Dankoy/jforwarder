@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.dankoy.telegrambot.core.domain.subscription.channel.Channel;
 import ru.dankoy.telegrambot.core.domain.subscription.tag.Tag;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(name = "coub-smart-searcher")
 public interface CoubSmartSearcherFeign {
 

@@ -133,7 +133,7 @@ public class TagSubServiceImpl implements TagSubService {
 
   @Override
   public Page<TagSub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
-    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
-    return tagSubRepository.findAllBychatUuidIsIn(uuids, pageable);
+    // List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return tagSubRepository.findAllBychatUuidIsIn(chatUuids, pageable);
   }
 }

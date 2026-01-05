@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import ru.dankoy.kafkamessageconsumer.core.domain.registry.SentCoubsRegistry;
 import ru.dankoy.kafkamessageconsumer.core.domain.subscription.Subscription;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(name = "subscriptions-holder")
 public interface SubscriptionFeign {
 

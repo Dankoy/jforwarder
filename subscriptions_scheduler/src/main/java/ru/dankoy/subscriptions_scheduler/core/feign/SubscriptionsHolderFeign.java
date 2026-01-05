@@ -15,6 +15,10 @@ import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatDTO;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.ChatWithSubsDTO;
 import ru.dankoy.subscriptions_scheduler.core.dto.subscriptions.SubscriptionDTO;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(contextId = "subscriptions-holder", name = "subscriptions-holder")
 public interface SubscriptionsHolderFeign {
 

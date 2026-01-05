@@ -2,6 +2,7 @@ package ru.dankoy.subscriptionsholder.subscriptions_holder.core.repository.subsc
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -46,5 +47,5 @@ public interface TagSubRepository extends JpaRepository<TagSub, Long> {
 
   @EntityGraph(value = "tag-subscription-full-inherited", type = EntityGraphType.LOAD)
   Page<TagSub> findAllBychatUuidIsIn(
-      @Param(value = "chatUuid") List<String> chatUuid, Pageable pageable);
+      @Param(value = "chatUuid") List<UUID> chatUuid, Pageable pageable);
 }

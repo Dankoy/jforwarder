@@ -9,6 +9,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.Chat;
 import ru.dankoy.tcoubsinitiator.core.domain.telegramchatservice.filter.TelegramChatFilter;
 
+/**
+ * @deprecated since spring-boot 4.0.0 in favor {@link ChannelSubscriptionServiceHttpClient}
+ */
+@Deprecated(since = "2025-01-04", forRemoval = true)
 @FeignClient(contextId = "telegram-chat", name = "telegram-chat-service")
 public interface TelegramChatServiceFeign {
 

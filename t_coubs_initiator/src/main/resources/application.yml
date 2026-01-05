@@ -13,6 +13,10 @@ spring:
           default:
             connectTimeout: 160000000
             readTimeout: 160000000
+  http:
+    clients:
+      connect-timeout: 160000000
+      read-timeout: 160000000
 
 server:
   port: 8081

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.subscription.Order;
@@ -16,6 +17,7 @@ import ru.dankoy.telegrambot.core.service.order.OrderService;
 @Slf4j
 public class OrdersCommand extends BotCommand {
 
+  @Qualifier("OrderServiceHttpClient")
   private final transient OrderService orderService;
 
   public OrdersCommand(String command, String description, OrderService orderService) {

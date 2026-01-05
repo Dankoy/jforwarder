@@ -1,0 +1,11 @@
+// share spring boot and dependency management for other projects via plugin
+
+dependencies {
+
+	// restclinet
+	implementation 'org.springframework.boot:spring-boot-starter-restclient'
+	testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
+
+}
+
+

@@ -1,6 +1,7 @@
 package ru.dankoy.telegrambot.config.bot;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
@@ -25,8 +26,9 @@ public class TelegramClientConfig {
   @Bean
   public TelegramClientService telegramClientService(
       TelegramClient telegramClient,
-      TelegramChatService telegramChatService,
-      SubscriptionsHolderChatService subscriptionsHolderChatService) {
+      @Qualifier("telegramChatServiceHttpClient") TelegramChatService telegramChatService,
+      @Qualifier("subscriptionsHolderChatServiceHttpClient")
+          SubscriptionsHolderChatService subscriptionsHolderChatService) {
     return new TelegramClientServiceImpl(
         telegramClient, telegramChatService, subscriptionsHolderChatService);
   }

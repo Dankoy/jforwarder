@@ -163,7 +163,7 @@ public class CommunitySubServiceImpl implements CommunitySubService {
 
   @Override
   public Page<CommunitySub> findAllByChatsUUID(List<UUID> chatUuids, Pageable pageable) {
-    List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
-    return communitySubRepository.findAllBychatUuidIsIn(uuids, pageable);
+    // List<String> uuids = chatUuids.stream().map(UUID::toString).toList();
+    return communitySubRepository.findAllBychatUuidIsIn(chatUuids, pageable);
   }
 }
