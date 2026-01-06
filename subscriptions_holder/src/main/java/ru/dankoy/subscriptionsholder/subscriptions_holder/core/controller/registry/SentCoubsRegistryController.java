@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryCreateDTO;
+import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryCreatedDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.dto.sentcoubsregistry.SentCoubsRegistryDTO;
 import ru.dankoy.subscriptionsholder.subscriptions_holder.core.service.sentcoubsregistry.SentCoubsRegistryService;
 
@@ -56,10 +57,10 @@ public class SentCoubsRegistryController {
 
   @PostMapping(value = "/api/v1/sent_coubs_registry")
   @ResponseStatus(HttpStatus.CREATED)
-  public SentCoubsRegistryCreateDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
+  public SentCoubsRegistryCreatedDTO create(@Valid @RequestBody SentCoubsRegistryCreateDTO dto) {
     var fromDto = SentCoubsRegistryCreateDTO.fromDTO(dto);
     var s = sentCoubsRegistryService.create(fromDto);
-    return SentCoubsRegistryCreateDTO.toDTO(s);
+    return SentCoubsRegistryCreatedDTO.toDTO(s);
   }
 
   @DeleteMapping(value = "/api/v1/sent_coubs_registry/{id}")
