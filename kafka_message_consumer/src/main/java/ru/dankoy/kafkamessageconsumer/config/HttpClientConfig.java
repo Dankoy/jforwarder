@@ -1,5 +1,6 @@
 package ru.dankoy.kafkamessageconsumer.config;
 
+import io.micrometer.observation.ObservationRegistry;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
@@ -21,9 +22,9 @@ public class HttpClientConfig {
 
   @Primary
   @Bean
-  RestClient.Builder restClientBuilder() {
+  RestClient.Builder restClientBuilder(ObservationRegistry observationRegistry) {
     // this restclient is for eureka and other stuff
-    return RestClient.builder();
+    return RestClient.builder().observationRegistry(observationRegistry);
   }
 
   @LoadBalanced
@@ -40,10 +41,14 @@ public class HttpClientConfig {
   HttpServiceProxyFactory httpServiceProxyFactory(
       @Qualifier("lbRestClientBuilder") RestClient.Builder lbRestClientBuilder,
       @Qualifier("clientLoggerRequestInterceptor")
-          ClientHttpRequestInterceptor clientLoggerRequestInterceptor) {
+          ClientHttpRequestInterceptor clientLoggerRequestInterceptor,
+      ObservationRegistry observationRegistry) {
 
     RestClient restClient =
-        lbRestClientBuilder.requestInterceptor(clientLoggerRequestInterceptor).build();
+        lbRestClientBuilder
+            .requestInterceptor(clientLoggerRequestInterceptor)
+            .observationRegistry(observationRegistry)
+            .build();
 
     RestClientAdapter adapter = RestClientAdapter.create(restClient);
 

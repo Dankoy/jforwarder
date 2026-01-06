@@ -2,15 +2,23 @@
 
 dependencies {
 
+	// =========== Spring Boot 3.x.x ======================
 	// micrometer + zipkin bridge
-	implementation 'io.micrometer:micrometer-observation' // observation enable
-	implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
-	implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
-	implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
+	//implementation 'io.micrometer:micrometer-observation' // observation enable
+	//implementation 'io.micrometer:micrometer-registry-prometheus' // for metrics actuator (prometheus)
+	//implementation 'io.micrometer:micrometer-tracing-bridge-brave' // for tracing, span, etc
+	//implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // send logs to zipkin
 
+	// Migrated from feign to RestClient Http Services
 	if (plugins.findPlugin("spring-feign-conventions")) {
 		implementation 'io.github.openfeign:feign-micrometer'
 	}
+
+	// ============ Spring Boot 4.x.x ======================
+	implementation 'org.springframework.boot:spring-boot-starter-micrometer-metrics'
+	implementation 'org.springframework.boot:spring-boot-starter-zipkin'
+
+
 }
 
 
