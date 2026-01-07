@@ -270,3 +270,10 @@ Project contains only template files for deployments. Also threre is a script fi
 ./release.sh -u registry_user -r registry_host -t 1.8.0-SNAPSHOT
 ```
 
+## Cleanup images
+
+To cleanup unused images inside k3d kuber cluster do
+
+```shell
+docker exec {k3d_server_name} sh -c "crictl rmi --prune"
+```
