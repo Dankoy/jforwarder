@@ -1,0 +1,189 @@
+# Set this to containerd or crio if you want to collect CRI format logs
+containerRuntime: docker
+#  If you want to deploy a default Fluent Bit pipeline (including Fluent Bit Input, Filter, and output) to collect Kubernetes logs, you'll need to set the Kubernetes parameter to true
+# see https://github.com/fluent/fluent-operator/tree/master/manifests/logging-stack
+Kubernetes: true
+
+operator:
+  # The init container is to get the actual storage path of the docker log files so that it can be mounted to collect the logs.
+  # see https://github.com/fluent/fluent-operator/blob/master/manifests/setup/fluent-operator-deployment.yaml#L26
+  initcontainer:
+    image:
+      registry: docker.io
+      repository: docker
+      tag: "20.10"
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 64Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
+  image:
+    registry: ghcr.io
+    repository: fluent/fluent-operator/fluent-operator
+    tag: ""
+  resources:
+    limits:
+      cpu: 100m
+      memory: 60Mi
+    requests:
+      cpu: 100m
+      memory: 20Mi
+
+  service:
+    enable: true
+    type: ClusterIP
+    portName: metrics
+    port: 8080
+    annotations: {}
+    labels: {}
+
+  serviceMonitor:
+    enable: false
+    interval: 30s
+    path: /metrics
+    scrapeTimeout: 10s
+    secure: false
+    tlsConfig: {}
+    relabelings: []
+    metricRelabelings: []
+
+fluentbit:
+  # Installs a sub chart carrying the CRDs for the fluent-bit controller. The sub chart is enabled by default.
+  crdsEnable: true
+  enable: true
+  serviceMonitor:
+    enable: false
+    interval: 30s
+    path: /api/v2/metrics/prometheus
+    scrapeTimeout: 10s
+    secure: false
+    tlsConfig: {}
+    relabelings: []
+    metricRelabelings: []
+  livenessProbe:
+    enabled: true
+    httpGet:
+      port: 2020
+      path: /
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 15
+    successThreshold: 1
+    failureThreshold: 8
+
+  image:
+    registry: ghcr.io
+    repository: fluent/fluent-operator/fluent-bit
+    # renovate: datasource=docker depName=ghcr.io/fluent/fluent-operator/fluent-bit
+    tag: "4.1.1"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 200Mi
+    requests:
+      cpu: 10m
+      memory: 25Mi
+
+  # Configure the format of the config file to either classic or yaml. Default to classic when this value is not set
+  # configFileFormat: yaml
+
+  # Set a limit of memory that Tail plugin can use when appending data to the Engine.
+  # You can find more details here: https://docs.fluentbit.io/manual/pipeline/inputs/tail#config
+  # If the limit is reach, it will be paused; when the data is flushed it resumes.
+  # if the inbound traffic is less than 2.4Mbps, setting memBufLimit to 5MB is enough
+  # if the inbound traffic is less than 4.0Mbps, setting memBufLimit to 10MB is enough
+  # if the inbound traffic is less than 13.64Mbps, setting memBufLimit to 50MB is enough
+  input:
+    tail:
+      enable: true
+      refreshIntervalSeconds: 10
+      memBufLimit: 100MB
+      bufferMaxSize: ""
+      bufferChunkSize: ""
+      path: "/var/log/containers/*.log"
+      skipLongLines: true
+      skipEmptyLines: true
+      readFromHead: false
+      # Use storageType as "filesystem" if you want to use filesystem as the buffering mechanism for tail input.
+      storageType: memory
+      pauseOnChunksOverlimit: "off"
+      # multiline.parser
+      # multilineParser: "docker, cri"
+    systemd: 
+      enable: true
+      systemdFilter:
+        enable: true
+        filters: []
+      path: "/var/log/journal"
+      includeKubelet: true
+      stripUnderscores: "off"
+      # Use storageType as "filesystem" if you want to use filesystem as the buffering mechanism for systemd input.
+      storageType: memory
+      pauseOnChunksOverlimit: "off"
+    nodeExporterMetrics: {}
+    fluentBitMetrics: {}
+
+  # Configure the output plugin parameter in FluentBit.
+  # You can set enable to true to output logs to the specified location.
+  output:
+    es:
+      enable: false
+    # Loki fluentbit ClusterOutput, to be encapsulated in fluentbit config
+    # See https://github.com/fluent/fluent-operator/blob/master/docs/plugins/fluentbit/output/loki.md
+    # See https://docs.fluentbit.io/manual/pipeline/outputs/loki
+    loki:
+      # Switch for generation of fluentbit loki ClusterOutput (and loki basic auth http user and pass secrets if required)
+      enable: true  # Bool
+      retryLimit: "no_limits"
+      logLevel: "info"
+      host: loki-gateway.monitoring  # String
+      port: 80  # Int
+      httpUser: null
+      httpPassword: null
+      labels:
+        - job=fluent-bit
+        - $kubernetes['pod_name']
+        - $kubernetes['namespace_name']
+        - $kubernetes['container_name']
+      autoKubernetesLabels: "on"
+
+  parsers:
+    javaMultiline:
+      enable: true
+
+  # Configure the default filters in FluentBit.
+  # The `filter` will filter and parse the collected log information and output the logs into a uniform format. You can choose whether to turn this on or not.
+  filter:
+    multiline:
+      enable: true
+      keyContent: log
+      buffer: false
+      emitterMemBufLimit: 120
+      emitterType: memory
+      flushMs: 2000
+      parsers:
+        - go
+        - python
+        - java
+        #  use custom multiline parser need set .Values.parsers.javaMultiline.enable = true
+        # - java-multiline
+    kubernetes:
+      enable: true
+      labels: true
+      annotations: false
+      mergeLog: true
+    containerd:
+      # This is customized lua containerd log format converter, you can refer here:
+      # https://github.com/fluent/fluent-operator/blob/master/charts/fluent-operator/templates/fluentbit-clusterfilter-containerd.yaml
+      # https://github.com/fluent/fluent-operator/blob/master/charts/fluent-operator/templates/fluentbit-containerd-config.yaml
+      enable: true
+    systemd:
+      enable: true
+
+  # removes the hostPath mounts for varlibcontainers, varlogs and systemd.
+  disableLogVolumes: false
+
+
