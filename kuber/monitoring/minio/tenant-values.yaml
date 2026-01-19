@@ -56,25 +56,18 @@ tenant:
   buckets: 
   - name: mimir-blocks
     objectLock: false        # optional
-    region: null       # optional
   - name: mimir-ruler
     objectLock: false        # optional
-    region: null      # optional
   - name: mimir-storage
     objectLock: false        # optional
-    region: null       # optional
   - name: mimir
     objectLock: false
-    region: null
   - name: loki-chunks
     objectLock: false        # optional
-    region: null       # optional
   - name: loki-ruler
     objectLock: false        # optional
-    region: null       # optional
   - name: loki-admin
     objectLock: false        # optional
-    region: null       # optional 
 
   ###
   # Array of Kubernetes secrets from which the Operator generates MinIO users during tenant provisioning.
