@@ -15,6 +15,11 @@ sleep 100
 
 helm install loki grafana/loki -f monitoring/loki/values.yaml -n monitoring
 
+## Setup fluent
+
+helm repo add fluent https://fluent.github.io/helm-charts
+helm install fluent-operator fluent/fluent-operator -f monitoring/fluent-bit/fluent-operator.yaml -n fluent
+
 ## Actual monitoring
 
 sleep 60
