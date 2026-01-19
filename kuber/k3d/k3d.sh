@@ -7,6 +7,7 @@ kubectl apply -f namespaces/kafka-namespace.yaml
 kubectl apply -f namespaces/monitoring-namespace.yaml
 kubectl apply -f namespaces/minio-namespace.yaml
 kubectl apply -f namespaces/mimir-namespace.yaml
+kubectl apply -f namespaces/fluent-namespace.yaml
 
 # kubectl config set-context jforwarder --namespace=jforwarder \
 #   --cluster=k3d-mycluster \
