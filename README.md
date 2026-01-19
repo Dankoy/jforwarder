@@ -112,7 +112,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 2. Grafana
 3. Prometheus node exporter
 4. Prometheus postgres exporter
-5. Loki (logs)
+5. Loki + Fluent Bit (logs)
 6. Mimir + minio (metrics storage)
 7. cAdvisor (metrics)
 
