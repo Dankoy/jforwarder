@@ -82,7 +82,7 @@ mimir:
       max_global_series_per_user: 150000
       max_label_names_per_series: 400
       align_queries_with_step: true
-      compactor_blocks_retention_period: 200d
+      compactor_blocks_retention_period: 100d
     memberlist:
       abort_if_cluster_join_fails: false
       compression_enabled: false
