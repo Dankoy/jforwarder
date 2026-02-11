@@ -2,7 +2,7 @@ import com.github.jasypt.encrypt.JasyptPlugin
 
 buildscript {
 	dependencies {
-		classpath files('jasypt-encrypt-plugin-1.9.3.jar')
+		classpath files('jasypt-encrypt-plugin-1.3.3.jar')
 		classpath files('jooq-codegen-gradle-3.19.29.jar') // update only if starter updated it
 		classpath("org.testcontainers:testcontainers-postgresql:2.0.3")
 		classpath("org.postgresql:postgresql:42.7.9")
@@ -18,7 +18,7 @@ plugins {
 	id 'loki-conventions'
 	id 'spring-web-conventions'
 	id 'lombok-conventions'
-	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.9.3"
+	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.3.3"
 	id "org.jooq.jooq-codegen-gradle" version "3.19.29" // update only if starter updated jooq version
 	id 'org.liquibase.gradle' version '3.1.0'
 }
