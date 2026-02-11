@@ -201,7 +201,7 @@ jooq {
 				directory = "src/main/java/"
 			}
 
-			// generates in build folder. Add sourceSets{} see below + add classpth to vscode ot idea
+			// generates in build folder. Add sourceSets{} see below + add classpth to vscode or idea
 			// target {
 			//     packageName = "ru.dankoy.telegramchatservice.jooq"
 			//     directory = "${project.buildDir}/generated/sources/java/main/"

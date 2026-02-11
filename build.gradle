@@ -1,5 +1,5 @@
 // custom configuration and dependencies are moved to buildSrc
-// dependabot probably wont work with such configuration
+// dependabot probably won't work with such configuration
 
 plugins {
 	id 'spotless-conventions'
