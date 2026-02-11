@@ -28,13 +28,13 @@ dependencies {
 
 	// bot - doesn't work with eureka client
 	// adds core bot functionality
-	implementation('org.telegram:telegrambots-longpolling:9.2.1') {
+	implementation('org.telegram:telegrambots-longpolling:9.3.0') {
 		exclude group: 'org.glassfish.jersey.containers'
 		exclude group: 'org.glassfish.jersey.core'
 		exclude group: 'org.glassfish.jersey.inject'
 		exclude group: 'org.glassfish.jersey.media'
 	}
-	implementation('org.telegram:telegrambots-client:9.2.1') // adds client to communicate with telegram api
+	implementation('org.telegram:telegrambots-client:9.3.0') // adds client to communicate with telegram api
 
 	// freemarker
 	implementation 'org.springframework.boot:spring-boot-starter-freemarker'
