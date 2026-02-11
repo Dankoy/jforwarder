@@ -44,9 +44,9 @@ public class SentCoubsRegistry {
   @JoinColumn(name = "subscription_id")
   private Subscription subscription;
 
-  @Column(name = "coub_permalink")
+  @Column(name = "coub_permalink", nullable = false)
   private String coubPermalink;
 
-  @Column(name = "date_time")
+  @Column(name = "date_time", nullable = false)
   private LocalDateTime dateTime;
 }

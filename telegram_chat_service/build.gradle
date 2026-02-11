@@ -5,7 +5,7 @@ buildscript {
 		classpath files('jasypt-encrypt-plugin-1.3.3.jar')
 		classpath files('jooq-codegen-gradle-3.19.29.jar') // update only if starter updated it
 		classpath("org.testcontainers:testcontainers-postgresql:2.0.3")
-		classpath("org.postgresql:postgresql:42.7.8")
+		classpath("org.postgresql:postgresql:42.7.9")
 		classpath("org.liquibase:liquibase-gradle-plugin:3.0.2")
 		classpath('org.liquibase:liquibase-core:5.0.1')
 	}
@@ -201,7 +201,7 @@ jooq {
 				directory = "src/main/java/"
 			}
 
-			// generates in build folder. Add sourceSets{} see below + add classpth to vscode ot idea
+			// generates in build folder. Add sourceSets{} see below + add classpth to vscode or idea
 			// target {
 			//     packageName = "ru.dankoy.telegramchatservice.jooq"
 			//     directory = "${project.buildDir}/generated/sources/java/main/"

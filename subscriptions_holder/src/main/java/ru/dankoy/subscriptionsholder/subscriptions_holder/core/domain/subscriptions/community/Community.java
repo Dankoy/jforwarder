@@ -36,7 +36,7 @@ public class Community {
   @Column(name = "external_id")
   private long externalId;
 
-  @Column(name = "name")
+  @Column(name = "name", nullable = false)
   private String name;
 
   @BatchSize(size = 10) // not necessary if entity graph is used

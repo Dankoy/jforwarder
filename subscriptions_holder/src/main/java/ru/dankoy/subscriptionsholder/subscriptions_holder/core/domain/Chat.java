@@ -26,7 +26,7 @@ public class Chat {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
-  @Column(name = "chat_id")
+  @Column(name = "chat_id", nullable = false)
   private long chatId;
 
   @Column(name = "type")
@@ -44,7 +44,7 @@ public class Chat {
   @Column(name = "username")
   private String username;
 
-  @Column(name = "active")
+  @Column(name = "active", nullable = false)
   private boolean active;
 
   @Column(name = "message_thread_id")
