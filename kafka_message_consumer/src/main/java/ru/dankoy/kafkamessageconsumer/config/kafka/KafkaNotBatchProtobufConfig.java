@@ -82,7 +82,7 @@ public class KafkaNotBatchProtobufConfig {
     // polling interval. how many seconds consumer can work with pack of messages
     // time to process last polled records + idle between polls must be less than
     // max.poll.interval.ms.
-    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 15_000);
+    props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 40_000);
 
     // before he hits new poll
     props.put(ConsumerConfig.RETRY_BACKOFF_MS_CONFIG, 500);
@@ -238,7 +238,7 @@ public class KafkaNotBatchProtobufConfig {
     KafkaErrorHandler errorHandler =
         new KafkaErrorHandler(
             (consumerRecord, e) -> {
-              // logic to execute when all the retry attemps are exhausted
+              // logic to execute when all the retry attempts are exhausted
             },
             fixedBackOff);
     errorHandler.addRetryableExceptions(SocketTimeoutException.class);
