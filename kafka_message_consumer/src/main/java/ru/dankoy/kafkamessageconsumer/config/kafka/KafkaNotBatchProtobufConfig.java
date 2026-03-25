@@ -238,7 +238,7 @@ public class KafkaNotBatchProtobufConfig {
     KafkaErrorHandler errorHandler =
         new KafkaErrorHandler(
             (consumerRecord, e) -> {
-              // logic to execute when all the retry attemps are exhausted
+              // logic to execute when all the retry attempts are exhausted
             },
             fixedBackOff);
     errorHandler.addRetryableExceptions(SocketTimeoutException.class);
