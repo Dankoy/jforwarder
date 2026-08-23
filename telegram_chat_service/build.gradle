@@ -19,7 +19,7 @@ plugins {
 	id 'spring-web-conventions'
 	id 'lombok-conventions'
 	id "io.github.ximtech.jasypt-encrypt-plugin" version "1.4.1"
-	id "org.jooq.jooq-codegen-gradle" version "3.21.6" // update only if starter updated jooq version
+	id "org.jooq.jooq-codegen-gradle" version "3.21.5" // update only if starter updated jooq version
 	id 'org.liquibase.gradle' version '3.1.0'
 }
 
