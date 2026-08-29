@@ -69,7 +69,7 @@ jobs:
   deployment-status:
     needs: [build]
     runs-on: ubuntu-latest
-    permissions: read-all
+    permissions: {}
     environment:
       name: production
       deployment: true
