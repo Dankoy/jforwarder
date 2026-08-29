@@ -73,6 +73,7 @@ jobs:
     environment:
       name: production
       deployment: true
+      url: https://t.me/coub_forwarder_bot
     steps:
       - name: Deployment Completed
         run: echo "Production deployment completed successfully"
