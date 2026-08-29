@@ -15,7 +15,7 @@ jobs:
       contents: read
       packages: write
     strategy:
-      max-parallel: 5
+      max-parallel: 2
       matrix:
         docker-file: [ "coub_smart_searcher", "kafka_message_consumer", "kafka_message_producer",
                        "spring_eureka_registry", "spring_gateway", "subscriptions_holder",
