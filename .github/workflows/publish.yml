@@ -59,5 +59,5 @@ jobs:
             JAR_VERSION=${{ env.version_name }}
           file: ./Dockerfile.${{ matrix.docker-file }}
           platforms: linux/amd64,linux/arm64
-          tags: $DOCKERHUB_USERNAME/${{ matrix.docker-file }}:${{ env.version_name }}
+          tags: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.docker-file }}:${{ env.version_name }}
           push: true
