@@ -30,5 +30,5 @@ public interface SubscriptionsHolderChannelSubHttpService {
   @GetExchange(url = "/api/v1/channel_subscriptions")
   List<ChannelSubscription> getAllChannelSubscriptionsByChatIdAndMessageThreadId(
       @RequestParam("telegramChatId") long telegramChatId,
-      @RequestParam("messageThreadId") Integer messageThreadId);
+      @RequestParam(name = "messageThreadId", required = false) Integer messageThreadId);
 }
