@@ -22,14 +22,14 @@ ext {
 	// (the latest version btw), is not compatible and still depends on 3.25.5. Weird stuff ain't it?
 	// exception - https://github.com/protocolbuffers/protobuf/issues/16398
 	// more on compatibility issues - https://github.com/confluentinc/schema-registry/issues/3047
-	protobufVersion = '3.25.5'
+	protobufVersion = '4.34.0'
 }
 
 protobuf {
 	// Configure the protoc executable
 	protoc {
 		// Download from repositories
-		artifact = 'com.google.protobuf:protoc:3.25.5'
+		artifact = "com.google.protobuf:protoc:${protobufVersion}"
 	}
 
 	// generateProtoTasks.generatedFilesBaseDir = 'generated-sources'
