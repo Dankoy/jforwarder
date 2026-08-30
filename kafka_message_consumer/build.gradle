@@ -35,10 +35,14 @@ dependencies {
 
 	// protobuf schemas
 	implementation project(":protobuf_schemas")
-	implementation ("io.confluent:kafka-protobuf-serializer:7.9.0") {
-		exclude group: "com.google.protobuf", module: "protobuf-java"
-		exclude group: "com.google.protobuf", module: "protobuf-java-util"
-	}
+	implementation ("io.confluent:kafka-protobuf-serializer:8.3.1")
+	// {
+	// 	exclude group: "com.google.protobuf", module: "protobuf-java"
+	// 	exclude group: "com.google.protobuf", module: "protobuf-java-util"
+	// }
+	
+	// because it comes from kafka-protobuf-serializer:8.3.1
+	implementation platform('com.google.api.grpc:proto-google-common-protos:2.53.0')
 
 	testImplementation 'org.testcontainers:testcontainers-kafka'
 }
