@@ -15,7 +15,7 @@ spec:
         app: kafka-schema-registry
     spec:
       containers:
-        - image: "docker.io/confluentinc/cp-schema-registry:7.9.0"
+        - image: "docker.io/confluentinc/cp-schema-registry:8.3.1"
           name: kafka-schema-registry
           imagePullPolicy: IfNotPresent
           ports:
