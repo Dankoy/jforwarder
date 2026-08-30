@@ -4,7 +4,7 @@ services:
 
   ###### kafka related start #####
   kafka:
-    image: docker.io/bitnami/kafka:3.5
+    image: docker.io/bitnamilegacy/kafka:4.0.0
     container_name: kafka
     ports:
       - "9092:9092" # for connects from docker internal network
@@ -39,7 +39,7 @@ services:
 
   kafka-schema-registry:
     # image: docker.io/bitnami/schema-registry:7.9.0 # compatibility level doesn't work in bitnami
-    image: confluentinc/cp-schema-registry:7.9.0
+    image: confluentinc/cp-schema-registry:8.3.1
     container_name: schema-registry
     hostname: schema-registry
     ports:
