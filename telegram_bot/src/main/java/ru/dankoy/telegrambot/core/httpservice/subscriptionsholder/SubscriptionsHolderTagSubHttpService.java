@@ -29,5 +29,5 @@ public interface SubscriptionsHolderTagSubHttpService {
   @GetExchange(url = "/api/v1/tag_subscriptions")
   List<TagSubscription> getAllTagSubscriptionsByChatIdAndMessageThreadId(
       @RequestParam("telegramChatId") long telegramChatId,
-      @RequestParam("messageThreadId") Integer messageThreadId);
+      @RequestParam(name = "messageThreadId", required = false) Integer messageThreadId);
 }

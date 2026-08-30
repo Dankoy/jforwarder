@@ -26,7 +26,7 @@ public interface SubscriptionsHolderChatHttpService {
   @GetExchange(url = "/api/v1/telegram_chat")
   Chat getChatByIdAndMessageThreadId(
       @RequestParam("chatId") long chatId,
-      @RequestParam("messageThreadId") Integer messageThreadId);
+      @RequestParam(name = "messageThreadId", required = false) Integer messageThreadId);
 
   /**
    * @deprecated chat is in separate microservice and db

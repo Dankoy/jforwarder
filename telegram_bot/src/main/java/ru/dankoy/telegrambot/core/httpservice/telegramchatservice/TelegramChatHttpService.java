@@ -16,7 +16,7 @@ public interface TelegramChatHttpService {
   @GetExchange(url = "/api/v1/telegram_chat")
   ChatWithUUID getChatByIdAndMessageThreadId(
       @RequestParam("chatId") long chatId,
-      @RequestParam("messageThreadId") Integer messageThreadId);
+      @RequestParam(name = "messageThreadId", required = false) Integer messageThreadId);
 
   @PostExchange(url = "/api/v1/telegram_chat")
   ChatWithUUID createChat(@RequestBody ChatWithUUID chat);
