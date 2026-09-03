@@ -1,0 +1,31 @@
+{{ .Chart.Name }} {{ .Chart.Version }} (app {{ .Chart.AppVersion }}) released as "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Images:
+{{- range $name, $svc := .Values.services }}
+{{- if $svc.enabled }}
+  {{ $name }}: {{ include "jforwarder.image" (dict "root" $ "svc" $svc "name" $name) }}
+{{- end }}
+{{- end }}
+
+Check the rollout:
+
+  kubectl get pods -n {{ .Release.Namespace }} -w
+
+{{- if not .Values.image.user }}
+
+WARNING: image.user is empty, application images are pulled without a user
+         prefix. Set it with --set image.user=<docker hub user>.
+{{- end }}
+{{- if .Values.secrets.create }}
+
+WARNING: secrets.create is true, so the placeholder values from values.yaml were
+         applied. Pass the real ones with -f values-secrets.yaml or set
+         secrets.create=false and manage the secrets outside of the chart.
+{{- end }}
+{{- if .Values.ingress.enabled }}
+
+Ingress hosts (add them to /etc/hosts pointing at the cluster ip):
+{{- range .Values.ingress.hosts }}
+  {{ .host }}
+{{- end }}
+{{- end }}
