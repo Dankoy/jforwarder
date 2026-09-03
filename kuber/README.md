@@ -11,7 +11,7 @@ Tried k3d as docker wrapper for k3s and it feels better than others.
 
 ## Kubelet configs
 
-Create kubelet ![config](./kubelet-config.yaml) file and apply it whent minikube starts
+Create kubelet ![config](./kubelet-config.yaml) file and apply it when minikube starts
 
 ```shell
 minikube start --cpus 8 --memory 9000 --extra-config=kubelet.config=/kubelet-config.yaml
@@ -264,7 +264,7 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ### Project deployments 
 
-Project contains only template files for deployments. Also threre is a script file to generate deployment file dynamically.
+Project contains only template files for deployments. Also there is a script file to generate deployment file dynamically.
 
 ```shell
 ./release.sh -u registry_user -r registry_host -t 1.8.0-SNAPSHOT
