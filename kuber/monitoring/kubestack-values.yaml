@@ -49,15 +49,68 @@ grafana:
   - name: Loki
     access: proxy
     id: Loki
+    uid: loki
     basicAuth: false
     editable: false
     jsonData:
       httpHeaderName1: "X-Scope-OrgID"
+      # Turns the trace id printed in every log line into a link to the trace.
+      # The id comes from the correlation bracket written by
+      # logging.pattern.correlation: [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+      # e.g. ... ERROR 1 --- [pool-2-thread-1] [telegram-bot,6f1a2b,9c22d1] r.d.t.CoubService : msg
+      # It is the only bracket on the line that contains commas, so the thread
+      # name is skipped, and it is still found once fluent-bit wraps the line in
+      # JSON for the loki output. Lines logged outside a trace render as
+      # [name,,] and stay unmatched.
+      derivedFields:
+        # Internal link. datasourceUid must match the uid of the Zipkin datasource below.
+        - datasourceUid: zipkin
+          matcherRegex: '\[[^,\]]*,([0-9a-f]+),[0-9a-f]*\]'
+          name: TraceID
+          url: $${__value.raw}
+        # External link, through the zipkin ingress host.
+        - matcherRegex: '\[[^,\]]*,([0-9a-f]+),[0-9a-f]*\]'
+          name: TraceID_External
+          url: 'http://zipkin/zipkin/traces/$${__value.raw}'
     secureJsonData:
       httpHeaderValue1: "jforwarder"
     orgId: 1
     type: loki
     url: http://loki-gateway.monitoring
+  - name: Zipkin
+    access: proxy
+    uid: zipkin
+    basicAuth: false
+    editable: false
+    readOnly: true
+    orgId: 1
+    type: zipkin
+    url: http://zipkin.monitoring:9411/
+    jsonData:
+      tracesToLogsV2:
+        # Back link from a span to its logs. Must match the uid of Loki above.
+        datasourceUid: 'loki'
+        spanStartTimeShift: '-30m'
+        spanEndTimeShift: '30m'
+        tags: ['job', 'instance', 'pod', 'namespace']
+        filterByTraceID: false
+        filterBySpanID: true
+        customQuery: true
+        query: '{traceID="$${__span.traceId}"} |= "$${__span.spanId}"'
+      tracesToMetrics:
+        datasourceUid: 'prometheus'
+        spanStartTimeShift: '-30m'
+        spanEndTimeShift: '30m'
+        tags: [{ key: 'service.name', value: 'service' }, { key: 'job' }]
+      nodeGraph:
+        enabled: true
+      traceQuery:
+        timeShiftEnabled: true
+        spanStartTimeShift: '-1h'
+        spanEndTimeShift: '1h'
+      spanBar:
+        type: 'None'
+    version: 1
 
   # Flag to mark provisioned data sources for deletion if they are no longer configured.
   # It takes no effect if data sources are already listed in the deleteDatasources section.
