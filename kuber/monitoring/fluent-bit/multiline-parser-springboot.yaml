@@ -1,0 +1,46 @@
+---
+# Multiline parser for the Spring Boot console format.
+#
+# The built-in `java` parser starts a record only on a line that looks like
+# "...Exception:" / "...Error:", which leaves two gaps for our services:
+#   * the logger line ("... ERROR ... CoubService : Failed to send coub") is
+#     emitted as a separate record, detached from its stacktrace;
+#   * an exception thrown without a message prints as "...BotException" with
+#     no colon, so the start rule never fires and every "at ..." frame ends
+#     up as its own record.
+#
+# This parser anchors on the timestamp instead: a line that starts with the
+# Spring Boot console timestamp opens a new record, everything else belongs
+# to the previous one. Spring Boot 4 uses the ISO-8601 pattern
+# yyyy-MM-dd'T'HH:mm:ss.SSSXXX (see CONSOLE_LOG_PATTERN in Spring Boot's
+# logback defaults.xml), and none of the services override it.
+#
+# Non Spring Boot workloads are unaffected: their lines do not start with
+# that timestamp, so this parser rejects them and fluent-bit falls through
+# to the next parser in filter.multiline.parsers (go, python, java) - kafka
+# and postgres use "yyyy-MM-dd HH:mm:ss" with a space, not "T".
+#
+# Cost: a record is held until the next log line arrives or flushTimeout
+# expires, so log delivery lags by up to ~1s.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterMultilineParser
+metadata:
+  name: springboot
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+    fluentbit.fluent.io/component: logging
+spec:
+  type: "regex"
+  flushTimeout: 1000
+  keyContent: "log"
+  rules:
+    # A new event starts on the console timestamp.
+    - start: "start_state"
+      regex: '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}/'
+      next: "cont"
+    # Anything not starting with it continues the current event: the blank
+    # lines %wEx wraps the stacktrace in, "java.lang.X: msg", "\tat ...",
+    # "Caused by:" and "... N common frames omitted".
+    - start: "cont"
+      regex: '/^(?!\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3})/'
+      next: "cont"

@@ -1,0 +1,55 @@
+---
+# Extracts the log level into a `level` field so Loki does not have to guess it.
+#
+# Loki adds detected_level to every entry on ingestion. Its detector looks for
+# a level field in the JSON line first, and only falls back to scanning the raw
+# text if none is found. The fluent-bit loki output ships the whole record as
+# JSON, so putting `level` in the record hits that first branch and the level is
+# taken verbatim.
+#
+# Without it the text fallback decides, and before Loki 3.7.0 that fallback
+# matches a bare "INFO" but requires "[ERROR]"/"ERR:" for errors and
+# "[WARN]"/"WARN:" for warnings, while Spring Boot prints them bare
+# (" ERROR 1 --- "). It has no branch for TRACE or FATAL at all. The result is
+# that errors, warnings and hibernate TRACE output all arrive as
+# detected_level=unknown, which breaks the level filter and the log volume
+# histogram in Grafana.
+#
+# Doing it here rather than pinning a newer Loki keeps this working on any Loki
+# version, in both directions.
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterParser
+metadata:
+  name: springboot-level
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+    fluentbit.fluent.io/component: logging
+spec:
+  regex:
+    # \A, not ^: Onigmo uses Ruby syntax where ^ matches at every line start,
+    # and these records are multi-line. On a record whose first line carries no
+    # level, ^ would happily pick a level word out of the middle of a
+    # stacktrace; \A leaves such a record alone instead.
+    regex: '\A\S+\s+(?<level>TRACE|DEBUG|INFO|WARN|ERROR|FATAL)\s'
+---
+apiVersion: fluentbit.fluent.io/v1alpha2
+kind: ClusterFilter
+# The name decides the position in the pipeline: the operator sorts filters by
+# (ordinal, name) and the chart sets no ordinal, so this lands after
+# `kubernetes` and `multiline` and sees whole, already concatenated records.
+# Records that do not match the parser pass through untouched.
+metadata:
+  name: parser-loglevel
+  labels:
+    fluentbit.fluent.io/enabled: "true"
+    fluentbit.fluent.io/component: logging
+spec:
+  match: kube.*
+  filters:
+    - parser:
+        keyName: log
+        parser: springboot-level
+        # Keep the message and everything the kubernetes filter added; the
+        # parser only contributes the extra `level` key.
+        reserveData: true
+        preserveKey: true

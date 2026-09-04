@@ -1,5 +1,9 @@
-# Set this to containerd or crio if you want to collect CRI format logs
-containerRuntime: docker
+# Set this to containerd or crio if you want to collect CRI format logs.
+# k3s/k3d nodes run containerd: /var/log/containers/*.log are CRI formatted
+# ("<time> stdout F <message>"), not docker JSON. With "docker" here the tail
+# parser fails on every line, the raw CRI prefix stays inside the log field and
+# no multiline continuation rule (e.g. "^[\t ]+at ") can ever match.
+containerRuntime: containerd
 #  If you want to deploy a default Fluent Bit pipeline (including Fluent Bit Input, Filter, and output) to collect Kubernetes logs, you'll need to set the Kubernetes parameter to true
 # see https://github.com/fluent/fluent-operator/tree/master/manifests/logging-stack
 Kubernetes: true
@@ -100,7 +104,8 @@ fluentbit:
     tail:
       enable: true
       refreshIntervalSeconds: 10
-      memBufLimit: 100MB
+      # Keep tail + multiline emitter buffers below the container memory limit
+      memBufLimit: 50MB
       bufferMaxSize: ""
       bufferChunkSize: ""
       path: "/var/log/containers/*.log"
@@ -111,7 +116,15 @@ fluentbit:
       storageType: memory
       pauseOnChunksOverlimit: "off"
       # multiline.parser
-      # multilineParser: "docker, cri"
+      # The CRI multiline parser strips the "<time> stdout <logtag> "
+      # prefix into a clean `log` key and stitches the partial lines
+      # containerd emits for anything longer than 16KB (logtag P ... P F);
+      # long stacktraces get split there otherwise. Setting multilineParser
+      # makes tail ignore the `parser` derived from containerRuntime.
+      # Note: parsers are tried in order and the first match owns the
+      # stream, so "cri, java" would never reach `java` - stacktrace
+      # concatenation is done by the multiline filter below instead.
+      multilineParser: "cri"
     systemd: 
       enable: true
       systemdFilter:
@@ -152,7 +165,11 @@ fluentbit:
 
   parsers:
     javaMultiline:
-      enable: true
+      # Unused: not referenced in filter.multiline.parsers, and its
+      # hardcoded start rule expects "YYYY-MM-DD HH:MM:SS" while Spring
+      # Boot logs ISO-8601 ("2026-09-03T10:00:00.123+03:00"), so it would
+      # never match anyway.
+      enable: false
 
   # Configure the default filters in FluentBit.
   # The `filter` will filter and parse the collected log information and output the logs into a uniform format. You can choose whether to turn this on or not.
@@ -160,16 +177,27 @@ fluentbit:
     multiline:
       enable: true
       keyContent: log
-      buffer: false
-      emitterMemBufLimit: 120
+      # Buffered mode keeps multiline state across chunks. Unbuffered mode
+      # flushes everything pending at the end of every chunk and ignores
+      # flushMs, so a stacktrace spanning two tail reads is emitted as
+      # separate records.
+      buffer: true
+      # In MB. Must fit in fluentbit.resources.limits.memory together with
+      # input.tail.memBufLimit, otherwise the pod is OOMKilled mid-stacktrace.
+      emitterMemBufLimit: 20
       emitterType: memory
       flushMs: 2000
+      # Order matters: parsers are tried in sequence and the first one that
+      # matches owns the stream. `springboot` is applied to our services and
+      # keeps the logger line together with its stacktrace; the rest is the
+      # fallback for third party workloads (kafka/strimzi log4j, exporters).
+      # `springboot` comes from multiline-parser-springboot.yaml, which has
+      # to be applied separately - the chart cannot template custom rules.
       parsers:
+        - springboot
         - go
         - python
         - java
-        #  use custom multiline parser need set .Values.parsers.javaMultiline.enable = true
-        # - java-multiline
     kubernetes:
       enable: true
       labels: true
@@ -179,7 +207,14 @@ fluentbit:
       # This is customized lua containerd log format converter, you can refer here:
       # https://github.com/fluent/fluent-operator/blob/master/charts/fluent-operator/templates/fluentbit-clusterfilter-containerd.yaml
       # https://github.com/fluent/fluent-operator/blob/master/charts/fluent-operator/templates/fluentbit-containerd-config.yaml
-      enable: true
+      # Disabled on purpose. It only renames message -> log for the plain
+      # `cri` parser, which the tail multilineParser above already does.
+      # Worse, filters are ordered by name (containerd < kubernetes <
+      # multiline) and the buffered multiline filter re-injects finished
+      # records at the head of the pipeline, so this lua would run a second
+      # time on them: record["log"] = record["message"] with message
+      # already nil wipes the concatenated stacktrace.
+      enable: false
     systemd:
       enable: true
 

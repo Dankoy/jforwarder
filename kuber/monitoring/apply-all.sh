@@ -20,6 +20,14 @@ helm install loki grafana/loki -f monitoring/loki/values.yaml -n monitoring
 helm repo add fluent https://fluent.github.io/helm-charts
 helm install fluent-operator fluent/fluent-operator -f monitoring/fluent-bit/fluent-operator.yaml -n fluent
 
+## Custom multiline parser referenced from fluent-operator.yaml. Needs the
+## CRDs the chart above installs, so wait for them to be established first.
+
+kubectl wait --for condition=established --timeout=60s \
+    crd/clustermultilineparsers.fluentbit.fluent.io
+kubectl apply -f monitoring/fluent-bit/multiline-parser-springboot.yaml
+kubectl apply -f monitoring/fluent-bit/loglevel-filter.yaml
+
 ## Actual monitoring
 
 sleep 60
