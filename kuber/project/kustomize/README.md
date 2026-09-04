@@ -125,12 +125,6 @@ The deployments reference them by name (`telegram-bot-secret`,
 `subscriptions-holder-secret`, `telegram-chat-service-secret`), so the order is
 secrets first, then `kubectl apply -k`.
 
-`configmaps/kafka-configmap.yaml` is in the base, although it declares a
-`kafka-secret` with bitnami `KAFKA_CFG_*` variables that nothing in the cluster
-reads — the services reach the strimzi broker through `KAFKA_SERVER`. It carries
-no real credentials and it is kept only so that the default deploy applies
-exactly what `apply-all.sh` applied before.
-
 ## Changing something
 
 * a config or service value — edit the file in `base/<folder>` and the twin in

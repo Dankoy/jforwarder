@@ -176,9 +176,3 @@ helm lint ./jforwarder --set image.user=someuser
 Everything outside `kuber/project`: namespaces, storage class, kafka (strimzi),
 the monitoring stack and the dashboard. They are installed by
 `kuber/setup-in-k3d.sh` as before.
-
-One object of `kuber/project` is left out on purpose:
-`configmaps/kafka-configmap.yaml`, which declares a `kafka-secret` with bitnami
-`KAFKA_CFG_*` variables. Nothing in the cluster references it — the services
-talk to the strimzi broker through `KAFKA_SERVER` — so it looks like a leftover
-of the docker compose setup. Add it to `secrets.data` if it is still needed.
