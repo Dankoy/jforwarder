@@ -26,6 +26,7 @@ helm install fluent-operator fluent/fluent-operator -f monitoring/fluent-bit/flu
 kubectl wait --for condition=established --timeout=60s \
     crd/clustermultilineparsers.fluentbit.fluent.io
 kubectl apply -f monitoring/fluent-bit/multiline-parser-springboot.yaml
+kubectl apply -f monitoring/fluent-bit/loglevel-filter.yaml
 
 ## Actual monitoring
 

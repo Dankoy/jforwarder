@@ -65,10 +65,11 @@ PodMonitor should be applied in monitoring namespace.
 
 Log collection is fluent-operator, installed from the `fluent/fluent-operator`
 chart with [fluent-bit/fluent-operator.yaml](fluent-bit/fluent-operator.yaml).
-Stacktrace concatenation additionally needs
-[fluent-bit/multiline-parser-springboot.yaml](fluent-bit/multiline-parser-springboot.yaml),
-which is a plain manifest because the chart cannot template custom multiline
-rules.
+Two plain manifests go with it, because the chart cannot template either:
+[fluent-bit/multiline-parser-springboot.yaml](fluent-bit/multiline-parser-springboot.yaml)
+for stacktrace concatenation and
+[fluent-bit/loglevel-filter.yaml](fluent-bit/loglevel-filter.yaml), which puts
+the log level into a `level` field so Loki does not have to guess it.
 
 **Apply that manifest no later than the helm upgrade** - fluent-bit refuses to
 start when a filter references a multiline parser that is not registered.

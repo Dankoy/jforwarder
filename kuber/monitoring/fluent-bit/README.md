@@ -9,6 +9,7 @@ Files:
 | --- | --- |
 | [fluent-operator.yaml](fluent-operator.yaml) | Helm values for the `fluent/fluent-operator` chart |
 | [multiline-parser-springboot.yaml](multiline-parser-springboot.yaml) | Custom `ClusterMultilineParser`, applied separately |
+| [loglevel-filter.yaml](loglevel-filter.yaml) | `ClusterParser` + `ClusterFilter` putting the level into a `level` field |
 | `*.yaml_DISABLED` | Earlier hand written manifests, kept for reference |
 
 ## Overview
@@ -22,12 +23,13 @@ flowchart TB
     ML["FILTER multiline<br>springboot, go, python, java<br>buffer on"]
     EM["in_emitter"]
     AGAIN["filter chain, second pass<br>kubernetes re-runs<br>multiline skips its own emitter"]
+    LVL["FILTER parser-loglevel<br>extracts the level into a level field"]
     LOKI["OUTPUT loki<br>loki-gateway.monitoring:80"]
 
     APP --> FILE --> TAIL --> KUBE --> ML
     ML -- "buffered records" --> EM
     EM -- "re-injected at the head of the pipeline" --> AGAIN
-    AGAIN --> LOKI
+    AGAIN --> LVL --> LOKI
 ```
 
 Two separate stages do multiline work, and they are not interchangeable:
@@ -277,6 +279,33 @@ traversal logic: `cri` matches **every** CRI line, so it always wins and
 `java` never gets control. The split is mandatory — `cri` in the input peels
 off the transport layer, `springboot` in the filter parses the application
 one.
+
+## Log levels
+
+Loki attaches `detected_level` to every entry on ingestion. Its detector reads a
+level field out of the JSON line first and only falls back to scanning raw text
+when it finds none. The loki output ships the whole record as JSON, so
+[loglevel-filter.yaml](loglevel-filter.yaml) putting a `level` key into the
+record hits that first branch and the level is taken verbatim.
+
+That matters because the text fallback is version dependent. Before Loki 3.7.0
+it matches a bare `INFO` but wants `[ERROR]`/`ERR:` for errors and
+`[WARN]`/`WARN:` for warnings, and has no branch for `TRACE` or `FATAL` at all,
+while Spring Boot prints all of them bare (` ERROR 1 --- `). Measured on Loki
+3.6.11 across the running services: 433 `info`, 34 `debug`, 0 `warn`,
+0 `error`, 500 `unknown`. With the `level` field, the same Loki resolves
+`info`, `warn`, `error`, `debug` and `trace` correctly.
+
+Two details in the manifest are load bearing:
+
+- the filter is named `parser-loglevel` so it sorts after `multiline` and sees
+  whole, already concatenated records;
+- the regex is anchored with `\A`, not `^`. fluent-bit builds Onigmo with Ruby
+  syntax where `^` matches at every line start, so on a record whose first line
+  carries no level it would pick a level word out of the middle of a stacktrace.
+
+Non Spring Boot workloads do not match the parser, pass through untouched and
+keep relying on Loki's own heuristic, exactly as before.
 
 ## Summary of what was broken
 
