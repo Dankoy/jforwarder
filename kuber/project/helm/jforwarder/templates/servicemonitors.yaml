@@ -1,0 +1,29 @@
+{{- $global := .Values.serviceMonitor }}
+{{- range $name, $svc := .Values.services }}
+{{- $sm := $svc.serviceMonitor | default dict }}
+{{- $smEnabled := $global.enabled }}
+{{- if hasKey $sm "enabled" }}{{- $smEnabled = $sm.enabled }}{{- end }}
+{{- if and $svc.enabled (ne (($svc.service).enabled | toString) "false") $smEnabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ $name }}
+  namespace: {{ $sm.namespace | default $global.namespace }}
+  labels:
+    {{- /* must match the serviceMonitorSelector of the prometheus instance */}}
+    {{- toYaml ($sm.labels | default $global.labels) | nindent 4 }}
+    {{- include "jforwarder.componentLabels" (dict "root" $ "component" $name) | nindent 4 }}
+spec:
+  namespaceSelector:
+    matchNames:
+      - {{ $sm.targetNamespace | default $global.targetNamespace | default $.Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ $name }}-service
+  endpoints:
+    - targetPort: {{ $svc.port }}
+      path: {{ $sm.path | default $global.path }}
+      interval: {{ $sm.interval | default $global.interval }}
+{{- end }}
+{{- end }}

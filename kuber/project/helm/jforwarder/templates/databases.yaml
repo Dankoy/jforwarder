@@ -1,0 +1,138 @@
+{{- range $name, $db := .Values.databases }}
+{{- if $db.enabled }}
+{{- $persistence := $db.persistence | default dict }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    app: {{ $name }}
+    {{- include "jforwarder.componentLabels" (dict "root" $ "component" $name) | nindent 4 }}
+  {{- with ($db.service).annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ ($db.service).type | default "ClusterIP" }}
+  selector:
+    app: {{ $name }}
+  ports:
+    - name: postgres
+      port: {{ ($db.service).port | default $db.port }}
+      targetPort: {{ $db.port }}
+      protocol: TCP
+      {{- with ($db.service).nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $name }}
+  labels:
+    app: {{ $name }}
+    {{- include "jforwarder.componentLabels" (dict "root" $ "component" $name) | nindent 4 }}
+spec:
+  replicas: {{ $db.replicaCount | default 1 }}
+  serviceName: {{ $name }}
+  selector:
+    matchLabels:
+      app: {{ $name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $name }}
+        {{- with $.Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      annotations:
+        {{- with (include "jforwarder.configChecksums" (dict "root" $) | trim) }}
+        {{- . | nindent 8 }}
+        {{- end }}
+        {{- with $.Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with (include "jforwarder.podScheduling" (dict "root" $ "svc" $db) | trim) }}
+      {{- . | nindent 6 }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: {{ include "jforwarder.dbImage" (dict "db" $db "name" $name) | quote }}
+          imagePullPolicy: {{ (($db.image).pullPolicy) | default "IfNotPresent" }}
+          ports:
+            - name: postgres
+              containerPort: {{ $db.port }}
+              protocol: TCP
+          envFrom:
+            {{- range $secret := $db.secrets }}
+            - secretRef:
+                name: {{ $secret }}
+            {{- end }}
+            {{- with $db.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with $db.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if $persistence.enabled }}
+          volumeMounts:
+            - name: {{ $persistence.volumeName }}
+              mountPath: {{ $persistence.mountPath }}
+          {{- end }}
+          {{- with $db.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $db.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $db.securityContext | default $.Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $db.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+  {{- if $persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ $persistence.volumeName }}
+      spec:
+        accessModes:
+          {{- toYaml ($persistence.accessModes | default (list "ReadWriteOnce")) | nindent 10 }}
+        storageClassName: {{ $persistence.storageClassName | quote }}
+        resources:
+          requests:
+            storage: {{ $persistence.size }}
+  {{- end }}
+{{- if and $persistence.enabled $persistence.createPersistentVolume }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ $persistence.volumeName }}
+  labels:
+    type: local
+    app: {{ $name }}
+    {{- include "jforwarder.componentLabels" (dict "root" $ "component" $name) | nindent 4 }}
+  annotations:
+    # the PersistentVolume must outlive the release, it holds the database files
+    helm.sh/resource-policy: keep
+spec:
+  capacity:
+    storage: {{ $persistence.size }}
+  volumeMode: Filesystem
+  accessModes:
+    {{- toYaml ($persistence.accessModes | default (list "ReadWriteOnce")) | nindent 4 }}
+  persistentVolumeReclaimPolicy: {{ $persistence.reclaimPolicy | default "Retain" }}
+  storageClassName: {{ $persistence.storageClassName | quote }}
+  hostPath:
+    path: {{ $persistence.hostPath }}
+{{- end }}
+{{- end }}
+{{- end }}

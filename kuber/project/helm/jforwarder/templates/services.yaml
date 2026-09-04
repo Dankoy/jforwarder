@@ -1,0 +1,32 @@
+{{- range $name, $svc := .Values.services }}
+{{- if and $svc.enabled (ne (($svc.service).enabled | toString) "false") }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $name }}
+  labels:
+    # the ServiceMonitors match on this label, keep it in sync with them
+    app: {{ $name }}-service
+    {{- include "jforwarder.componentLabels" (dict "root" $ "component" $name) | nindent 4 }}
+  {{- with ($svc.service).annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ ($svc.service).type | default "ClusterIP" }}
+  selector:
+    app: {{ $name }}
+  ports:
+    - name: http
+      port: {{ ($svc.service).port | default $svc.port }}
+      targetPort: {{ $svc.port }}
+      protocol: TCP
+      {{- with ($svc.service).nodePort }}
+      nodePort: {{ . }}
+      {{- end }}
+    {{- with ($svc.service).extraPorts }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+{{- end }}
+{{- end }}

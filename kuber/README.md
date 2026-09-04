@@ -11,7 +11,7 @@ Tried k3d as docker wrapper for k3s and it feels better than others.
 
 ## Kubelet configs
 
-Create kubelet ![config](./kubelet-config.yaml) file and apply it whent minikube starts
+Create kubelet ![config](./kubelet-config.yaml) file and apply it when minikube starts
 
 ```shell
 minikube start --cpus 8 --memory 9000 --extra-config=kubelet.config=/kubelet-config.yaml
@@ -264,11 +264,29 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ### Project deployments 
 
-Project contains only template files for deployments. Also threre is a script file to generate deployment file dynamically.
+Project contains only template files for deployments. Also there is a script file to generate deployment file dynamically.
 
 ```shell
 ./release.sh -u registry_user -r registry_host -t 1.8.0-SNAPSHOT
 ```
+
+### Project deployments with helm
+
+The same project resources are also packaged as a helm chart in
+[project/helm](./project/helm). It replaces `release.sh` + `apply-all.sh` with a
+single command and adds `helm history` / `helm rollback`:
+
+The wrapper keeps the two steps of the old flow: `version` substitutes the image
+coordinates (like `release.sh` did), `install` applies the chart (like
+`apply-all.sh` did).
+
+```shell
+cd project/helm
+./release.sh version -u registry_user -t 1.8.0-SNAPSHOT
+./release.sh install -f values-secrets.yaml
+```
+
+See [project/helm/README.md](./project/helm/README.md) for the values reference.
 
 ## Cleanup images
 

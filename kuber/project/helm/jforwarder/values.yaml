@@ -1,0 +1,390 @@
+# Default values for the jforwarder chart.
+#
+# The chart is a direct port of the manifests from kuber/project.
+# Resource names are kept identical to the plain yaml ones, so services keep
+# resolving each other by hostname (spring-eureka-registry, spring-gateway, ...)
+# and the ServiceMonitors from kuber/monitoring/servicemonitor keep matching.
+
+nameOverride: ""
+
+## Images ---------------------------------------------------------------------
+# Equivalent of release.sh: image is built as
+#   {registry}/{user}/{service.image.repository}:{tag}
+# Empty registry or user parts are simply omitted.
+image:
+  registry: docker.io
+  # Docker hub user, the -u flag of release.sh. Required for the app images.
+  user: ""
+  # Global tag, the -t flag of release.sh. Defaults to .Chart.AppVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+# Names of docker registry secrets, e.g. [{name: regcred}]
+imagePullSecrets: []
+
+## Pod defaults ---------------------------------------------------------------
+# Every setting below can be overridden per service inside `services.<name>`.
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+securityContext: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+# Roll pods when their ConfigMaps or Secrets change.
+restartOnConfigChange: true
+
+## Shared configuration -------------------------------------------------------
+# ConfigMap mounted into every service that has `useDefaultConfig: true`.
+defaultConfig:
+  create: true
+  name: default-config
+  data:
+    EUREKA_SERVER: http://spring-eureka-registry:8761/eureka
+    ZIPKIN_SERVER: http://zipkin.monitoring:9411/api/v2/spans
+    GATEWAY_COUB_URL: http://spring-gateway:8760/cc/
+    LOKI_URL: http://loki-gateway.monitoring/loki/api/v1/push
+
+# JVM_PARAMS used by every service that does not define its own `jvmParams`.
+defaultJvmParams: |-
+  -Xms200m -Xmx200m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m
+  -XX:MaxNewSize=150m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+  -XX:HeapDumpPath=./dump.hprof -XX:+UseGCOverheadLimit -XX:+UseStringDeduplication
+  -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m
+
+## ServiceMonitors ------------------------------------------------------------
+# Disabled by default because kuber/monitoring/servicemonitor already ships the
+# same objects. Enable it here to let the chart own them and delete that folder
+# from apply-all.sh.
+serviceMonitor:
+  enabled: false
+  # Namespace where prometheus-operator looks for ServiceMonitors.
+  namespace: monitoring
+  # Namespace where the scraped services live.
+  targetNamespace: jforwarder
+  interval: 15s
+  path: /actuator/prometheus
+  labels:
+    release: kube-prometheus-stack
+
+## Secrets --------------------------------------------------------------------
+# Placeholders, exactly like kuber/project/secrets. Never commit real values:
+# pass them with `-f values-secrets.yaml` (see values-secrets.example.yaml) or
+# set `secrets.create=false` and manage them with sealed-secrets / an operator.
+secrets:
+  create: true
+  data:
+    telegram-bot-secret:
+      TELEGRAM_BOT_NAME: name
+      TELEGRAM_BOT_API_TOKEN: token
+    subscriptions-holder-secret:
+      POSTGRES_CONTAINER_URL: jdbc:postgresql://host:5432/db
+      POSTGRES_CONTAINER_USER: user
+      POSTGRES_CONTAINER_PASSWORD: pass
+      JASYPT_MASTER_PASSWORD: pass2
+      SUBSCRIPTIONS_HOLDER_SERVICE_JASYPT_PARAMS: |
+        -Djasypt.encryptor.password=${JASYPT_MASTER_PASSWORD}
+        -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+        -Djasypt.encryptor.ivGeneratorClassName=org.jasypt.iv.NoIvGenerator
+    telegram-chat-service-secret:
+      TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_URL: jdbc:postgresql://host:5432/db
+      TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_USER: user
+      TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_PASSWORD: pass
+      TELEGRAM_CHAT_SERVICE_POSTGRES_CONTAINER_DB: db
+      TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD: pass2
+      TELEGRAM_CHAT_SERVICE_JASYPT_PARAMS: |
+        -Djasypt.encryptor.password=${TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD}
+        -Djasypt.encryptor.algorithm=PBEWithMD5AndDES
+        -Djasypt.encryptor.ivGeneratorClassName=org.jasypt.iv.NoIvGenerator
+    subscriptions-holder-db-secret:
+      PGUSER: user
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+    telegram-chat-service-db-secret:
+      PGUSER: user
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: db
+
+## Microservices --------------------------------------------------------------
+# Key of the map is the kubernetes name of the service:
+#   Deployment  <key>-app
+#   Service     <key>            with label app: <key>-service
+#   ConfigMap   <key>-config
+#
+# Per service keys:
+#   enabled           render the service at all
+#   image.repository  docker image name (Dockerfile.<repository> in the repo root)
+#   image.tag         overrides the global tag
+#   port              container and service port
+#   replicaCount      deployment replicas
+#   useDefaultConfig  mount the shared default-config ConfigMap
+#   jvmParams         JVM_PARAMS of <key>-config, defaults to defaultJvmParams
+#   config            extra entries of <key>-config
+#   secrets           list of secret names mounted with envFrom
+#   resources         container resources
+#   service.*         type/annotations/extra ports of the Service
+#   serviceMonitor.*  per service override of the global serviceMonitor block
+#   livenessProbe / readinessProbe / startupProbe are passed through as is
+services:
+
+  spring-eureka-registry:
+    enabled: true
+    image:
+      repository: spring_eureka_registry
+    port: 8761
+    replicaCount: 1
+    # eureka is the registry itself, it does not consume default-config
+    useDefaultConfig: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+
+  spring-gateway:
+    enabled: true
+    image:
+      repository: spring_gateway
+    port: 8760
+    replicaCount: 1
+    useDefaultConfig: true
+    jvmParams: |-
+      -Xms250m -Xmx250m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m
+      -XX:MaxNewSize=150m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=./dump.hprof -XX:+UseGCOverheadLimit -XX:+UseStringDeduplication
+      -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+
+  t-coubs-initiator:
+    enabled: true
+    image:
+      repository: t_coubs_initiator
+    port: 8081
+    replicaCount: 1
+    useDefaultConfig: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+
+  subscriptions-holder:
+    enabled: true
+    image:
+      repository: subscriptions_holder
+    port: 8082
+    replicaCount: 1
+    useDefaultConfig: true
+    secrets:
+      - subscriptions-holder-secret
+    jvmParams: |-
+      -Xms250m -Xmx250m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m
+      -XX:MaxNewSize=150m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+      -XX:HeapDumpPath=./dump.hprof -XX:+UseGCOverheadLimit -XX:+UseStringDeduplication
+      -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 600Mi
+
+  kafka-message-producer:
+    enabled: true
+    image:
+      repository: kafka_message_producer
+    port: 8083
+    replicaCount: 1
+    useDefaultConfig: true
+    config:
+      KAFKA_SERVER: my-cluster-kafka-bootstrap.kafka:9092
+      SCHEMA_REGISTRY: http://kafka-schema-registry.kafka:8081
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+
+  kafka-message-consumer:
+    enabled: true
+    image:
+      repository: kafka_message_consumer
+    port: 8085
+    replicaCount: 1
+    useDefaultConfig: true
+    config:
+      KAFKA_SERVER: my-cluster-kafka-bootstrap.kafka:9092
+      SCHEMA_REGISTRY: http://kafka-schema-registry.kafka:8081
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+
+  telegram-bot:
+    enabled: true
+    image:
+      # the only image whose name does not match the service name
+      repository: coub_forwarder_telegram_bot
+    port: 8084
+    replicaCount: 1
+    useDefaultConfig: true
+    secrets:
+      - telegram-bot-secret
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+
+  coub-smart-searcher:
+    enabled: true
+    image:
+      repository: coub_smart_searcher
+    port: 8086
+    replicaCount: 1
+    useDefaultConfig: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 200m
+        memory: 512Mi
+
+  subscriptions-scheduler:
+    enabled: true
+    image:
+      repository: subscriptions_scheduler
+    port: 8087
+    replicaCount: 1
+    useDefaultConfig: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+
+  telegram-chat-service:
+    enabled: true
+    image:
+      repository: telegram_chat_service
+    port: 8088
+    replicaCount: 1
+    useDefaultConfig: true
+    secrets:
+      - telegram-chat-service-secret
+    resources:
+      requests:
+        cpu: 50m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 600Mi
+
+## Databases ------------------------------------------------------------------
+# Postgres StatefulSets with their Service and (optionally) a hostPath
+# PersistentVolume, as in kuber/project/statefulsets and kuber/project/storage.
+databases:
+
+  subscriptions-holder-postgres-db:
+    enabled: true
+    image:
+      registry: ""
+      repository: postgres
+      tag: "16.2"
+      pullPolicy: IfNotPresent
+    port: 5432
+    replicaCount: 1
+    secrets:
+      - subscriptions-holder-db-secret
+    service:
+      type: NodePort
+    persistence:
+      enabled: true
+      # name of the volumeClaimTemplate and of the created PersistentVolume
+      volumeName: subscriptions-holder-pv-for-pg
+      mountPath: /var/lib/postgresql/data
+      storageClassName: local-storage
+      accessModes:
+        - ReadWriteOnce
+      size: 4Gi
+      # create the hostPath PersistentVolume (needed for local-storage class)
+      createPersistentVolume: true
+      hostPath: /data/subscriptions-holder-db/postgresql
+      reclaimPolicy: Retain
+    resources:
+      requests:
+        cpu: 60m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 256Mi
+
+  telegram-chat-service-postgres-db:
+    enabled: true
+    image:
+      registry: ""
+      repository: postgres
+      tag: "16.2"
+      pullPolicy: IfNotPresent
+    port: 5432
+    replicaCount: 1
+    secrets:
+      - telegram-chat-service-db-secret
+    service:
+      type: NodePort
+    persistence:
+      enabled: true
+      volumeName: telegram-chat-service-pv-for-pg
+      mountPath: /var/lib/postgresql/data
+      storageClassName: local-storage
+      accessModes:
+        - ReadWriteOnce
+      size: 4Gi
+      createPersistentVolume: true
+      hostPath: /data/tg-chat-service-db/postgresql
+      reclaimPolicy: Retain
+    resources:
+      requests:
+        cpu: 80m
+        memory: 128Mi
+      limits:
+        cpu: 120m
+        memory: 256Mi
+
+## Ingress --------------------------------------------------------------------
+ingress:
+  enabled: true
+  name: jforwarder-ingress
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: spring-eureka-registry
+      paths:
+        - path: /
+          pathType: Prefix
+          service: spring-eureka-registry
+          port: 8761
+  tls: []
