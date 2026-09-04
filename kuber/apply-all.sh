@@ -58,8 +58,16 @@ done
 OVERLAY_DIR="${KUSTOMIZE_DIR}/overlays/${ENVIRONMENT}"
 
 if [ ! -f "${OVERLAY_DIR}/kustomization.yaml" ]; then
+  environments=""
+  for overlay in "${KUSTOMIZE_DIR}"/overlays/*/kustomization.yaml; do
+    name=$(basename "$(dirname "${overlay}")")
+    if [ "${name}" != "release" ]; then
+      environments="${environments}${name} "
+    fi
+  done
+
   printf "Unknown environment %s, available: %s \n" "${ENVIRONMENT}" \
-    "$(ls "${KUSTOMIZE_DIR}/overlays" | grep -v '^release$' | tr '\n' ' ')"
+    "${environments}"
   exit 1
 fi
 

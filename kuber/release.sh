@@ -1,9 +1,5 @@
 #!/bin/bash
 
-## Legacy: kustomize is the default deploy since #333, see
-## project/kustomize/release.sh. This script still generates the deployments
-## from the templates with sed, they are applied by "apply-all.sh -p".
-
 ## VARS
 
 EXTENSION="template"

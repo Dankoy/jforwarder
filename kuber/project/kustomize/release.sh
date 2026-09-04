@@ -36,13 +36,24 @@ IMAGES=(
 
 ### the overlay of an environment ############################################
 
+# every overlays/<name>/kustomization.yaml but the generated one
+environments() {
+  local dir name
+  for dir in "${OVERLAYS_DIR}"/*/kustomization.yaml; do
+    name=$(basename "$(dirname "${dir}")")
+    if [ "${name}" != "release" ]; then
+      printf "%s " "${name}"
+    fi
+  done
+}
+
 overlay_dir() {
   local environment=$1
   local dir="${OVERLAYS_DIR}/${environment}"
 
   if [ ! -f "${dir}/kustomization.yaml" ]; then
     printf "Unknown environment %s, available: %s\n" "${environment}" \
-      "$(ls "${OVERLAYS_DIR}" | grep -v '^release$' | tr '\n' ' ')" >&2
+      "$(environments)" >&2
     exit 1
   fi
 
