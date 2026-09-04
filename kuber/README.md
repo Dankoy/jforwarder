@@ -268,8 +268,19 @@ Deploy of the project is done with kustomize since #333:
 
 `apply-all.sh` applies `project/secrets` and then hands the rest to
 [project/kustomize](./project/kustomize). The image tag is not a flag, it lives
-in git in `project/kustomize/overlays/production`, the registry user is added at
-deploy time and never committed.
+in git in `project/kustomize/overlays/<environment>`, the registry user is added
+at deploy time and never committed.
+
+There are three environments, `-o` picks one and production is the default:
+
+```shell
+./apply-all.sh -o dev     # namespace jforwarder-dev, host spring-eureka-registry-dev
+./apply-all.sh -o test    # namespace jforwarder-test
+```
+
+dev and test bring their own namespace and take the database volumes from the
+`local-path` provisioner instead of the hostPath `PersistentVolume`s, so they
+can live in the same cluster as production.
 
 ### Project deployments with kustomize
 
@@ -282,6 +293,7 @@ cd project/kustomize
 ./release.sh version              # takes the version of build.gradle
 git diff overlays/production      # review and commit it, it is the release
 ./release.sh install -u registry_user   # same as ../../apply-all.sh -u
+./release.sh version -o dev && ./release.sh install -o dev   # another environment
 ```
 
 `version` never talks to the cluster, it only sets the image tag of the tracked

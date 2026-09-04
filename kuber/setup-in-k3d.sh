@@ -2,7 +2,7 @@
 
 ## setup cluster
 
-OPTSTRING=":c:u:H:"
+OPTSTRING=":c:u:H:o:"
 
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
@@ -17,6 +17,10 @@ while getopts ${OPTSTRING} opt; do
     H)
       printf "docker registry host: %s \n" "${OPTARG}"
       REGISTRY_HOST=${OPTARG}
+      ;;
+    o)
+      printf "environment: %s \n" "${OPTARG}"
+      ENVIRONMENT=${OPTARG}
       ;;
     :)
       printf "Option -%s requires an argument. \n" "${OPTARG}"
@@ -34,11 +38,14 @@ if [ -z "$CLUSTER" ]; then
   exit 1
 fi
 
-## -u and -H are passed to apply-all.sh, which deploys the project with
+## -u, -H and -o are passed to apply-all.sh, which deploys the project with
 ## kustomize. Without -u the images are taken as they are, which is what
-## locally built k3d images need.
+## locally built k3d images need, without -o it is the production overlay.
 
 APPLY_ARGS=()
+if [ -n "${ENVIRONMENT:-}" ]; then
+  APPLY_ARGS+=(-o "${ENVIRONMENT}")
+fi
 if [ -n "${REGISTRY_USER:-}" ]; then
   APPLY_ARGS+=(-u "${REGISTRY_USER}")
 fi

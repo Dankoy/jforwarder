@@ -1,0 +1,51 @@
+---
+# The test environment: same objects as production, in its own namespace,
+# with its own version and with dynamically provisioned database volumes.
+#
+# The tag below is tracked in git like the production one, bump it with
+#   ../../release.sh version -o test
+# and commit the diff. The registry and the docker hub user are added at
+# deploy time by "release.sh install -o test -u <user>".
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: jforwarder-test
+
+resources:
+  - ../../base
+  - namespace.yaml
+
+components:
+  - ../../components/dynamic-storage
+
+patches:
+  # the production host is taken by the production ingress
+  - target:
+      kind: Ingress
+      name: jforwarder-ingress
+    patch: |
+      - op: replace
+        path: /spec/rules/0/host
+        value: spring-eureka-registry-test
+
+images:
+  - name: coub_smart_searcher
+    newTag: "1.9.6-SNAPSHOT"
+  - name: kafka_message_consumer
+    newTag: "1.9.6-SNAPSHOT"
+  - name: kafka_message_producer
+    newTag: "1.9.6-SNAPSHOT"
+  - name: spring_eureka_registry
+    newTag: "1.9.6-SNAPSHOT"
+  - name: spring_gateway
+    newTag: "1.9.6-SNAPSHOT"
+  - name: subscriptions_holder
+    newTag: "1.9.6-SNAPSHOT"
+  - name: subscriptions_scheduler
+    newTag: "1.9.6-SNAPSHOT"
+  - name: t_coubs_initiator
+    newTag: "1.9.6-SNAPSHOT"
+  - name: coub_forwarder_telegram_bot
+    newTag: "1.9.6-SNAPSHOT"
+  - name: telegram_chat_service
+    newTag: "1.9.6-SNAPSHOT"
