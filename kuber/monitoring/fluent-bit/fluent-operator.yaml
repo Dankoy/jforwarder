@@ -187,12 +187,17 @@ fluentbit:
       emitterMemBufLimit: 20
       emitterType: memory
       flushMs: 2000
+      # Order matters: parsers are tried in sequence and the first one that
+      # matches owns the stream. `springboot` is applied to our services and
+      # keeps the logger line together with its stacktrace; the rest is the
+      # fallback for third party workloads (kafka/strimzi log4j, exporters).
+      # `springboot` comes from multiline-parser-springboot.yaml, which has
+      # to be applied separately - the chart cannot template custom rules.
       parsers:
+        - springboot
         - go
         - python
         - java
-        #  use custom multiline parser need set .Values.parsers.javaMultiline.enable = true
-        # - java-multiline
     kubernetes:
       enable: true
       labels: true
