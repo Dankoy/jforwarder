@@ -288,6 +288,32 @@ cd project/helm
 
 See [project/helm/README.md](./project/helm/README.md) for the values reference.
 
+### Project deployments with kustomize
+
+The same resources are also described as a kustomize base in
+[project/kustomize](./project/kustomize). It replaces the `sed` substitution of
+`release.sh` with the `images` transformer and keeps the deployed version in
+git, in `overlays/production`:
+
+```shell
+cd project/kustomize
+./release.sh version              # takes the version of build.gradle
+git diff overlays/production      # review and commit it
+./release.sh install -u registry_user
+```
+
+`version` never talks to the cluster, it only sets the image tag of the tracked
+overlay. `install` layers the registry and the docker hub user on top of it
+(they stay out of git, like `DOCKER_HUB_USER` in docker-compose) and runs
+`kubectl apply -k`. Locally built images need no flags at all,
+`kubectl apply -k overlays/production` uses them as they are.
+
+Secrets are not part of the base, they stay with `secrets.sh` and
+`kubectl apply -f project/secrets -n jforwarder`.
+
+See [project/kustomize/README.md](./project/kustomize/README.md) for the
+details.
+
 ## Cleanup images
 
 To cleanup unused images inside k3d kuber cluster do

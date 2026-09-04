@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-message-producer-config
+data:
+  JVM_PARAMS: |
+        -Xms200m -Xmx200m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m 
+        -XX:MaxNewSize=150m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=./dump.hprof -XX:+UseGCOverheadLimit -XX:+UseStringDeduplication
+        -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m
+  KAFKA_SERVER:  my-cluster-kafka-bootstrap.kafka:9092
+  SCHEMA_REGISTRY: http://kafka-schema-registry.kafka:8081

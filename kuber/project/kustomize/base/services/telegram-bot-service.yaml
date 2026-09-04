@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-bot
+  namespace: jforwarder
+  labels:
+    app: telegram-bot-service
+spec:
+  type: ClusterIP
+  selector:
+    app: telegram-bot
+  ports:
+    - port: 8084
+      targetPort: 8084

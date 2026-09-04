@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: subscriptions-holder
+  namespace: jforwarder
+  labels:
+    app: subscriptions-holder-service
+spec:
+  type: ClusterIP
+  selector:
+    app: subscriptions-holder
+  ports:
+    - port: 8082
+      targetPort: 8082

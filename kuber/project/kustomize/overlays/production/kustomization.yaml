@@ -1,0 +1,38 @@
+---
+# Deployed version of jforwarder, the kubernetes counterpart of
+# PROJECT_VERSION in build.gradle. This file is tracked in git on purpose:
+# the tag below is the record of what is running in the cluster.
+#
+# Bump it with ../../release.sh version (takes the version from build.gradle)
+# or with "kustomize edit set image <image>=:<tag>", and commit the diff.
+#
+# The registry and the docker hub user are not here, the same way
+# docker-compose.yaml keeps them in DOCKER_HUB_USER: they are added at deploy
+# time by "release.sh install -u <user>".
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base
+
+images:
+  - name: coub_smart_searcher
+    newTag: "1.9.6-SNAPSHOT"
+  - name: kafka_message_consumer
+    newTag: "1.9.6-SNAPSHOT"
+  - name: kafka_message_producer
+    newTag: "1.9.6-SNAPSHOT"
+  - name: spring_eureka_registry
+    newTag: "1.9.6-SNAPSHOT"
+  - name: spring_gateway
+    newTag: "1.9.6-SNAPSHOT"
+  - name: subscriptions_holder
+    newTag: "1.9.6-SNAPSHOT"
+  - name: subscriptions_scheduler
+    newTag: "1.9.6-SNAPSHOT"
+  - name: t_coubs_initiator
+    newTag: "1.9.6-SNAPSHOT"
+  - name: coub_forwarder_telegram_bot
+    newTag: "1.9.6-SNAPSHOT"
+  - name: telegram_chat_service
+    newTag: "1.9.6-SNAPSHOT"

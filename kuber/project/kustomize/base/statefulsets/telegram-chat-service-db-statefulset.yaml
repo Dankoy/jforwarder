@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: telegram-chat-service-postgres-db
+  labels:
+    app: telegram-chat-service-postgres-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-chat-service-postgres-db
+  serviceName: telegram-chat-service-postgres-db
+  template:
+    metadata:
+      labels:
+        app: telegram-chat-service-postgres-db
+    spec:
+      containers:
+        - image: "postgres:16.2"
+          name: telegram-chat-service-postgres-db
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: telegram-chat-service-pv-for-pg
+          ports:
+            - containerPort: 5432
+          envFrom:
+          - secretRef:
+             name: telegram-chat-service-db-secret
+          resources:
+            requests:
+              cpu: 80m
+              memory: 128Mi
+            limits:
+              cpu: 120m
+              memory: 256Mi
+  volumeClaimTemplates:
+  - metadata:
+      name: telegram-chat-service-pv-for-pg
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: 4Gi
+              
