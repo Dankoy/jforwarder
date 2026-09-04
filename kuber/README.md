@@ -258,16 +258,53 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ## Install everything for project
 
+Deploy of the project is done with kustomize since #333:
+
 ```shell
-./apply-all.sh
+./secrets.sh                            # real secrets over the dummy ones
+./apply-all.sh -u registry_user         # images of a registry
+./apply-all.sh                          # locally built k3d images
 ```
 
-### Project deployments 
+`apply-all.sh` applies `project/secrets` and then hands the rest to
+[project/kustomize](./project/kustomize). The image tag is not a flag, it lives
+in git in `project/kustomize/overlays/production`, the registry user is added at
+deploy time and never committed.
 
-Project contains only template files for deployments. Also there is a script file to generate deployment file dynamically.
+### Project deployments with kustomize
+
+[project/kustomize](./project/kustomize) is what `apply-all.sh` uses. The
+deployed version is bumped in git, the way `PROJECT_VERSION` is bumped in
+`build.gradle`:
 
 ```shell
-./release.sh -u registry_user -r registry_host -t 1.8.0-SNAPSHOT
+cd project/kustomize
+./release.sh version              # takes the version of build.gradle
+git diff overlays/production      # review and commit it, it is the release
+./release.sh install -u registry_user   # same as ../../apply-all.sh -u
+```
+
+`version` never talks to the cluster, it only sets the image tag of the tracked
+overlay. `install` layers the registry and the docker hub user on top of it
+(they stay out of git, like `DOCKER_HUB_USER` in docker-compose, `-H` changes
+the registry host) and runs `kubectl apply -k`. Locally built images need no
+flags at all, `kubectl apply -k overlays/production` uses them as they are.
+
+Secrets are not part of the base, they stay with `secrets.sh` and
+`kubectl apply -f project/secrets -n jforwarder`, which `apply-all.sh` does.
+
+See [project/kustomize/README.md](./project/kustomize/README.md) for the
+details.
+
+### Project deployments with sed templates (legacy)
+
+The flow that was default before kustomize. `project/deployments` contains only
+template files, `release.sh` generates the deployments from them with `sed` and
+`apply-all.sh -p` applies the plain folders:
+
+```shell
+./release.sh -u registry_user -H registry_host -t 1.8.0-SNAPSHOT
+./apply-all.sh -p
 ```
 
 ### Project deployments with helm
@@ -287,32 +324,6 @@ cd project/helm
 ```
 
 See [project/helm/README.md](./project/helm/README.md) for the values reference.
-
-### Project deployments with kustomize
-
-The same resources are also described as a kustomize base in
-[project/kustomize](./project/kustomize). It replaces the `sed` substitution of
-`release.sh` with the `images` transformer and keeps the deployed version in
-git, in `overlays/production`:
-
-```shell
-cd project/kustomize
-./release.sh version              # takes the version of build.gradle
-git diff overlays/production      # review and commit it
-./release.sh install -u registry_user
-```
-
-`version` never talks to the cluster, it only sets the image tag of the tracked
-overlay. `install` layers the registry and the docker hub user on top of it
-(they stay out of git, like `DOCKER_HUB_USER` in docker-compose) and runs
-`kubectl apply -k`. Locally built images need no flags at all,
-`kubectl apply -k overlays/production` uses them as they are.
-
-Secrets are not part of the base, they stay with `secrets.sh` and
-`kubectl apply -f project/secrets -n jforwarder`.
-
-See [project/kustomize/README.md](./project/kustomize/README.md) for the
-details.
 
 ## Cleanup images
 

@@ -1,11 +1,72 @@
 #!/bin/bash
 
-## creates namespaces for development and production environments
+## applies the whole project to the jforwarder namespace with kustomize,
+## which is the default deploy since #333:
+##
+##   ./apply-all.sh -u <docker hub user>   # registry images, tag from git
+##   ./apply-all.sh                        # images as they are, k3d builds
+##
+## The image tag comes from project/kustomize/overlays/production, the file
+## that keeps the deployed version in git. Bump it with
+## "project/kustomize/release.sh version" and commit it.
+##
+## The old sed flow (release.sh + kubectl apply -f) is still one flag away:
+##
+##   ./release.sh -u <user> -t <tag> && ./apply-all.sh -p
 
-kubectl apply -f project/configmaps -n jforwarder
-kubectl apply -f project/storage -n jforwarder
-kubectl apply -f project/secrets -n jforwarder
-kubectl apply -f project/services -n jforwarder
-kubectl apply -f project/statefulsets -n jforwarder
-kubectl apply -f project/deployments -n jforwarder
-kubectl apply -f project/ingress -n jforwarder
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+NAMESPACE="jforwarder"
+
+Help() {
+  echo "Applies the jforwarder project to the cluster"
+  echo
+  echo "Syntax: apply-all.sh [-u user] [-H registry] [-p] [-h]"
+  echo "options:"
+  echo "  -u  Docker registry user. Without it the images are taken as they"
+  echo "      are, which is what locally built k3d images need."
+  echo "  -H  Registry domain. Default: docker.io. Needs -u."
+  echo "  -p  Plain manifests instead of kustomize: applies"
+  echo "      project/<folder> the way it was done before kustomize."
+  echo "      Needs release.sh to have generated project/deployments first."
+  echo "  -h  Print this help."
+}
+
+USER_ARG=""
+REGISTRY_ARG=""
+PLAIN=""
+
+while getopts ":u:H:ph" opt; do
+  case ${opt} in
+    h) Help; exit 0 ;;
+    u) USER_ARG=${OPTARG} ;;
+    H) REGISTRY_ARG=${OPTARG} ;;
+    p) PLAIN="yes" ;;
+    :) printf "Option -%s requires an argument. \n" "${OPTARG}"; exit 1 ;;
+    ?) printf "Invalid option: -%s. \n" "${OPTARG}"; exit 1 ;;
+  esac
+done
+
+## secrets are not part of the kustomize base: project/secrets holds dummies
+## that secrets.sh replaces with the real ones, and kustomize would push the
+## dummies over the real secrets in the cluster.
+
+kubectl apply -f "${SCRIPT_DIR}/project/secrets" -n "${NAMESPACE}"
+
+if [ -n "${PLAIN}" ]; then
+  kubectl apply -f "${SCRIPT_DIR}/project/configmaps" -n "${NAMESPACE}"
+  kubectl apply -f "${SCRIPT_DIR}/project/storage" -n "${NAMESPACE}"
+  kubectl apply -f "${SCRIPT_DIR}/project/services" -n "${NAMESPACE}"
+  kubectl apply -f "${SCRIPT_DIR}/project/statefulsets" -n "${NAMESPACE}"
+  kubectl apply -f "${SCRIPT_DIR}/project/deployments" -n "${NAMESPACE}"
+  kubectl apply -f "${SCRIPT_DIR}/project/ingress" -n "${NAMESPACE}"
+  exit 0
+fi
+
+install_args=()
+[ -n "${USER_ARG}" ] && install_args+=(-u "${USER_ARG}")
+[ -n "${REGISTRY_ARG}" ] && install_args+=(-H "${REGISTRY_ARG}")
+
+# bash 3.2 (default on macos) treats an empty array as unset under `set -u`
+"${SCRIPT_DIR}/project/kustomize/release.sh" install ${install_args[@]+"${install_args[@]}"}

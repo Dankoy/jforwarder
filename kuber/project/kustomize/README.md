@@ -4,9 +4,13 @@ Kustomize port of the plain manifests from [kuber/project](../). It replaces
 the `sed` substitution of [kuber/release.sh](../../release.sh) with the built in
 `images` transformer, and it keeps the deployed version in git.
 
-Nothing here changes the existing flows. `release.sh` + `apply-all.sh` (sed) and
-the [helm chart](../helm) keep working exactly as before, this is a third way to
-deploy the very same objects.
+This is the default deploy of the project: [kuber/apply-all.sh](../../apply-all.sh)
+applies `project/secrets` and then hands everything else to the overlay below,
+and [kuber/setup-in-k3d.sh](../../setup-in-k3d.sh) passes its `-u` / `-H` flags
+through to it.
+
+The other two flows still work and are untouched: `kuber/release.sh` +
+`apply-all.sh -p` (sed templates) and the [helm chart](../helm).
 
 ## Layout
 
@@ -67,6 +71,15 @@ secret. They are added at deploy time.
 
 ## Install
 
+From `kuber`, which also applies the secrets:
+
+```shell
+./apply-all.sh -u <docker hub user>
+./apply-all.sh                   # locally built k3d images
+```
+
+or here, without the secrets step:
+
 ```shell
 ./release.sh install -u <docker hub user>   # docker.io/<user>/<image>:<tag>
 ./release.sh install -u <user> -H ghcr.io   # another registry
@@ -98,7 +111,7 @@ kubectl apply -k overlays/production
 
 ## Secrets
 
-The base creates no `Secret`. `kuber/project/secrets` holds dummy values that
+The base creates no application `Secret`. `kuber/project/secrets` holds dummy values that
 [kuber/secrets.sh](../../secrets.sh) overwrites with the real ones from
 `kuber/.all_secrets`, and a kustomize apply of those files would push the
 dummies over the real secrets in the cluster. They keep being applied the way
@@ -112,9 +125,11 @@ The deployments reference them by name (`telegram-bot-secret`,
 `subscriptions-holder-secret`, `telegram-chat-service-secret`), so the order is
 secrets first, then `kubectl apply -k`.
 
-`configmaps/kafka-configmap.yaml` is left out for another reason: it declares a
+`configmaps/kafka-configmap.yaml` is in the base, although it declares a
 `kafka-secret` with bitnami `KAFKA_CFG_*` variables that nothing in the cluster
-reads — the services reach the strimzi broker through `KAFKA_SERVER`.
+reads — the services reach the strimzi broker through `KAFKA_SERVER`. It carries
+no real credentials and it is kept only so that the default deploy applies
+exactly what `apply-all.sh` applied before.
 
 ## Changing something
 

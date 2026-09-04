@@ -5,6 +5,9 @@ kind: Kustomization
 # Every object that apply-all.sh applies, except the secrets: those stay in
 # ../../../secrets and keep being deployed by kuber/secrets.sh + kubectl, so
 # that a kustomize apply never overwrites the real ones with the dummies.
+# configmaps/kafka-configmap.yaml is a Secret too, but a dummy one that
+# nothing reads, kept here only so that this base covers everything the plain
+# manifests cover.
 namespace: jforwarder
 
 # Images have no registry and no user here, so a locally built image
@@ -15,6 +18,7 @@ resources:
   # configmaps
   - configmaps/coub-smart-searcher-configmap.yaml
   - configmaps/default-configmap.yaml
+  - configmaps/kafka-configmap.yaml
   - configmaps/kafka-message-consumer-configmap.yaml
   - configmaps/kafka-message-producer-configmap.yaml
   - configmaps/spring-eureka-configmap.yaml

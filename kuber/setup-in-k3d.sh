@@ -2,13 +2,21 @@
 
 ## setup cluster
 
-OPTSTRING=":c:"
+OPTSTRING=":c:u:H:"
 
 while getopts ${OPTSTRING} opt; do
   case ${opt} in
     c)
       printf "k3d cluster name: %s \n" "${OPTARG}"
       CLUSTER=${OPTARG}
+      ;;
+    u)
+      printf "docker registry user: %s \n" "${OPTARG}"
+      REGISTRY_USER=${OPTARG}
+      ;;
+    H)
+      printf "docker registry host: %s \n" "${OPTARG}"
+      REGISTRY_HOST=${OPTARG}
       ;;
     :)
       printf "Option -%s requires an argument. \n" "${OPTARG}"
@@ -24,6 +32,18 @@ done
 if [ -z "$CLUSTER" ]; then
   echo "Error: Cluster name must be provided as a command-line argument with -c"
   exit 1
+fi
+
+## -u and -H are passed to apply-all.sh, which deploys the project with
+## kustomize. Without -u the images are taken as they are, which is what
+## locally built k3d images need.
+
+APPLY_ARGS=()
+if [ -n "${REGISTRY_USER:-}" ]; then
+  APPLY_ARGS+=(-u "${REGISTRY_USER}")
+fi
+if [ -n "${REGISTRY_HOST:-}" ]; then
+  APPLY_ARGS+=(-H "${REGISTRY_HOST}")
 fi
 
 
@@ -102,7 +122,8 @@ printf "\n------- Kafka created ------- \n\n"
 
 printf "\n------- Setup jforwarder project ------- \n\n"
 
-./apply-all.sh
+# bash 3.2 (default on macos) treats an empty array as unset
+./apply-all.sh ${APPLY_ARGS[@]+"${APPLY_ARGS[@]}"}
 
 printf "\n------- Jforwarder created ------- \n\n"
 
