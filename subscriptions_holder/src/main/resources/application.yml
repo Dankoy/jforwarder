@@ -96,5 +96,5 @@ logging:
           jdbc:
             bind: TRACE
   pattern:
-    correlation: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
   include-application-name: false
