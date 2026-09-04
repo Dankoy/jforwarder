@@ -92,12 +92,16 @@ datasources:
         derivedFields:
           # Field with internal link pointing to data source in Grafana.
           # datasourceUid value can be anything, but it should be unique across all defined data source uids.
+          # matcherRegex captures the traceId from the correlation bracket written by
+          # logging.pattern.correlation: [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+          # e.g. ... ERROR 1 --- [pool-2-thread-1] [telegram-bot,6f1a2b,9c22d1] r.d.t.CoubService : msg
+          # Lines logged outside a trace render as [name,,] and stay unmatched.
           - datasourceUid: zipkin
-            matcherRegex: '.+ --- \[.+\] \[.+\] \[(\w*)-\w*\] .+'
+            matcherRegex: '\[[^,\]]*,([0-9a-f]+),[0-9a-f]*\]'
             name: TraceID
             url: $${__value.raw}
           # Field with external link.
-          - matcherRegex: '.+ --- \[.+\] \[.+\] \[(\w*)-\w*\] .+'
+          - matcherRegex: '\[[^,\]]*,([0-9a-f]+),[0-9a-f]*\]'
             name: TraceID_External
             url: 'http://localhost:9411/zipkin/traces/$${__value.raw}'  
 
