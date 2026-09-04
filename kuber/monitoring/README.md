@@ -61,6 +61,24 @@ Instructions [here](https://piotrminkowski.com/2023/11/06/apache-kafka-on-kubern
 
 PodMonitor should be applied in monitoring namespace.
 
+## Fluent Bit
+
+Log collection is fluent-operator, installed from the `fluent/fluent-operator`
+chart with [fluent-bit/fluent-operator.yaml](fluent-bit/fluent-operator.yaml).
+Stacktrace concatenation additionally needs
+[fluent-bit/multiline-parser-springboot.yaml](fluent-bit/multiline-parser-springboot.yaml),
+which is a plain manifest because the chart cannot template custom multiline
+rules.
+
+**Apply that manifest no later than the helm upgrade** - fluent-bit refuses to
+start when a filter references a multiline parser that is not registered.
+
+`containerRuntime` must stay `containerd`: k3s/k3d nodes write CRI formatted
+files, not docker JSON.
+
+See [fluent-bit/README.md](fluent-bit/README.md) for how the pipeline works
+and why it is put together this way.
+
 ## Script
 
 Or just run script
