@@ -1,58 +1,35 @@
 #!/bin/bash
 
 ## setup cluster
+##
+## Takes no arguments, every setting comes from .env.deploy: the cluster name
+## and, through apply-all.sh, the environment and the image coordinates.
 
-OPTSTRING=":c:u:H:o:"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="${SCRIPT_DIR}/.env.deploy"
 
-while getopts ${OPTSTRING} opt; do
-  case ${opt} in
-    c)
-      printf "k3d cluster name: %s \n" "${OPTARG}"
-      CLUSTER=${OPTARG}
-      ;;
-    u)
-      printf "docker registry user: %s \n" "${OPTARG}"
-      REGISTRY_USER=${OPTARG}
-      ;;
-    H)
-      printf "docker registry host: %s \n" "${OPTARG}"
-      REGISTRY_HOST=${OPTARG}
-      ;;
-    o)
-      printf "environment: %s \n" "${OPTARG}"
-      ENVIRONMENT=${OPTARG}
-      ;;
-    :)
-      printf "Option -%s requires an argument. \n" "${OPTARG}"
-      exit 1
-      ;;
-    ?)
-      printf "Invalid option: -%s. \n" "${OPTARG}"
-      exit 1
-      ;;
-  esac
-done
-
-if [ -z "$CLUSTER" ]; then
-  echo "Error: Cluster name must be provided as a command-line argument with -c"
+if [ $# -gt 0 ]; then
+  printf "setup-in-k3d.sh takes no arguments, settings live in %s \n" \
+    "${ENV_FILE}"
   exit 1
 fi
 
-## -u, -H and -o are passed to apply-all.sh, which deploys the project with
-## kustomize. Without -u the images are taken as they are, which is what
-## locally built k3d images need, without -o it is the production overlay.
-
-APPLY_ARGS=()
-if [ -n "${ENVIRONMENT:-}" ]; then
-  APPLY_ARGS+=(-o "${ENVIRONMENT}")
-fi
-if [ -n "${REGISTRY_USER:-}" ]; then
-  APPLY_ARGS+=(-u "${REGISTRY_USER}")
-fi
-if [ -n "${REGISTRY_HOST:-}" ]; then
-  APPLY_ARGS+=(-H "${REGISTRY_HOST}")
+if [ ! -f "${ENV_FILE}" ]; then
+  printf "%s not found, copy it from .env.deploy.example first \n" "${ENV_FILE}"
+  exit 1
 fi
 
+# shellcheck source=/dev/null
+. "${ENV_FILE}"
+
+CLUSTER="${K3D_CLUSTER:-}"
+
+if [ -z "${CLUSTER}" ]; then
+  printf "K3D_CLUSTER is empty in %s \n" "${ENV_FILE}"
+  exit 1
+fi
+
+printf "k3d cluster name: %s \n" "${CLUSTER}"
 
 printf "\n------- Setting up Kubernetes cluster -------  \n\n"
 
@@ -129,8 +106,7 @@ printf "\n------- Kafka created ------- \n\n"
 
 printf "\n------- Setup jforwarder project ------- \n\n"
 
-# bash 3.2 (default on macos) treats an empty array as unset
-./apply-all.sh ${APPLY_ARGS[@]+"${APPLY_ARGS[@]}"}
+./apply-all.sh
 
 printf "\n------- Jforwarder created ------- \n\n"
 

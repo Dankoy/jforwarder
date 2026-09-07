@@ -258,29 +258,33 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ## Install everything for project
 
-Deploy of the project is done with kustomize since #333:
+Deploy of the project is done with kustomize since #333. Every setting lives in
+`kuber/.env.deploy`, the scripts take no arguments:
 
 ```shell
-./secrets.sh                            # real secrets over the dummy ones
-./apply-all.sh -u registry_user         # images of a registry
-./apply-all.sh                          # locally built k3d images
+cd kuber
+cp .env.deploy.example .env.deploy   # once, the copy is gitignored
+./secrets.sh
+./apply-all.sh
 ```
-
-`apply-all.sh` applies `project/secrets` and then hands the rest to
-[project/kustomize](./project/kustomize). The image tag is not a flag, it lives
-in git in `project/kustomize/overlays/<environment>`, the registry user is added
-at deploy time and never committed.
-
-There are three environments, `-o` picks one and production is the default:
 
 ```shell
-./apply-all.sh -o dev     # namespace jforwarder-dev, host spring-eureka-registry-dev
-./apply-all.sh -o test    # namespace jforwarder-test
+DOCKER_HUB_USER=      # empty for locally built k3d images
+REGISTRY_HOST=docker.io
+ENVIRONMENT=production   # or dev, test
+DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow
+K3D_CLUSTER=my-cluster   # used by setup-in-k3d.sh
 ```
 
-dev and test bring their own namespace and take the database volumes from the
-`local-path` provisioner instead of the hostPath `PersistentVolume`s, so they
-can live in the same cluster as production.
+`apply-all.sh` applies `project/secrets` and hands everything else to
+[project/kustomize](./project/kustomize). The image tag is not in that file, it
+lives in git in `project/kustomize/overlays/<environment>`; the registry user is
+read at deploy time and never committed.
+
+dev and test bring their own namespace (`jforwarder-dev`, `jforwarder-test`) and
+take the database volumes from the `local-path` provisioner instead of the
+hostPath `PersistentVolume`s, so they can live in the same cluster as
+production.
 
 ### Project deployments with kustomize
 
@@ -291,19 +295,19 @@ deployed version is bumped in git, the way `PROJECT_VERSION` is bumped in
 ```shell
 cd project/kustomize
 ./release.sh version              # takes the version of build.gradle
-git diff overlays/production      # review and commit it, it is the release
-./release.sh install -u registry_user   # same as ../../apply-all.sh -u
-./release.sh version -o dev && ./release.sh install -o dev   # another environment
+git diff overlays                 # review and commit it, it is the release
+./release.sh install              # same as ../../apply-all.sh, without secrets
+./release.sh render               # print the manifests, touch nothing
 ```
 
-`version` never talks to the cluster, it only sets the image tag of the tracked
-overlay. `install` layers the registry and the docker hub user on top of it
-(they stay out of git, like `DOCKER_HUB_USER` in docker-compose, `-H` changes
-the registry host) and runs `kubectl apply -k`. Locally built images need no
-flags at all, `kubectl apply -k overlays/production` uses them as they are.
+`version` never talks to the cluster, it only sets the image tag of the overlay
+of `ENVIRONMENT`. `install` layers `REGISTRY_HOST` and `DOCKER_HUB_USER` on top
+of it (they stay out of git, like `DOCKER_HUB_USER` in docker-compose) and runs
+`kubectl apply -k`. With an empty `DOCKER_HUB_USER` the images are used as they
+are, which is what locally built k3d images need.
 
 Secrets are not part of the base, they stay with `secrets.sh` and
-`kubectl apply -f project/secrets -n jforwarder`, which `apply-all.sh` does.
+`kubectl apply -f project/secrets`, which `apply-all.sh` does.
 
 See [project/kustomize/README.md](./project/kustomize/README.md) for the
 details.
@@ -312,11 +316,11 @@ details.
 
 The flow that was default before kustomize. `project/deployments` contains only
 template files, `release.sh` generates the deployments from them with `sed` and
-`apply-all.sh -p` applies the plain folders:
+`apply-all.sh` applies the plain folders when `DEPLOY_MODE=plain`:
 
 ```shell
 ./release.sh -u registry_user -H registry_host -t 1.8.0-SNAPSHOT
-./apply-all.sh -p
+./apply-all.sh   # with DEPLOY_MODE=plain in .env.deploy
 ```
 
 ### Project deployments with helm

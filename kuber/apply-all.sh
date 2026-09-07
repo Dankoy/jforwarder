@@ -1,59 +1,39 @@
 #!/bin/bash
 
-## applies the whole project to the jforwarder namespace with kustomize,
-## which is the default deploy since #333:
+## applies the whole project to the cluster with kustomize, which is the
+## default deploy since #333:
 ##
-##   ./apply-all.sh -u <docker hub user>   # registry images, tag from git
-##   ./apply-all.sh                        # images as they are, k3d builds
-##   ./apply-all.sh -o dev                 # another environment
+##   cp .env.deploy.example .env.deploy   # once
+##   ./apply-all.sh
 ##
-## The image tag comes from project/kustomize/overlays/<environment>, the file
-## that keeps the deployed version in git. Bump it with
-## "project/kustomize/release.sh version -o <environment>" and commit it.
-##
-## The old sed flow (release.sh + kubectl apply -f) is still one flag away:
-##
-##   ./release.sh -u <user> -t <tag> && ./apply-all.sh -p
+## The script takes no arguments, every setting comes from .env.deploy: the
+## environment, the docker hub user and the registry host. The image tag is
+## not there, it lives in git in project/kustomize/overlays/<environment>
+## and is bumped by "project/kustomize/release.sh version".
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 KUSTOMIZE_DIR="${SCRIPT_DIR}/project/kustomize"
-ENVIRONMENT="production"
+ENV_FILE="${SCRIPT_DIR}/.env.deploy"
 
-Help() {
-  echo "Applies the jforwarder project to the cluster"
-  echo
-  echo "Syntax: apply-all.sh [-o environment] [-u user] [-H registry] [-p] [-h]"
-  echo "options:"
-  echo "  -o  Environment: production, dev, test. Default: production."
-  echo "      Its namespace comes from the overlay, jforwarder for"
-  echo "      production, jforwarder-<environment> for the others."
-  echo "  -u  Docker registry user. Without it the images are taken as they"
-  echo "      are, which is what locally built k3d images need."
-  echo "  -H  Registry domain. Default: docker.io. Needs -u."
-  echo "  -p  Plain manifests instead of kustomize: applies"
-  echo "      project/<folder> the way it was done before kustomize."
-  echo "      Needs release.sh to have generated project/deployments first."
-  echo "      Production only."
-  echo "  -h  Print this help."
-}
+if [ $# -gt 0 ]; then
+  printf "apply-all.sh takes no arguments, settings live in %s \n" "${ENV_FILE}"
+  exit 1
+fi
 
-USER_ARG=""
-REGISTRY_ARG=""
-PLAIN=""
+if [ ! -f "${ENV_FILE}" ]; then
+  printf "%s not found, copy it from .env.deploy.example first \n" "${ENV_FILE}"
+  exit 1
+fi
 
-while getopts ":o:u:H:ph" opt; do
-  case ${opt} in
-    h) Help; exit 0 ;;
-    o) ENVIRONMENT=${OPTARG} ;;
-    u) USER_ARG=${OPTARG} ;;
-    H) REGISTRY_ARG=${OPTARG} ;;
-    p) PLAIN="yes" ;;
-    :) printf "Option -%s requires an argument. \n" "${OPTARG}"; exit 1 ;;
-    ?) printf "Invalid option: -%s. \n" "${OPTARG}"; exit 1 ;;
-  esac
-done
+# shellcheck source=/dev/null
+. "${ENV_FILE}"
+
+DOCKER_HUB_USER="${DOCKER_HUB_USER:-}"
+REGISTRY_HOST="${REGISTRY_HOST:-docker.io}"
+ENVIRONMENT="${ENVIRONMENT:-production}"
+DEPLOY_MODE="${DEPLOY_MODE:-kustomize}"
 
 OVERLAY_DIR="${KUSTOMIZE_DIR}/overlays/${ENVIRONMENT}"
 
@@ -66,7 +46,7 @@ if [ ! -f "${OVERLAY_DIR}/kustomization.yaml" ]; then
     fi
   done
 
-  printf "Unknown environment %s, available: %s \n" "${ENVIRONMENT}" \
+  printf "Unknown ENVIRONMENT %s, available: %s \n" "${ENVIRONMENT}" \
     "${environments}"
   exit 1
 fi
@@ -75,6 +55,8 @@ fi
 
 NAMESPACE=$(sed -n 's/^namespace: *//p' "${OVERLAY_DIR}/kustomization.yaml")
 NAMESPACE=${NAMESPACE:-jforwarder}
+
+printf "\nDeploying %s to namespace %s \n\n" "${ENVIRONMENT}" "${NAMESPACE}"
 
 ## dev and test bring their own namespace, production expects the one of
 ## namespaces/jforwarder-namespace.yaml to be there already
@@ -89,7 +71,7 @@ fi
 
 kubectl apply -f "${SCRIPT_DIR}/project/secrets" -n "${NAMESPACE}"
 
-if [ -n "${PLAIN}" ]; then
+if [ "${DEPLOY_MODE}" = "plain" ]; then
   kubectl apply -f "${SCRIPT_DIR}/project/configmaps" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/storage" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/services" -n "${NAMESPACE}"
@@ -99,9 +81,10 @@ if [ -n "${PLAIN}" ]; then
   exit 0
 fi
 
-install_args=(-o "${ENVIRONMENT}")
-[ -n "${USER_ARG}" ] && install_args+=(-u "${USER_ARG}")
-[ -n "${REGISTRY_ARG}" ] && install_args+=(-H "${REGISTRY_ARG}")
+if [ "${DEPLOY_MODE}" != "kustomize" ]; then
+  printf "Unknown DEPLOY_MODE %s, expected kustomize or plain \n" \
+    "${DEPLOY_MODE}"
+  exit 1
+fi
 
-# bash 3.2 (default on macos) treats an empty array as unset under `set -u`
-"${KUSTOMIZE_DIR}/release.sh" install ${install_args[@]+"${install_args[@]}"}
+"${KUSTOMIZE_DIR}/release.sh" install
