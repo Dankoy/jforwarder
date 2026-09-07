@@ -139,6 +139,25 @@ overlay, which layers `REGISTRY_HOST` and that user on top of the overlay of
 `ENVIRONMENT` and is what gets applied; the tag always comes from the tracked
 overlay. With an empty user the environment overlay is applied directly.
 
+### Which script when
+
+| | command | what it sends |
+| --- | --- | --- |
+| first deploy, new environment | `../../apply-all.sh` | namespace, secrets, manifests |
+| new version, changed manifests | `./release.sh install` | manifests only |
+| changed secrets | `../../secrets.sh`, then `kubectl apply -f ../secrets` | secrets only |
+
+A released version needs nothing but `release.sh install`: the namespace is
+already there and the secrets did not change. `apply-all.sh` would also apply
+`project/secrets` again, and those files hold the dummy values until
+`secrets.sh` has copied the real ones over them - on a machine without
+`.all_secrets` that pushes the placeholders over the real secrets in the
+cluster.
+
+`kubectl apply -k` sends all objects either way; the API server changes only
+the ones that differ, so a version bump rolls the deployments and everything
+else answers `unchanged`.
+
 Plain kubectl works too, no wrapper and no kustomize binary needed:
 
 ```shell

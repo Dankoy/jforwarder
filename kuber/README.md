@@ -300,6 +300,12 @@ git diff overlays                 # review and commit it, it is the release
 ./release.sh render               # print the manifests, touch nothing
 ```
 
+A released version needs nothing but `release.sh install`: the namespace exists
+and the secrets did not change. `apply-all.sh` is for the first deploy of an
+environment - it also applies `project/secrets`, which are dummies until
+`secrets.sh` has replaced them, so running it on a machine without
+`.all_secrets` overwrites the real secrets in the cluster.
+
 `version` never talks to the cluster, it only sets the image tag of the overlay
 of `ENVIRONMENT`. `install` layers `REGISTRY_HOST` and `DOCKER_HUB_USER` on top
 of it (they stay out of git, like `DOCKER_HUB_USER` in docker-compose) and runs
