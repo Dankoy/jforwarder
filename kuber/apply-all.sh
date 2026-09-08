@@ -27,17 +27,36 @@ if [ ! -f "${ENV_FILE}" ]; then
   exit 1
 fi
 
-# shellcheck source=/dev/null
-. "${ENV_FILE}"
+## .env.deploy is read as KEY=value and never sourced: a stray SCRIPT_DIR or a
+## typo in it would otherwise be executed and quietly move the script around.
+## Inline comments, surrounding quotes and CRLF endings are stripped, and a
+## value therefore cannot contain a "#".
 
-DOCKER_HUB_USER="${DOCKER_HUB_USER:-}"
-REGISTRY_HOST="${REGISTRY_HOST:-docker.io}"
+setting() {
+  sed -n "s/^[[:space:]]*$1=//p" "${ENV_FILE}" | tail -n1 | tr -d '\r' \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+          -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+}
+
+ENVIRONMENT="$(setting ENVIRONMENT)"
 ENVIRONMENT="${ENVIRONMENT:-production}"
+DEPLOY_MODE="$(setting DEPLOY_MODE)"
 DEPLOY_MODE="${DEPLOY_MODE:-kustomize}"
 
 if [ "${DEPLOY_MODE}" != "kustomize" ] && [ "${DEPLOY_MODE}" != "plain" ]; then
   printf "Unknown DEPLOY_MODE %s, expected kustomize or plain \n" \
     "${DEPLOY_MODE}"
+  exit 1
+fi
+
+## The plain manifests know nothing about environments: project/storage holds
+## the hostPath PersistentVolumes, which are cluster scoped and named the same
+## for everyone, so applying them for dev or test takes the volumes of
+## production with them.
+
+if [ "${DEPLOY_MODE}" = "plain" ] && [ "${ENVIRONMENT}" != "production" ]; then
+  printf "DEPLOY_MODE=plain is production only, ENVIRONMENT is %s \n" \
+    "${ENVIRONMENT}"
   exit 1
 fi
 

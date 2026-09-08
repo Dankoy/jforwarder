@@ -272,7 +272,7 @@ cp .env.deploy.example .env.deploy   # once, the copy is gitignored
 DOCKER_HUB_USER=      # empty for locally built k3d images
 REGISTRY_HOST=docker.io
 ENVIRONMENT=production   # or dev, test
-DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow
+DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow, production only
 K3D_CLUSTER=my-cluster   # used by setup-in-k3d.sh
 ```
 

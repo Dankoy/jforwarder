@@ -60,6 +60,17 @@ Help() {
 
 ### settings ##################################################################
 
+## .env.deploy is read as KEY=value and never sourced: a stray SCRIPT_DIR or a
+## typo in it would otherwise be executed and quietly move the script around.
+## Inline comments, surrounding quotes and CRLF endings are stripped, and a
+## value therefore cannot contain a "#".
+
+setting() {
+  sed -n "s/^[[:space:]]*$1=//p" "${ENV_FILE}" | tail -n1 | tr -d '\r' \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+          -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+}
+
 load_env() {
   if [ ! -f "${ENV_FILE}" ]; then
     printf "%s not found, copy it from .env.deploy.example first\n" \
@@ -67,11 +78,10 @@ load_env() {
     exit 1
   fi
 
-  # shellcheck source=/dev/null
-  . "${ENV_FILE}"
-
-  DOCKER_HUB_USER="${DOCKER_HUB_USER:-}"
+  DOCKER_HUB_USER="$(setting DOCKER_HUB_USER)"
+  REGISTRY_HOST="$(setting REGISTRY_HOST)"
   REGISTRY_HOST="${REGISTRY_HOST:-docker.io}"
+  ENVIRONMENT="$(setting ENVIRONMENT)"
   ENVIRONMENT="${ENVIRONMENT:-production}"
 }
 

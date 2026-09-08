@@ -19,10 +19,11 @@ if [ ! -f "${ENV_FILE}" ]; then
   exit 1
 fi
 
-# shellcheck source=/dev/null
-. "${ENV_FILE}"
+## .env.deploy is read as KEY=value and never sourced, see apply-all.sh
 
-CLUSTER="${K3D_CLUSTER:-}"
+CLUSTER="$(sed -n "s/^[[:space:]]*K3D_CLUSTER=//p" "${ENV_FILE}" | tail -n1 \
+  | tr -d '\r' | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+        -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/")"
 
 if [ -z "${CLUSTER}" ]; then
   printf "K3D_CLUSTER is empty in %s \n" "${ENV_FILE}"

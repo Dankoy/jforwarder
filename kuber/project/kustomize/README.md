@@ -42,13 +42,14 @@ diff -r base/configmaps ../configmaps
 
 `kuber/.env.deploy`, copied from
 [.env.deploy.example](../../.env.deploy.example) and gitignored, is the only
-input of the deploy scripts:
+input of the deploy scripts. It is read as `KEY=value` and never sourced, so a
+typo in it cannot move a script somewhere else:
 
 ```shell
 DOCKER_HUB_USER=      # empty: images as they are, for locally built k3d ones
 REGISTRY_HOST=docker.io
 ENVIRONMENT=production   # which overlay is deployed
-DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow of apply-all.sh
+DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow, production only
 K3D_CLUSTER=my-cluster   # setup-in-k3d.sh
 ```
 
