@@ -246,15 +246,67 @@ To install kafka I used strimzi operator.
 Guide [here](https://piotrminkowski.com/2023/11/06/apache-kafka-on-kubernetes-with-strimzi/)
 
 ```shell
-helm install strimzi-cluster-operator --set strimzi.io/kraft=enabled  oci://quay.io/strimzi-helm/strimzi-kafka-operator -f helm/strizmi-kafka/strizmi-values.yaml -n kafka
+./apply-kafka.sh
 ```
 
-Kafka NodePools and cluster configurations is available in [helm/strizmi-kafka](./kafka/strizmi-kafka) directory. Apply it and everything should work fine.
+The script installs the operator and applies the manifests of
+[kafka/strizmi-kafka](./kafka/strizmi-kafka): the `Kafka` cluster, its
+`KafkaNodePool`, the schema registry and the UI. The chart version is pinned in
+the script, because the manifests are written for the CRD version that chart
+ships (`kafka.strimzi.io/v1`) and for the kafka versions its operator supports.
 
 Examples from strimzi could be find [here](https://github.com/strimzi/strimzi-kafka-operator/tree/main/examples)
 
-
 When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator and then install it again and apply kafka node pool
+
+### Upgrading strimzi on a cluster that already runs it
+
+On a fresh cluster `./apply-kafka.sh` is enough. On a cluster where an older
+operator is already installed it is not, and the reason is easy to miss:
+strimzi ships its CRDs in the `crds/` directory of the chart, and helm installs
+those **once and never upgrades them**. `helm upgrade --install` replaces the
+operator and leaves the CRDs where they were, so `kubectl wait` passes - the
+CRDs do exist - and the apply right after it fails with
+
+```text
+no matches for kind "Kafka" in version "kafka.strimzi.io/v1"
+```
+
+Update the CRDs by hand, once, before running the script:
+
+```shell
+# what is installed now
+helm list -n kafka
+kubectl get crd kafkas.kafka.strimzi.io -o jsonpath='{.spec.versions[*].name}{"\n"}'
+
+# bring them to the version the script pins
+helm repo add strimzi https://strimzi.io/charts/
+helm repo update strimzi
+helm show crds strimzi/strimzi-kafka-operator --version 1.2.0 | kubectl apply --server-side -f -
+
+# then the usual
+./apply-kafka.sh
+```
+
+and check afterwards:
+
+```shell
+kubectl get crd kafkas.kafka.strimzi.io -o jsonpath='{.spec.versions[*].name}{"\n"}'   # v1
+kubectl get kafka -n kafka                                                              # READY True
+kubectl get pods -n kafka
+```
+
+Two things to keep in mind on an existing cluster:
+
+* **the kafka version moves with it.** `kafka-one-node.yaml` carries both
+  `version` and `metadataVersion`. Strimzi rolls the brokers first and only then
+  accepts the new metadata version, so when the cluster runs a much older kafka
+  it is safer to apply the new `version` while leaving the previous
+  `metadataVersion`, wait for the brokers to roll, and raise the metadata
+  version after that. The operator refuses a metadata version the running
+  brokers cannot serve and says so in its log.
+* **the data stays.** The node pool keeps `deleteClaim: false`, so the PVC of
+  the broker survives both the operator upgrade and the broker restart.
 
 ## Install everything for project
 
