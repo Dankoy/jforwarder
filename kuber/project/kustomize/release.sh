@@ -7,6 +7,7 @@
 ##                          # of the environment, commit the diff
 ##   ./release.sh install   # kubectl apply -k with that version
 ##   ./release.sh render    # print the manifests, touch nothing
+##   ./release.sh namespace # print the namespace of the environment
 ##
 ## Only the command is passed on the command line, every setting comes from
 ## ../../.env.deploy: which environment, the docker hub user, the registry
@@ -47,6 +48,8 @@ Help() {
   echo "            cluster, the diff is meant to be committed."
   echo "  install   Apply the manifests with kubectl apply -k."
   echo "  render    Print the manifests without touching the cluster."
+  echo "  namespace Print the namespace the environment deploys into, the"
+  echo "            one its overlay declares. Used by ../../apply-all.sh."
   echo
   echo "Settings come from ${ENV_FILE}:"
   echo "  ENVIRONMENT       production, dev or test. Default: production."
@@ -138,6 +141,21 @@ cmd_version() {
     "${overlay_file}" "${tag}"
 }
 
+### namespace: the one the overlay of the environment declares ###############
+
+cmd_namespace() {
+  local overlay_file namespace
+  overlay_file="$(overlay_dir)/kustomization.yaml"
+  namespace=$(sed -n 's/^namespace: *//p' "${overlay_file}")
+
+  if [ -z "${namespace}" ]; then
+    printf "no namespace declared in %s\n" "${overlay_file}" >&2
+    exit 1
+  fi
+
+  echo "${namespace}"
+}
+
 ### the overlay that is actually applied ######################################
 
 ## The registry and the docker hub user are not committed, so they are layered
@@ -223,6 +241,7 @@ load_env
 
 case "${COMMAND}" in
   version) cmd_version ;;
+  namespace) cmd_namespace ;;
   install) cmd_install ;;
   render) cmd_render ;;
   "") echo "Missing command" >&2; Help; exit 1 ;;

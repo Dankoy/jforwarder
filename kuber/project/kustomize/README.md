@@ -22,7 +22,7 @@ The other two flows still work: `kuber/release.sh` + `apply-all.sh` with
 | [overlays/test](./overlays/test/kustomization.yaml) | test, namespace `jforwarder-test` |
 | [components/dynamic-storage](./components/dynamic-storage/kustomization.yaml) | database volumes from the default provisioner |
 | `overlays/release-<env>` | registry + user from `.env.deploy`, generated, gitignored |
-| [release.sh](./release.sh) | `version` (bump the tag), `install` (apply), `render` |
+| [release.sh](./release.sh) | `version` (bump the tag), `install` (apply), `render`, `namespace` |
 | [../../.env.deploy](../../.env.deploy.example) | environment, registry host, docker hub user |
 
 `base/configmaps`, `base/services`, `base/statefulsets`, `base/storage` and
@@ -130,8 +130,17 @@ From `kuber`, which also applies the secrets:
 or here, without the secrets step:
 
 ```shell
-./release.sh install   # kubectl apply -k
-./release.sh render    # print the manifests, no cluster
+./release.sh install     # kubectl apply -k
+./release.sh render      # print the manifests, no cluster
+./release.sh namespace   # print the namespace of ENVIRONMENT
+```
+
+`namespace` is what `apply-all.sh` uses to know where to put the secrets, so
+the overlays stay the single place that knows which namespace an environment
+deploys into. It is handy by hand as well:
+
+```shell
+kubectl get pods -n "$(./release.sh namespace)"
 ```
 
 With a `DOCKER_HUB_USER` the script writes the gitignored

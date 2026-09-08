@@ -35,38 +35,17 @@ REGISTRY_HOST="${REGISTRY_HOST:-docker.io}"
 ENVIRONMENT="${ENVIRONMENT:-production}"
 DEPLOY_MODE="${DEPLOY_MODE:-kustomize}"
 
-OVERLAY_DIR="${KUSTOMIZE_DIR}/overlays/${ENVIRONMENT}"
-
-if [ ! -f "${OVERLAY_DIR}/kustomization.yaml" ]; then
-  environments=""
-  for overlay in "${KUSTOMIZE_DIR}"/overlays/*/kustomization.yaml; do
-    name=$(basename "$(dirname "${overlay}")")
-    case "${name}" in
-      release-*) ;;
-      *) environments="${environments}${name} " ;;
-    esac
-  done
-
-  printf "Unknown ENVIRONMENT %s, available: %s \n" "${ENVIRONMENT}" \
-    "${environments}"
-  exit 1
-fi
-
 if [ "${DEPLOY_MODE}" != "kustomize" ] && [ "${DEPLOY_MODE}" != "plain" ]; then
   printf "Unknown DEPLOY_MODE %s, expected kustomize or plain \n" \
     "${DEPLOY_MODE}"
   exit 1
 fi
 
-## the namespace of the environment, as its overlay declares it. Every overlay
-## sets it, so a missing line is a broken overlay and not a reason to guess.
+## release.sh owns the overlays: it validates ENVIRONMENT and reports the
+## namespace its overlay declares, so that knowledge lives in one place.
 
-NAMESPACE=$(sed -n 's/^namespace: *//p' "${OVERLAY_DIR}/kustomization.yaml")
-
-if [ -z "${NAMESPACE}" ]; then
-  printf "no namespace declared in %s/kustomization.yaml \n" "${OVERLAY_DIR}"
-  exit 1
-fi
+OVERLAY_DIR="${KUSTOMIZE_DIR}/overlays/${ENVIRONMENT}"
+NAMESPACE="$("${KUSTOMIZE_DIR}/release.sh" namespace)"
 
 printf "\nDeploying %s to namespace %s \n\n" "${ENVIRONMENT}" "${NAMESPACE}"
 
