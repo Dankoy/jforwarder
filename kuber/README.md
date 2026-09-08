@@ -290,38 +290,29 @@ production.
 
 [project/kustomize](./project/kustomize) is what `apply-all.sh` uses. The
 deployed version is bumped in git, the way `PROJECT_VERSION` is bumped in
-`build.gradle`:
+`build.gradle`, and a release is a committed diff of one overlay followed by
+one command:
 
 ```shell
 cd project/kustomize
-./release.sh version              # takes the version of build.gradle
-git diff overlays                 # review and commit it, it is the release
-./release.sh install              # same as ../../apply-all.sh, without secrets
-./release.sh render               # print the manifests, touch nothing
+./release.sh version                      # tag of build.gradle into the overlay
+git diff overlays                         # review, commit - that is the release
+./release.sh render | kubectl diff -f -   # what will change in the cluster
+./release.sh install                      # kubectl apply -k
 ```
 
-A released version needs nothing but `release.sh install`: the namespace exists
-and the secrets did not change. `apply-all.sh` is for the first deploy of an
-environment - it also applies `project/secrets`, which are dummies until
-`secrets.sh` has replaced them, so running it on a machine without
-`.all_secrets` overwrites the real secrets in the cluster.
+`apply-all.sh` is for the first deploy of an environment: it also applies
+`project/secrets`, which are dummies until `secrets.sh` has replaced them, so
+running it on a machine without `.all_secrets` overwrites the real secrets in
+the cluster. A release needs `release.sh install` and nothing else.
 
-`version` never talks to the cluster, it only sets the image tag of the overlay
-of `ENVIRONMENT`. `install` layers `REGISTRY_HOST` and `DOCKER_HUB_USER` on top
-of it (they stay out of git, like `DOCKER_HUB_USER` in docker-compose) and runs
-`kubectl apply -k`. With an empty `DOCKER_HUB_USER` the images are used as they
-are, which is what locally built k3d images need.
-
-Secrets are not part of the base, they stay with `secrets.sh` and
-`kubectl apply -f project/secrets`, which `apply-all.sh` does.
+The full sequence, the rollback and the case of several environments are in
+[project/kustomize/README.md](./project/kustomize/README.md#releasing).
 
 Deleting is manual: `kubectl apply -k` never removes anything, so a service
 dropped from git keeps running until `kubectl delete` is run for it. See
 [project/kustomize/README.md](./project/kustomize/README.md) for the details
 and for why automatic pruning is not wired in.
-
-See [project/kustomize/README.md](./project/kustomize/README.md) for the
-details.
 
 ### Project deployments with sed templates (legacy)
 

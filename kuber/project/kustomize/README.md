@@ -85,11 +85,10 @@ the ingress host and the tags changed; `release.sh` and `apply-all.sh` pick it
 up by the folder name as soon as `ENVIRONMENT` names it, nothing else has to be
 edited.
 
-## Who changes the version, and when
+## Releasing
 
-The tag lives in the overlay of the environment, for example
-[overlays/production/kustomization.yaml](./overlays/production/kustomization.yaml),
-the kubernetes counterpart of `PROJECT_VERSION` in
+The deployed version lives in git, in the overlay of the environment - the
+kubernetes counterpart of `PROJECT_VERSION` in
 [build.gradle](../../../build.gradle):
 
 ```yaml
@@ -98,26 +97,80 @@ images:
     newTag: "1.9.6-SNAPSHOT"
 ```
 
-The release flow of the project bumps it in three steps:
+Before starting, check that `ENVIRONMENT` in `.env.deploy` names the
+environment being released - every command below acts on that one and says so
+in its output - and that the real secrets are already in the cluster
+(`../../secrets.sh` and `kubectl apply -f ../secrets`). A release does not
+touch secrets.
 
-1. `PROJECT_VERSION` goes up in `build.gradle`, as it does today;
-2. a GitHub release runs [publish.yml](../../../.github/workflows/publish.yml),
-   which pushes `<user>/<image>:<version>` to docker hub;
-3. `./release.sh version` copies that version into the overlay and the diff is
-   committed — that commit is the record of what runs in the cluster.
+**1. Raise the version and publish the images.** `PROJECT_VERSION` goes up in
+`build.gradle` and is committed, then a GitHub release runs
+[publish.yml](../../../.github/workflows/publish.yml), which pushes
+`<user>/<image>:<version>` to docker hub. Nothing kubernetes related happens
+yet.
+
+**2. Write that version into the overlay and commit it.** That commit is the
+record of what runs in the cluster:
 
 ```shell
-./release.sh version   # the overlay of ENVIRONMENT, version of build.gradle
-git diff overlays      # review, commit
+cd kuber/project/kustomize
+./release.sh version
+git diff overlays
+git commit -am "chore: deploy 1.9.7-SNAPSHOT"
 ```
 
-The same edit by hand or with `kustomize edit set image
+`version` takes the tag from `build.gradle` and rewrites only the `newTag`
+entries. Editing the overlay by hand or with `kustomize edit set image
 coub_smart_searcher:1.9.7-SNAPSHOT` is equally fine, the script only saves the
-ten repetitions. Nothing in it talks to the cluster.
+ten repetitions. Nothing here talks to the cluster.
+
+**3. Look at what will change.**
+
+```shell
+./release.sh render | kubectl diff -f -
+```
+
+**4. Deploy.**
+
+```shell
+./release.sh install
+```
+
+`../../apply-all.sh` is not needed for a release: the namespace is there and
+the secrets did not change, and it would apply `../secrets` again - those files
+hold the dummy values until `secrets.sh` has replaced them.
+
+**5. Watch it roll.** Only the deployments whose image changed restart,
+everything else answers `unchanged`:
+
+```shell
+kubectl get pods -n "$(./release.sh namespace)" -w
+```
+
+### Rolling back
+
+The version is a commit, so the rollback is a commit as well:
+
+```shell
+git revert <the release commit>   # or set newTag back by hand
+./release.sh install
+```
+
+Do not use `release.sh version` for this: it always takes the version of
+`build.gradle`, which still holds the new one. Until git catches up, a single
+service can be returned to its previous pod template with
+`kubectl rollout undo deployment/<name> -n <namespace>`.
+
+### Several environments
+
+Each overlay carries its own tag, so dev can run a version production has never
+seen. Releasing the same version everywhere means repeating steps 2 to 4 with
+`ENVIRONMENT` switched in `.env.deploy`; the commits of the different overlays
+are independent.
 
 The registry and the docker hub user are deliberately *not* in git, the same
-way `docker-compose.yaml` keeps them in `DOCKER_HUB_USER` and `publish.yml` in a
-secret. They are added at deploy time.
+way `docker-compose.yaml` keeps them in `DOCKER_HUB_USER` and `publish.yml` in
+a secret. They are added at deploy time, from `.env.deploy`.
 
 ## Install
 
