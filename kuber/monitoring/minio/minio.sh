@@ -2,23 +2,18 @@
 
 ## creates namespaces for development and production environments
 
+if ! command -v helmfile > /dev/null; then
+    echo "helmfile is not installed, see README" >&2
+    exit 1
+fi
+
 kubectl apply -f monitoring/minio/minio-env-secret.yaml -n minio
 kubectl apply -f monitoring/minio/minio-pv.yaml -n minio
 
-helm repo add minio-operator https://operator.min.io
-helm install \
-  --namespace minio-operator \
-  --create-namespace \
-  --values monitoring/minio/operator-values.yaml \
-  operator minio-operator/operator
+## The operator and the tenant come from helmfile.yaml, which pins their chart
+## versions and knows the tenant needs the operator first.
 
-sleep 30
-
-helm install \
---namespace minio \
---create-namespace \
---values monitoring/minio/tenant-values.yaml \
-minio minio-operator/tenant
+helmfile -l name=operator -l name=minio apply
 
 
 

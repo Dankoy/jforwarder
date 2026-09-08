@@ -1,0 +1,100 @@
+---
+# Infrastructure of the cluster: every chart that is installed with helm and is
+# not the application itself. The application is deployed with kustomize, see
+# project/kustomize.
+#
+#   helmfile diff                              # what would change
+#   helmfile apply                             # everything
+#   helmfile -l name=strimzi-cluster-operator apply   # one release
+#
+# Chart versions are pinned here on purpose. An unpinned install takes whatever
+# is latest on the day it runs, which is how the kafka manifests ended up two
+# API versions behind the operator (#356).
+
+repositories:
+  - name: strimzi
+    url: https://strimzi.io/charts/
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: fluent
+    url: https://fluent.github.io/helm-charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: minio-operator
+    url: https://operator.min.io
+
+releases:
+  ## kafka ####################################################################
+
+  - name: strimzi-cluster-operator
+    namespace: kafka
+    chart: strimzi/strimzi-kafka-operator
+    version: 1.2.0
+    values:
+      - kafka/strizmi-kafka/strizmi-values.yaml
+
+  ## object storage for mimir #################################################
+
+  - name: operator
+    namespace: minio-operator
+    chart: minio-operator/operator
+    version: 7.1.1
+    values:
+      - monitoring/minio/operator-values.yaml
+
+  - name: minio
+    namespace: minio
+    chart: minio-operator/tenant
+    version: 7.1.1
+    values:
+      - monitoring/minio/tenant-values.yaml
+    # the tenant is a CR of the operator above
+    needs:
+      - minio-operator/operator
+
+  ## monitoring ###############################################################
+
+  - name: mimir
+    namespace: mimir
+    chart: grafana/mimir-distributed
+    version: 6.2.0
+    values:
+      - monitoring/mimir/values.yaml
+    # mimir stores its blocks in the tenant
+    needs:
+      - minio/minio
+
+  - name: loki
+    namespace: monitoring
+    chart: grafana/loki
+    version: 7.3.0
+    values:
+      - monitoring/loki/values.yaml
+
+  - name: fluent-operator
+    namespace: fluent
+    chart: fluent/fluent-operator
+    version: 4.3.0
+    values:
+      - monitoring/fluent-bit/fluent-operator.yaml
+
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: 90.0.0
+    values:
+      - monitoring/kubestack-values.yaml
+
+  ## dashboard ################################################################
+
+  # Disabled: the chart repository this used to come from,
+  # https://kubernetes.github.io/dashboard/, answers 404 - the project moved its
+  # distribution and the new location is not settled yet. dashboard/dashboard.sh
+  # still applies the service account and the ingress; enable this release and
+  # fill in chart and version once upstream has a working source again.
+  - name: kubernetes-dashboard
+    namespace: kubernetes-dashboard
+    chart: kubernetes-dashboard/kubernetes-dashboard
+    installed: false
+    values:
+      - dashboard/values.yaml

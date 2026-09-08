@@ -252,8 +252,9 @@ Guide [here](https://piotrminkowski.com/2023/11/06/apache-kafka-on-kubernetes-wi
 The script installs the operator and applies the manifests of
 [kafka/strizmi-kafka](./kafka/strizmi-kafka): the `Kafka` cluster, its
 `KafkaNodePool`, the schema registry and the UI. The chart version is pinned in
-the script, because the manifests are written for the CRD version that chart
-ships (`kafka.strimzi.io/v1`) and for the kafka versions its operator supports.
+[helmfile.yaml](./helmfile.yaml), because the manifests are written for the CRD
+version that chart ships (`kafka.strimzi.io/v1`) and for the kafka versions its
+operator supports.
 
 Examples from strimzi could be find [here](https://github.com/strimzi/strimzi-kafka-operator/tree/main/examples)
 
@@ -337,6 +338,44 @@ The data survives: the node pool keeps `deleteClaim: false`, so the broker PVC
 outlives the operator upgrade and the restart. In the test the topics, their
 offsets and a message written before the upgrade were all still there
 afterwards, and the consumer reconnected on its own and caught up to zero lag.
+
+## Charts
+
+Every chart of the cluster - the strimzi operator, the monitoring stack, minio -
+is declared in [helmfile.yaml](./helmfile.yaml) with its **version pinned**, its
+namespace and its values file. The scripts do not call `helm` any more, they
+call `helmfile` with a selector:
+
+```shell
+helmfile diff                                    # what would change
+helmfile apply                                   # every chart
+helmfile -l name=strimzi-cluster-operator apply   # one of them, as apply-kafka.sh does
+```
+
+`helmfile` has to be installed (`brew install helmfile`, or the
+`ghcr.io/helmfile/helmfile` image); repositories are added by it, so the scripts
+no longer do that either.
+
+Pinning is the point. An unpinned `helm install` takes whatever is latest on the
+day it runs, which is how the kafka manifests ended up two API versions behind
+their operator (#356). Raising a version is now a diff in git:
+
+```shell
+$EDITOR helmfile.yaml       # version: 1.2.0 -> 1.3.0
+helmfile diff               # read what it changes in the cluster
+helmfile apply
+git commit -am "chore: strimzi 1.3.0"
+```
+
+The current pins are strimzi 1.2.0, minio operator and tenant 7.1.1, mimir
+6.2.0, loki 7.3.0, fluent-operator 4.3.0 and kube-prometheus-stack 90.0.0 -
+the versions an unpinned install would have taken at the time of writing, so
+nothing changes for a cluster that is already up.
+
+The kubernetes dashboard release is in the file but disabled: the chart
+repository it used to come from answers 404 and the project has not settled on a
+new location, so `dashboard/dashboard.sh` is left as it was. Enable the release
+and fill in its chart and version once upstream has a working source.
 
 ## Install everything for project
 

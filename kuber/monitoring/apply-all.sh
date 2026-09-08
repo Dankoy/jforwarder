@@ -2,23 +2,21 @@
 
 ## creates namespaces for development and production environments
 
+if ! command -v helmfile > /dev/null; then
+    echo "helmfile is not installed, see README" >&2
+    exit 1
+fi
+
 monitoring/minio/minio.sh
 
 ## Setup mimir
 
 kubectl apply -f monitoring/mimir/mimir-secret.yaml -n mimir
-helm install mimir grafana/mimir-distributed -n mimir -f monitoring/mimir/values.yaml
 
-sleep 100
+## mimir, loki and the fluent operator come from helmfile.yaml, which pins
+## their chart versions and orders mimir after the minio tenant it stores in.
 
-## Setup loki 
-
-helm install loki grafana/loki -f monitoring/loki/values.yaml -n monitoring
-
-## Setup fluent
-
-helm repo add fluent https://fluent.github.io/helm-charts
-helm install fluent-operator fluent/fluent-operator -f monitoring/fluent-bit/fluent-operator.yaml -n fluent
+helmfile -l name=mimir -l name=loki -l name=fluent-operator apply
 
 ## Custom multiline parser referenced from fluent-operator.yaml. Needs the
 ## CRDs the chart above installs, so wait for them to be established first.
@@ -36,12 +34,7 @@ kubectl apply -f monitoring/grafana/dashboards -n monitoring
 kubectl apply -f monitoring/grafana/secrets -n monitoring
 kubectl apply -f monitoring/ingress/ingress.yaml -n monitoring
 
-helm repo add prometheus-community \
-    https://prometheus-community.github.io/helm-charts
-
-helm install kube-prometheus-stack \
-    prometheus-community/kube-prometheus-stack \
-    -n monitoring --create-namespace -f monitoring/kubestack-values.yaml
+helmfile -l name=kube-prometheus-stack apply
 
 kubectl apply -f monitoring/alertmanager/rules -n monitoring
 kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n monitoring
