@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: default-config
+data:
+  EUREKA_SERVER: http://spring-eureka-registry:8761/eureka
+  ZIPKIN_SERVER: http://zipkin.monitoring:9411/api/v2/spans
+  GATEWAY_COUB_URL: http://spring-gateway:8760/cc/
+  LOKI_URL: http://loki-gateway.monitoring/loki/api/v1/push

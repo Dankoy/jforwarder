@@ -258,16 +258,71 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ## Install everything for project
 
+Deploy of the project is done with kustomize since #333. Every setting lives in
+`kuber/.env.deploy`, the scripts take no arguments:
+
 ```shell
+cd kuber
+cp .env.deploy.example .env.deploy   # once, the copy is gitignored
+./secrets.sh
 ./apply-all.sh
 ```
 
-### Project deployments 
+```shell
+DOCKER_HUB_USER=      # empty for locally built k3d images
+REGISTRY_HOST=docker.io
+ENVIRONMENT=production   # or dev, test
+DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow, production only
+K3D_CLUSTER=my-cluster   # used by setup-in-k3d.sh
+```
 
-Project contains only template files for deployments. Also there is a script file to generate deployment file dynamically.
+`apply-all.sh` applies `project/secrets` and hands everything else to
+[project/kustomize](./project/kustomize). The image tag is not in that file, it
+lives in git in `project/kustomize/overlays/<environment>`; the registry user is
+read at deploy time and never committed.
+
+dev and test bring their own namespace (`jforwarder-dev`, `jforwarder-test`) and
+take the database volumes from the `local-path` provisioner instead of the
+hostPath `PersistentVolume`s, so they can live in the same cluster as
+production.
+
+### Project deployments with kustomize
+
+[project/kustomize](./project/kustomize) is what `apply-all.sh` uses. The
+deployed version is bumped in git, the way `PROJECT_VERSION` is bumped in
+`build.gradle`, and a release is a committed diff of one overlay followed by
+one command:
 
 ```shell
-./release.sh -u registry_user -r registry_host -t 1.8.0-SNAPSHOT
+cd project/kustomize
+./release.sh version                      # tag of build.gradle into the overlay
+git diff overlays                         # review, commit - that is the release
+./release.sh render | kubectl diff -f -   # what will change in the cluster
+./release.sh install                      # kubectl apply -k
+```
+
+`apply-all.sh` is for the first deploy of an environment: it also applies
+`project/secrets`, which are dummies until `secrets.sh` has replaced them, so
+running it on a machine without `.all_secrets` overwrites the real secrets in
+the cluster. A release needs `release.sh install` and nothing else.
+
+The full sequence, the rollback and the case of several environments are in
+[project/kustomize/README.md](./project/kustomize/README.md#releasing).
+
+Deleting is manual: `kubectl apply -k` never removes anything, so a service
+dropped from git keeps running until `kubectl delete` is run for it. See
+[project/kustomize/README.md](./project/kustomize/README.md) for the details
+and for why automatic pruning is not wired in.
+
+### Project deployments with sed templates (legacy)
+
+The flow that was default before kustomize. `project/deployments` contains only
+template files, `release.sh` generates the deployments from them with `sed` and
+`apply-all.sh` applies the plain folders when `DEPLOY_MODE=plain`:
+
+```shell
+./release.sh -u registry_user -H registry_host -t 1.8.0-SNAPSHOT
+./apply-all.sh   # with DEPLOY_MODE=plain in .env.deploy
 ```
 
 ### Project deployments with helm

@@ -1,31 +1,36 @@
 #!/bin/bash
 
 ## setup cluster
+##
+## Takes no arguments, every setting comes from .env.deploy: the cluster name
+## and, through apply-all.sh, the environment and the image coordinates.
 
-OPTSTRING=":c:"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="${SCRIPT_DIR}/.env.deploy"
 
-while getopts ${OPTSTRING} opt; do
-  case ${opt} in
-    c)
-      printf "k3d cluster name: %s \n" "${OPTARG}"
-      CLUSTER=${OPTARG}
-      ;;
-    :)
-      printf "Option -%s requires an argument. \n" "${OPTARG}"
-      exit 1
-      ;;
-    ?)
-      printf "Invalid option: -%s. \n" "${OPTARG}"
-      exit 1
-      ;;
-  esac
-done
-
-if [ -z "$CLUSTER" ]; then
-  echo "Error: Cluster name must be provided as a command-line argument with -c"
+if [ $# -gt 0 ]; then
+  printf "setup-in-k3d.sh takes no arguments, settings live in %s \n" \
+    "${ENV_FILE}"
   exit 1
 fi
 
+if [ ! -f "${ENV_FILE}" ]; then
+  printf "%s not found, copy it from .env.deploy.example first \n" "${ENV_FILE}"
+  exit 1
+fi
+
+## .env.deploy is read as KEY=value and never sourced, see apply-all.sh
+
+CLUSTER="$(sed -n "s/^[[:space:]]*K3D_CLUSTER=//p" "${ENV_FILE}" | tail -n1 \
+  | tr -d '\r' | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+        -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/")"
+
+if [ -z "${CLUSTER}" ]; then
+  printf "K3D_CLUSTER is empty in %s \n" "${ENV_FILE}"
+  exit 1
+fi
+
+printf "k3d cluster name: %s \n" "${CLUSTER}"
 
 printf "\n------- Setting up Kubernetes cluster -------  \n\n"
 

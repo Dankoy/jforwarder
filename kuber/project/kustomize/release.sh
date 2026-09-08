@@ -1,0 +1,259 @@
+#!/bin/bash
+
+## Kustomize release of the jforwarder manifests, without the sed templating
+## of ../../release.sh:
+##
+##   ./release.sh version   # writes the build.gradle version into the overlay
+##                          # of the environment, commit the diff
+##   ./release.sh install   # kubectl apply -k with that version
+##   ./release.sh render    # print the manifests, touch nothing
+##   ./release.sh namespace # print the namespace of the environment
+##
+## Only the command is passed on the command line, every setting comes from
+## ../../.env.deploy: which environment, the docker hub user, the registry
+## host. The version does not live there, it lives in git, in
+## overlays/<environment>/kustomization.yaml.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OVERLAYS_DIR="${SCRIPT_DIR}/overlays"
+KUBER_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+ENV_FILE="${KUBER_DIR}/.env.deploy"
+BUILD_GRADLE="${KUBER_DIR}/../build.gradle"
+
+# Image names of base/deployments, docker hub repository names as well.
+IMAGES=(
+  coub_smart_searcher
+  kafka_message_consumer
+  kafka_message_producer
+  spring_eureka_registry
+  spring_gateway
+  subscriptions_holder
+  subscriptions_scheduler
+  t_coubs_initiator
+  coub_forwarder_telegram_bot
+  telegram_chat_service
+)
+
+Help() {
+  echo "Releases the jforwarder manifests with kustomize"
+  echo
+  echo "Syntax: release.sh <command>"
+  echo
+  echo "commands:"
+  echo "  version   Write the image tag into the overlay of ENVIRONMENT, the"
+  echo "            file that keeps the deployed version in git. The tag is"
+  echo "            the version of build.gradle. Nothing is sent to the"
+  echo "            cluster, the diff is meant to be committed."
+  echo "  install   Apply the manifests with kubectl apply -k."
+  echo "  render    Print the manifests without touching the cluster."
+  echo "  namespace Print the namespace the environment deploys into, the"
+  echo "            one its overlay declares. Used by ../../apply-all.sh."
+  echo
+  echo "Settings come from ${ENV_FILE}:"
+  echo "  ENVIRONMENT       production, dev or test. Default: production."
+  echo "  DOCKER_HUB_USER   Empty means the images are taken as they are,"
+  echo "                    which is what locally built k3d images need."
+  echo "  REGISTRY_HOST     Default: docker.io. Ignored without a user."
+}
+
+### settings ##################################################################
+
+## .env.deploy is read as KEY=value and never sourced: a stray SCRIPT_DIR or a
+## typo in it would otherwise be executed and quietly move the script around.
+## Inline comments, surrounding quotes and CRLF endings are stripped, and a
+## value therefore cannot contain a "#".
+
+setting() {
+  sed -n "s/^[[:space:]]*$1=//p" "${ENV_FILE}" | tail -n1 | tr -d '\r' \
+    | sed -e 's/[[:space:]]*#.*$//' -e 's/[[:space:]]*$//' \
+          -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'\$/\1/"
+}
+
+load_env() {
+  if [ ! -f "${ENV_FILE}" ]; then
+    printf "%s not found, copy it from .env.deploy.example first\n" \
+      "${ENV_FILE}" >&2
+    exit 1
+  fi
+
+  DOCKER_HUB_USER="$(setting DOCKER_HUB_USER)"
+  REGISTRY_HOST="$(setting REGISTRY_HOST)"
+  REGISTRY_HOST="${REGISTRY_HOST:-docker.io}"
+  ENVIRONMENT="$(setting ENVIRONMENT)"
+  ENVIRONMENT="${ENVIRONMENT:-production}"
+}
+
+# every overlays/<name>/kustomization.yaml but the generated ones
+environments() {
+  local dir name
+  for dir in "${OVERLAYS_DIR}"/*/kustomization.yaml; do
+    name=$(basename "$(dirname "${dir}")")
+    case "${name}" in
+      release-*) ;;
+      *) printf "%s " "${name}" ;;
+    esac
+  done
+}
+
+overlay_dir() {
+  local dir="${OVERLAYS_DIR}/${ENVIRONMENT}"
+
+  if [ ! -f "${dir}/kustomization.yaml" ]; then
+    printf "Unknown ENVIRONMENT %s, available: %s\n" "${ENVIRONMENT}" \
+      "$(environments)" >&2
+    exit 1
+  fi
+
+  echo "${dir}"
+}
+
+### the version of build.gradle, the same one publish.yml tags images with ####
+
+gradle_version() {
+  local version
+  version=$(sed -n 's/.*set("PROJECT_VERSION", "\([^"]*\)").*/\1/p' \
+    "${BUILD_GRADLE}")
+
+  if [ -z "${version}" ]; then
+    echo "PROJECT_VERSION not found in ${BUILD_GRADLE}" >&2
+    exit 1
+  fi
+
+  # allprojects { version = "${PROJECT_VERSION}-SNAPSHOT" }
+  echo "${version}-SNAPSHOT"
+}
+
+### version: set the tag of every image in the tracked overlay ################
+
+cmd_version() {
+  local overlay_file tag
+  overlay_file="$(overlay_dir)/kustomization.yaml"
+  tag=$(gradle_version)
+
+  printf "Environment: %s\nTaking the version of build.gradle: %s\n" \
+    "${ENVIRONMENT}" "${tag}"
+
+  # Same edit "kustomize edit set image <image>:<tag>" would do, without
+  # asking for the kustomize binary: only the newTag of the known images is
+  # rewritten, everything else in the file is left alone.
+  local tmp="${overlay_file}.tmp"
+  awk -v tag="${tag}" -v images="${IMAGES[*]}" '
+    BEGIN { split(images, list, " "); for (i in list) known[list[i]] = 1 }
+    /^  - name: / { current = $3; print; next }
+    /^    newTag: / && current in known { printf "    newTag: \"%s\"\n", tag; next }
+    { print }
+  ' "${overlay_file}" > "${tmp}"
+  mv "${tmp}" "${overlay_file}"
+
+  printf "\nWrote %s\n tag: %s\n\nCommit it, it is the deployed version.\n\n" \
+    "${overlay_file}" "${tag}"
+}
+
+### namespace: the one the overlay of the environment declares ###############
+
+cmd_namespace() {
+  local overlay_file namespace
+  overlay_file="$(overlay_dir)/kustomization.yaml"
+  namespace=$(sed -n 's/^namespace: *//p' "${overlay_file}")
+
+  if [ -z "${namespace}" ]; then
+    printf "no namespace declared in %s\n" "${overlay_file}" >&2
+    exit 1
+  fi
+
+  echo "${namespace}"
+}
+
+### the overlay that is actually applied ######################################
+
+## The registry and the docker hub user are not committed, so they are layered
+## on top of the tracked overlay instead of living in it.
+
+resolve_overlay() {
+  local environment_dir
+  environment_dir="$(overlay_dir)"
+
+  if [ -z "${DOCKER_HUB_USER}" ]; then
+    echo "${environment_dir}"
+    return
+  fi
+
+  # one generated overlay per environment, so that two deploys running at the
+  # same time cannot hand each other the wrong one
+  local release_dir="${OVERLAYS_DIR}/release-${ENVIRONMENT}"
+  local release_file="${release_dir}/kustomization.yaml"
+
+  local prefix=""
+  if [ -n "${REGISTRY_HOST}" ]; then
+    prefix="${REGISTRY_HOST}/"
+  fi
+  prefix="${prefix}${DOCKER_HUB_USER}/"
+
+  mkdir -p "${release_dir}"
+  cat > "${release_file}" <<HEADER
+---
+# Generated from .env.deploy by release.sh, the tag comes from ../${ENVIRONMENT}
+# and this only prepends the registry. Do not edit and do not commit it.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../${ENVIRONMENT}
+
+images:
+HEADER
+  local image
+  for image in "${IMAGES[@]}"; do
+    cat >> "${release_file}" <<ENTRY
+  - name: ${image}
+    newName: ${prefix}${image}
+ENTRY
+  done
+
+  echo "${release_dir}"
+}
+
+### install / render ##########################################################
+
+cmd_install() {
+  local overlay
+  overlay="$(resolve_overlay)"
+
+  printf "\nApplying %s to environment %s\n\n" "${overlay}" "${ENVIRONMENT}"
+
+  kubectl apply -k "${overlay}"
+}
+
+cmd_render() {
+  local overlay
+  overlay="$(resolve_overlay)"
+
+  kubectl kustomize "${overlay}"
+}
+
+### dispatch ##################################################################
+
+COMMAND="${1:-}"
+
+case "${COMMAND}" in
+  -h|--help|help) Help; exit 0 ;;
+esac
+
+if [ $# -gt 1 ]; then
+  printf "release.sh takes a command and nothing else, settings live in %s\n" \
+    "${ENV_FILE}" >&2
+  exit 1
+fi
+
+load_env
+
+case "${COMMAND}" in
+  version) cmd_version ;;
+  namespace) cmd_namespace ;;
+  install) cmd_install ;;
+  render) cmd_render ;;
+  "") echo "Missing command" >&2; Help; exit 1 ;;
+  *) printf "Unknown command: %s\n\n" "${COMMAND}" >&2; Help; exit 1 ;;
+esac

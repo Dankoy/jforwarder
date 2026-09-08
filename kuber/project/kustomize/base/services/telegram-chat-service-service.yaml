@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: telegram-chat-service
+  namespace: jforwarder
+  labels:
+    app: telegram-chat-service-service
+spec:
+  type: ClusterIP
+  selector:
+    app: telegram-chat-service
+  ports:
+    - port: 8088
+      targetPort: 8088

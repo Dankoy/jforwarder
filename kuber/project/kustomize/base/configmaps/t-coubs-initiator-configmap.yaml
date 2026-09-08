@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: t-coubs-initiator-config
+data:
+  JVM_PARAMS: |
+        -Xms200m -Xmx200m -XX:MaxMetaspaceSize=150m -XX:NewSize=150m 
+        -XX:MaxNewSize=150m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=./dump.hprof -XX:+UseGCOverheadLimit -XX:+UseStringDeduplication
+        -Xlog:gc=info:file=./gc-%p-%t.log:tags,uptime,time,level:filecount=5,filesize=10m

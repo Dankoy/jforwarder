@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-message-producer
+  namespace: jforwarder
+  labels:
+    app: kafka-message-producer-service
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka-message-producer
+  ports:
+    - port: 8083
+      targetPort: 8083

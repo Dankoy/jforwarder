@@ -1,0 +1,58 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Every object that apply-all.sh applies, except the secrets: those stay in
+# ../../../secrets and keep being deployed by kuber/secrets.sh + kubectl, so
+# that a kustomize apply never overwrites the real ones with the dummies.
+namespace: jforwarder
+
+# Images have no registry and no user here, so a locally built image
+# (k3d image import coub_smart_searcher:latest) works as is. An overlay points
+# them at a registry with the "images" transformer, see ../release.sh.
+
+resources:
+  # configmaps
+  - configmaps/coub-smart-searcher-configmap.yaml
+  - configmaps/default-configmap.yaml
+  - configmaps/kafka-message-consumer-configmap.yaml
+  - configmaps/kafka-message-producer-configmap.yaml
+  - configmaps/spring-eureka-configmap.yaml
+  - configmaps/spring-gateway-configmap.yaml
+  - configmaps/subscriptions-holder-configmap.yaml
+  - configmaps/subscriptions-scheduler-configmap.yaml
+  - configmaps/t-coubs-initiator-configmap.yaml
+  - configmaps/telegram-bot-configmap.yaml
+  - configmaps/telegram-chat-service-configmap.yaml
+  # storage
+  - storage/subscriptions-holder-db-persistent-volume.yaml
+  - storage/telegram-chat-service-db-persistent-volume.yaml
+  # services
+  - services/coub-smart-searcher-service.yaml
+  - services/kafka-message-consumer-service.yaml
+  - services/kafka-message-producer-service.yaml
+  - services/spring-eureka-service.yaml
+  - services/spring-gateway-service.yaml
+  - services/subscriptions-holder-db-service.yaml
+  - services/subscriptions-holder-service.yaml
+  - services/subscriptions-scheduler-service.yaml
+  - services/t-coubs-initiator-service.yaml
+  - services/telegram-bot-service.yaml
+  - services/telegram-chat-service-db-service.yaml
+  - services/telegram-chat-service-service.yaml
+  # statefulsets
+  - statefulsets/subscriptions-holder-db-statefulset.yaml
+  - statefulsets/telegram-chat-service-db-statefulset.yaml
+  # deployments
+  - deployments/coub-smart-searcher-deployment.yaml
+  - deployments/kafka-message-consumer-deployment.yaml
+  - deployments/kafka-message-producer-deployment.yaml
+  - deployments/spring-eureka-registry-deployment.yaml
+  - deployments/spring-gateway-deployment.yaml
+  - deployments/subscriptions-holder-deployment.yaml
+  - deployments/subscriptions-scheduler-deployment.yaml
+  - deployments/t-coubs-initiator-deployment.yaml
+  - deployments/telegram-bot-deployment.yaml
+  - deployments/telegram-chat-service-deployment.yaml
+  # ingress
+  - ingress/ingress.yaml

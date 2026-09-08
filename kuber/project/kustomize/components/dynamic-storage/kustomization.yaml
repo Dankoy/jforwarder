@@ -1,0 +1,34 @@
+---
+# Storage for the environments that are not production: instead of the manual
+# PersistentVolumes of base/storage, which are hostPath volumes with fixed
+# cluster wide names, the databases ask the default provisioner of the cluster
+# (local-path on k3d/k3s) for their volumes. Without it two environments would
+# fight over the same PersistentVolume objects and the same host directories.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+patches:
+  - target:
+      kind: PersistentVolume
+      name: subscriptions-holder-pv-for-pg
+    patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: subscriptions-holder-pv-for-pg
+  - target:
+      kind: PersistentVolume
+      name: telegram-chat-service-pv-for-pg
+    patch: |
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: telegram-chat-service-pv-for-pg
+  - target:
+      kind: StatefulSet
+    patch: |
+      - op: replace
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: local-path
