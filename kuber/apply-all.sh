@@ -51,10 +51,15 @@ if [ ! -f "${OVERLAY_DIR}/kustomization.yaml" ]; then
   exit 1
 fi
 
-## the namespace of the environment, as the overlay declares it
+## the namespace of the environment, as its overlay declares it. Every overlay
+## sets it, so a missing line is a broken overlay and not a reason to guess.
 
 NAMESPACE=$(sed -n 's/^namespace: *//p' "${OVERLAY_DIR}/kustomization.yaml")
-NAMESPACE=${NAMESPACE:-jforwarder}
+
+if [ -z "${NAMESPACE}" ]; then
+  printf "no namespace declared in %s/kustomization.yaml \n" "${OVERLAY_DIR}"
+  exit 1
+fi
 
 printf "\nDeploying %s to namespace %s \n\n" "${ENVIRONMENT}" "${NAMESPACE}"
 

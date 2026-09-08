@@ -12,6 +12,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# Declared here and not only in the base, so that the namespace of an
+# environment is readable from its own overlay: apply-all.sh takes the
+# namespace it puts the secrets into from this line.
+namespace: jforwarder
+
 resources:
   - ../../base
 
