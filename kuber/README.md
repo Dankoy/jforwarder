@@ -315,6 +315,11 @@ are, which is what locally built k3d images need.
 Secrets are not part of the base, they stay with `secrets.sh` and
 `kubectl apply -f project/secrets`, which `apply-all.sh` does.
 
+Deleting is manual: `kubectl apply -k` never removes anything, so a service
+dropped from git keeps running until `kubectl delete` is run for it. See
+[project/kustomize/README.md](./project/kustomize/README.md) for the details
+and for why automatic pruning is not wired in.
+
 See [project/kustomize/README.md](./project/kustomize/README.md) for the
 details.
 

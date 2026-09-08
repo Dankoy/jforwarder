@@ -193,6 +193,36 @@ The deployments reference them by name (`telegram-bot-secret`,
 `subscriptions-holder-secret`, `telegram-chat-service-secret`), so the order is
 secrets first, then `kubectl apply -k`.
 
+## Deleting things
+
+`kubectl apply -k` never deletes. It reconciles the objects it is handed and
+knows nothing about what was applied before, so a service removed from git
+keeps running in the cluster until it is removed by hand:
+
+```shell
+kubectl delete deployment/<name>-app service/<name> configmap/<name>-config \
+    -n jforwarder
+```
+
+A whole environment goes away with its overlay, the namespace included:
+
+```shell
+kubectl delete -k overlays/dev
+```
+
+Do not run that against production: `base/storage` holds the two
+`PersistentVolume`s, which are cluster scoped, and deleting them detaches the
+databases. The `hostPath` data survives (the volumes are `Retain`), but the
+objects and the bindings have to be recreated.
+
+Automatic pruning is not wired in on purpose. `kubectl apply --prune -l` needs
+a label on everything plus an allow-list of kinds, and silently skips the kinds
+missing from it; `--prune --applyset` is the intended replacement but is still
+alpha. The tool that does this properly is a GitOps controller - Flux with
+`prune: true`, Argo CD with `automated.prune: true` - which keeps an inventory
+of what it applied. If the deploy ever moves there, it takes this section with
+it.
+
 ## Changing something
 
 * a config or service value — edit the file in `base/<folder>` and the twin in
