@@ -261,52 +261,82 @@ When trying to redeploy kafka, it is necessary to delete PVC, strimzi operator a
 
 ### Upgrading strimzi on a cluster that already runs it
 
-On a fresh cluster `./apply-kafka.sh` is enough. On a cluster where an older
-operator is already installed it is not, and the reason is easy to miss:
-strimzi ships its CRDs in the `crds/` directory of the chart, and helm installs
-those **once and never upgrades them**. `helm upgrade --install` replaces the
-operator and leaves the CRDs where they were, so `kubectl wait` passes - the
-CRDs do exist - and the apply right after it fails with
+On a fresh cluster `./apply-kafka.sh` is enough. On a cluster that already runs
+an older operator it is not: the chart is pinned to 1.2.0, whose CRDs serve
+`kafka.strimzi.io/v1` only, and getting there from a `v1beta2` cluster is a
+migration, not an install. The steps below were run end to end on a k3d cluster
+that started at strimzi 0.46.1 with kafka 4.0.0.
 
-```text
-no matches for kind "Kafka" in version "kafka.strimzi.io/v1"
-```
+Two things make it awkward, and both are silent:
 
-Update the CRDs by hand, once, before running the script:
+* helm ships strimzi CRDs in the chart's `crds/` directory, and helm installs
+  those **once and never upgrades them**. `helm upgrade` replaces the operator
+  and leaves the CRDs where they were, so `kubectl wait` passes - the CRDs do
+  exist - and the apply right after it fails with
+  `no matches for kind "Kafka" in version "kafka.strimzi.io/v1"`;
+* the `v1beta2` version cannot simply be dropped from a CRD. Kubernetes refuses
+  with `status.storedVersions[0]: Invalid value: "v1beta2": missing from
+  spec.versions` until every stored resource has been rewritten as `v1`.
+
+**1. Upgrade to an intermediate version that serves both APIs.** `v1` appears
+in 0.50 and 0.51 next to `v1beta2`; 1.x serves `v1` alone. The CRDs have to be
+applied by hand, and `--force-conflicts` is needed because helm owns those
+fields - without it the apply is refused and nothing changes:
 
 ```shell
-# what is installed now
-helm list -n kafka
-kubectl get crd kafkas.kafka.strimzi.io -o jsonpath='{.spec.versions[*].name}{"\n"}'
-
-# bring them to the version the script pins
 helm repo add strimzi https://strimzi.io/charts/
 helm repo update strimzi
-helm show crds strimzi/strimzi-kafka-operator --version 1.2.0 | kubectl apply --server-side -f -
+helm show crds strimzi/strimzi-kafka-operator --version 0.51.0 \
+    | kubectl apply --server-side --force-conflicts -f -
+helm upgrade strimzi-cluster-operator strimzi/strimzi-kafka-operator \
+    --version 0.51.0 -f kafka/strizmi-kafka/strizmi-values.yaml -n kafka
+```
 
-# then the usual
+While the cluster sits here with kafka 4.0.0 its `Kafka` resource may report
+`Unsupported Kafka.spec.kafka.version: 4.0.0` - 0.51 no longer supports it. The
+version moves in step 3, so do not stop half way.
+
+**2. Convert the resources and the CRDs with the strimzi tool.** It is in the
+[1.0.0 release](https://github.com/strimzi/strimzi-kafka-operator/releases/tag/1.0.0)
+as `strimzi-v1-api-conversion-1.0.0.tar.gz` and needs java:
+
+```shell
+bin/v1-api-conversion.sh convert-resource --all-namespaces
+bin/v1-api-conversion.sh crd-upgrade
+```
+
+`convert-resource` rewrites every strimzi custom resource in the `v1` schema,
+`crd-upgrade` makes `v1` the stored version, touches the resources so nothing
+stays persisted as `v1beta2`, and removes `v1beta2` from `status.storedVersions`.
+After it `kubectl get crd kafkas.kafka.strimzi.io -o jsonpath='{.status.storedVersions}'`
+prints `["v1"]`.
+
+**3. Apply the pinned CRDs and run the script:**
+
+```shell
+helm show crds strimzi/strimzi-kafka-operator --version 1.2.0 \
+    | kubectl apply --server-side --force-conflicts -f -
 ./apply-kafka.sh
 ```
 
-and check afterwards:
+The operator takes it from there: in the test it rolled the broker from kafka
+4.0.0 to the 4.3.1 of `kafka-one-node.yaml` and moved the metadata version to
+4.3-IV0 by itself, in one reconciliation, without a separate step for the
+metadata version.
+
+**4. Check:**
 
 ```shell
-kubectl get crd kafkas.kafka.strimzi.io -o jsonpath='{.spec.versions[*].name}{"\n"}'   # v1
-kubectl get kafka -n kafka                                                              # READY True
+kubectl get kafka -n kafka          # READY True, 4.3.1, 4.3-IV0
 kubectl get pods -n kafka
+kubectl exec -n kafka my-cluster-dual-role-0 -- \
+    bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 ```
 
-Two things to keep in mind on an existing cluster:
-
-* **the kafka version moves with it.** `kafka-one-node.yaml` carries both
-  `version` and `metadataVersion`. Strimzi rolls the brokers first and only then
-  accepts the new metadata version, so when the cluster runs a much older kafka
-  it is safer to apply the new `version` while leaving the previous
-  `metadataVersion`, wait for the brokers to roll, and raise the metadata
-  version after that. The operator refuses a metadata version the running
-  brokers cannot serve and says so in its log.
-* **the data stays.** The node pool keeps `deleteClaim: false`, so the PVC of
-  the broker survives both the operator upgrade and the broker restart.
+The data survives: the node pool keeps `deleteClaim: false`, so the broker PVC
+outlives the operator upgrade and the restart. In the test the topics, their
+offsets and a message written before the upgrade were all still there
+afterwards, and the consumer reconnected on its own and caught up to zero lag.
 
 ## Install everything for project
 
