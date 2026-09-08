@@ -70,6 +70,10 @@ releases:
     version: 7.3.0
     values:
       - monitoring/loki/values.yaml
+    # loki keeps its chunks and its index in the tenant as well. Without it the
+    # pods still start and even report ready, they just fail every S3 call.
+    needs:
+      - minio/minio
 
   - name: fluent-operator
     namespace: fluent

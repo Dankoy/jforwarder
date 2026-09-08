@@ -372,6 +372,23 @@ The current pins are strimzi 1.2.0, minio operator and tenant 7.1.1, mimir
 the versions an unpinned install would have taken at the time of writing, so
 nothing changes for a cluster that is already up.
 
+### Order matters, and nothing tells you when it is wrong
+
+Both loki and mimir keep their data in the minio tenant, so they declare it in
+`needs`. That dependency is quiet when it is not met: installed without the
+tenant, loki starts, reports `2/2 Running` and **ready**, and only its log shows
+that every S3 call fails with `no such host`; mimir does not even start, because
+the endpoint and the bucket come from `mimir-secret`.
+
+A selector skips `needs` - `--skip-needs` defaults to true whenever `-l` is
+given - so `monitoring/apply-all.sh` passes `--include-needs`, and the tenant is
+brought up first even when only mimir or loki is asked for:
+
+```shell
+helmfile -l name=mimir diff                    # mimir alone
+helmfile -l name=mimir diff --include-needs    # minio operator, tenant, then mimir
+```
+
 The kubernetes dashboard release is in the file but disabled: the chart
 repository it used to come from answers 404 and the project has not settled on a
 new location, so `dashboard/dashboard.sh` is left as it was. Enable the release

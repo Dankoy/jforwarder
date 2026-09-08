@@ -13,10 +13,12 @@ monitoring/minio/minio.sh
 
 kubectl apply -f monitoring/mimir/mimir-secret.yaml -n mimir
 
-## mimir, loki and the fluent operator come from helmfile.yaml, which pins
-## their chart versions and orders mimir after the minio tenant it stores in.
+## mimir, loki and the fluent operator come from helmfile.yaml, which pins their
+## chart versions. Both mimir and loki store in the minio tenant and declare it
+## in "needs"; a selector skips needs unless --include-needs is given, and
+## without the tenant they start, report ready and fail every S3 call.
 
-helmfile -l name=mimir -l name=loki -l name=fluent-operator apply
+helmfile -l name=mimir -l name=loki -l name=fluent-operator apply --include-needs
 
 ## Custom multiline parser referenced from fluent-operator.yaml. Needs the
 ## CRDs the chart above installs, so wait for them to be established first.
