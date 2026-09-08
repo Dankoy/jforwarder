@@ -21,7 +21,7 @@ The other two flows still work: `kuber/release.sh` + `apply-all.sh` with
 | [overlays/dev](./overlays/dev/kustomization.yaml) | dev, namespace `jforwarder-dev` |
 | [overlays/test](./overlays/test/kustomization.yaml) | test, namespace `jforwarder-test` |
 | [components/dynamic-storage](./components/dynamic-storage/kustomization.yaml) | database volumes from the default provisioner |
-| `overlays/release` | registry + user from `.env.deploy`, generated, gitignored |
+| `overlays/release-<env>` | registry + user from `.env.deploy`, generated, gitignored |
 | [release.sh](./release.sh) | `version` (bump the tag), `install` (apply), `render` |
 | [../../.env.deploy](../../.env.deploy.example) | environment, registry host, docker hub user |
 
@@ -134,10 +134,12 @@ or here, without the secrets step:
 ./release.sh render    # print the manifests, no cluster
 ```
 
-With a `DOCKER_HUB_USER` the script writes the gitignored `overlays/release`
-overlay, which layers `REGISTRY_HOST` and that user on top of the overlay of
-`ENVIRONMENT` and is what gets applied; the tag always comes from the tracked
-overlay. With an empty user the environment overlay is applied directly.
+With a `DOCKER_HUB_USER` the script writes the gitignored
+`overlays/release-<environment>` overlay, which layers `REGISTRY_HOST` and that
+user on top of the overlay of `ENVIRONMENT` and is what gets applied; the tag
+always comes from the tracked overlay. One generated overlay per environment,
+so two deploys running at the same time cannot hand each other the wrong one.
+With an empty user the environment overlay is applied directly.
 
 ### Which script when
 

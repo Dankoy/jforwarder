@@ -17,8 +17,6 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OVERLAYS_DIR="${SCRIPT_DIR}/overlays"
-RELEASE_DIR="${OVERLAYS_DIR}/release"
-RELEASE_FILE="${RELEASE_DIR}/kustomization.yaml"
 KUBER_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 ENV_FILE="${KUBER_DIR}/.env.deploy"
 BUILD_GRADLE="${KUBER_DIR}/../build.gradle"
@@ -74,14 +72,15 @@ load_env() {
   ENVIRONMENT="${ENVIRONMENT:-production}"
 }
 
-# every overlays/<name>/kustomization.yaml but the generated one
+# every overlays/<name>/kustomization.yaml but the generated ones
 environments() {
   local dir name
   for dir in "${OVERLAYS_DIR}"/*/kustomization.yaml; do
     name=$(basename "$(dirname "${dir}")")
-    if [ "${name}" != "release" ]; then
-      printf "%s " "${name}"
-    fi
+    case "${name}" in
+      release-*) ;;
+      *) printf "%s " "${name}" ;;
+    esac
   done
 }
 
@@ -120,7 +119,8 @@ cmd_version() {
   overlay_file="$(overlay_dir)/kustomization.yaml"
   tag=$(gradle_version)
 
-  printf "Taking the version of build.gradle: %s\n" "${tag}"
+  printf "Environment: %s\nTaking the version of build.gradle: %s\n" \
+    "${ENVIRONMENT}" "${tag}"
 
   # Same edit "kustomize edit set image <image>:<tag>" would do, without
   # asking for the kustomize binary: only the newTag of the known images is
@@ -152,14 +152,19 @@ resolve_overlay() {
     return
   fi
 
+  # one generated overlay per environment, so that two deploys running at the
+  # same time cannot hand each other the wrong one
+  local release_dir="${OVERLAYS_DIR}/release-${ENVIRONMENT}"
+  local release_file="${release_dir}/kustomization.yaml"
+
   local prefix=""
   if [ -n "${REGISTRY_HOST}" ]; then
     prefix="${REGISTRY_HOST}/"
   fi
   prefix="${prefix}${DOCKER_HUB_USER}/"
 
-  mkdir -p "${RELEASE_DIR}"
-  cat > "${RELEASE_FILE}" <<HEADER
+  mkdir -p "${release_dir}"
+  cat > "${release_file}" <<HEADER
 ---
 # Generated from .env.deploy by release.sh, the tag comes from ../${ENVIRONMENT}
 # and this only prepends the registry. Do not edit and do not commit it.
@@ -173,13 +178,13 @@ images:
 HEADER
   local image
   for image in "${IMAGES[@]}"; do
-    cat >> "${RELEASE_FILE}" <<ENTRY
+    cat >> "${release_file}" <<ENTRY
   - name: ${image}
     newName: ${prefix}${image}
 ENTRY
   done
 
-  echo "${RELEASE_DIR}"
+  echo "${release_dir}"
 }
 
 ### install / render ##########################################################
@@ -188,7 +193,7 @@ cmd_install() {
   local overlay
   overlay="$(resolve_overlay)"
 
-  printf "\nApplying %s\n\n" "${overlay}"
+  printf "\nApplying %s to environment %s\n\n" "${overlay}" "${ENVIRONMENT}"
 
   kubectl apply -k "${overlay}"
 }

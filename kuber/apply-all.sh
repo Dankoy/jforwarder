@@ -41,13 +41,20 @@ if [ ! -f "${OVERLAY_DIR}/kustomization.yaml" ]; then
   environments=""
   for overlay in "${KUSTOMIZE_DIR}"/overlays/*/kustomization.yaml; do
     name=$(basename "$(dirname "${overlay}")")
-    if [ "${name}" != "release" ]; then
-      environments="${environments}${name} "
-    fi
+    case "${name}" in
+      release-*) ;;
+      *) environments="${environments}${name} " ;;
+    esac
   done
 
   printf "Unknown ENVIRONMENT %s, available: %s \n" "${ENVIRONMENT}" \
     "${environments}"
+  exit 1
+fi
+
+if [ "${DEPLOY_MODE}" != "kustomize" ] && [ "${DEPLOY_MODE}" != "plain" ]; then
+  printf "Unknown DEPLOY_MODE %s, expected kustomize or plain \n" \
+    "${DEPLOY_MODE}"
   exit 1
 fi
 
@@ -84,12 +91,6 @@ if [ "${DEPLOY_MODE}" = "plain" ]; then
   kubectl apply -f "${SCRIPT_DIR}/project/deployments" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/ingress" -n "${NAMESPACE}"
   exit 0
-fi
-
-if [ "${DEPLOY_MODE}" != "kustomize" ]; then
-  printf "Unknown DEPLOY_MODE %s, expected kustomize or plain \n" \
-    "${DEPLOY_MODE}"
-  exit 1
 fi
 
 "${KUSTOMIZE_DIR}/release.sh" install
