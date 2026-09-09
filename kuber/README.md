@@ -460,6 +460,26 @@ stalls for as long as those two steps are apart. It does not announce itself:
 once the stack is synced, but do not stop half way and do not read the retries
 as damage.
 
+Several pods also sit in `Terminating` for a long time, and none of it is a
+hang - these components drain on shutdown and their grace periods say so:
+
+| pod | terminationGracePeriodSeconds |
+| --- | --- |
+| prometheus | 600 |
+| mimir query-scheduler | 180 |
+| mimir distributor | 100 |
+
+Prometheus is the one that catches people out: up to ten minutes of
+`1/2 Terminating` while it flushes its WAL, with nothing in the events to say
+that is what it is doing. Check `deletionTimestamp` plus
+`deletionGracePeriodSeconds` before concluding anything is stuck.
+
+The mimir distributor, ruler and one ingester crashloop for a minute or two
+right after the mimir sync: kafka is still starting and they fail on
+`dial tcp ...:9092: connection refused`, then come up on their own after two or
+three restarts. Only worry if it is still happening once `mimir-kafka-0` is
+`1/1 Running`.
+
 Worth checking once it is all through, the four things that actually broke or
 nearly broke during testing:
 
