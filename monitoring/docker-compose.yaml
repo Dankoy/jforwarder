@@ -95,7 +95,7 @@ services:
   prometheus-postgres-exporter-subscriptions-holder:
     env_file:
     - ".env"
-    image: "bitnami/postgres-exporter:0.17.1"
+    image: "soldevelo/postgres-exporter:0.17.1"
     container_name: "prometheus-postgres-exporter-subscriptions-holder"
     ports:
     - "9187:9187"
@@ -107,7 +107,7 @@ services:
   prometheus-postgres-exporter-telegram-chat:
     env_file:
     - ".env"
-    image: "bitnami/postgres-exporter:0.17.1"
+    image: "soldevelo/postgres-exporter:0.17.1"
     container_name: "prometheus-postgres-exporter-telegram-chat"
     ports:
     - "9188:9187"
