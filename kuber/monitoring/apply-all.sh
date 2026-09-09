@@ -17,8 +17,14 @@ kubectl apply -f monitoring/mimir/mimir-secret.yaml -n mimir
 ## chart versions. Both mimir and loki store in the minio tenant and declare it
 ## in "needs"; a selector skips needs unless --include-needs is given, and
 ## without the tenant they start, report ready and fail every S3 call.
+##
+## "sync" and not "apply": apply runs helm-diff first, and a chart that brings
+## its own CRDs and objects of those kinds - fluent-operator here - cannot be
+## rendered while the cluster does not know them yet. See
+## https://github.com/roboll/helmfile/issues/1353
 
-helmfile -l name=mimir -l name=loki -l name=fluent-operator apply --include-needs
+helmfile -l name=mimir -l name=loki -l name=fluent-operator sync \
+    --include-needs --concurrency 1
 
 ## Custom multiline parser referenced from fluent-operator.yaml. Needs the
 ## CRDs the chart above installs, so wait for them to be established first.
@@ -36,7 +42,15 @@ kubectl apply -f monitoring/grafana/dashboards -n monitoring
 kubectl apply -f monitoring/grafana/secrets -n monitoring
 kubectl apply -f monitoring/ingress/ingress.yaml -n monitoring
 
-helmfile -l name=kube-prometheus-stack apply
+## The chart keeps its CRDs in a subchart and creates objects of those kinds in
+## the same release. helm 4 does not pick the CRDs up within that release, so on
+## a cluster where they do not exist yet the first run fails and the second one
+## succeeds - checked with plain "helm install" as well, and on chart versions
+## 65, 75, 86 and 90; helm 3.16 installs the same chart in one go. The retry is
+## a no-op once the CRDs are there, which is the case on an existing cluster.
+
+helmfile -l name=kube-prometheus-stack sync --concurrency 1 \
+    || helmfile -l name=kube-prometheus-stack sync --concurrency 1
 
 kubectl apply -f monitoring/alertmanager/rules -n monitoring
 kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n monitoring

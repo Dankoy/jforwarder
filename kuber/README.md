@@ -367,10 +367,37 @@ helmfile apply
 git commit -am "chore: strimzi 1.3.0"
 ```
 
-The current pins are strimzi 1.2.0, minio operator and tenant 7.1.1, mimir
-6.2.0, loki 7.3.0, fluent-operator 4.3.0 and kube-prometheus-stack 90.0.0 -
-the versions an unpinned install would have taken at the time of writing, so
-nothing changes for a cluster that is already up.
+The pins are **the versions the cluster actually runs**, not the newest ones:
+minio operator and tenant 7.1.1, mimir 5.8.0, loki 6.38.0, fluent-operator
+3.5.0, kube-prometheus-stack 77.1.0. A deploy is not the place to find out that
+a chart moved thirteen major versions ahead. strimzi is the one exception, 1.2.0
+against the 0.47.0 that is installed: that upgrade came with #356 and needs the
+migration written down above.
+
+Raising a version is its own commit, and for a chart that brings CRDs it is two
+steps, because **helm never updates CRDs on upgrade** - they are installed once:
+
+```shell
+$EDITOR helmfile.yaml                        # version: 5.8.0 -> 6.2.0
+helm show crds <repo>/<chart> --version 6.2.0 | kubectl apply --server-side -f -
+helmfile -l name=<release> diff              # read what changes
+helmfile -l name=<release> sync
+git commit -am "chore: mimir 6.2.0"
+```
+
+Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
+`charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
+that directory instead.
+
+### helm 4 and charts that carry their own CRDs
+
+On a cluster where the CRDs do not exist yet, kube-prometheus-stack fails on the
+first install and succeeds on the second: helm 4 does not pick up the CRDs it
+just installed while building the objects of the same release. This is not
+about helmfile or about the chart version - plain `helm install` behaves the
+same, on chart versions 65, 75, 86 and 90, while helm 3.16 installs the same
+chart in one go. `monitoring/apply-all.sh` therefore runs that release twice;
+the second run is a no-op once the CRDs are in place.
 
 ### Order matters, and nothing tells you when it is wrong
 

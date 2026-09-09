@@ -14,7 +14,7 @@ if ! command -v helmfile > /dev/null; then
     exit 1
 fi
 
-helmfile -l name=strimzi-cluster-operator apply
+helmfile -l name=strimzi-cluster-operator sync
 
 ## The Kafka and KafkaNodePool objects are instances of the CRDs the chart
 ## brings. Applying them before kubernetes serves those kinds fails with
