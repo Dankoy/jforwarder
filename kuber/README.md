@@ -550,17 +550,31 @@ in `helmfile diff` or in a rendered-manifest comparison - the config is valid
 YAML either way, and only the object store and the scheduler reject it.
 
 **Separately, and not caused by the upgrade:** the `${ACCESS_KEY_ID}` and
-`${SECRET_ACCESS_KEY}` in this values file are never expanded. Loki only
+`${SECRET_ACCESS_KEY}` in this values file were never expanded. Loki only
 substitutes environment variables when it is started with
-`-config.expand-env=true` and given the secret, and the `global.extraEnvFrom`
-block at the top of the file is commented out, so the config reaches loki with
-those two strings literally and minio answers `InvalidAccessKeyId`. 6.38.0
-behaves the same way, so this has been true for as long as the file has looked
-like this. mimir is the contrast: its chart renders `-config.expand-env=true`
-and `envFrom: mimir-secret`, which is why the same `${...}` style works there.
-Fixing it is its own change - `global.extraArgs` and `global.extraEnvFrom` are
-not picked up by the single-binary StatefulSet, so it needs more than
-uncommenting those lines.
+`-config.expand-env=true` *and* given the secret that holds them, and neither
+was set, so the config reached loki with those two strings literally and minio
+answered `InvalidAccessKeyId`. 6.38.0 does the same, so this had been true for
+as long as the file looked like that. mimir is the contrast: its chart renders
+both, which is why the same `${...}` style always worked there.
+
+Both go on the component that actually runs. With `deploymentMode: SingleBinary`
+that is `singleBinary`, not `global` - the commented-out `global.extraEnvFrom`
+at the top of the file would not have helped, which is easy to miss because the
+key exists and helm accepts it silently. So:
+
+```yaml
+singleBinary:
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-secret
+```
+
+with a `loki-secret` in the `monitoring` namespace carrying `ACCESS_KEY_ID` and
+`SECRET_ACCESS_KEY`. That is in the values file now, and loki reaches the tenant
+with it: no S3 errors, chunks and a compacted index written to `loki-chunks`.
 
 ### mimir 5.8.0 -> 6.2.0
 

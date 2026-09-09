@@ -1,19 +1,23 @@
-# useExternalConfig: false
-# global:
-#   extraEnvFrom:
-#     - secretRef:
-#         name: loki-secret
-#   podAnnotations:
-#     bucketSecretVersion: "0"
+# The ${ACCESS_KEY_ID} and ${SECRET_ACCESS_KEY} further down are expanded by
+# loki itself, and only if it is started with -config.expand-env=true and given
+# the secret that holds them. Both have to be set on the component that runs,
+# which in deploymentMode: SingleBinary is `singleBinary` - the `global` keys
+# that used to be commented out here are not picked up by its StatefulSet, so
+# they looked right and did nothing. Without this block the config reaches loki
+# with those two strings literally and minio answers InvalidAccessKeyId.
+singleBinary:
+  replicas: 1
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-secret
 
 # Disable minio storage
 minio:
   enabled: false
 
 deploymentMode: SingleBinary
-
-singleBinary:
-  replicas: 1
 
 loki:
   auth_enabled: false
