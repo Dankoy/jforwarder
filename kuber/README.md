@@ -496,16 +496,18 @@ and deploys no operator, and mimir needs exactly the two
 Error: chart requires kubeVersion: ^1.32.0-0 which is incompatible with Kubernetes v1.31.5
 ```
 
-So on an older cluster the mimir step fails with loki and fluent-operator
-already applied. `kubectl version` first, and if the server is below 1.32 see
-"Raising the cluster to 1.32" below. The other three pins do not care: loki and
-fluent-operator declare no `kubeVersion` at all and kube-prometheus-stack asks
-for `>=1.25.0-0`, so they can go ahead on 1.31 while mimir waits.
+`kubectl version` first. If the server is below 1.32, raise the cluster before
+touching any of this - the other three charts would go in on 1.31 and mimir
+would not, and a half-applied monitoring stack is a worse place to be than an
+un-upgraded one.
 
-### Raising the cluster to 1.32
+### Raising the cluster first
 
-Only needed for the mimir pin. One minor at a time - go to 1.32 from 1.31, not
-straight to 1.33.
+[k3d-default.yaml](./k3d/k3d-default.yaml) pins `image: rancher/k3s:v1.35.5-k3s1`,
+which is the version this upgrade was tested on - monitoring stack and
+application both. It is pinned for the same reason the charts are: without it
+k3d asks the k3s channel on the day it runs, which is how this cluster ended up
+on 1.31.5 in the first place.
 
 **On a k3s server**, this is an in-place upgrade and nothing is lost:
 
@@ -515,14 +517,18 @@ kubectl get nodes    # wait for Ready on the new version
 ```
 
 **Under k3d there is no in-place upgrade** - the node is a container built from
-a pinned k3s image, so the cluster is deleted and recreated:
+a pinned k3s image, so the cluster is deleted and recreated. The config already
+carries the version, so this is the whole of it:
 
 ```shell
-k3d version list k3s | grep v1.32          # newest 1.32 at time of writing: v1.32.13-k3s1
-$EDITOR k3d/k3d-default.yaml               # add: image: rancher/k3s:v1.32.13-k3s1
 k3d cluster delete my-cluster
 k3d cluster create my-cluster --config k3d/k3d-default.yaml
+kubectl version    # expect 1.35.5
 ```
+
+k3d itself does not have to be upgraded for this. 5.8.3 has `v1.21.7-k3s1`
+hardcoded as a build-time fallback but resolves the real image at runtime, and
+it is already running k3s 1.31.5 - ten minors past that fallback.
 
 **What survives that, and what does not.** `k3d cluster delete` takes the
 node's `/var/lib/rancher/k3s` volume with it, and that is where the local-path
@@ -535,9 +541,15 @@ durable data is on the host and the volumes that go are WALs and caches.
 Everything else - namespaces, secrets, the releases - has to be applied again,
 which is what `setup-in-k3d.sh` does.
 
-Practically: drain what is in flight first if you care about it, take the
-upgrade when a gap in ingestion is acceptable, and confirm `kubectl version`
-reports 1.32 before returning to the mimir step.
+The application is unaffected by the jump: every manifest the production
+kustomize overlay produces - 38 objects - was server-side applied against a
+1.35.5 cluster without a single error or deprecation, and nothing in
+`project/`, `kafka/`, `namespaces/` or `storage/` uses an API that 1.31 to 1.35
+removed. They are all `v1`, `apps/v1`, `networking.k8s.io/v1`,
+`storage.k8s.io/v1`, `rbac.authorization.k8s.io/v1` and the two CRD groups.
+
+Practically: take the recreate when a gap in ingestion is acceptable, confirm
+`kubectl version` reports 1.35.5, then run the chart steps above in one pass.
 
 Between the mimir sync and the kube-prometheus-stack sync the old `mimir-nginx`
 service is already gone and prometheus still writes to it, so remote write
