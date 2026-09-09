@@ -44,7 +44,7 @@ grafana:
       httpHeaderValue1: "jforwarder"
     orgId: 1
     type: prometheus
-    url: http://mimir-nginx.mimir:80/prometheus
+    url: http://mimir-gateway.mimir:80/prometheus
     version: 1
   - name: Loki
     access: proxy
@@ -162,7 +162,7 @@ prometheus:
     ## The remote_write spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
     remoteWrite:
-    - url: http://mimir-nginx.mimir:80/api/v1/push
+    - url: http://mimir-gateway.mimir:80/api/v1/push
       headers:
         X-Scope-OrgID: jforwarder
 

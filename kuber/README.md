@@ -375,15 +375,14 @@ place to find out that a chart moved thirteen major versions ahead.
 | --- | --- | --- | --- |
 | strimzi-kafka-operator | 1.2.0 | 0.47.0 | the v1 API migration above (#356) |
 | minio operator, tenant | 7.1.1 | 7.1.1 | latest |
-| mimir-distributed | 5.8.0 | 5.8.0 | latest 5.x, see below |
+| mimir-distributed | 6.2.0 | 5.8.0 | new architecture, see below |
 | loki | 7.3.0 | 6.38.0 | CRDs by hand first |
 | fluent-operator | 4.3.0 | 3.5.0 | CRDs by hand first |
 | kube-prometheus-stack | 90.0.0 | 77.1.0 | CRDs by hand first |
 
-The three raised in the monitoring stack were checked by rendering each chart at
-the old and the new version against this repository's own values file and
-diffing the result; every value the repository sets still lands where it did.
-What moves:
+Each of the raised charts was checked by rendering it at the old and the new
+version against this repository's own values file and diffing the result. What
+moves:
 
 * **loki 7.3.0** (loki 3.5.3 -> 3.6.11) renders the same set of objects. The
   one config line that changes is `common.storage.s3.bucketnames`, now empty
@@ -400,16 +399,10 @@ What moves:
   distroless images now. The grafana test Pod is gone, the `kube-webhook-certgen`
   image moved to `ghcr.io/jkroepke`. Every datasource, the derived fields and
   the `remoteWrite` of [kubestack-values.yaml](./monitoring/kubestack-values.yaml)
-  render unchanged.
-
-**mimir stays on 5.8.0**, which is the last 5.x. 6.x is not a version bump: the
-chart moves to the ingest-storage architecture, where a kafka of its own sits in
-front of the ingesters and the ingesters stop accepting a direct gRPC push
-(`kafka.enabled` defaults to `true`), and it renames the `mimir-nginx` service to
-`mimir-gateway` - which is what both mimir URLs in `kubestack-values.yaml` point
-at, so grafana and the prometheus `remoteWrite` break the moment it is applied.
-It also adds rollout-operator admission webhooks. That is a migration and it
-wants its own branch.
+  render unchanged;
+* **mimir-distributed 6.2.0** (mimir 2.17.0 -> 3.2.0) is the one that is not
+  just a bump - it changes the write path and renames a service, and it has its
+  own section below.
 
 Raising a version is its own commit, and for a chart that brings CRDs it is two
 steps, because **helm never updates CRDs on upgrade** - they are installed once:
@@ -428,8 +421,11 @@ that directory instead.
 
 ### Applying the pins that are ahead
 
-The CRDs of all three raised monitoring charts changed, so each is CRDs first,
-sync second. Run them one at a time and read the diff before the sync:
+The CRDs of all four raised monitoring charts changed, so each one is CRDs
+first, sync second. Run them one at a time and read the diff before the sync.
+The order is not free: kube-prometheus-stack goes last, because the mimir URLs
+it carries only resolve once mimir has been synced under its new service name -
+read the mimir section below before starting.
 
 ```shell
 helm repo update grafana fluent prometheus-community
@@ -442,7 +438,12 @@ helm show crds fluent/fluent-operator --version 4.3.0 \
     | kubectl apply --server-side --force-conflicts -f -
 helmfile -l name=fluent-operator diff && helmfile -l name=fluent-operator sync
 
-# subchart CRDs, so this one is pulled rather than shown
+helm show crds grafana/mimir-distributed --version 6.2.0 \
+    | kubectl apply --server-side --force-conflicts -f -
+helmfile -l name=mimir diff && helmfile -l name=mimir sync
+
+# subchart CRDs, so this one is pulled rather than shown. It is also what moves
+# the grafana datasource and the prometheus remoteWrite to mimir-gateway.
 helm pull prometheus-community/kube-prometheus-stack --version 90.0.0 --untar
 kubectl apply --server-side --force-conflicts \
     -f kube-prometheus-stack/charts/crds/crds/
@@ -452,6 +453,58 @@ helmfile -l name=kube-prometheus-stack sync
 
 `--force-conflicts` is needed for the same reason as in the strimzi upgrade
 above: helm owns those fields and a plain server-side apply is refused.
+
+### mimir 5.8.0 -> 6.2.0
+
+This one is not a version bump, it is a change of architecture, and it needs
+edits in two more files besides `helmfile.yaml`. They are already in this
+commit; what follows is why each is there.
+
+**The write path now goes through a kafka.** 6.x turns on the ingest-storage
+architecture: the distributor writes every sample to a kafka topic and the
+ingesters read it back, and `ingester.push_grpc_method_enabled` is `false`, so
+there is no direct gRPC push left to fall back to. The chart brings that kafka
+itself as a `mimir-kafka` StatefulSet (`kafka.enabled` defaults to `true`) and
+mimir creates the `mimir-ingest` topic on start up. It has nothing to do with
+the strimzi cluster in the `kafka` namespace, which belongs to the application.
+
+Two of its defaults do not suit this cluster and
+[mimir/values.yaml](./monitoring/mimir/values.yaml) overrides them: the pod asks
+for a whole cpu, which nothing else here does, and the topic is created with 100
+partitions, which is the chart's demo value. The only rule about partitions is
+that there are no fewer than the maximum number of ingester replicas - there are
+two - so it is set to 8. Raising it later means recreating the topic.
+
+**`mimir-nginx` is now `mimir-gateway`.** Both mimir URLs in
+[kubestack-values.yaml](./monitoring/kubestack-values.yaml) - the grafana
+datasource and the prometheus `remoteWrite` - follow the rename here. Without
+that edit grafana and `remoteWrite` fail the moment the release is synced, and
+they fail quietly: prometheus keeps scraping and only the remote write queue
+backs up.
+
+**Three values keys were dropped by the chart** and are gone from
+`mimir/values.yaml`: `nginx` (replaced by the `gateway` block, which was already
+in the file with the same numbers and was inert until now), and `admin_api` and
+`admin-cache`, which were Grafana Enterprise Metrics keys. Helm ignores unknown
+keys silently, so they would have sat there looking effective.
+
+**The rollout-operator now installs four admission webhooks**
+(`prepare-downscale-mimir`, `no-downscale-mimir`, `pod-eviction-mimir`,
+`zpdb-validation-mimir`). They are cluster-scoped objects but their
+`namespaceSelector` is `kubernetes.io/metadata.name: mimir`, and they carry
+`failurePolicy: Fail`: while the rollout-operator is down, StatefulSet updates
+and pod evictions **in the mimir namespace** are refused. Deleting the release
+does not delete them, so a `helm uninstall` leaves them behind to block the next
+install.
+
+**Two CRDs are new**, `replicatemplates` and
+`zoneawarepoddisruptionbudgets`, both `rollout-operator.grafana.com`. Helm does
+not install CRDs on an upgrade even when they did not exist before, so these
+have to be applied by hand like the rest.
+
+Metrics already in the tenant are unaffected - the blocks in minio do not change
+format - but anything still in an ingester's WAL when it restarts is at risk, as
+it is on any ingester restart.
 
 ### helm 4 and charts that carry their own CRDs
 

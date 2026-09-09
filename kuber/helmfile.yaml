@@ -22,12 +22,15 @@
 #   API migration written down in ./README.md;
 #
 #   loki 7.3.0, fluent-operator 4.3.0 and kube-prometheus-stack 90.0.0 - all
-#   three change their CRDs, so the CRDs go in by hand before the sync.
+#   three change their CRDs, so the CRDs go in by hand before the sync;
 #
-# mimir stays on 5.8.0 on purpose. 6.x is not a version bump: it moves to the
-# ingest-storage architecture (a kafka of its own, ingesters that no longer take
-# a direct gRPC push) and renames the mimir-nginx service to mimir-gateway,
-# which the two mimir URLs in monitoring/kubestack-values.yaml point at.
+#   mimir 6.2.0 against the installed 5.8.0 - the biggest of them. 6.x moves to
+#   the ingest-storage architecture, where the distributor writes to a kafka of
+#   the chart's own and the ingesters no longer take a direct gRPC push, and it
+#   renames the mimir-nginx service to mimir-gateway. Both mimir URLs in
+#   monitoring/kubestack-values.yaml follow that rename in this commit, and
+#   monitoring/mimir/values.yaml sizes the new kafka. Read the mimir section of
+#   ./README.md before applying it.
 
 repositories:
   - name: strimzi
@@ -83,7 +86,7 @@ releases:
   - name: mimir
     namespace: mimir
     chart: grafana/mimir-distributed
-    version: 5.8.0
+    version: 6.2.0
     values:
       - monitoring/mimir/values.yaml
     # mimir stores its blocks in the tenant
