@@ -437,12 +437,39 @@ helmfile apply
 git commit -am "chore: strimzi 1.3.0"
 ```
 
-The pins are **the versions the cluster actually runs**, not the newest ones:
-minio operator and tenant 7.1.1, mimir 5.8.0, loki 6.38.0, fluent-operator
-3.5.0, kube-prometheus-stack 77.1.0. A deploy is not the place to find out that
-a chart moved thirteen major versions ahead. strimzi is the one exception, 1.2.0
-against the 0.47.0 that is installed: that upgrade came with #356 and needs the
-migration written down above.
+A pin is either the version the cluster runs or a version someone deliberately
+raised it to; it is never "whatever was newest that day". A deploy is not the
+place to find out that a chart moved thirteen major versions ahead.
+
+| release | pinned | cluster runs | note |
+| --- | --- | --- | --- |
+| strimzi-kafka-operator | 1.2.0 | 0.47.0 | the v1 API migration above (#356) |
+| minio operator, tenant | 7.1.1 | 7.1.1 | latest |
+| mimir-distributed | 6.2.0 | 5.8.0 | new architecture, see below |
+| loki | 7.3.0 | 6.38.0 | CRDs by hand first |
+| fluent-operator | 4.3.0 | 3.5.0 | CRDs by hand first |
+| kube-prometheus-stack | 90.0.0 | 77.1.0 | CRDs by hand first |
+
+Each of the raised charts was checked by rendering it at the old and the new
+version against this repository's own values file and diffing the result. What
+moves:
+
+* **loki 7.3.0** (loki 3.5.3 -> 3.6.12) renders the same set of objects, but it
+  needed three edits in [loki/values.yaml](./monitoring/loki/values.yaml), all
+  found by running it, not by reading the diff - see below;
+* **fluent-operator 4.3.0** (fluent-bit operator 3.10.0) drops the
+  `docker:20.10` init container that wrote `fluent-bit.env` and ships that file
+  as a ConfigMap instead, and it gives the operator a non-root securityContext
+  and liveness and readiness probes. Same CRD names as 3.5.0, different schemas;
+* **kube-prometheus-stack 90.0.0** brings prometheus-operator 0.93.1,
+  prometheus 3.14.0, grafana 13.2.1 and alertmanager 0.34.0, most of them on
+  distroless images now. The grafana test Pod is gone, the `kube-webhook-certgen`
+  image moved to `ghcr.io/jkroepke`. Every datasource, the derived fields and
+  the `remoteWrite` of [kubestack-values.yaml](./monitoring/kubestack-values.yaml)
+  render unchanged;
+* **mimir-distributed 6.2.0** (mimir 2.17.0 -> 3.2.0) is the one that is not
+  just a bump - it changes the write path and renames a service, and it has its
+  own section below.
 
 Raising a version is its own commit, and for a chart that brings CRDs it is two
 steps, because **helm never updates CRDs on upgrade** - they are installed once:
@@ -458,6 +485,225 @@ git commit -am "chore: mimir 6.2.0"
 Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
 `charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
 that directory instead.
+
+### Applying the pins that are ahead
+
+Three of the four need CRDs applied before the sync, and *which* CRDs matters -
+see the warning under the block. Run them one at a time and read the diff
+before the sync.
+The order is not free: kube-prometheus-stack goes last, because the mimir URLs
+it carries only resolve once mimir has been synced under its new service name -
+read the mimir section below before starting.
+
+**One thing to do before starting.** Loki now reads its tenant credentials from
+a `loki-secret` in the `monitoring` namespace, which never existed before - see
+the loki section below for why. Without it loki comes up, reports ready and
+fails every S3 call, so put it in first:
+
+```shell
+$EDITOR .all_secrets/monitoring/loki/loki-secret.yaml   # ACCESS_KEY_ID, SECRET_ACCESS_KEY
+./secrets.sh
+kubectl apply -f monitoring/loki/loki-secret.yaml -n monitoring
+```
+
+`.all_secrets/monitoring/loki/` is a new directory - the store has no `loki`
+folder yet, so create it before writing the file. `secrets.sh` runs without
+`set -e`, so a `cp` from a path that is not there says so and carries on, and
+the `kubectl apply` that follows then refuses the untouched `${base64}`
+placeholder. That is the tracked dummy doing its job rather than a failure to
+debug, but it does mean the error you see is one step removed from the cause.
+
+Any key that can read and write the `loki-*` buckets will do, including the one
+mimir already uses - nothing has to be created in minio for this. A separate,
+narrower user is a reasonable thing to want, and the tenant can mint one
+(`tenant.users` in [minio/tenant-values.yaml](./monitoring/minio/tenant-values.yaml)),
+but that is a decision about privileges and not part of this upgrade.
+
+```shell
+helm repo update grafana fluent prometheus-community
+
+# loki needs no CRDs at all here - see the warning below
+helmfile -l name=loki diff && helmfile -l name=loki sync
+
+helm show crds fluent/fluent-operator --version 4.3.0 \
+    | kubectl apply --server-side --force-conflicts -f -
+helmfile -l name=fluent-operator diff && helmfile -l name=fluent-operator sync
+
+# only the rollout-operator CRDs, not everything the chart carries
+helm pull grafana/mimir-distributed --version 6.2.0 --untar
+kubectl apply --server-side --force-conflicts \
+    -f mimir-distributed/charts/rollout-operator/charts/crds/crds/
+helmfile -l name=mimir diff && helmfile -l name=mimir sync
+
+# subchart CRDs, so this one is pulled rather than shown. It is also what moves
+# the grafana datasource and the prometheus remoteWrite to mimir-gateway.
+helm pull prometheus-community/kube-prometheus-stack --version 90.0.0 --untar
+kubectl apply --server-side --force-conflicts \
+    -f kube-prometheus-stack/charts/crds/crds/
+helmfile -l name=kube-prometheus-stack diff
+helmfile -l name=kube-prometheus-stack sync
+```
+
+`--force-conflicts` is needed for the same reason as in the strimzi upgrade
+above: helm owns those fields and a plain server-side apply is refused.
+
+**Do not pipe `helm show crds` for loki or mimir into that apply.** Both charts
+carry a grafana-agent-operator subchart, and its `crds/` directory contains
+`servicemonitors`, `podmonitors` and `probes` of `monitoring.coreos.com` - the
+same CRDs kube-prometheus-stack owns, at an ancient schema: 435 lines against
+the 1429 that operator 0.93.1 ships. Applied with `--force-conflicts` they
+replace the real ones, and every ServiceMonitor in the cluster is then read
+through a schema that does not know most of its fields until the
+kube-prometheus-stack step at the end puts them back. Neither release needs
+any of it: with the values in this repository loki creates no custom resource
+and deploys no operator, and mimir needs exactly the two
+`rollout-operator.grafana.com` CRDs that the command above applies on their own.
+
+**mimir 6.2.0 requires Kubernetes 1.32 or newer.** Its `kubeVersion` went from
+`^1.20.0-0` to `^1.32.0-0`, and helm refuses the release rather than warning:
+
+```
+Error: chart requires kubeVersion: ^1.32.0-0 which is incompatible with Kubernetes v1.31.5
+```
+
+`kubectl version` first. If the server is below 1.32 this branch cannot be
+applied at all - not partly: the other three charts would go in on 1.31 and
+mimir would not, and a half-migrated monitoring stack is a worse place to sit
+than an un-upgraded one. Raising the cluster is its own change and its own
+pull request; do that first, come back here after `kubectl version` reports
+1.32 or newer.
+
+### loki 6.38.0 -> 7.3.0
+
+The rendered objects are the same and the chart takes every value the
+repository sets, so the diff looks harmless. It is not: on a cluster, 7.3.0
+fails two S3 paths that 6.38.0 serves, and both needed a values edit.
+
+**The chunks bucket loses its name.** 7.x stops writing
+`common.storage.s3.bucketnames` as soon as `loki.storage_config.aws.bucketnames`
+is set - the chart treats the second as the authority and leaves the first
+empty. Loki then sends `ListObjectsV2` with an empty bucket and minio answers
+400, so the index never syncs and nothing is written. `bucketnames` is
+therefore gone from `storage_config.aws`, leaving `storage.bucketNames.chunks`
+as the one place the bucket is named.
+
+**`insecure: true` stops being tolerated.** The endpoint is `https://minio.minio:443`
+and `loki.storage.s3.insecure` was `true`, which means "speak plain HTTP" - a
+contradiction loki 3.5.3 ignored and 3.6 does not: the ruler's client sends
+HTTP to the TLS port, minio resets the connection, and the ruler logs
+`unable to list rules ... StatusCode: 400` forever. It is now `false`; the
+self-signed certificate is handled by `http_config.insecure_skip_verify`, which
+is what that setting was always for.
+
+**The gateway Deployment deadlocks on every upgrade.** This one is not about
+7.3.0 at all - 6.38.0 renders the same thing - but it is what an upgrade hits
+and a fresh install never does. The gateway is one replica, the chart gives it
+a *required* `podAntiAffinity` on `kubernetes.io/hostname`, and this cluster has
+one node. The default RollingUpdate starts the new pod before draining the old
+one, the old pod's own rule keeps the new one off the only node, and it sits in
+`Pending` indefinitely while helm reports the release upgraded and the gateway
+quietly keeps serving the previous version. Deleting the pending pod does not
+help: the old ReplicaSet is still scaled to 1 and wins the race again.
+
+`gateway.deploymentStrategy` in [loki/values.yaml](./monitoring/loki/values.yaml)
+now sets `maxSurge: 0` with `maxUnavailable: 1`, which drains before it starts
+and costs a few seconds of gateway downtime. Two things that look like the
+answer and are not:
+
+* `gateway.affinity: {}` changes nothing. Helm merges maps, so an empty one
+  leaves the chart's default in place; only `null` would drop it - and dropping
+  it on the new pod still does not help, because it is the *old* pod's rule
+  that does the blocking;
+* `type: Recreate` cannot be applied to a Deployment that already exists. Helm's
+  server-side apply merges, the `spec.strategy.rollingUpdate` block of the
+  running object survives, and the API rejects the result with
+  `may not be specified when strategy type is 'Recreate'`.
+
+With all three edits 7.3.0 runs clean against the tenant. None of them shows up
+in `helmfile diff` or in a rendered-manifest comparison - the config is valid
+YAML either way, and only the object store and the scheduler reject it.
+
+**Separately, and not caused by the upgrade:** the `${ACCESS_KEY_ID}` and
+`${SECRET_ACCESS_KEY}` in this values file were never expanded. Loki only
+substitutes environment variables when it is started with
+`-config.expand-env=true` *and* given the secret that holds them, and neither
+was set, so the config reached loki with those two strings literally and minio
+answered `InvalidAccessKeyId`. 6.38.0 does the same, so this had been true for
+as long as the file looked like that. mimir is the contrast: its chart renders
+both, which is why the same `${...}` style always worked there.
+
+Both go on the component that actually runs. With `deploymentMode: SingleBinary`
+that is `singleBinary`, not `global` - the commented-out `global.extraEnvFrom`
+at the top of the file would not have helped, which is easy to miss because the
+key exists and helm accepts it silently. So:
+
+```yaml
+singleBinary:
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-secret
+```
+
+with a `loki-secret` in the `monitoring` namespace carrying `ACCESS_KEY_ID` and
+`SECRET_ACCESS_KEY`. That is in the values file now, and loki reaches the tenant
+with it: no S3 errors, chunks and a compacted index written to `loki-chunks`.
+
+### mimir 5.8.0 -> 6.2.0
+
+This one is not a version bump, it is a change of architecture, and it needs
+edits in two more files besides `helmfile.yaml`. They are already in this
+commit; what follows is why each is there.
+
+**The write path now goes through a kafka.** 6.x turns on the ingest-storage
+architecture: the distributor writes every sample to a kafka topic and the
+ingesters read it back, and `ingester.push_grpc_method_enabled` is `false`, so
+there is no direct gRPC push left to fall back to. The chart brings that kafka
+itself as a `mimir-kafka` StatefulSet (`kafka.enabled` defaults to `true`) and
+mimir creates the `mimir-ingest` topic on start up. It has nothing to do with
+the strimzi cluster in the `kafka` namespace, which belongs to the application.
+
+Two of its defaults do not suit this cluster and
+[mimir/values.yaml](./monitoring/mimir/values.yaml) overrides them: the pod asks
+for a whole cpu, which nothing else here does, and the topic is created with 100
+partitions, which is the chart's demo value. The only rule about partitions is
+that there are no fewer than the maximum number of ingester replicas - there are
+two - so it is set to 8. Raising it later means recreating the topic.
+
+**`mimir-nginx` is now `mimir-gateway`.** Both mimir URLs in
+[kubestack-values.yaml](./monitoring/kubestack-values.yaml) - the grafana
+datasource and the prometheus `remoteWrite` - follow the rename here. Without
+that edit grafana and `remoteWrite` fail the moment the release is synced, and
+they fail quietly: prometheus keeps scraping and only the remote write queue
+backs up.
+
+**Three values keys were dropped by the chart** and are gone from
+`mimir/values.yaml`: `nginx` (replaced by the `gateway` block, which was already
+in the file with the same numbers and was inert until now), and `admin_api` and
+`admin-cache`, which were Grafana Enterprise Metrics keys. Helm ignores unknown
+keys silently, so they would have sat there looking effective.
+
+**The rollout-operator now installs four admission webhooks**
+(`prepare-downscale-mimir`, `no-downscale-mimir`, `pod-eviction-mimir`,
+`zpdb-validation-mimir`). They are cluster-scoped objects but their
+`namespaceSelector` is `kubernetes.io/metadata.name: mimir`, and they carry
+`failurePolicy: Fail`: while the rollout-operator is down, StatefulSet updates
+and pod evictions **in the mimir namespace** are refused. Deleting the release
+does not delete them, so a `helm uninstall` leaves them behind to block the next
+install.
+
+**Two CRDs are new**, `replicatemplates` and
+`zoneawarepoddisruptionbudgets`, both `rollout-operator.grafana.com`. Helm does
+not install CRDs on an upgrade even when they did not exist before, so these
+have to go in by hand - and only these two. Take them from the pulled chart's
+`charts/rollout-operator/charts/crds/crds/`, never from `helm show crds`, which
+would drag the grafana-agent-operator's copies of the kube-prometheus-stack
+CRDs along with them.
+
+Metrics already in the tenant are unaffected - the blocks in minio do not change
+format - but anything still in an ingester's WAL when it restarts is at risk, as
+it is on any ingester restart.
 
 ### helm 4 and charts that carry their own CRDs
 

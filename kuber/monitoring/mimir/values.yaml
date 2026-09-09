@@ -60,6 +60,14 @@ mimir:
     multitenancy_enabled: false
     frontend:
       log_queries_longer_than: 10s
+    ingest_storage:
+      kafka:
+        # Chart 6.x writes every sample to kafka before an ingester sees it, and
+        # mimir creates the topic itself on start up. The chart asks for 100
+        # partitions, which is its demo value; the rule is only that there are
+        # no fewer partitions than ingester replicas, and there are two of them.
+        # Raising this later means recreating the topic, so it has some room.
+        auto_create_topic_default_partitions: 8
     ingester:
       instance_limits:
         max_ingestion_rate: 0
@@ -154,9 +162,23 @@ ingester:
     enabled: false
     topologyKey: 'kubernetes.io/hostname'
 
-admin-cache:
-  enabled: false
-  replicas: 1
+# New in chart 6.x: the distributor writes to this kafka and the ingesters read
+# from it, so it is on the write path and not optional. It has nothing to do
+# with the strimzi cluster in the kafka namespace, which belongs to the
+# application. The chart asks for a whole cpu, which nothing else here does.
+kafka:
+  persistence:
+    enabled: true
+    size: 5Gi
+  resources:
+    # Only the cpu is lowered. The chart asks for a whole one, which nothing
+    # else in this file does; 1Gi of memory is its own floor and is left alone,
+    # and no memory limit is set, also as the chart ships it. Capping this pod
+    # is not the place to save memory - it is the entire write path now, and an
+    # OOMKill here loses ingestion rather than degrading it.
+    requests:
+      cpu: 100m
+      memory: 1Gi
 
 chunks-cache:
   enabled: false
@@ -218,25 +240,10 @@ store_gateway:
     enabled: false
     topologyKey: 'kubernetes.io/hostname'
 
-nginx:
-  replicas: 1
-  resources:
-    limits:
-      memory: 200Mi
-    requests:
-      cpu: 80m
-      memory: 100Mi
-
-# Grafana Enterprise Metrics feature related
-admin_api:
-  replicas: 1
-  resources:
-    limits:
-      memory: 128Mi
-    requests:
-      cpu: 80m
-      memory: 64Mi
-
+# The reverse proxy in front of mimir. Up to chart 5.x this was the `nginx`
+# block and the service was called mimir-nginx; 6.x renamed both, and the
+# grafana datasource and the prometheus remoteWrite in ../kubestack-values.yaml
+# follow the new name.
 gateway:
   replicas: 1
   resources:

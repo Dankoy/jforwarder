@@ -1,19 +1,23 @@
-# useExternalConfig: false
-# global:
-#   extraEnvFrom:
-#     - secretRef:
-#         name: loki-secret
-#   podAnnotations:
-#     bucketSecretVersion: "0"
+# The ${ACCESS_KEY_ID} and ${SECRET_ACCESS_KEY} further down are expanded by
+# loki itself, and only if it is started with -config.expand-env=true and given
+# the secret that holds them. Both have to be set on the component that runs,
+# which in deploymentMode: SingleBinary is `singleBinary` - the `global` keys
+# that used to be commented out here are not picked up by its StatefulSet, so
+# they looked right and did nothing. Without this block the config reaches loki
+# with those two strings literally and minio answers InvalidAccessKeyId.
+singleBinary:
+  replicas: 1
+  extraArgs:
+    - -config.expand-env=true
+  extraEnvFrom:
+    - secretRef:
+        name: loki-secret
 
 # Disable minio storage
 minio:
   enabled: false
 
 deploymentMode: SingleBinary
-
-singleBinary:
-  replicas: 1
 
 loki:
   auth_enabled: false
@@ -31,8 +35,12 @@ loki:
   storage_config:
     aws:
       region: null
-      bucketnames: loki-chunks
       s3forcepathstyle: true
+      # No bucketnames here on purpose. Chart 7.x stops writing
+      # common.storage.s3.bucketnames as soon as this key is set, and then the
+      # index and chunk calls go out with an empty bucket name and minio
+      # answers 400. The bucket below under storage.bucketNames.chunks is the
+      # one place it is named; loki merges common.storage into this block.
   pattern_ingester:
       enabled: true
   limits_config:
@@ -62,8 +70,12 @@ loki:
       # signatureVersion: <your-signature-version>
       # Forces the path style for S3 (true/false)
       s3ForcePathStyle: true
-      # Allows insecure (HTTP) connections (true/false)
-      insecure: true
+      # Allows insecure (HTTP) connections (true/false). false, because the
+      # endpoint above is https: loki 3.6 takes "true" literally and speaks
+      # plain HTTP to port 443, which minio resets - 3.5 tolerated the
+      # contradiction. The self-signed certificate is handled by
+      # insecure_skip_verify below, not by this.
+      insecure: false
       # HTTP configuration settings
       # This shit makes loki connect to minio as bucket.minio.namespace. 
       # Disable it { } and then loki goes to normal service
@@ -129,3 +141,27 @@ bloomCompactor:
   replicas: 0
 bloomGateway:
   replicas: 0
+
+# One replica, a required podAntiAffinity on kubernetes.io/hostname from the
+# chart, and one node. The default RollingUpdate then deadlocks on every
+# upgrade: it starts the new pod before draining the old one, the old pod's own
+# anti-affinity rule keeps the new one off the only node, and helm still
+# reports the release upgraded while the gateway quietly keeps serving the
+# previous version. Deleting the pod by hand does not help either - the old
+# ReplicaSet is still scaled to 1 and simply wins the race again.
+#
+# maxSurge 0 with maxUnavailable 1 drains the old pod before starting the new
+# one, which is what ends the deadlock. It costs a few seconds of gateway
+# downtime on a single node. The anti-affinity is left alone so it still
+# spreads the gateway if the cluster ever grows a second node.
+#
+# Not type: Recreate, which looks like the obvious answer and cannot be applied
+# to a Deployment that already exists: helm's server-side apply merges, the
+# spec.strategy.rollingUpdate block of the running object survives, and the API
+# rejects it - "may not be specified when strategy type is 'Recreate'".
+gateway:
+  deploymentStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
