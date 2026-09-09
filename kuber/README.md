@@ -526,9 +526,20 @@ k3d cluster create my-cluster --config k3d/k3d-default.yaml
 kubectl version    # expect 1.35.5
 ```
 
-k3d itself does not have to be upgraded for this. 5.8.3 has `v1.21.7-k3s1`
-hardcoded as a build-time fallback but resolves the real image at runtime, and
-it is already running k3s 1.31.5 - ten minors past that fallback.
+**Raise k3d itself to 5.9.0 while you are here.** It is not required - 5.8.3
+has `v1.21.7-k3s1` hardcoded as a build-time fallback but resolves the real
+image at runtime, and is already running 1.31.5, ten minors past it. The reason
+to do it anyway is that 5.9.0 is what this upgrade was tested with, so it puts
+the cluster on the combination that was actually exercised rather than a nearby
+one. 5.9.0 is the release straight after 5.8.3, declares no breaking changes,
+and takes the config in this repository unchanged, `v1alpha5` and all.
+
+```shell
+brew upgrade k3d            # or: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+k3d version                 # expect v5.9.0
+```
+
+Do it before deleting the cluster, so the recreate is the new binary's work.
 
 **What survives that, and what does not.** `k3d cluster delete` takes the
 node's `/var/lib/rancher/k3s` volume with it, and that is where the local-path
