@@ -424,6 +424,23 @@ The order is not free: kube-prometheus-stack goes last, because the mimir URLs
 it carries only resolve once mimir has been synced under its new service name -
 read the mimir section below before starting.
 
+**One thing to do before starting.** Loki now reads its tenant credentials from
+a `loki-secret` in the `monitoring` namespace, which never existed before - see
+the loki section below for why. Without it loki comes up, reports ready and
+fails every S3 call, so put it in first:
+
+```shell
+$EDITOR .all_secrets/monitoring/loki/loki-secret.yaml   # ACCESS_KEY_ID, SECRET_ACCESS_KEY
+./secrets.sh
+kubectl apply -f monitoring/loki/loki-secret.yaml -n monitoring
+```
+
+Any key that can read and write the `loki-*` buckets will do, including the one
+mimir already uses - nothing has to be created in minio for this. A separate,
+narrower user is a reasonable thing to want, and the tenant can mint one
+(`tenant.users` in [minio/tenant-values.yaml](./monitoring/minio/tenant-values.yaml)),
+but that is a decision about privileges and not part of this upgrade.
+
 ```shell
 helm repo update grafana fluent prometheus-community
 
@@ -492,8 +509,10 @@ curl -sG localhost:9090/api/v1/query --data-urlencode \
 # the gateway really is on the new version and nothing is left Pending
 kubectl -n monitoring get pods,rs -l app.kubernetes.io/component=gateway
 
-# loki is not failing every S3 call
+# loki got the credentials rather than the literal ${ACCESS_KEY_ID}
 kubectl -n monitoring logs loki-0 -c loki | grep -c "operation error S3"
+kubectl -n monitoring get pod loki-0 \
+  -o jsonpath='{.spec.containers[?(@.name=="loki")].args}{"\n"}'   # expects -config.expand-env=true
 
 # the ingest topic exists with the partition count from values.yaml
 kubectl -n mimir logs deploy/mimir-distributor | grep "created Kafka topic"
