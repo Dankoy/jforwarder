@@ -157,7 +157,7 @@ Write in /etc/hosts file (same stuff as for local cluster):
 ```text
 127.0.0.1 grafana
 127.0.0.1 zipkin
-127.0.0.1 kubernetes-dashboard
+127.0.0.1 headlamp
 ```
 
 Then make ssh tunnel to host:
@@ -170,7 +170,7 @@ where
 8888 - port on local machine
 8443 - port on remote machine
 
-Then it should be possible to connect to dashboard, grafana and etc in browser with `https://grafana:8888/`and `https://kubernetes-dashboard:8888/`
+Then it should be possible to connect to headlamp, grafana and etc in browser with `https://grafana:8888/`and `https://headlamp:8888/`
 
 
 ## Remote access with kubectl 
@@ -178,60 +178,61 @@ Then it should be possible to connect to dashboard, grafana and etc in browser w
 Same stuff. Do ssh tunneling, but for port 6445
 
 
-## Install dashboard
+## Cluster UI
+
+The cluster UI is [headlamp](https://github.com/kubernetes-sigs/headlamp),
+maintained under sig-ui. It replaced kubernetes-dashboard, which upstream
+archived as `kubernetes-retired/dashboard` for lack of maintainers and whose
+own README sends users here.
+
+The release is declared in `helmfile.yaml` with its chart version pinned, so
+there is no `helm repo add` to run:
 
 ```shell
-helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
-
-helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+helmfile -l name=headlamp sync
 ```
 
-Apply service account for dashboard
+`setup-in-k3d.sh` does that on a fresh cluster.
 
-```yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: admin-user
-  namespace: kube-system
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: admin-user
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cluster-admin
-subjects:
-- kind: ServiceAccount
-  name: admin-user
-  namespace: kube-system
-```
-
-Create token
+Log in with a bearer token. The chart creates the `headlamp` service account
+and binds it to `cluster-admin`, so it has the access the dashboard's
+`admin-user` had:
 
 ```shell
-kubectl -n kube-system create token admin-user
+kubectl -n headlamp create token headlamp
 ```
 
-Port forward dashboard (not necessary for ingress)
+The chart brings its own ingress, enabled in `headlamp/values.yaml` for the
+host `headlamp`, so headlamp is reachable at `http://headlamp:8080/` and
+`https://headlamp:8443/` the same way grafana and zipkin are - the host has to
+be in `/etc/hosts`, see "k3d remote access" above. Without the ingress:
 
 ```shell
-kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard-kong-proxy 10443:443 --address 0.0.0.0 &
+kubectl port-forward -n headlamp service/headlamp 8081:80 --address 0.0.0.0 &
 ```
 
-Dashboard is available by https://localhost:10443/
+### Removing the old dashboard
 
+helmfile only touches the releases named in `helmfile.yaml`, and the dashboard
+is not one of them any more, so on a cluster that still runs it the old release
+stays untouched until it is removed by hand:
 
-Or it is better to use ingress.
+```shell
+helm uninstall kubernetes-dashboard -n kubernetes-dashboard
+kubectl delete namespace kubernetes-dashboard
+kubectl delete clusterrolebinding admin-user
+kubectl delete serviceaccount admin-user -n kube-system
+```
 
-Ingress should send http requests to kong-proxy which should accept it. It is configured by values.yaml.
+The `admin-user` service account existed only to log into the dashboard;
+headlamp has its own. Drop the `127.0.0.1 kubernetes-dashboard` line from
+`/etc/hosts` as well.
 
-Dashboard is accessible by https://kubernetes-dashboard:8443/
-
-More info [here](https://medium.com/@tinhtq97/kubernetes-dashboard-7-x-unknown-error-200-a5be156db23f)
-
+The dashboard's last chart, 7.14.0, can still be installed - the 404 on
+`https://kubernetes.github.io/dashboard/` is the archived repository's github
+pages having moved to `https://kubernetes-retired.github.io/dashboard/` along
+with the rename, and the images are still on docker hub. It is frozen there,
+though: no release after 2025-10-30 and no fix for anything found in it since.
 
 ## Add namespaces and contexts
 
@@ -732,10 +733,10 @@ helmfile -l name=mimir diff                    # mimir alone
 helmfile -l name=mimir diff --include-needs    # minio operator, tenant, then mimir
 ```
 
-The kubernetes dashboard release is in the file but disabled: the chart
-repository it used to come from answers 404 and the project has not settled on a
-new location, so `dashboard/dashboard.sh` is left as it was. Enable the release
-and fill in its chart and version once upstream has a working source.
+The cluster UI in the file is headlamp, not kubernetes-dashboard: the dashboard
+is archived upstream and points at headlamp itself. An `apply` installs
+headlamp but does not remove the dashboard, which is no longer declared here -
+see "Removing the old dashboard" above.
 
 ## Install everything for project
 

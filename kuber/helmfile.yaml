@@ -43,6 +43,8 @@ repositories:
     url: https://prometheus-community.github.io/helm-charts
   - name: minio-operator
     url: https://operator.min.io
+  - name: headlamp
+    url: https://kubernetes-sigs.github.io/headlamp/
 
 releases:
   ## kafka ####################################################################
@@ -118,17 +120,20 @@ releases:
     values:
       - monitoring/kubestack-values.yaml
 
-  ## dashboard ################################################################
+  ## cluster ui ###############################################################
 
-  # Disabled: the chart repository this used to come from,
-  # https://kubernetes.github.io/dashboard/, answers 404 - the project moved its
-  # distribution and the new location is not settled yet. The cluster runs
-  # kubernetes-dashboard 7.13.0, installed while that repository still worked;
-  # dashboard/dashboard.sh still applies the service account and the ingress.
-  # Enable this release with chart and version once upstream has a source again.
-  - name: kubernetes-dashboard
-    namespace: kubernetes-dashboard
-    chart: kubernetes-dashboard/kubernetes-dashboard
-    installed: false
+  # Headlamp, the cluster UI, in place of kubernetes-dashboard. The dashboard
+  # was archived by upstream as kubernetes-retired/dashboard for lack of
+  # maintainers, and its own README sends users here; headlamp is maintained
+  # under sig-ui. The dashboard's last chart, 7.14.0, is still downloadable
+  # from the retired repository, but nothing will be fixed in it again.
+  #
+  # The cluster may still run the old release. It is not in this file any more,
+  # so helmfile leaves it alone rather than removing it - uninstall it by hand,
+  # see "Cluster UI" in ./README.md.
+  - name: headlamp
+    namespace: headlamp
+    chart: headlamp/headlamp
+    version: 0.45.0
     values:
-      - dashboard/values.yaml
+      - headlamp/values.yaml
