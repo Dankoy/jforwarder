@@ -22,22 +22,22 @@ resources:
 
 images:
   - name: coub_smart_searcher
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: kafka_message_consumer
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: kafka_message_producer
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: spring_eureka_registry
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: spring_gateway
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: subscriptions_holder
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: subscriptions_scheduler
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: t_coubs_initiator
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: coub_forwarder_telegram_bot
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
   - name: telegram_chat_service
-    newTag: "1.9.6-SNAPSHOT"
+    newTag: "1.9.7-SNAPSHOT"
