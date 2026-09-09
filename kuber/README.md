@@ -451,6 +451,34 @@ helmfile -l name=kube-prometheus-stack sync
 `--force-conflicts` is needed for the same reason as in the strimzi upgrade
 above: helm owns those fields and a plain server-side apply is refused.
 
+Between the mimir sync and the kube-prometheus-stack sync the old `mimir-nginx`
+service is already gone and prometheus still writes to it, so remote write
+stalls for as long as those two steps are apart. It does not announce itself:
+`prometheus_remote_storage_samples_failed_total` stays at 0 and only
+`..._samples_retried_total` climbs - on the run this was written from it reached
+50k with the queue about 100s behind. Nothing is lost, the queue drains to zero
+once the stack is synced, but do not stop half way and do not read the retries
+as damage.
+
+Worth checking once it is all through, the four things that actually broke or
+nearly broke during testing:
+
+```shell
+# remote write reaches the new service and has caught up
+kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090 &
+curl -sG localhost:9090/api/v1/query --data-urlencode \
+  'query=prometheus_remote_storage_highest_timestamp_in_seconds - ignoring(url,remote_name) prometheus_remote_storage_queue_highest_sent_timestamp_seconds'
+
+# the gateway really is on the new version and nothing is left Pending
+kubectl -n monitoring get pods,rs -l app.kubernetes.io/component=gateway
+
+# loki is not failing every S3 call
+kubectl -n monitoring logs loki-0 -c loki | grep -c "operation error S3"
+
+# the ingest topic exists with the partition count from values.yaml
+kubectl -n mimir logs deploy/mimir-distributor | grep "created Kafka topic"
+```
+
 ### loki 6.38.0 -> 7.3.0
 
 The rendered objects are the same and the chart takes every value the
