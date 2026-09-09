@@ -2,14 +2,6 @@ apiVersion: k3d.io/v1alpha5
 kind: Simple
 metadata:
   name: my-cluster
-# Pinned for the same reason the chart versions in helmfile.yaml are: without
-# it k3d asks the k3s release channel on the day it runs, so two people
-# creating "the same" cluster a month apart get different Kubernetes versions.
-# That is how this cluster ended up on 1.31.5, which mimir 6.2.0 then refused.
-#
-# 1.35.5 is the version the chart upgrade was tested on, monitoring stack and
-# application both. Raising it is a deliberate commit, like raising a chart.
-image: rancher/k3s:v1.35.5-k3s1
 servers: 1
 agents: 0
 kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would resolve to 127.0.0.1)

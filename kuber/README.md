@@ -496,121 +496,12 @@ and deploys no operator, and mimir needs exactly the two
 Error: chart requires kubeVersion: ^1.32.0-0 which is incompatible with Kubernetes v1.31.5
 ```
 
-`kubectl version` first. If the server is below 1.32, raise the cluster before
-touching any of this - the other three charts would go in on 1.31 and mimir
-would not, and a half-applied monitoring stack is a worse place to be than an
-un-upgraded one.
-
-### Raising the cluster first
-
-[k3d-default.yaml](./k3d/k3d-default.yaml) pins `image: rancher/k3s:v1.35.5-k3s1`,
-which is the version this upgrade was tested on - monitoring stack and
-application both. It is pinned for the same reason the charts are: without it
-k3d asks the k3s channel on the day it runs, which is how this cluster ended up
-on 1.31.5 in the first place.
-
-**On a k3s server**, this is an in-place upgrade and nothing is lost:
-
-```shell
-curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.32.13+k3s1 sh -
-kubectl get nodes    # wait for Ready on the new version
-```
-
-**Under k3d there is no in-place upgrade** - the node is a container built from
-a pinned k3s image, so the cluster is deleted and recreated. The config already
-carries the version, so this is the whole of it:
-
-```shell
-k3d cluster delete my-cluster
-k3d cluster create my-cluster --config k3d/k3d-default.yaml
-kubectl version    # expect 1.35.5
-```
-
-**Raise k3d itself to 5.9.0 while you are here.** It is not required - 5.8.3
-has `v1.21.7-k3s1` hardcoded as a build-time fallback but resolves the real
-image at runtime, and is already running 1.31.5, ten minors past it. The reason
-to do it anyway is that 5.9.0 is what this upgrade was tested with, so it puts
-the cluster on the combination that was actually exercised rather than a nearby
-one. 5.9.0 is the release straight after 5.8.3, declares no breaking changes,
-and takes the config in this repository unchanged, `v1alpha5` and all.
-
-```shell
-brew upgrade k3d            # or: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
-k3d version                 # expect v5.9.0
-```
-
-Do it before deleting the cluster, so the recreate is the new binary's work.
-
-**What survives that, and what does not.** `k3d cluster delete` takes the
-node's `/var/lib/rancher/k3s` volume with it, and that is where the local-path
-provisioner keeps every PVC - the mimir ingester, compactor, store-gateway and
-kafka volumes, and loki's. What it does not touch is
-[minio-pv.yaml](./monitoring/minio/minio-pv.yaml), a hostPath PV on `/data/minio`,
-which the k3d config maps to `/var/volumes` on the docker host. That is the one
-that matters: mimir's blocks and loki's chunks live in the tenant, so the
-durable data is on the host and the volumes that go are WALs and caches.
-Everything else - namespaces, secrets, the releases - has to be applied again,
-which is what `setup-in-k3d.sh` does.
-
-The application is unaffected by the jump: every manifest the production
-kustomize overlay produces - 38 objects - was server-side applied against a
-1.35.5 cluster without a single error or deprecation, and nothing in
-`project/`, `kafka/`, `namespaces/` or `storage/` uses an API that 1.31 to 1.35
-removed. They are all `v1`, `apps/v1`, `networking.k8s.io/v1`,
-`storage.k8s.io/v1`, `rbac.authorization.k8s.io/v1` and the two CRD groups.
-
-Practically: take the recreate when a gap in ingestion is acceptable, confirm
-`kubectl version` reports 1.35.5, then run the chart steps above in one pass.
-
-Between the mimir sync and the kube-prometheus-stack sync the old `mimir-nginx`
-service is already gone and prometheus still writes to it, so remote write
-stalls for as long as those two steps are apart. It does not announce itself:
-`prometheus_remote_storage_samples_failed_total` stays at 0 and only
-`..._samples_retried_total` climbs - on the run this was written from it reached
-50k with the queue about 100s behind. Nothing is lost, the queue drains to zero
-once the stack is synced, but do not stop half way and do not read the retries
-as damage.
-
-Several pods also sit in `Terminating` for a long time, and none of it is a
-hang - these components drain on shutdown and their grace periods say so:
-
-| pod | terminationGracePeriodSeconds |
-| --- | --- |
-| prometheus | 600 |
-| mimir query-scheduler | 180 |
-| mimir distributor | 100 |
-
-Prometheus is the one that catches people out: up to ten minutes of
-`1/2 Terminating` while it flushes its WAL, with nothing in the events to say
-that is what it is doing. Check `deletionTimestamp` plus
-`deletionGracePeriodSeconds` before concluding anything is stuck.
-
-The mimir distributor, ruler and one ingester crashloop for a minute or two
-right after the mimir sync: kafka is still starting and they fail on
-`dial tcp ...:9092: connection refused`, then come up on their own after two or
-three restarts. Only worry if it is still happening once `mimir-kafka-0` is
-`1/1 Running`.
-
-Worth checking once it is all through, the four things that actually broke or
-nearly broke during testing:
-
-```shell
-# remote write reaches the new service and has caught up
-kubectl -n monitoring port-forward svc/kube-prometheus-stack-prometheus 9090:9090 &
-curl -sG localhost:9090/api/v1/query --data-urlencode \
-  'query=prometheus_remote_storage_highest_timestamp_in_seconds - ignoring(url,remote_name) prometheus_remote_storage_queue_highest_sent_timestamp_seconds'
-
-# the gateway really is on the new version and nothing is left Pending
-kubectl -n monitoring get pods,rs -l app.kubernetes.io/component=gateway
-
-# loki got the credentials rather than the literal ${ACCESS_KEY_ID}
-kubectl -n monitoring logs loki-0 -c loki | grep -c "operation error S3"
-kubectl -n monitoring get pod loki-0 \
-  -o jsonpath='{.spec.containers[?(@.name=="loki")].args}{"\n"}'   # expects -config.expand-env=true
-
-# the ingest topic exists with the partition count from values.yaml
-kubectl -n mimir logs deploy/mimir-distributor | grep "created Kafka topic"
-```
+`kubectl version` first. If the server is below 1.32 this branch cannot be
+applied at all - not partly: the other three charts would go in on 1.31 and
+mimir would not, and a half-migrated monitoring stack is a worse place to sit
+than an un-upgraded one. Raising the cluster is its own change and its own
+pull request; do that first, come back here after `kubectl version` reports
+1.32 or newer.
 
 ### loki 6.38.0 -> 7.3.0
 
