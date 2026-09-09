@@ -418,8 +418,9 @@ that directory instead.
 
 ### Applying the pins that are ahead
 
-The CRDs of all four raised monitoring charts changed, so each one is CRDs
-first, sync second. Run them one at a time and read the diff before the sync.
+Three of the four need CRDs applied before the sync, and *which* CRDs matters -
+see the warning under the block. Run them one at a time and read the diff
+before the sync.
 The order is not free: kube-prometheus-stack goes last, because the mimir URLs
 it carries only resolve once mimir has been synced under its new service name -
 read the mimir section below before starting.
@@ -435,6 +436,13 @@ $EDITOR .all_secrets/monitoring/loki/loki-secret.yaml   # ACCESS_KEY_ID, SECRET_
 kubectl apply -f monitoring/loki/loki-secret.yaml -n monitoring
 ```
 
+`.all_secrets/monitoring/loki/` is a new directory - the store has no `loki`
+folder yet, so create it before writing the file. `secrets.sh` runs without
+`set -e`, so a `cp` from a path that is not there says so and carries on, and
+the `kubectl apply` that follows then refuses the untouched `${base64}`
+placeholder. That is the tracked dummy doing its job rather than a failure to
+debug, but it does mean the error you see is one step removed from the cause.
+
 Any key that can read and write the `loki-*` buckets will do, including the one
 mimir already uses - nothing has to be created in minio for this. A separate,
 narrower user is a reasonable thing to want, and the tenant can mint one
@@ -444,16 +452,17 @@ but that is a decision about privileges and not part of this upgrade.
 ```shell
 helm repo update grafana fluent prometheus-community
 
-helm show crds grafana/loki --version 7.3.0 \
-    | kubectl apply --server-side --force-conflicts -f -
+# loki needs no CRDs at all here - see the warning below
 helmfile -l name=loki diff && helmfile -l name=loki sync
 
 helm show crds fluent/fluent-operator --version 4.3.0 \
     | kubectl apply --server-side --force-conflicts -f -
 helmfile -l name=fluent-operator diff && helmfile -l name=fluent-operator sync
 
-helm show crds grafana/mimir-distributed --version 6.2.0 \
-    | kubectl apply --server-side --force-conflicts -f -
+# only the rollout-operator CRDs, not everything the chart carries
+helm pull grafana/mimir-distributed --version 6.2.0 --untar
+kubectl apply --server-side --force-conflicts \
+    -f mimir-distributed/charts/rollout-operator/charts/crds/crds/
 helmfile -l name=mimir diff && helmfile -l name=mimir sync
 
 # subchart CRDs, so this one is pulled rather than shown. It is also what moves
@@ -467,6 +476,23 @@ helmfile -l name=kube-prometheus-stack sync
 
 `--force-conflicts` is needed for the same reason as in the strimzi upgrade
 above: helm owns those fields and a plain server-side apply is refused.
+
+**Do not pipe `helm show crds` for loki or mimir into that apply.** Both charts
+carry a grafana-agent-operator subchart, and its `crds/` directory contains
+`servicemonitors`, `podmonitors` and `probes` of `monitoring.coreos.com` - the
+same CRDs kube-prometheus-stack owns, at an ancient schema: 435 lines against
+the 1429 that operator 0.93.1 ships. Applied with `--force-conflicts` they
+replace the real ones, and every ServiceMonitor in the cluster is then read
+through a schema that does not know most of its fields until the
+kube-prometheus-stack step at the end puts them back. Neither release needs
+any of it: with the values in this repository loki creates no custom resource
+and deploys no operator, and mimir needs exactly the two
+`rollout-operator.grafana.com` CRDs that the command above applies on their own.
+
+**mimir 6.2.0 requires Kubernetes 1.32 or newer.** Its `kubeVersion` went from
+`^1.20.0-0` to `^1.32.0-0`, and helm refuses the release rather than warning, so
+an older cluster fails on the third step with the first two already applied.
+Check `kubectl version` before starting.
 
 Between the mimir sync and the kube-prometheus-stack sync the old `mimir-nginx`
 service is already gone and prometheus still writes to it, so remote write
@@ -641,7 +667,10 @@ install.
 **Two CRDs are new**, `replicatemplates` and
 `zoneawarepoddisruptionbudgets`, both `rollout-operator.grafana.com`. Helm does
 not install CRDs on an upgrade even when they did not exist before, so these
-have to be applied by hand like the rest.
+have to go in by hand - and only these two. Take them from the pulled chart's
+`charts/rollout-operator/charts/crds/crds/`, never from `helm show crds`, which
+would drag the grafana-agent-operator's copies of the kube-prometheus-stack
+CRDs along with them.
 
 Metrics already in the tenant are unaffected - the blocks in minio do not change
 format - but anything still in an ingester's WAL when it restarts is at risk, as

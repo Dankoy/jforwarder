@@ -19,6 +19,11 @@ kubectl apply -f monitoring/mimir/mimir-secret.yaml -n mimir
 
 kubectl apply -f monitoring/loki/loki-secret.yaml -n monitoring
 
+## This script builds a cluster from nothing, where helm does install the CRDs
+## a chart carries, so there is no CRD step here. Raising a pinned version on a
+## cluster that already runs it is the other case - helm skips CRDs on upgrade -
+## and that is the runbook in README, not this script.
+##
 ## mimir, loki and the fluent operator come from helmfile.yaml, which pins their
 ## chart versions. Both mimir and loki store in the minio tenant and declare it
 ## in "needs"; a selector skips needs unless --include-needs is given, and

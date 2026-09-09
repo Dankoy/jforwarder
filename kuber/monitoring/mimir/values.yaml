@@ -171,11 +171,14 @@ kafka:
     enabled: true
     size: 5Gi
   resources:
-    limits:
-      memory: 1Gi
+    # Only the cpu is lowered. The chart asks for a whole one, which nothing
+    # else in this file does; 1Gi of memory is its own floor and is left alone,
+    # and no memory limit is set, also as the chart ships it. Capping this pod
+    # is not the place to save memory - it is the entire write path now, and an
+    # OOMKill here loses ingestion rather than degrading it.
     requests:
       cpu: 100m
-      memory: 512Mi
+      memory: 1Gi
 
 chunks-cache:
   enabled: false
