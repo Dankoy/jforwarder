@@ -339,6 +339,76 @@ outlives the operator upgrade and the restart. In the test the topics, their
 offsets and a message written before the upgrade were all still there
 afterwards, and the consumer reconnected on its own and caught up to zero lag.
 
+## Kubernetes version
+
+[k3d-default.yaml](./k3d/k3d-default.yaml) pins
+`image: rancher/k3s:v1.35.5-k3s1`. It is pinned for the same reason the chart
+versions in [helmfile.yaml](./helmfile.yaml) are: with no image, k3d asks the
+k3s release channel on the day it runs, so two people creating "the same"
+cluster a month apart get different Kubernetes versions. That is how this
+cluster ended up on 1.31.5 - not chosen, just whatever was stable that morning.
+Left unpinned today it would come up on 1.36.4, which is equally nobody's
+decision.
+
+Unlike a chart, this is not a version you can roll back. Under k3d the
+Kubernetes version lives in the node's container image, so there is no in-place
+upgrade: raising it means deleting the cluster and creating it again.
+
+### Raising it
+
+k3d first, while the old cluster is still up:
+
+```shell
+brew upgrade k3d      # or: curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+k3d version           # expect v5.9.0
+```
+
+5.9.0 is the release straight after 5.8.3, declares no breaking changes across
+its 29 items, and takes this repository's config unchanged, `v1alpha5` and all.
+It is not strictly required - 5.8.3 has `v1.21.7-k3s1` hardcoded as a
+build-time fallback but resolves the real image at runtime, which is how it has
+been running 1.31.5, ten minors past that fallback. The reason to do it anyway
+is that 5.9.0 is the version everything here was tested with.
+
+Then the cluster itself. The version is in the config, so this is the whole of
+it:
+
+```shell
+k3d cluster delete my-cluster
+k3d cluster create my-cluster --config k3d/k3d-default.yaml
+kubectl version       # expect 1.35.5
+```
+
+Afterwards the cluster is empty: namespaces, storage, secrets and every release
+have to go back in, which is what [setup-in-k3d.sh](./setup-in-k3d.sh) does.
+
+### What survives it
+
+`k3d cluster delete` takes the node's `/var/lib/rancher/k3s` volume with it,
+and that is where the local-path provisioner keeps every PVC - mimir's
+ingester, compactor and store-gateway volumes, and loki's.
+
+What it does not touch is [minio-pv.yaml](./monitoring/minio/minio-pv.yaml), a
+hostPath PV on `/data/minio`, which the k3d config maps to `/var/volumes` on
+the docker host. That is the one that matters: mimir's blocks and loki's chunks
+live in the tenant, so the durable data sits outside the cluster and the
+volumes that go are WALs and caches. Take the recreate when a gap in ingestion
+is acceptable.
+
+### Why 1.35.5
+
+Because it is the version the monitoring stack was upgraded and tested on, and
+because the application goes with it: every manifest the production kustomize
+overlay produces - 38 objects - server-side applies against a 1.35.5 cluster
+with no error and no deprecation, and nothing in `project/`, `kafka/`,
+`namespaces/` or `storage/` uses an API that 1.31 to 1.35 removed. They are all
+`v1`, `apps/v1`, `networking.k8s.io/v1`, `storage.k8s.io/v1`,
+`rbac.authorization.k8s.io/v1` and the two CRD groups.
+
+Going only as far as 1.32 would work as well - it is what the newest chart pins
+ask for as a floor - but there is no reason to stop short when the cluster is
+being recreated either way and 1.35.5 is the tested one.
+
 ## Charts
 
 Every chart of the cluster - the strimzi operator, the monitoring stack, minio -
