@@ -367,12 +367,49 @@ helmfile apply
 git commit -am "chore: strimzi 1.3.0"
 ```
 
-The pins are **the versions the cluster actually runs**, not the newest ones:
-minio operator and tenant 7.1.1, mimir 5.8.0, loki 6.38.0, fluent-operator
-3.5.0, kube-prometheus-stack 77.1.0. A deploy is not the place to find out that
-a chart moved thirteen major versions ahead. strimzi is the one exception, 1.2.0
-against the 0.47.0 that is installed: that upgrade came with #356 and needs the
-migration written down above.
+A pin is either the version the cluster runs or a version someone deliberately
+raised it to; it is never "whatever was newest that day". A deploy is not the
+place to find out that a chart moved thirteen major versions ahead.
+
+| release | pinned | cluster runs | note |
+| --- | --- | --- | --- |
+| strimzi-kafka-operator | 1.2.0 | 0.47.0 | the v1 API migration above (#356) |
+| minio operator, tenant | 7.1.1 | 7.1.1 | latest |
+| mimir-distributed | 5.8.0 | 5.8.0 | latest 5.x, see below |
+| loki | 7.3.0 | 6.38.0 | CRDs by hand first |
+| fluent-operator | 4.3.0 | 3.5.0 | CRDs by hand first |
+| kube-prometheus-stack | 90.0.0 | 77.1.0 | CRDs by hand first |
+
+The three raised in the monitoring stack were checked by rendering each chart at
+the old and the new version against this repository's own values file and
+diffing the result; every value the repository sets still lands where it did.
+What moves:
+
+* **loki 7.3.0** (loki 3.5.3 -> 3.6.11) renders the same set of objects. The
+  one config line that changes is `common.storage.s3.bucketnames`, now empty
+  where it used to repeat `loki-chunks`: 7.x stops writing it when
+  `loki.storage_config.aws.bucketnames` is set, which
+  [loki/values.yaml](./monitoring/loki/values.yaml) does, so the chunks bucket
+  is still `loki-chunks` and the ruler still gets `loki-ruler`;
+* **fluent-operator 4.3.0** (fluent-bit operator 3.10.0) drops the
+  `docker:20.10` init container that wrote `fluent-bit.env` and ships that file
+  as a ConfigMap instead, and it gives the operator a non-root securityContext
+  and liveness and readiness probes. Same CRD names as 3.5.0, different schemas;
+* **kube-prometheus-stack 90.0.0** brings prometheus-operator 0.93.1,
+  prometheus 3.14.0, grafana 13.2.1 and alertmanager 0.34.0, most of them on
+  distroless images now. The grafana test Pod is gone, the `kube-webhook-certgen`
+  image moved to `ghcr.io/jkroepke`. Every datasource, the derived fields and
+  the `remoteWrite` of [kubestack-values.yaml](./monitoring/kubestack-values.yaml)
+  render unchanged.
+
+**mimir stays on 5.8.0**, which is the last 5.x. 6.x is not a version bump: the
+chart moves to the ingest-storage architecture, where a kafka of its own sits in
+front of the ingesters and the ingesters stop accepting a direct gRPC push
+(`kafka.enabled` defaults to `true`), and it renames the `mimir-nginx` service to
+`mimir-gateway` - which is what both mimir URLs in `kubestack-values.yaml` point
+at, so grafana and the prometheus `remoteWrite` break the moment it is applied.
+It also adds rollout-operator admission webhooks. That is a migration and it
+wants its own branch.
 
 Raising a version is its own commit, and for a chart that brings CRDs it is two
 steps, because **helm never updates CRDs on upgrade** - they are installed once:
@@ -388,6 +425,33 @@ git commit -am "chore: mimir 6.2.0"
 Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
 `charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
 that directory instead.
+
+### Applying the pins that are ahead
+
+The CRDs of all three raised monitoring charts changed, so each is CRDs first,
+sync second. Run them one at a time and read the diff before the sync:
+
+```shell
+helm repo update grafana fluent prometheus-community
+
+helm show crds grafana/loki --version 7.3.0 \
+    | kubectl apply --server-side --force-conflicts -f -
+helmfile -l name=loki diff && helmfile -l name=loki sync
+
+helm show crds fluent/fluent-operator --version 4.3.0 \
+    | kubectl apply --server-side --force-conflicts -f -
+helmfile -l name=fluent-operator diff && helmfile -l name=fluent-operator sync
+
+# subchart CRDs, so this one is pulled rather than shown
+helm pull prometheus-community/kube-prometheus-stack --version 90.0.0 --untar
+kubectl apply --server-side --force-conflicts \
+    -f kube-prometheus-stack/charts/crds/crds/
+helmfile -l name=kube-prometheus-stack diff
+helmfile -l name=kube-prometheus-stack sync
+```
+
+`--force-conflicts` is needed for the same reason as in the strimzi upgrade
+above: helm owns those fields and a plain server-side apply is refused.
 
 ### helm 4 and charts that carry their own CRDs
 
