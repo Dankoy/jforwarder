@@ -490,9 +490,54 @@ and deploys no operator, and mimir needs exactly the two
 `rollout-operator.grafana.com` CRDs that the command above applies on their own.
 
 **mimir 6.2.0 requires Kubernetes 1.32 or newer.** Its `kubeVersion` went from
-`^1.20.0-0` to `^1.32.0-0`, and helm refuses the release rather than warning, so
-an older cluster fails on the third step with the first two already applied.
-Check `kubectl version` before starting.
+`^1.20.0-0` to `^1.32.0-0`, and helm refuses the release rather than warning:
+
+```
+Error: chart requires kubeVersion: ^1.32.0-0 which is incompatible with Kubernetes v1.31.5
+```
+
+So on an older cluster the mimir step fails with loki and fluent-operator
+already applied. `kubectl version` first, and if the server is below 1.32 see
+"Raising the cluster to 1.32" below. The other three pins do not care: loki and
+fluent-operator declare no `kubeVersion` at all and kube-prometheus-stack asks
+for `>=1.25.0-0`, so they can go ahead on 1.31 while mimir waits.
+
+### Raising the cluster to 1.32
+
+Only needed for the mimir pin. One minor at a time - go to 1.32 from 1.31, not
+straight to 1.33.
+
+**On a k3s server**, this is an in-place upgrade and nothing is lost:
+
+```shell
+curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION=v1.32.13+k3s1 sh -
+kubectl get nodes    # wait for Ready on the new version
+```
+
+**Under k3d there is no in-place upgrade** - the node is a container built from
+a pinned k3s image, so the cluster is deleted and recreated:
+
+```shell
+k3d version list k3s | grep v1.32          # newest 1.32 at time of writing: v1.32.13-k3s1
+$EDITOR k3d/k3d-default.yaml               # add: image: rancher/k3s:v1.32.13-k3s1
+k3d cluster delete my-cluster
+k3d cluster create my-cluster --config k3d/k3d-default.yaml
+```
+
+**What survives that, and what does not.** `k3d cluster delete` takes the
+node's `/var/lib/rancher/k3s` volume with it, and that is where the local-path
+provisioner keeps every PVC - the mimir ingester, compactor, store-gateway and
+kafka volumes, and loki's. What it does not touch is
+[minio-pv.yaml](./monitoring/minio/minio-pv.yaml), a hostPath PV on `/data/minio`,
+which the k3d config maps to `/var/volumes` on the docker host. That is the one
+that matters: mimir's blocks and loki's chunks live in the tenant, so the
+durable data is on the host and the volumes that go are WALs and caches.
+Everything else - namespaces, secrets, the releases - has to be applied again,
+which is what `setup-in-k3d.sh` does.
+
+Practically: drain what is in flight first if you care about it, take the
+upgrade when a gap in ingestion is acceptable, and confirm `kubectl version`
+reports 1.32 before returning to the mimir step.
 
 Between the mimir sync and the kube-prometheus-stack sync the old `mimir-nginx`
 service is already gone and prometheus still writes to it, so remote write
