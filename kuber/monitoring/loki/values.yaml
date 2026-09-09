@@ -31,8 +31,12 @@ loki:
   storage_config:
     aws:
       region: null
-      bucketnames: loki-chunks
       s3forcepathstyle: true
+      # No bucketnames here on purpose. Chart 7.x stops writing
+      # common.storage.s3.bucketnames as soon as this key is set, and then the
+      # index and chunk calls go out with an empty bucket name and minio
+      # answers 400. The bucket below under storage.bucketNames.chunks is the
+      # one place it is named; loki merges common.storage into this block.
   pattern_ingester:
       enabled: true
   limits_config:
@@ -62,8 +66,12 @@ loki:
       # signatureVersion: <your-signature-version>
       # Forces the path style for S3 (true/false)
       s3ForcePathStyle: true
-      # Allows insecure (HTTP) connections (true/false)
-      insecure: true
+      # Allows insecure (HTTP) connections (true/false). false, because the
+      # endpoint above is https: loki 3.6 takes "true" literally and speaks
+      # plain HTTP to port 443, which minio resets - 3.5 tolerated the
+      # contradiction. The self-signed certificate is handled by
+      # insecure_skip_verify below, not by this.
+      insecure: false
       # HTTP configuration settings
       # This shit makes loki connect to minio as bucket.minio.namespace. 
       # Disable it { } and then loki goes to normal service

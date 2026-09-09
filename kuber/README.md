@@ -384,12 +384,9 @@ Each of the raised charts was checked by rendering it at the old and the new
 version against this repository's own values file and diffing the result. What
 moves:
 
-* **loki 7.3.0** (loki 3.5.3 -> 3.6.11) renders the same set of objects. The
-  one config line that changes is `common.storage.s3.bucketnames`, now empty
-  where it used to repeat `loki-chunks`: 7.x stops writing it when
-  `loki.storage_config.aws.bucketnames` is set, which
-  [loki/values.yaml](./monitoring/loki/values.yaml) does, so the chunks bucket
-  is still `loki-chunks` and the ruler still gets `loki-ruler`;
+* **loki 7.3.0** (loki 3.5.3 -> 3.6.12) renders the same set of objects, but it
+  needed two edits in [loki/values.yaml](./monitoring/loki/values.yaml), both
+  found by running it, not by reading the diff - see below;
 * **fluent-operator 4.3.0** (fluent-bit operator 3.10.0) drops the
   `docker:20.10` init container that wrote `fluent-bit.env` and ships that file
   as a ConfigMap instead, and it gives the operator a non-root securityContext
@@ -453,6 +450,45 @@ helmfile -l name=kube-prometheus-stack sync
 
 `--force-conflicts` is needed for the same reason as in the strimzi upgrade
 above: helm owns those fields and a plain server-side apply is refused.
+
+### loki 6.38.0 -> 7.3.0
+
+The rendered objects are the same and the chart takes every value the
+repository sets, so the diff looks harmless. It is not: on a cluster, 7.3.0
+fails two S3 paths that 6.38.0 serves, and both needed a values edit.
+
+**The chunks bucket loses its name.** 7.x stops writing
+`common.storage.s3.bucketnames` as soon as `loki.storage_config.aws.bucketnames`
+is set - the chart treats the second as the authority and leaves the first
+empty. Loki then sends `ListObjectsV2` with an empty bucket and minio answers
+400, so the index never syncs and nothing is written. `bucketnames` is
+therefore gone from `storage_config.aws`, leaving `storage.bucketNames.chunks`
+as the one place the bucket is named.
+
+**`insecure: true` stops being tolerated.** The endpoint is `https://minio.minio:443`
+and `loki.storage.s3.insecure` was `true`, which means "speak plain HTTP" - a
+contradiction loki 3.5.3 ignored and 3.6 does not: the ruler's client sends
+HTTP to the TLS port, minio resets the connection, and the ruler logs
+`unable to list rules ... StatusCode: 400` forever. It is now `false`; the
+self-signed certificate is handled by `http_config.insecure_skip_verify`, which
+is what that setting was always for.
+
+With both edits 7.3.0 runs clean against the tenant. Neither shows up in
+`helmfile diff` or in a rendered-manifest comparison - the config is valid
+YAML either way, and only the object store rejects it.
+
+**Separately, and not caused by the upgrade:** the `${ACCESS_KEY_ID}` and
+`${SECRET_ACCESS_KEY}` in this values file are never expanded. Loki only
+substitutes environment variables when it is started with
+`-config.expand-env=true` and given the secret, and the `global.extraEnvFrom`
+block at the top of the file is commented out, so the config reaches loki with
+those two strings literally and minio answers `InvalidAccessKeyId`. 6.38.0
+behaves the same way, so this has been true for as long as the file has looked
+like this. mimir is the contrast: its chart renders `-config.expand-env=true`
+and `envFrom: mimir-secret`, which is why the same `${...}` style works there.
+Fixing it is its own change - `global.extraArgs` and `global.extraEnvFrom` are
+not picked up by the single-binary StatefulSet, so it needs more than
+uncommenting those lines.
 
 ### mimir 5.8.0 -> 6.2.0
 
