@@ -385,7 +385,7 @@ version against this repository's own values file and diffing the result. What
 moves:
 
 * **loki 7.3.0** (loki 3.5.3 -> 3.6.12) renders the same set of objects, but it
-  needed two edits in [loki/values.yaml](./monitoring/loki/values.yaml), both
+  needed three edits in [loki/values.yaml](./monitoring/loki/values.yaml), all
   found by running it, not by reading the diff - see below;
 * **fluent-operator 4.3.0** (fluent-bit operator 3.10.0) drops the
   `docker:20.10` init container that wrote `fluent-bit.env` and ships that file
@@ -473,9 +473,33 @@ HTTP to the TLS port, minio resets the connection, and the ruler logs
 self-signed certificate is handled by `http_config.insecure_skip_verify`, which
 is what that setting was always for.
 
-With both edits 7.3.0 runs clean against the tenant. Neither shows up in
-`helmfile diff` or in a rendered-manifest comparison - the config is valid
-YAML either way, and only the object store rejects it.
+**The gateway Deployment deadlocks on every upgrade.** This one is not about
+7.3.0 at all - 6.38.0 renders the same thing - but it is what an upgrade hits
+and a fresh install never does. The gateway is one replica, the chart gives it
+a *required* `podAntiAffinity` on `kubernetes.io/hostname`, and this cluster has
+one node. The default RollingUpdate starts the new pod before draining the old
+one, the old pod's own rule keeps the new one off the only node, and it sits in
+`Pending` indefinitely while helm reports the release upgraded and the gateway
+quietly keeps serving the previous version. Deleting the pending pod does not
+help: the old ReplicaSet is still scaled to 1 and wins the race again.
+
+`gateway.deploymentStrategy` in [loki/values.yaml](./monitoring/loki/values.yaml)
+now sets `maxSurge: 0` with `maxUnavailable: 1`, which drains before it starts
+and costs a few seconds of gateway downtime. Two things that look like the
+answer and are not:
+
+* `gateway.affinity: {}` changes nothing. Helm merges maps, so an empty one
+  leaves the chart's default in place; only `null` would drop it - and dropping
+  it on the new pod still does not help, because it is the *old* pod's rule
+  that does the blocking;
+* `type: Recreate` cannot be applied to a Deployment that already exists. Helm's
+  server-side apply merges, the `spec.strategy.rollingUpdate` block of the
+  running object survives, and the API rejects the result with
+  `may not be specified when strategy type is 'Recreate'`.
+
+With all three edits 7.3.0 runs clean against the tenant. None of them shows up
+in `helmfile diff` or in a rendered-manifest comparison - the config is valid
+YAML either way, and only the object store and the scheduler reject it.
 
 **Separately, and not caused by the upgrade:** the `${ACCESS_KEY_ID}` and
 `${SECRET_ACCESS_KEY}` in this values file are never expanded. Loki only

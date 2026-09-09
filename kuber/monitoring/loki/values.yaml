@@ -137,3 +137,27 @@ bloomCompactor:
   replicas: 0
 bloomGateway:
   replicas: 0
+
+# One replica, a required podAntiAffinity on kubernetes.io/hostname from the
+# chart, and one node. The default RollingUpdate then deadlocks on every
+# upgrade: it starts the new pod before draining the old one, the old pod's own
+# anti-affinity rule keeps the new one off the only node, and helm still
+# reports the release upgraded while the gateway quietly keeps serving the
+# previous version. Deleting the pod by hand does not help either - the old
+# ReplicaSet is still scaled to 1 and simply wins the race again.
+#
+# maxSurge 0 with maxUnavailable 1 drains the old pod before starting the new
+# one, which is what ends the deadlock. It costs a few seconds of gateway
+# downtime on a single node. The anti-affinity is left alone so it still
+# spreads the gateway if the cluster ever grows a second node.
+#
+# Not type: Recreate, which looks like the obvious answer and cannot be applied
+# to a Deployment that already exists: helm's server-side apply merges, the
+# spec.strategy.rollingUpdate block of the running object survives, and the API
+# rejects it - "may not be specified when strategy type is 'Recreate'".
+gateway:
+  deploymentStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
