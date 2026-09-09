@@ -3,20 +3,18 @@
 ## installs the strimzi operator and the kafka cluster of strizmi-kafka into
 ## the kafka namespace
 
-## The chart version is pinned on purpose: the manifests below are written for
-## the CRD version the chart ships (kafka.strimzi.io/v1) and for the kafka
-## versions its operator supports, so an unpinned "latest" silently breaks
-## them - a newer chart dropped v1beta2 and kafka 4.0.0.
+## The operator comes from helmfile.yaml, which pins the chart version: the
+## manifests below are written for the CRD version that chart ships
+## (kafka.strimzi.io/v1) and for the kafka versions its operator supports, so
+## an unpinned "latest" silently breaks them - a newer chart dropped v1beta2
+## and kafka 4.0.0.
 
-STRIMZI_CHART_VERSION="1.2.0"
+if ! command -v helmfile > /dev/null; then
+    echo "helmfile is not installed, see README" >&2
+    exit 1
+fi
 
-helm repo add strimzi https://strimzi.io/charts/
-helm repo update strimzi
-
-helm upgrade --install strimzi-cluster-operator strimzi/strimzi-kafka-operator \
-    --version "${STRIMZI_CHART_VERSION}" \
-    -f kafka/strizmi-kafka/strizmi-values.yaml \
-    -n kafka
+helmfile -l name=strimzi-cluster-operator sync
 
 ## The Kafka and KafkaNodePool objects are instances of the CRDs the chart
 ## brings. Applying them before kubernetes serves those kinds fails with

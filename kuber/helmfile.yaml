@@ -1,0 +1,120 @@
+---
+# Infrastructure of the cluster: every chart that is installed with helm and is
+# not the application itself. The application is deployed with kustomize, see
+# project/kustomize.
+#
+#   helmfile diff                              # what would change
+#   helmfile apply                             # everything
+#   helmfile -l name=strimzi-cluster-operator apply   # one release
+#
+# Chart versions are pinned here on purpose. An unpinned install takes whatever
+# is latest on the day it runs, which is how the kafka manifests ended up two
+# API versions behind the operator (#356).
+#
+# The versions are the ones the cluster actually runs, not the newest ones:
+# pinning is meant to keep a deploy from changing anything by itself. Raising
+# one is a separate, deliberate commit - see "Charts" in ../README.md.
+#
+# strimzi is the exception: 1.2.0 is a deliberate upgrade from the 0.47.0 that
+# is installed, it came with #356 and needs the migration described there.
+
+repositories:
+  - name: strimzi
+    url: https://strimzi.io/charts/
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: fluent
+    url: https://fluent.github.io/helm-charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: minio-operator
+    url: https://operator.min.io
+
+releases:
+  ## kafka ####################################################################
+
+  - name: strimzi-cluster-operator
+    namespace: kafka
+    chart: strimzi/strimzi-kafka-operator
+    version: 1.2.0
+    values:
+      - kafka/strizmi-kafka/strizmi-values.yaml
+
+  ## object storage for mimir #################################################
+
+  - name: operator
+    namespace: minio-operator
+    chart: minio-operator/operator
+    version: 7.1.1
+    values:
+      - monitoring/minio/operator-values.yaml
+    # The tenant below is an object of the CRD this release brings, and it is
+    # installed right after it: without waiting for the operator to be ready
+    # helm cannot map the Tenant kind yet. This is what the "sleep 30" of the
+    # old minio.sh was for. Only the releases someone waits for get this, a
+    # global wait would block on mimir, which cannot become ready until its
+    # real secret is in the cluster.
+    wait: true
+    timeout: 600
+
+  - name: minio
+    namespace: minio
+    chart: minio-operator/tenant
+    version: 7.1.1
+    values:
+      - monitoring/minio/tenant-values.yaml
+    # an object of the CRD the operator release brings, so it goes after it
+    needs:
+      - minio-operator/operator
+
+  ## monitoring ###############################################################
+
+  - name: mimir
+    namespace: mimir
+    chart: grafana/mimir-distributed
+    version: 5.8.0
+    values:
+      - monitoring/mimir/values.yaml
+    # mimir stores its blocks in the tenant
+    needs:
+      - minio/minio
+
+  - name: loki
+    namespace: monitoring
+    chart: grafana/loki
+    version: 6.38.0
+    values:
+      - monitoring/loki/values.yaml
+    # loki keeps its chunks and its index in the tenant as well. Without it the
+    # pods still start and even report ready, they just fail every S3 call.
+    needs:
+      - minio/minio
+
+  - name: fluent-operator
+    namespace: fluent
+    chart: fluent/fluent-operator
+    version: 3.5.0
+    values:
+      - monitoring/fluent-bit/fluent-operator.yaml
+
+  - name: kube-prometheus-stack
+    namespace: monitoring
+    chart: prometheus-community/kube-prometheus-stack
+    version: 77.1.0
+    values:
+      - monitoring/kubestack-values.yaml
+
+  ## dashboard ################################################################
+
+  # Disabled: the chart repository this used to come from,
+  # https://kubernetes.github.io/dashboard/, answers 404 - the project moved its
+  # distribution and the new location is not settled yet. The cluster runs
+  # kubernetes-dashboard 7.13.0, installed while that repository still worked;
+  # dashboard/dashboard.sh still applies the service account and the ingress.
+  # Enable this release with chart and version once upstream has a source again.
+  - name: kubernetes-dashboard
+    namespace: kubernetes-dashboard
+    chart: kubernetes-dashboard/kubernetes-dashboard
+    installed: false
+    values:
+      - dashboard/values.yaml

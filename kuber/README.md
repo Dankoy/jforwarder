@@ -252,8 +252,9 @@ Guide [here](https://piotrminkowski.com/2023/11/06/apache-kafka-on-kubernetes-wi
 The script installs the operator and applies the manifests of
 [kafka/strizmi-kafka](./kafka/strizmi-kafka): the `Kafka` cluster, its
 `KafkaNodePool`, the schema registry and the UI. The chart version is pinned in
-the script, because the manifests are written for the CRD version that chart
-ships (`kafka.strimzi.io/v1`) and for the kafka versions its operator supports.
+[helmfile.yaml](./helmfile.yaml), because the manifests are written for the CRD
+version that chart ships (`kafka.strimzi.io/v1`) and for the kafka versions its
+operator supports.
 
 Examples from strimzi could be find [here](https://github.com/strimzi/strimzi-kafka-operator/tree/main/examples)
 
@@ -337,6 +338,88 @@ The data survives: the node pool keeps `deleteClaim: false`, so the broker PVC
 outlives the operator upgrade and the restart. In the test the topics, their
 offsets and a message written before the upgrade were all still there
 afterwards, and the consumer reconnected on its own and caught up to zero lag.
+
+## Charts
+
+Every chart of the cluster - the strimzi operator, the monitoring stack, minio -
+is declared in [helmfile.yaml](./helmfile.yaml) with its **version pinned**, its
+namespace and its values file. The scripts do not call `helm` any more, they
+call `helmfile` with a selector:
+
+```shell
+helmfile diff                                    # what would change
+helmfile apply                                   # every chart
+helmfile -l name=strimzi-cluster-operator apply   # one of them, as apply-kafka.sh does
+```
+
+`helmfile` has to be installed (`brew install helmfile`, or the
+`ghcr.io/helmfile/helmfile` image); repositories are added by it, so the scripts
+no longer do that either.
+
+Pinning is the point. An unpinned `helm install` takes whatever is latest on the
+day it runs, which is how the kafka manifests ended up two API versions behind
+their operator (#356). Raising a version is now a diff in git:
+
+```shell
+$EDITOR helmfile.yaml       # version: 1.2.0 -> 1.3.0
+helmfile diff               # read what it changes in the cluster
+helmfile apply
+git commit -am "chore: strimzi 1.3.0"
+```
+
+The pins are **the versions the cluster actually runs**, not the newest ones:
+minio operator and tenant 7.1.1, mimir 5.8.0, loki 6.38.0, fluent-operator
+3.5.0, kube-prometheus-stack 77.1.0. A deploy is not the place to find out that
+a chart moved thirteen major versions ahead. strimzi is the one exception, 1.2.0
+against the 0.47.0 that is installed: that upgrade came with #356 and needs the
+migration written down above.
+
+Raising a version is its own commit, and for a chart that brings CRDs it is two
+steps, because **helm never updates CRDs on upgrade** - they are installed once:
+
+```shell
+$EDITOR helmfile.yaml                        # version: 5.8.0 -> 6.2.0
+helm show crds <repo>/<chart> --version 6.2.0 | kubectl apply --server-side -f -
+helmfile -l name=<release> diff              # read what changes
+helmfile -l name=<release> sync
+git commit -am "chore: mimir 6.2.0"
+```
+
+Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
+`charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
+that directory instead.
+
+### helm 4 and charts that carry their own CRDs
+
+On a cluster where the CRDs do not exist yet, kube-prometheus-stack fails on the
+first install and succeeds on the second: helm 4 does not pick up the CRDs it
+just installed while building the objects of the same release. This is not
+about helmfile or about the chart version - plain `helm install` behaves the
+same, on chart versions 65, 75, 86 and 90, while helm 3.16 installs the same
+chart in one go. `monitoring/apply-all.sh` therefore runs that release twice;
+the second run is a no-op once the CRDs are in place.
+
+### Order matters, and nothing tells you when it is wrong
+
+Both loki and mimir keep their data in the minio tenant, so they declare it in
+`needs`. That dependency is quiet when it is not met: installed without the
+tenant, loki starts, reports `2/2 Running` and **ready**, and only its log shows
+that every S3 call fails with `no such host`; mimir does not even start, because
+the endpoint and the bucket come from `mimir-secret`.
+
+A selector skips `needs` - `--skip-needs` defaults to true whenever `-l` is
+given - so `monitoring/apply-all.sh` passes `--include-needs`, and the tenant is
+brought up first even when only mimir or loki is asked for:
+
+```shell
+helmfile -l name=mimir diff                    # mimir alone
+helmfile -l name=mimir diff --include-needs    # minio operator, tenant, then mimir
+```
+
+The kubernetes dashboard release is in the file but disabled: the chart
+repository it used to come from answers 404 and the project has not settled on a
+new location, so `dashboard/dashboard.sh` is left as it was. Enable the release
+and fill in its chart and version once upstream has a working source.
 
 ## Install everything for project
 
