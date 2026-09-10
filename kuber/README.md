@@ -260,10 +260,9 @@ except the cluster-admin ClusterRole they each bind to - so there is no window
 without a UI, and no reason to take the old one out before the new one answers.
 
 Always pass the selector. A bare `helmfile apply` or `helmfile sync` is every
-release in the file, and the pins here are deliberately ahead of what the
-cluster runs - strimzi 1.2.0 over 0.47.0, mimir 6.2.0 over 5.8.0, loki and
-kube-prometheus-stack over theirs - each needing the migration written down
-under "Charts" first. `-l name=headlamp` is the whole change:
+release in the file - kafka, minio, the whole monitoring stack - reconciled at
+once, and whatever drift has collected in them acted on, to add one UI.
+`-l name=headlamp` is the entire change:
 
 ```shell
 helmfile -l name=headlamp diff
