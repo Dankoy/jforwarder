@@ -231,8 +231,8 @@ helmfile -l name=headlamp sync
 kubectl -n headlamp rollout status deploy/headlamp
 ```
 
-Optionally, telegram alerts for the namespace. headlamp itself does not need
-them - this is the cluster's alert routing, which is per namespace here:
+Telegram alerts for the namespace. headlamp itself does not need them - this is
+the cluster's alert routing, which is per namespace here:
 `alertmanagerConfigMatcherStrategy` is `OnNamespace` in
 `monitoring/kubestack-values.yaml`, so an AlertmanagerConfig only matches
 alerts labelled with its own namespace, and the bot token is referenced by
@@ -245,10 +245,58 @@ kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml 
 kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n headlamp
 ```
 
-Skip it and nothing breaks. Rules like `KubePodCrashLooping` still fire with
-`namespace=headlamp`, they just find no matching config and fall through to the
-chart's default route, whose receiver is `null` - visible in alertmanager and
-grafana, not in telegram.
+Leaving it out breaks nothing, but it makes this namespace the silent one:
+rules like `KubePodCrashLooping` still fire with `namespace=headlamp`, they
+just find no matching config and fall through to the chart's default route,
+whose receiver is `null` - visible in alertmanager and grafana, never in
+telegram. `kubernetes-dashboard` had the pair, so a cluster that is watched
+should keep it.
+
+### On a cluster that serves
+
+Order: install headlamp and log into it first, remove the dashboard second.
+Both can run at once - different namespaces, different hosts, no shared object
+except the cluster-admin ClusterRole they each bind to - so there is no window
+without a UI, and no reason to take the old one out before the new one answers.
+
+Always pass the selector. A bare `helmfile apply` or `helmfile sync` is every
+release in the file, and the pins here are deliberately ahead of what the
+cluster runs - strimzi 1.2.0 over 0.47.0, mimir 6.2.0 over 5.8.0, loki and
+kube-prometheus-stack over theirs - each needing the migration written down
+under "Charts" first. `-l name=headlamp` is the whole change:
+
+```shell
+helmfile -l name=headlamp diff
+```
+
+Read that diff before syncing. It should contain one namespace's worth of
+objects and nothing else.
+
+Check the kong CRDs before deleting them. They are only leftovers if nothing
+uses them, which is worth confirming rather than assuming on a live cluster:
+
+```shell
+for c in $(kubectl get crd -o name | grep '\.konghq\.com$'); do
+  echo "$c: $(kubectl get "${c#customresourcedefinition.apiextensions.k8s.io/}" -A --no-headers 2>/dev/null | wc -l)"
+done
+```
+
+Every line has to read 0. Anything else means something in the cluster is
+running on kong and the CRDs stay.
+
+The token is a cluster-admin token, the same as the dashboard's `admin-user`
+was. The chart takes any role instead, so read-only access is one value away in
+`headlamp/values.yaml`:
+
+```yaml
+clusterRoleBinding:
+  clusterRoleName: view
+```
+
+The ingress terminates nothing and asks for no auth - anyone who reaches the
+host reaches the login screen, as with grafana and zipkin. That is what the ssh
+tunnel in "k3d remote access" is for; the cluster ports are not meant to be
+published.
 
 Then replace the `127.0.0.1 kubernetes-dashboard` line in `/etc/hosts` with
 `127.0.0.1 headlamp`, and remove the old dashboard as below.
