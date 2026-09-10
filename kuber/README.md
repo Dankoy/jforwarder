@@ -192,7 +192,7 @@ there is no `helm repo add` to run:
 helmfile -l name=headlamp sync
 ```
 
-`setup-in-k3d.sh` does that on a fresh cluster.
+`setup-in-k3d.sh` does that on a fresh cluster, and prints a token afterwards.
 
 Log in with a bearer token. The chart creates the `headlamp` service account
 and binds it to `cluster-admin`, so it has the access the dashboard's
@@ -211,22 +211,88 @@ be in `/etc/hosts`, see "k3d remote access" above. Without the ingress:
 kubectl port-forward -n headlamp service/headlamp 8081:80 --address 0.0.0.0 &
 ```
 
+Routing is by host and every host in the cluster is distinct - `headlamp` here,
+`grafana` and `zipkin` in `monitoring/ingress/ingress.yaml`,
+`spring-eureka-registry` in the project's own - so this ingress does not
+collide with the others. It also carries no annotations at all, unlike the
+dashboard's, which asked for `nginx.ingress.kubernetes.io/ssl-passthrough`; on
+ingress-nginx that switch is not per-ingress, it changes how the controller
+handles 443 for every ingress behind it.
+
+### Installing it on a cluster that is already running
+
+The steps `setup-in-k3d.sh` and `monitoring/apply-all.sh` do for a new cluster,
+for one that exists. From `kuber`:
+
+```shell
+kubectl apply -f namespaces/headlamp-namespace.yaml
+helmfile -l name=headlamp diff            # nothing else should show up
+helmfile -l name=headlamp sync
+kubectl -n headlamp rollout status deploy/headlamp
+```
+
+Alertmanager configuration is per namespace, and `monitoring/apply-all.sh` used
+to put it in `kubernetes-dashboard`. The new namespace needs its own copy, or
+alerts raised there go nowhere:
+
+```shell
+kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n headlamp
+kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n headlamp
+```
+
+Then replace the `127.0.0.1 kubernetes-dashboard` line in `/etc/hosts` with
+`127.0.0.1 headlamp`, and remove the old dashboard as below.
+
 ### Removing the old dashboard
 
 helmfile only touches the releases named in `helmfile.yaml`, and the dashboard
 is not one of them any more, so on a cluster that still runs it the old release
-stays untouched until it is removed by hand:
+keeps running untouched until it is removed by hand.
+
+`helm uninstall` takes out the release itself - the api, web, auth and kong
+deployments, their services, configmaps and secrets, the namespaced roles, and
+the two cluster-scoped objects the chart creates,
+`kubernetes-dashboard-metrics-scraper` as both ClusterRole and
+ClusterRoleBinding:
 
 ```shell
 helm uninstall kubernetes-dashboard -n kubernetes-dashboard
+```
+
+Deleting the namespace takes the rest of what lived in it and was never part of
+the release: the ingress and the service account, both applied by the old
+`dashboard/dashboard.sh`, and the alertmanager secret and receiver that
+`monitoring/apply-all.sh` put there:
+
+```shell
 kubectl delete namespace kubernetes-dashboard
+```
+
+`admin-user` is cluster-scoped on one side and sits in `kube-system` on the
+other, so the namespace does not take it. It existed only to log into the
+dashboard - headlamp has its own service account:
+
+```shell
 kubectl delete clusterrolebinding admin-user
 kubectl delete serviceaccount admin-user -n kube-system
 ```
 
-The `admin-user` service account existed only to log into the dashboard;
-headlamp has its own. Drop the `127.0.0.1 kubernetes-dashboard` line from
-`/etc/hosts` as well.
+What is left after all that is kong's CRDs. They come from the `crds/`
+directory of the kong subchart, and helm never removes CRDs on uninstall, so
+twelve `*.configuration.konghq.com` definitions stay behind. Nothing else in
+this cluster uses kong; check first, then delete:
+
+```shell
+kubectl get crd -o name | grep '\.konghq\.com$'
+kubectl get crd -o name | grep '\.konghq\.com$' | xargs -I{} kubectl delete {}
+```
+
+Finally, confirm nothing answers on the old host any more:
+
+```shell
+kubectl get all,ingress -n kubernetes-dashboard        # No resources found
+kubectl get clusterrole,clusterrolebinding | grep -iE "dashboard|admin-user"
+```
 
 The dashboard's last chart, 7.14.0, can still be installed - the 404 on
 `https://kubernetes.github.io/dashboard/` is the archived repository's github
