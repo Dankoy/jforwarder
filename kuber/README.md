@@ -231,14 +231,24 @@ helmfile -l name=headlamp sync
 kubectl -n headlamp rollout status deploy/headlamp
 ```
 
-Alertmanager configuration is per namespace, and `monitoring/apply-all.sh` used
-to put it in `kubernetes-dashboard`. The new namespace needs its own copy, or
-alerts raised there go nowhere:
+Optionally, telegram alerts for the namespace. headlamp itself does not need
+them - this is the cluster's alert routing, which is per namespace here:
+`alertmanagerConfigMatcherStrategy` is `OnNamespace` in
+`monitoring/kubestack-values.yaml`, so an AlertmanagerConfig only matches
+alerts labelled with its own namespace, and the bot token is referenced by
+name, so the secret has to sit next to it. That is what the run of near
+identical applies at the end of `monitoring/apply-all.sh` is, one pair per
+namespace, and `kubernetes-dashboard` used to be one of them:
 
 ```shell
 kubectl apply -f monitoring/alertmanager/secrets/telegram-bot-token-secret.yaml -n headlamp
 kubectl apply -f monitoring/alertmanager/receivers/telegram-receiver.yaml -n headlamp
 ```
+
+Skip it and nothing breaks. Rules like `KubePodCrashLooping` still fire with
+`namespace=headlamp`, they just find no matching config and fall through to the
+chart's default route, whose receiver is `null` - visible in alertmanager and
+grafana, not in telegram.
 
 Then replace the `127.0.0.1 kubernetes-dashboard` line in `/etc/hosts` with
 `127.0.0.1 headlamp`, and remove the old dashboard as below.
