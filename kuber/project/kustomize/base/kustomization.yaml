@@ -2,14 +2,48 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-# Every object that apply-all.sh applies, except the secrets: those stay in
-# ../../../secrets and keep being deployed by kuber/secrets.sh + kubectl, so
-# that a kustomize apply never overwrites the real ones with the dummies.
+# Every object that apply-all.sh applies, secrets included: they are built by
+# the secretGenerator below out of the gitignored env files in ./secrets, so a
+# kustomize deploy never needs kubectl to apply them separately.
+#
+# ../../../secrets and kuber/secrets.sh are untouched by this: they are what
+# DEPLOY_MODE=plain and the helm chart still use.
 namespace: jforwarder
 
 # Images have no registry and no user here, so a locally built image
 # (k3d image import coub_smart_searcher:latest) works as is. An overlay points
 # them at a registry with the "images" transformer, see ../release.sh.
+
+# Secrets, built from ./secrets/*.env. Those files are gitignored, only the
+# .example ones next to them are tracked, so a machine without them fails the
+# build instead of pushing placeholder credentials into the cluster.
+#
+# envs takes one KEY=value per line and interprets nothing: quotes and \n stay
+# part of the value, and a quoted multi line value is parsed as several keys.
+# Nothing here needs more than a line: the JASYPT keys these secrets used to
+# carry are gone, see "No JASYPT" in ../README.md.
+#
+# No name suffix hash: the database secrets are consumed by the statefulsets of
+# ./statefulsets, and a renamed secret restarts those pods without a surge.
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: subscriptions-holder-db-secret
+    envs:
+      - secrets/subscriptions-holder-db.env
+  - name: subscriptions-holder-secret
+    envs:
+      - secrets/subscriptions-holder.env
+  - name: telegram-bot-secret
+    envs:
+      - secrets/telegram-bot.env
+  - name: telegram-chat-service-db-secret
+    envs:
+      - secrets/telegram-chat-service-db.env
+  - name: telegram-chat-service-secret
+    envs:
+      - secrets/telegram-chat-service.env
 
 resources:
   # configmaps

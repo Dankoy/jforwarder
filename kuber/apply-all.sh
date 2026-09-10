@@ -75,13 +75,16 @@ if [ -f "${OVERLAY_DIR}/namespace.yaml" ]; then
   kubectl apply -f "${OVERLAY_DIR}/namespace.yaml"
 fi
 
-## secrets are not part of the kustomize base: project/secrets holds dummies
-## that secrets.sh replaces with the real ones, and kustomize would push the
-## dummies over the real secrets in the cluster.
-
-kubectl apply -f "${SCRIPT_DIR}/project/secrets" -n "${NAMESPACE}"
+## In kustomize mode the secrets are part of the build: the secretGenerator of
+## project/kustomize/base reads project/kustomize/base/secrets/*.env, which are
+## gitignored, so a missing file fails the build instead of pushing placeholder
+## credentials into the cluster.
+##
+## The plain mode is unchanged and keeps project/secrets, the dummies that
+## secrets.sh replaces with the real ones.
 
 if [ "${DEPLOY_MODE}" = "plain" ]; then
+  kubectl apply -f "${SCRIPT_DIR}/project/secrets" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/configmaps" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/storage" -n "${NAMESPACE}"
   kubectl apply -f "${SCRIPT_DIR}/project/services" -n "${NAMESPACE}"
