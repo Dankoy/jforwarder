@@ -344,6 +344,16 @@ kubectl get crd -o name | grep '\.konghq\.com$'
 kubectl get crd -o name | grep '\.konghq\.com$' | xargs -I{} kubectl delete {}
 ```
 
+On the machine the deploys run from, drop the chart repository too. Its entry
+in `helm repo list` still resolves, not because the repository is alive but
+because the index was cached before it went 404, and the chart tarballs it
+names still redirect to the renamed github repository - which is how a cluster
+built today can come up with dashboard 7.13.0 on it:
+
+```shell
+helm repo remove kubernetes-dashboard
+```
+
 Finally, confirm nothing answers on the old host any more:
 
 ```shell
