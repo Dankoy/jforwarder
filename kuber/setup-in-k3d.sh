@@ -61,15 +61,21 @@ kubectl apply -f storage
 
 printf "\n------- Storage created ------- \n\n"
 
-## setup dashboard
+## setup cluster ui
 
-printf "\n------- Setup dashboard ------- \n\n"
+printf "\n------- Setup headlamp ------- \n\n"
 
-./dashboard/dashboard.sh
+## headlamp is a plain chart release with no dependencies, so it goes in
+## straight from helmfile.yaml. It replaced kubernetes-dashboard, which is
+## archived upstream - see "Cluster UI" in ./README.md.
+
+helmfile -l name=headlamp sync
 
 sleep 30
 
-printf "\n------- Dashboard created ------- \n\n"
+printf "\n------- Headlamp created, log in with this token ------- \n\n"
+
+kubectl -n headlamp create token headlamp
 
 ## apply monitoring
 

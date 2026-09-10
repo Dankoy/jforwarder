@@ -1,0 +1,37 @@
+## Headlamp, the cluster UI. It replaced kubernetes-dashboard, which upstream
+## archived - see the headlamp section of ../README.md.
+##
+## One container, no gateway in front of it, so unlike the dashboard there is
+## nothing here that turns CSRF protection off to make an ingress work.
+
+## Log in with a bearer token. The chart creates the service account and binds
+## it to cluster-admin, the same access the dashboard's admin-user had:
+##
+##   kubectl -n headlamp create token headlamp
+
+config:
+  ## The chart creates an empty "oidc" secret by default. Login here is by
+  ## token, so there is nothing to put in it.
+  oidc:
+    secret:
+      create: false
+
+serviceAccount:
+  create: true
+
+clusterRoleBinding:
+  create: true
+  clusterRoleName: cluster-admin
+
+## Reachable as http://headlamp:8080/ and https://headlamp:8443/ once the host
+## is in /etc/hosts, the same way grafana and zipkin are. No ingressClassName,
+## because monitoring/ingress/ingress.yaml does not set one either and k3s
+## routes both through the traefik it ships with.
+
+ingress:
+  enabled: true
+  hosts:
+    - host: headlamp
+      paths:
+        - path: /
+          type: Prefix

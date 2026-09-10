@@ -302,5 +302,5 @@ it.
 ## What it does not cover
 
 Everything outside `kuber/project`: namespaces, the storage class, kafka
-(strimzi), the monitoring stack, the ServiceMonitors and the dashboard. They are
+(strimzi), the monitoring stack, the ServiceMonitors and headlamp. They are
 installed by [kuber/setup-in-k3d.sh](../../setup-in-k3d.sh) as before.

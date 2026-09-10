@@ -174,5 +174,5 @@ helm lint ./jforwarder --set image.user=someuser
 ## What the chart does not cover
 
 Everything outside `kuber/project`: namespaces, storage class, kafka (strimzi),
-the monitoring stack and the dashboard. They are installed by
+the monitoring stack and headlamp. They are installed by
 `kuber/setup-in-k3d.sh` as before.
