@@ -441,7 +441,12 @@ A pin is either the version the cluster runs or a version someone deliberately
 raised it to; it is never "whatever was newest that day". A deploy is not the
 place to find out that a chart moved thirteen major versions ahead.
 
-| release | pinned | cluster runs | note |
+The cluster was rebuilt on these pins on 2026-09-10 - every release installed
+fresh rather than upgraded in place, which is why none of the migrations below
+had to be run on it. The column is what it ran until then, and the notes are
+what an in-place upgrade from those versions takes.
+
+| release | pinned | ran before | note |
 | --- | --- | --- | --- |
 | strimzi-kafka-operator | 1.2.0 | 0.47.0 | the v1 API migration above (#356) |
 | minio operator, tenant | 7.1.1 | 7.1.1 | latest |
@@ -486,7 +491,11 @@ Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
 `charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
 that directory instead.
 
-### Applying the pins that are ahead
+### Applying these pins to a cluster that runs older ones
+
+This is the in-place route, kept for the cluster that needs it: another one, or
+this one if it is ever upgraded rather than rebuilt. Nothing here is stale -
+the versions are the pinned ones, they are simply already installed here.
 
 Three of the four need CRDs applied before the sync, and *which* CRDs matters -
 see the warning under the block. Run them one at a time and read the diff
