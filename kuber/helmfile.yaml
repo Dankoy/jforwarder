@@ -16,15 +16,18 @@
 # is two steps, because helm never updates CRDs on upgrade - see "Charts" in
 # ./README.md.
 #
-# These pins are ahead of what the cluster runs and need work before an apply:
+# The cluster was rebuilt on these pins on 2026-09-10 and runs all of them now,
+# installed rather than upgraded. What each one takes to reach from the release
+# it replaced, for the next cluster that has to get there in place:
 #
-#   strimzi 1.2.0 against the installed 0.47.0 - came with #356, needs the v1
+#   strimzi 1.2.0 - came with #356; over an installed 0.47.0 it needs the v1
 #   API migration written down in ./README.md;
 #
 #   loki 7.3.0, fluent-operator 4.3.0 and kube-prometheus-stack 90.0.0 - all
-#   three change their CRDs, so the CRDs go in by hand before the sync;
+#   three change their CRDs, and helm skips CRDs on upgrade, so they go in by
+#   hand before the sync;
 #
-#   mimir 6.2.0 against the installed 5.8.0 - the biggest of them. 6.x moves to
+#   mimir 6.2.0 over an installed 5.8.0 - the biggest of them. 6.x moves to
 #   the ingest-storage architecture, where the distributor writes to a kafka of
 #   the chart's own and the ingesters no longer take a direct gRPC push, and it
 #   renames the mimir-nginx service to mimir-gateway. Both mimir URLs in
