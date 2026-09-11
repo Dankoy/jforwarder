@@ -888,9 +888,18 @@ Deploy of the project is done with kustomize since #333. Every setting lives in
 ```shell
 cd kuber
 cp .env.deploy.example .env.deploy   # once, the copy is gitignored
-./secrets.sh
+
+cd project/kustomize/base/secrets     # once, the copies are gitignored
+for f in *.example; do cp "$f" "${f%.example}"; done
+$EDITOR *.env                         # the real values
+cd -
+
 ./apply-all.sh
 ```
+
+`./secrets.sh` is not part of this anymore: it copies `.all_secrets` over
+`project/secrets`, which only `DEPLOY_MODE=plain` and the helm chart still
+read. The kustomize deploy builds its secrets from the env files above.
 
 ```shell
 DOCKER_HUB_USER=      # empty for locally built k3d images
@@ -900,10 +909,10 @@ DEPLOY_MODE=kustomize    # or plain, the pre kustomize flow, production only
 K3D_CLUSTER=my-cluster   # used by setup-in-k3d.sh
 ```
 
-`apply-all.sh` applies `project/secrets` and hands everything else to
-[project/kustomize](./project/kustomize). The image tag is not in that file, it
-lives in git in `project/kustomize/overlays/<environment>`; the registry user is
-read at deploy time and never committed.
+`apply-all.sh` creates the namespace and hands everything else, secrets
+included, to [project/kustomize](./project/kustomize). The image tag is not in
+that file, it lives in git in `project/kustomize/overlays/<environment>`; the
+registry user is read at deploy time and never committed.
 
 dev and test bring their own namespace (`jforwarder-dev`, `jforwarder-test`) and
 take the database volumes from the `local-path` provisioner instead of the
@@ -925,10 +934,10 @@ git diff overlays                         # review, commit - that is the release
 ./release.sh install                      # kubectl apply -k
 ```
 
-`apply-all.sh` is for the first deploy of an environment: it also applies
-`project/secrets`, which are dummies until `secrets.sh` has replaced them, so
-running it on a machine without `.all_secrets` overwrites the real secrets in
-the cluster. A release needs `release.sh install` and nothing else.
+`apply-all.sh` is for the first deploy of an environment: it adds the
+namespace. A release needs `release.sh install` and nothing else - the secrets
+are built from `project/kustomize/base/secrets/*.env` on every run, and a
+missing file fails the build instead of reaching the cluster.
 
 The full sequence, the rollback and the case of several environments are in
 [project/kustomize/README.md](./project/kustomize/README.md#releasing).

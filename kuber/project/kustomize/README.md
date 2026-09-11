@@ -5,7 +5,7 @@ the `sed` substitution of [kuber/release.sh](../../release.sh) with the built in
 `images` transformer, and it keeps the deployed version in git.
 
 This is the default deploy of the project: [kuber/apply-all.sh](../../apply-all.sh)
-applies `project/secrets` and then hands everything else to the overlay below.
+builds the secrets from env files and hands everything to the overlay below.
 None of these scripts takes arguments, they read
 [kuber/.env.deploy](../../.env.deploy.example).
 
@@ -16,7 +16,8 @@ The other two flows still work: `kuber/release.sh` + `apply-all.sh` with
 
 | Path | What it is |
 | --- | --- |
-| [base](./base) | every object of `kuber/project` except the secrets |
+| [base](./base) | every object of `kuber/project`, secrets included |
+| [base/secrets](./base/secrets) | env files the `secretGenerator` reads, gitignored except the `.example` ones |
 | [overlays/production](./overlays/production/kustomization.yaml) | production, namespace `jforwarder` |
 | [overlays/dev](./overlays/dev/kustomization.yaml) | dev, namespace `jforwarder-dev` |
 | [overlays/test](./overlays/test/kustomization.yaml) | test, namespace `jforwarder-test` |
@@ -71,7 +72,7 @@ With `ENVIRONMENT=dev` in `.env.deploy`:
 ```shell
 ./release.sh version      # bump the dev version, commit it
 ./release.sh install      # deploy it
-../../apply-all.sh        # the same, plus the secrets
+../../apply-all.sh        # the same, plus the namespace
 ```
 
 Everything else — config maps, services, resources, replicas — is the same as
@@ -100,9 +101,9 @@ images:
 
 Before starting, check that `ENVIRONMENT` in `.env.deploy` names the
 environment being released - every command below acts on that one and says so
-in its output - and that the real secrets are already in the cluster
-(`../../secrets.sh` and `kubectl apply -f ../secrets`). A release does not
-touch secrets.
+in its output - and that `base/secrets` holds the real env files. A release
+carries the secrets with it: they are part of the build, so nothing has to be
+applied separately, and nothing changes as long as those files do not.
 
 **1. Raise the version and publish the images.** `PROJECT_VERSION` goes up in
 `build.gradle` and is committed, then a GitHub release runs
@@ -137,9 +138,8 @@ ten repetitions. Nothing here talks to the cluster.
 ./release.sh install
 ```
 
-`../../apply-all.sh` is not needed for a release: the namespace is there and
-the secrets did not change, and it would apply `../secrets` again - those files
-hold the dummy values until `secrets.sh` has replaced them.
+`../../apply-all.sh` is not needed for a release: it adds the namespace and
+nothing else that `install` does not already send.
 
 **5. Watch it roll.** Only the deployments whose image changed restart,
 everything else answers `unchanged`:
@@ -175,13 +175,13 @@ a secret. They are added at deploy time, from `.env.deploy`.
 
 ## Install
 
-From `kuber`, which also applies the secrets:
+From `kuber`, which also creates the namespace:
 
 ```shell
 ./apply-all.sh
 ```
 
-or here, without the secrets step:
+or here, without the namespace step:
 
 ```shell
 ./release.sh install     # kubectl apply -k
@@ -189,9 +189,9 @@ or here, without the secrets step:
 ./release.sh namespace   # print the namespace of ENVIRONMENT
 ```
 
-`namespace` is what `apply-all.sh` uses to know where to put the secrets, so
-the overlays stay the single place that knows which namespace an environment
-deploys into. It is handy by hand as well:
+`namespace` is what `apply-all.sh` reports and what `DEPLOY_MODE=plain` applies
+into, so the overlays stay the single place that knows which namespace an
+environment deploys into. It is handy by hand as well:
 
 ```shell
 kubectl get pods -n "$(./release.sh namespace)"
@@ -208,16 +208,14 @@ With an empty user the environment overlay is applied directly.
 
 | | command | what it sends |
 | --- | --- | --- |
-| first deploy, new environment | `../../apply-all.sh` | namespace, secrets, manifests |
+| first deploy, new environment | `../../apply-all.sh` | namespace, manifests, secrets |
 | new version, changed manifests | `./release.sh install` | manifests only |
-| changed secrets | `../../secrets.sh`, then `kubectl apply -f ../secrets` | secrets only |
+| changed secrets | edit `base/secrets/*.env`, then `./release.sh install` | everything, only the secrets differ |
 
 A released version needs nothing but `release.sh install`: the namespace is
-already there and the secrets did not change. `apply-all.sh` would also apply
-`project/secrets` again, and those files hold the dummy values until
-`secrets.sh` has copied the real ones over them - on a machine without
-`.all_secrets` that pushes the placeholders over the real secrets in the
-cluster.
+already there. Changed secrets need the same command - they are built from
+`base/secrets` on every run, so there is no separate step and no way to apply
+a stale copy of them.
 
 `kubectl apply -k` sends all objects either way; the API server changes only
 the ones that differ, so a version bump rolls the deployments and everything
@@ -244,19 +242,132 @@ kubectl apply -k overlays/production
 
 ## Secrets
 
-The base creates no application `Secret`. `kuber/project/secrets` holds dummy values that
-[kuber/secrets.sh](../../secrets.sh) overwrites with the real ones from
-`kuber/.all_secrets`, and a kustomize apply of those files would push the
-dummies over the real secrets in the cluster. They keep being applied the way
-they are today:
+The base builds them itself, with a `secretGenerator` over the env files in
+[base/secrets](./base/secrets). Those files are gitignored, the `.example` ones
+next to them are not, so a checkout starts with:
 
 ```shell
-kubectl apply -f ../secrets -n jforwarder
+cd base/secrets
+for f in *.example; do cp "$f" "${f%.example}"; done
+$EDITOR *.env          # the real values
 ```
 
-The deployments reference them by name (`telegram-bot-secret`,
-`subscriptions-holder-secret`, `telegram-chat-service-secret`), so the order is
-secrets first, then `kubectl apply -k`.
+Filling them in is the only setup step. After that every deploy carries the
+secrets, in the right namespace, with no separate `kubectl apply`:
+
+```shell
+./release.sh install
+```
+
+A missing env file fails the build and sends nothing to the cluster, which is
+the point of this arrangement: there is no longer a placeholder file that a
+machine without the real values can push over a live secret.
+
+### The env file format
+
+`envs` wants one `KEY=value` per line and interprets nothing else. `#` starts a
+comment, but quotes are kept as part of the value and `\n` stays two
+characters, so a value cannot span lines:
+
+```shell
+TELEGRAM_BOT_API_TOKEN=123456:AAH...    # right
+TELEGRAM_BOT_API_TOKEN="123456:AAH..."  # wrong, the quotes end up in the token
+```
+
+Keys are kept in alphabetical order. `dotenv-linter`, which super-linter runs
+over the tracked `.example` files, fails the build on anything else
+(`UnorderedKey`), so a new key goes in its place rather than at the end.
+
+A quoted multi line value is not a value at all, kustomize reads each of its
+lines as another key. Nothing here needs more than a line, so every secret is a
+plain `envs:`. Anything that really is multi line and really is secret goes
+through `files:` instead:
+
+```yaml
+secretGenerator:
+  - name: some-secret
+    files:
+      - SOME_KEY=secrets/some-key.pem
+```
+
+### No JASYPT
+
+These secrets used to carry four more keys - `JASYPT_MASTER_PASSWORD`,
+`TELEGRAM_CHAT_SERVICE_JASYPT_MASTER_PASSWORD` and the two three line
+`*_JASYPT_PARAMS` blocks. They are gone, and nothing references them any more.
+
+The parameters were dead on arrival here. They come from
+[docker-compose.yaml](../../../docker-compose.yaml), where compose itself
+interpolates `${JASYPT_MASTER_PASSWORD}` out of `.env` before the container
+starts. Kubernetes has no such step, and `CMD java ${..._JASYPT_PARAMS}` in the
+Dockerfile expands once, so the inner placeholder is never substituted. The
+running container really had this on its command line:
+
+```shell
+$ cat /proc/1/cmdline | tr '\0' '\n' | grep jasypt
+-Djasypt.encryptor.password=${JASYPT_MASTER_PASSWORD}
+```
+
+The master password was redundant twice over. The services read it themselves,
+straight from the environment, in
+[application.yml](../../../subscriptions_holder/src/main/resources/application.yml):
+
+```yaml
+jasypt:
+  encryptor:
+    password: ${JASYPT_MASTER_PASSWORD:pass}
+```
+
+and nothing ever asks the encryptor for anything. The only encrypted values in
+the project are the datasource defaults of those same two services:
+
+```yaml
+url:      ${POSTGRES_CONTAINER_URL:ENC(39g3EzgM/ERP7cue...)}
+username: ${POSTGRES_CONTAINER_USER:ENC(Q11d86lj5Fu0dZk9...)}
+password: ${POSTGRES_CONTAINER_PASSWORD:ENC(sd1CNQox07aaV9FL...)}
+```
+
+`ENC(...)` sits after the colon - it is the *default*, used only when the
+variable is absent. In the cluster all three come from the secrets and shadow
+it, so jasypt-spring-boot never creates its lazy encryptor. Verified on a
+cluster with both master passwords removed: `subscriptions-holder` and
+`telegram-chat-service` started, served reads and writes through their REST
+API, and their logs contain zero mentions of jasypt.
+
+**This holds only while those variables are in the secrets.** Drop
+`POSTGRES_CONTAINER_PASSWORD` and the `ENC(...)` default takes over, jasypt is
+asked to decrypt it, and without the right master password the service fails to
+start with `Failed to bind properties under 'spring.datasource.password'`. That
+is what the encrypted defaults are for: running a service locally with no
+environment at all. In the cluster there is always an environment.
+
+The helm chart and `kuber/project/secrets` still carry these keys; they were
+left alone with the rest of the pre kustomize flow.
+
+### Names are not hashed
+
+[base/kustomization.yaml](./base/kustomization.yaml) sets
+`disableNameSuffixHash: true`, so the objects are named `telegram-bot-secret`
+and friends, exactly as before.
+
+The kustomize default is the opposite, and its upside is real: the name changes
+with the content, so a rotated secret rolls the pods that read it instead of
+leaving them on the old values until someone runs `kubectl rollout restart`.
+Two things argue against it here. The database secrets are consumed by the
+statefulsets of [base/statefulsets](./base/statefulsets), which have no surge -
+turning the hash on renames them and takes both databases down on the next
+apply. And every rotation leaves the previous secret behind, holding real
+credentials, because nothing in this repo prunes (see "Deleting things").
+
+Turning it on later is one line plus a plan for those two points.
+
+### The old flow is still there
+
+`kuber/project/secrets`, [kuber/secrets.sh](../../secrets.sh) and
+`kuber/.all_secrets` are untouched and keep working for `DEPLOY_MODE=plain` and
+for the [helm chart](../helm). They are no longer part of the kustomize deploy,
+so `base/secrets/*.env` and `.all_secrets` are two separate copies of the same
+credentials - whichever flow is used has to be the one that is kept current.
 
 ## Deleting things
 
@@ -297,7 +408,16 @@ it.
 * a new service — add its manifests to both places, list the new files in
   [base/kustomization.yaml](./base/kustomization.yaml), add an entry to the
   `images` of every overlay and the image name to the `IMAGES` array of
-  [release.sh](./release.sh).
+  [release.sh](./release.sh);
+* a secret value — edit `base/secrets/<name>.env` and run `./release.sh
+  install`; the pods keep the old value until they restart, the names are not
+  hashed (see "Names are not hashed" above);
+* a new secret key — add it to `base/secrets/<name>.env` and to the tracked
+  `.example` next to it, so the next checkout knows the key exists;
+* a new secret — add the env file and its `.example`, and a `secretGenerator`
+  entry in [base/kustomization.yaml](./base/kustomization.yaml). The twin in
+  `kuber/project/secrets` is only needed by `DEPLOY_MODE=plain` and the helm
+  chart.
 
 ## What it does not cover
 
