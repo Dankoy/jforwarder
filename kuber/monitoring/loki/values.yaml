@@ -157,6 +157,38 @@ loki:
           enabled: true
           max_size_mb: 512
 
+    # The results cache, in the process as well - the memcached the chart would
+    # run for it is off below. It holds the answers to metric queries, keyed by
+    # the 15m splits of limits_config.split_queries_by_interval, so a dashboard
+    # whose window slides by a minute recomputes one split instead of all of
+    # them. cache_results has to be set here too: the chart writes it only
+    # alongside its own memcached block.
+    #
+    # 128MB and not the 512 of the chunk cache above, because this number is
+    # spent more than once. cache_index_stats_results, cache_volume_results,
+    # cache_series_results and cache_label_results are all true by default in
+    # loki 3.6 and take this config when given none of their own, and with an
+    # embedded cache each of them builds its *own* LRU of this size rather than
+    # sharing one pool the way they shared the memcached. Five caches, so the
+    # ceiling is 640MB, reached only if every one of them fills.
+    query_range:
+      cache_results: true
+      results_cache:
+        cache:
+          default_validity: 12h
+          embedded_cache:
+            enabled: true
+            max_size_mb: 128
+            # Spelled out because the embedded cache keeps a ttl of its own,
+            # one hour by default, and it is the shorter of the two that an
+            # entry actually lives by - default_validity above would have been
+            # decorative. 12h is what the memcached this replaces was set to.
+            # Nothing invalidates a cached result when the logs behind it
+            # change, so this is also how stale an answer can be; the last 10
+            # minutes are never cached at all, see
+            # limits_config.max_cache_freshness_per_query.
+            ttl: 12h
+
 
 # Zero out replica counts of other deployment modes
 backend:
@@ -171,48 +203,24 @@ write:
 chunksCache:
   enabled: false
 
-# The results cache, on the other hand, is wanted, and is written out here
-# rather than left to the chart: enabled: true is its default, so this block
-# adds no memcached that was not already running - loki-results-cache in this
-# namespace, a memcached pod the cluster has had all along - it only stops that
-# pod from looking like something nobody asked for.
+# Both caches now live in loki's own heap, see loki.structuredConfig above, so
+# this chart's memcached is off. It defaults to enabled, which is why the
+# cluster has been running a loki-results-cache pod all along while the values
+# here claimed the opposite.
 #
-# It holds the answers to metric queries, split by the 15m of
-# limits_config.split_queries_by_interval, so a dashboard whose window slides
-# by a minute recomputes one split instead of all of them. Through the
-# cache_index_stats_results, cache_volume_results, cache_series_results and
-# cache_label_results defaults of loki 3.6 - all true, and all falling back to
-# this cache when given no cache of their own - it also answers the stats and
-# volume queries behind the histogram in explore and the label queries behind
-# its dropdowns. It never holds log lines; those are what the chunk cache is
-# for.
+# What that pod bought was a cache that outlives loki: memcached keeps its
+# entries across a restart of the single binary, and an in-process cache does
+# not - the first queries after every helmfile apply are uncached now. What it
+# cost was 614Mi reserved on the one node, a network hop on every lookup and
+# another image in the upgrade chain. For one binary, one tenant and a handful
+# of dashboards that trade is not worth a pod.
 #
-# allocatedMemory is what memcached is given (-m), and the pod asks the node
-# for that plus a fifth, so 614Mi here. Half of the chart's 1024, which is
-# sized for a distributed install with several queriers and tenants; this one
-# serves a single binary, one tenant and a handful of dashboards, and it now
-# shares a node with the 512MB of chunk cache in loki's own heap. Running out
-# of room here costs nothing but a recomputed query: memcached evicts the
-# oldest entries and loki answers from the store. Before raising it again,
-# check that it is actually full - the exporter sidecar publishes
-# memcached_current_bytes and memcached_items_evicted_total.
+# Watching it changes with it: memcached_current_bytes and
+# memcached_items_evicted_total are gone, loki_cache_hits and
+# loki_embeddedcache_entries - both labelled by cache name - say the same
+# things from loki itself.
 resultsCache:
-  enabled: true
-  replicas: 1
-  allocatedMemory: 512
-  # How long an entry lives. Nothing evicts a result when the logs behind it
-  # change, so this is also how stale a cached answer can be; the last 10
-  # minutes are never cached in the first place, see
-  # limits_config.max_cache_freshness_per_query.
-  defaultValidity: 12h
-  timeout: 500ms
-  # Largest single entry, memcached's -I, against its own default of 1MB. An
-  # entry is the answer to one 15m split and runs to kilobytes, so this is
-  # reached only by a /series or /labels answer over a very wide window; that
-  # one is not cached and is simply recomputed. Worth leaving where it is
-  # rather than raising: a higher -I grows the slab pages memcached allocates
-  # and wastes the tails.
-  maxItemMemory: 5
+  enabled: false
 ingester:
   replicas: 0
 querier:
