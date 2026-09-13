@@ -106,11 +106,56 @@ loki:
         http:
           insecure_skip_verify: true
 
-  memcached:
-    chunk_cache:
-      enabled: false
-    results_cache:
-      enabled: false
+  # Neither of these was a key of this chart. The pair that exists is
+  # chunksCache / resultsCache at the top level, so loki.memcached read like it
+  # turned both caches off and turned off nothing: the results cache has been
+  # running all along (resultsCache.enabled defaults to true, see the note by
+  # chunksCache below), and the chunk cache was off only because chunksCache
+  # said so.
+  #
+  #  memcached:
+  #    chunk_cache:
+  #      enabled: false
+  #    results_cache:
+  #      enabled: false
+
+  # How many split sub-queries the single binary works on at a time. One
+  # grafana query is cut into sub-queries of limits_config.split_queries_by_
+  # interval - 15m, from the chart's own values - and handed to these workers,
+  # so a query over a day is 96 sub-queries drained 4 at a time at the default.
+  # They spend most of their time waiting on minio rather than on cpu, which is
+  # why doubling them roughly halves the wait. The pod has no resource limits,
+  # so there is room for it.
+  #
+  # This is the knob that parallelises queries here. query_range.parallelise_
+  # shardable_queries, the one that looks like it, defaults to true already.
+  querier:
+    max_concurrent: 8
+
+  # A chunk cache, which this install has never had: every query re-read the
+  # same chunks from minio over TLS, and a repeated query - a dashboard
+  # refresh, a time range nudged by a minute - paid for all of them again. The
+  # results cache does not cover this, it holds computed answers to metric,
+  # volume, stats, series and label queries, never the log lines themselves,
+  # which is why browsing logs in explore was the slow part while the histogram
+  # above them was quick.
+  #
+  # In-process rather than the chart's chunksCache: a single binary on a single
+  # node gains nothing from putting the cache in another pod behind a network
+  # hop, and that pod would ask the node for another gigabyte. The 512MB live
+  # in loki's own heap.
+  #
+  # It goes through structuredConfig, which is merged over the generated config,
+  # and not as a plain loki.chunk_store_config key: the chart writes that block
+  # only inside `if .Values.chunksCache.enabled` and only in its memcached form,
+  # so as a top-level key it is silently dropped - `helm template` renders a
+  # config with no chunk cache at all and loki starts happily without one.
+  structuredConfig:
+    chunk_store_config:
+      chunk_cache_config:
+        embedded_cache:
+          enabled: true
+          max_size_mb: 512
 
 
 # Zero out replica counts of other deployment modes
@@ -121,6 +166,13 @@ read:
 write:
   replicas: 0
 
+# The memcached chunk cache stays off - the in-process one configured above
+# under loki.chunk_store_config replaces it. Note that its counterpart
+# resultsCache has no entry here and so defaults to enabled: the memcached
+# behind loki-results-cache is deliberate, and caches the results of metric
+# queries plus, through the cache_index_stats_results / cache_volume_results /
+# cache_series_results / cache_label_results defaults of loki 3.6, the stats,
+# volume, series and label queries grafana's explore view fires constantly.
 chunksCache:
   enabled: false
 ingester:
