@@ -156,6 +156,14 @@ loki:
         embedded_cache:
           enabled: true
           max_size_mb: 512
+          # A chunk is immutable once flushed, so nothing can go stale in here
+          # and the default hour only throws away entries that are still
+          # correct - a query over yesterday would refetch from minio the
+          # second time as well. Six hours covers a working day of looking at
+          # the same window. It is not a memory setting: what the cache costs
+          # is max_size_mb above, and eviction is by least recently used long
+          # before the ttl matters.
+          ttl: 6h
 
     # The results cache, in the process as well - the memcached the chart would
     # run for it is off below. It holds the answers to metric queries, keyed by
