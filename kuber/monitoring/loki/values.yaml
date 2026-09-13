@@ -106,11 +106,56 @@ loki:
         http:
           insecure_skip_verify: true
 
-  memcached:
-    chunk_cache:
-      enabled: false
-    results_cache:
-      enabled: false
+  # A loki.memcached block used to sit here and looked like it turned both
+  # caches off. Not a key of this chart - the pair is chunksCache /
+  # resultsCache at the top level - so it did nothing.
+
+  # Workers for the split sub-queries: a day is 96 splits of 15m, drained 4 at
+  # a time by default, and they wait on minio rather than on cpu. The knob that
+  # parallelises queries here - query_range.parallelise_shardable_queries,
+  # which looks like it, is already true by default.
+  querier:
+    max_concurrent: 8
+
+  # Both caches, in loki's own heap rather than in memcached pods: one binary
+  # on one node gains nothing from a network hop to the next pod.
+  #
+  # They have to go through structuredConfig, which is merged over the
+  # generated config. The chart writes chunk_store_config only inside
+  # `if .Values.chunksCache.enabled`, and cache_results only next to its own
+  # memcached, so as plain loki.* keys both are dropped without a word.
+  structuredConfig:
+    chunk_store_config:
+      chunk_cache_config:
+        embedded_cache:
+          enabled: true
+          max_size_mb: 512
+          # Chunks are immutable once flushed, so the default hour only drops
+          # entries that are still good. Costs nothing: the size is max_size_mb
+          # and eviction is by LRU well before a ttl matters.
+          ttl: 6h
+
+    # Answers to metric queries, keyed by the 15m splits, so a window that
+    # slides by a minute recomputes one split instead of all of them.
+    #
+    # 128MB and not 512, because the number is spent five times:
+    # cache_index_stats_results, cache_volume_results, cache_series_results and
+    # cache_label_results default to true and take this config, and an embedded
+    # cache builds each of them its own LRU rather than sharing one pool the
+    # way they shared the memcached. Ceiling 640MB.
+    query_range:
+      cache_results: true
+      results_cache:
+        cache:
+          default_validity: 12h
+          embedded_cache:
+            enabled: true
+            max_size_mb: 128
+            # The embedded cache keeps a ttl of its own, an hour by default,
+            # and an entry lives by the shorter of the two - default_validity
+            # alone would be decorative. Also how stale an answer can be:
+            # nothing invalidates one when the logs behind it change.
+            ttl: 12h
 
 
 # Zero out replica counts of other deployment modes
@@ -121,7 +166,16 @@ read:
 write:
   replicas: 0
 
+# Replaced by the in-process cache under loki.structuredConfig.
 chunksCache:
+  enabled: false
+
+# Same, and this one defaults to enabled - which is why the cluster ran a
+# loki-results-cache pod all along. It bought a cache that outlives a loki
+# restart and cost 614Mi reserved on the one node; not worth a pod here. The
+# first queries after every apply are uncached now, and loki_cache_hits /
+# loki_embeddedcache_entries replace the memcached exporter.
+resultsCache:
   enabled: false
 ingester:
   replicas: 0
