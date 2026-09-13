@@ -167,14 +167,42 @@ write:
   replicas: 0
 
 # The memcached chunk cache stays off - the in-process one configured above
-# under loki.chunk_store_config replaces it. Note that its counterpart
-# resultsCache has no entry here and so defaults to enabled: the memcached
-# behind loki-results-cache is deliberate, and caches the results of metric
-# queries plus, through the cache_index_stats_results / cache_volume_results /
-# cache_series_results / cache_label_results defaults of loki 3.6, the stats,
-# volume, series and label queries grafana's explore view fires constantly.
+# under loki.structuredConfig replaces it.
 chunksCache:
   enabled: false
+
+# The results cache, on the other hand, is wanted, and is written out here
+# rather than left to the chart: enabled: true is its default, so this block
+# adds no memcached that was not already running - loki-results-cache in this
+# namespace, a memcached pod the cluster has had all along - it only stops that
+# pod from looking like something nobody asked for.
+#
+# It holds the answers to metric queries, split by the 15m of
+# limits_config.split_queries_by_interval, so a dashboard whose window slides
+# by a minute recomputes one split instead of all of them. Through the
+# cache_index_stats_results, cache_volume_results, cache_series_results and
+# cache_label_results defaults of loki 3.6 - all true, and all falling back to
+# this cache when given no cache of their own - it also answers the stats and
+# volume queries behind the histogram in explore and the label queries behind
+# its dropdowns. It never holds log lines; those are what the chunk cache is
+# for.
+#
+# The values below are the chart's own defaults, pinned so that the size of
+# the pod is visible here: allocatedMemory is what memcached is given, and the
+# pod asks the node for that plus a fifth, 1229Mi.
+resultsCache:
+  enabled: true
+  replicas: 1
+  allocatedMemory: 1024
+  # How long an entry lives. Nothing evicts a result when the logs behind it
+  # change, so this is also how stale a cached answer can be; the last 10
+  # minutes are never cached in the first place, see
+  # limits_config.max_cache_freshness_per_query.
+  defaultValidity: 12h
+  timeout: 500ms
+  # Results larger than this are not cached at all - memcached refuses the
+  # item and loki carries on without it.
+  maxItemMemory: 5
 ingester:
   replicas: 0
 querier:
