@@ -187,21 +187,31 @@ chunksCache:
 # its dropdowns. It never holds log lines; those are what the chunk cache is
 # for.
 #
-# The values below are the chart's own defaults, pinned so that the size of
-# the pod is visible here: allocatedMemory is what memcached is given, and the
-# pod asks the node for that plus a fifth, 1229Mi.
+# allocatedMemory is what memcached is given (-m), and the pod asks the node
+# for that plus a fifth, so 614Mi here. Half of the chart's 1024, which is
+# sized for a distributed install with several queriers and tenants; this one
+# serves a single binary, one tenant and a handful of dashboards, and it now
+# shares a node with the 512MB of chunk cache in loki's own heap. Running out
+# of room here costs nothing but a recomputed query: memcached evicts the
+# oldest entries and loki answers from the store. Before raising it again,
+# check that it is actually full - the exporter sidecar publishes
+# memcached_current_bytes and memcached_items_evicted_total.
 resultsCache:
   enabled: true
   replicas: 1
-  allocatedMemory: 1024
+  allocatedMemory: 512
   # How long an entry lives. Nothing evicts a result when the logs behind it
   # change, so this is also how stale a cached answer can be; the last 10
   # minutes are never cached in the first place, see
   # limits_config.max_cache_freshness_per_query.
   defaultValidity: 12h
   timeout: 500ms
-  # Results larger than this are not cached at all - memcached refuses the
-  # item and loki carries on without it.
+  # Largest single entry, memcached's -I, against its own default of 1MB. An
+  # entry is the answer to one 15m split and runs to kilobytes, so this is
+  # reached only by a /series or /labels answer over a very wide window; that
+  # one is not cached and is simply recomputed. Worth leaving where it is
+  # rather than raising: a higher -I grows the slab pages memcached allocates
+  # and wastes the tails.
   maxItemMemory: 5
 ingester:
   replicas: 0
