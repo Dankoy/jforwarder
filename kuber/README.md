@@ -823,8 +823,24 @@ Two of its defaults do not suit this cluster and
 [mimir/values.yaml](./monitoring/mimir/values.yaml) overrides them: the pod asks
 for a whole cpu, which nothing else here does, and the topic is created with 100
 partitions, which is the chart's demo value. The only rule about partitions is
-that there are no fewer than the maximum number of ingester replicas - there are
-two - so it is set to 8. Raising it later means recreating the topic.
+that there are no fewer than the maximum number of ingester replicas - there is
+one - so it is set to 8. Raising it later means recreating the topic.
+
+**Lowering `ingester.replicas` is not an apply.** An ingester owns a partition
+of that topic, and a plain sync takes the pod away with the partition still
+assigned to it. The partition is then in the ring with no healthy owner and
+every read fails:
+
+```
+500 partition 1: too many unhealthy instances in the ring
+```
+
+Scaling back up restores it, and the samples are not lost - they sit in the
+`mimir-ingest` topic until an ingester consumes them, so long as that is inside
+the topic's retention. Going down for good needs the partition handed over
+first; see "Scaling down ingesters" in the mimir docs for the version in
+`helmfile.yaml`. This cluster went from two ingesters to one in #366 without
+it, read nothing for an hour and was rebuilt from scratch instead.
 
 **`mimir-nginx` is now `mimir-gateway`.** Both mimir URLs in
 [kubestack-values.yaml](./monitoring/kubestack-values.yaml) - the grafana
