@@ -145,6 +145,27 @@ kubelet:
   enabled: true
   namespace: kube-system
   serviceMonitor:
+    # k3s serves the apiserver and the kubelet from one process, so the kubelet
+    # endpoint on 10250 returns the apiserver's metrics as well - the same
+    # families the apiserver scrape drops arrive a second time with
+    # job="kubelet". Dropped here too, which is what the apiserver rules
+    # actually needed to be effective: count by (job) on
+    # apiserver_request_duration_seconds_bucket answers "kubelet".
+    #
+    # The first rule is the chart's own default for this endpoint, kept because
+    # setting this key replaces it. rest_client_* is deliberately not in the
+    # list - the kubelet dashboard draws it.
+    metricRelabelings:
+      - action: drop
+        sourceLabels: [__name__, le]
+        regex: '(csi_operations|storage_operation_duration)_seconds_bucket;(0.25|2.5|15|25|120|600)(\.0)?'
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_duration_seconds|apiserver_request_sli_duration_seconds|apiserver_request_slo_duration_seconds|etcd_request_duration_seconds|apiserver_watch_list_duration_seconds|apiserver_watch_cache_read_wait_seconds|workqueue_work_duration_seconds|workqueue_queue_duration_seconds)_bucket'
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_body_size_bytes|apiserver_response_sizes|apiserver_watch_events_sizes)_bucket'
+
     # The cadvisor endpoint keeps an interval of its own, and the chart sets it
     # to 10s - the housekeeping period of cadvisor itself - so this scrape ran
     # six times a minute while everything else ran twice. It was the largest
