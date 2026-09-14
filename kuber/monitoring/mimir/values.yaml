@@ -60,15 +60,22 @@ mimir:
     multitenancy_enabled: false
     frontend:
       log_queries_longer_than: 10s
+    # The classic write path: the distributor pushes to the ingesters over gRPC
+    # and there is no kafka in between. Chart 6.x defaults the other way and
+    # turns the gRPC push off with it, so both keys are needed - the chart's own
+    # comment on the second one is "Disallow Push gRPC API; everything comes
+    # through Kafka in the ingest storage architecture".
+    #
+    # Switching either way is a config change and a restart: the ingester comes
+    # back on the same volume and replays its WAL. Verified on mimir 3.2.0 with
+    # separate distributor, ingester, querier and store-gateway - data written
+    # through kafka stayed readable after the switch, new data kept arriving
+    # with kafka stopped, and switching back showed the same series unbroken.
+    # What is lost is whatever sits in the topic unconsumed, a second or two.
     ingest_storage:
-      kafka:
-        # Chart 6.x writes every sample to kafka before an ingester sees it, and
-        # mimir creates the topic itself on start up. The chart asks for 100
-        # partitions, which is its demo value; the rule is only that there are
-        # no fewer partitions than ingester replicas, and there are two of them.
-        # Raising this later means recreating the topic, so it has some room.
-        auto_create_topic_default_partitions: 8
+      enabled: false
     ingester:
+      push_grpc_method_enabled: true
       instance_limits:
         max_ingestion_rate: 0
       ring:
@@ -171,23 +178,17 @@ ingester:
     enabled: false
     topologyKey: 'kubernetes.io/hostname'
 
-# New in chart 6.x: the distributor writes to this kafka and the ingesters read
-# from it, so it is on the write path and not optional. It has nothing to do
-# with the strimzi cluster in the kafka namespace, which belongs to the
-# application. The chart asks for a whole cpu, which nothing else here does.
+# Off, and with it the whole ingest-storage write path - see the ingest_storage
+# and push_grpc_method_enabled keys in structuredConfig above. The chart brings
+# this kafka itself and puts it between the distributor and the ingesters; its
+# own migration guide calls the bundled deployment "for demonstration and
+# testing purposes only and is not suitable for production use".
+#
+# On one node it bought nothing and cost a journal with its fsyncs on the eMMC
+# card, plus the partition ring - an ingester owns a partition, and taking one
+# away without handing it over stops every read. That is what happened here.
 kafka:
-  persistence:
-    enabled: true
-    size: 5Gi
-  resources:
-    # Only the cpu is lowered. The chart asks for a whole one, which nothing
-    # else in this file does; 1Gi of memory is its own floor and is left alone,
-    # and no memory limit is set, also as the chart ships it. Capping this pod
-    # is not the place to save memory - it is the entire write path now, and an
-    # OOMKill here loses ingestion rather than degrading it.
-    requests:
-      cpu: 100m
-      memory: 1Gi
+  enabled: false
 
 chunks-cache:
   enabled: false
