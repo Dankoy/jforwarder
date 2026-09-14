@@ -625,6 +625,18 @@ Charts whose CRDs sit in a subchart - kube-prometheus-stack keeps them in
 `charts/crds/crds` - do not answer `helm show crds`; pull the chart and apply
 that directory instead.
 
+One thing to re-check when raising **kube-prometheus-stack**:
+`kubelet.serviceMonitor.cAdvisorMetricRelabelings` in
+[kubestack-values.yaml](./monitoring/kubestack-values.yaml) is a keep list, so a
+metric a new version starts drawing is silently not collected and shows up as an
+empty panel. The list was built by grepping the chart itself, and the same two
+commands rebuild it:
+
+```shell
+grep -rhoE "container_[a-z_]+" kube-prometheus-stack/templates/grafana/dashboards-1.14/
+grep -rhoE "container_[a-z_]+" kube-prometheus-stack/templates/prometheus/rules-1.14/
+```
+
 ### Applying these pins to a cluster that runs older ones
 
 This is the in-place route, kept for the cluster that needs it: another one, or
