@@ -159,6 +159,15 @@ prometheus:
   ##
   prometheusSpec:
 
+    # 45s instead of the 30s prometheus defaults to. Every sample scraped here
+    # is written to mimir's kafka and read back out of it by the ingesters, so
+    # the interval sets the load of that whole conveyor, not just of prometheus.
+    #
+    # It is the default for targets only: a ServiceMonitor that names its own
+    # interval keeps it, and the ones in monitoring/servicemonitor still say
+    # 15s, so the ten application targets are not affected by this.
+    scrapeInterval: 45s
+
     ## The remote_write spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
     remoteWrite:

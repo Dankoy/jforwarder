@@ -148,7 +148,16 @@ ingester:
   persistentVolume:
     size: 20Gi
     enabled: true
-  replicas: 2
+  # One, not two. The cluster has a single node, so the second replica bought
+  # no redundancy and doubled the disk work of the write path: every sample was
+  # read out of kafka twice, written to two local TSDB WALs and built into two
+  # sets of blocks to upload. On an eMMC card that is the difference that shows
+  # up as iowait.
+  #
+  # Scaling down is not a plain apply under ingest-storage: an ingester owns
+  # kafka partitions, and the partition of the replica that goes away has to be
+  # handed over first - see "Scaling down ingesters" in the mimir 3.2 docs.
+  replicas: 1
   resources:
     limits:
       memory: 512Gi
