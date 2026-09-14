@@ -145,6 +145,15 @@ kubelet:
   enabled: true
   namespace: kube-system
   serviceMonitor:
+    # The cadvisor endpoint keeps an interval of its own, and the chart sets it
+    # to 10s - the housekeeping period of cadvisor itself - so this scrape ran
+    # six times a minute while everything else ran twice. It was the largest
+    # single source of samples in the cluster by a wide margin.
+    #
+    # 45s, the same as the global one now. Every window over container_* in the
+    # rules the chart ships is [5m], so nothing there loses its second sample.
+    cAdvisorInterval: 45s
+
     # cAdvisor is the largest scrape in the cluster - 59443 samples against the
     # apiserver's 49302 - and almost none of it is read. The keep below is the
     # set of container_* metrics named by anything that runs here: the
