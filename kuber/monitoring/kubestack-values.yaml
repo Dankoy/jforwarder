@@ -119,10 +119,51 @@ grafana:
 
 kubeApiServer:
   enabled: true
+  serviceMonitor:
+    # 55k of the 124k series this cluster carried were apiserver, etcd and
+    # workqueue histogram buckets - 44% of everything scraped, written to
+    # mimir's kafka and read back out of it, for panels nothing here draws:
+    # no dashboard under monitoring/grafana/dashboards names any of them.
+    #
+    # Only the buckets go. apiserver_request_total and the _count and _sum of
+    # each histogram stay, so request rates and error ratios still work; what
+    # is lost is the latency quantiles and heatmaps of the api server dashboard
+    # the chart ships.
+    #
+    # This replaces a narrower rule the chart sets by default, which drops
+    # individual `le` values of the same histograms - whole families are
+    # dropped here instead, so that rule has nothing left to do.
+    metricRelabelings:
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_duration_seconds|apiserver_request_sli_duration_seconds|apiserver_request_slo_duration_seconds|etcd_request_duration_seconds|apiserver_watch_list_duration_seconds|apiserver_watch_cache_read_wait_seconds|workqueue_work_duration_seconds|workqueue_queue_duration_seconds)_bucket'
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_body_size_bytes|apiserver_response_sizes|apiserver_watch_events_sizes)_bucket'
 
 kubelet:
   enabled: true
   namespace: kube-system
+  serviceMonitor:
+    # cAdvisor is the largest scrape in the cluster - 59443 samples against the
+    # apiserver's 49302 - and almost none of it is read. The list below is the
+    # complete set of container_* metrics named by anything that runs here: the
+    # dashboards the chart ships (k8s-resources-*, namespace-by-*, kubelet) and
+    # its recording rules and alerts. The three dashboards of our own, under
+    # monitoring/grafana/dashboards, name none of them at all.
+    #
+    # A keep and not a list of drops, because the useful set is small and known
+    # while the noise is not - and because this replaces the chart's own seven
+    # default rules either way, a keep leaves nothing of them to carry over.
+    #
+    # Windows-only names (container_available, container_private_working_set_
+    # usage) are left out; so are the per-device container_fs_* and container_
+    # blkio_* families, the spec metrics that duplicate kube-state-metrics, and
+    # the per-interface network error counters.
+    cAdvisorMetricRelabelings:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: 'container_(cpu_usage_seconds_total|cpu_cfs_periods_total|cpu_cfs_throttled_periods_total|memory_cache|memory_rss|memory_swap|memory_working_set_bytes|fs_reads_bytes_total|fs_reads_total|fs_writes_bytes_total|fs_writes_total|network_receive_bytes_total|network_receive_packets_total|network_receive_packets_dropped_total|network_transmit_bytes_total|network_transmit_packets_total|network_transmit_packets_dropped_total)'
 
 kubeControllerManager:
   enabled: true
@@ -158,6 +199,15 @@ prometheus:
   ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#prometheusspec
   ##
   prometheusSpec:
+
+    # 45s instead of the 30s prometheus defaults to. Every sample scraped here
+    # is written to mimir's kafka and read back out of it by the ingesters, so
+    # the interval sets the load of that whole conveyor, not just of prometheus.
+    #
+    # It is the default for targets only: a ServiceMonitor that names its own
+    # interval keeps it, and the ones in monitoring/servicemonitor still say
+    # 15s, so the ten application targets are not affected by this.
+    scrapeInterval: 45s
 
     ## The remote_write spec configuration for Prometheus.
     ## ref: https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#remotewritespec
