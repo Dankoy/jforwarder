@@ -119,6 +119,27 @@ grafana:
 
 kubeApiServer:
   enabled: true
+  serviceMonitor:
+    # 55k of the 124k series this cluster carried were apiserver, etcd and
+    # workqueue histogram buckets - 44% of everything scraped, written to
+    # mimir's kafka and read back out of it, for panels nothing here draws:
+    # no dashboard under monitoring/grafana/dashboards names any of them.
+    #
+    # Only the buckets go. apiserver_request_total and the _count and _sum of
+    # each histogram stay, so request rates and error ratios still work; what
+    # is lost is the latency quantiles and heatmaps of the api server dashboard
+    # the chart ships.
+    #
+    # This replaces a narrower rule the chart sets by default, which drops
+    # individual `le` values of the same histograms - whole families are
+    # dropped here instead, so that rule has nothing left to do.
+    metricRelabelings:
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_duration_seconds|apiserver_request_sli_duration_seconds|apiserver_request_slo_duration_seconds|etcd_request_duration_seconds|apiserver_watch_list_duration_seconds|apiserver_watch_cache_read_wait_seconds|workqueue_work_duration_seconds|workqueue_queue_duration_seconds)_bucket'
+      - action: drop
+        sourceLabels: [__name__]
+        regex: '(apiserver_request_body_size_bytes|apiserver_response_sizes|apiserver_watch_events_sizes)_bucket'
 
 kubelet:
   enabled: true
