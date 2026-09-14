@@ -146,11 +146,15 @@ kubelet:
   namespace: kube-system
   serviceMonitor:
     # cAdvisor is the largest scrape in the cluster - 59443 samples against the
-    # apiserver's 49302 - and almost none of it is read. The list below is the
-    # complete set of container_* metrics named by anything that runs here: the
+    # apiserver's 49302 - and almost none of it is read. The keep below is the
+    # set of container_* metrics named by anything that runs here: the
     # dashboards the chart ships (k8s-resources-*, namespace-by-*, kubelet) and
     # its recording rules and alerts. The three dashboards of our own, under
     # monitoring/grafana/dashboards, name none of them at all.
+    #
+    # container_memory_swap is named by those rules and is still left out: the
+    # chart's own defaults drop it as always zero, so the rules get nothing for
+    # it today either, and keeping it would start collecting something new.
     #
     # A keep and not a list of drops, because the useful set is small and known
     # while the noise is not - and because this replaces the chart's own seven
@@ -163,7 +167,21 @@ kubelet:
     cAdvisorMetricRelabelings:
       - sourceLabels: [__name__]
         action: keep
-        regex: 'container_(cpu_usage_seconds_total|cpu_cfs_periods_total|cpu_cfs_throttled_periods_total|memory_cache|memory_rss|memory_swap|memory_working_set_bytes|fs_reads_bytes_total|fs_reads_total|fs_writes_bytes_total|fs_writes_total|network_receive_bytes_total|network_receive_packets_total|network_receive_packets_dropped_total|network_transmit_bytes_total|network_transmit_packets_total|network_transmit_packets_dropped_total)'
+        regex: 'container_(cpu_usage_seconds_total|cpu_cfs_periods_total|cpu_cfs_throttled_periods_total|memory_cache|memory_rss|memory_working_set_bytes|fs_reads_bytes_total|fs_reads_total|fs_writes_bytes_total|fs_writes_total|network_receive_bytes_total|network_receive_packets_total|network_receive_packets_dropped_total|network_transmit_bytes_total|network_transmit_packets_total|network_transmit_packets_dropped_total)'
+      # Two of the chart's defaults that the keep above does not replace,
+      # because they select on labels rather than on the metric name. Without
+      # them the kept families come back with a tail that is dropped today.
+      #
+      # Series of cgroups that belong to no pod - /system.slice, the kubepods
+      # parents, the node's own slices:
+      - sourceLabels: [id, pod]
+        action: drop
+        regex: '.+;'
+      # Network counters of the CNI interfaces, which is how a host-network
+      # container's traffic gets counted twice:
+      - sourceLabels: [__name__, interface]
+        action: drop
+        regex: 'container_network_.*;(cali|cilium|cni|lxc|nodelocaldns|tunl).*'
 
 kubeControllerManager:
   enabled: true
