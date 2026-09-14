@@ -811,36 +811,57 @@ This one is not a version bump, it is a change of architecture, and it needs
 edits in two more files besides `helmfile.yaml`. They are already in this
 commit; what follows is why each is there.
 
-**The write path now goes through a kafka.** 6.x turns on the ingest-storage
-architecture: the distributor writes every sample to a kafka topic and the
-ingesters read it back, and `ingester.push_grpc_method_enabled` is `false`, so
-there is no direct gRPC push left to fall back to. The chart brings that kafka
-itself as a `mimir-kafka` StatefulSet (`kafka.enabled` defaults to `true`) and
-mimir creates the `mimir-ingest` topic on start up. It has nothing to do with
-the strimzi cluster in the `kafka` namespace, which belongs to the application.
+**The write path goes through a kafka by default, and this cluster turns that
+off.** 6.x defaults to the ingest-storage architecture: the distributor writes
+every sample to a kafka topic and the ingesters read it back, the chart brings
+that kafka itself as a `mimir-kafka` StatefulSet, and it sets
+`ingester.push_grpc_method_enabled: false` with it. That last key reads like
+there is no way back to the direct gRPC push - there is. Both are values, and
+[mimir/values.yaml](./monitoring/mimir/values.yaml) sets `kafka.enabled: false`,
+`ingest_storage.enabled: false` and `push_grpc_method_enabled: true`, which
+renders no kafka objects at all and puts the distributor back to pushing
+ingesters over gRPC. The chart's own migration guide offers exactly this choice,
+and calls its bundled kafka "for demonstration and testing purposes only and is
+not suitable for production use".
 
-Two of its defaults do not suit this cluster and
-[mimir/values.yaml](./monitoring/mimir/values.yaml) overrides them: the pod asks
-for a whole cpu, which nothing else here does, and the topic is created with 100
-partitions, which is the chart's demo value. The only rule about partitions is
-that there are no fewer than the maximum number of ingester replicas - there is
-one - so it is set to 8. Raising it later means recreating the topic.
+On one node the kafka bought nothing - it is there to decouple the write path
+across many ingesters - and cost a journal with its fsyncs on the eMMC card and
+a partition ring to keep straight.
 
-**Lowering `ingester.replicas` is not an apply.** An ingester owns a partition
-of that topic, and a plain sync takes the pod away with the partition still
-assigned to it. The partition is then in the ring with no healthy owner and
-every read fails:
+**The two migration guides**, for when either decision has to be revisited:
+
+* [Migrate the Helm chart from version 5.x to 6.0](https://grafana.com/docs/helm-charts/mimir-distributed/latest/migration-guides/migrate-helm-chart-5.x-to-6.0/)
+  is this upgrade: the unified gateway, the rollout-operator CRDs, and the
+  ingest-storage decision, as an ordinary `helm upgrade`;
+* [Migrate from classic to ingest storage architecture](https://grafana.com/docs/mimir/latest/set-up/migrate/migrate-ingest-storage/)
+  is mimir's own, and it is not in-place: it runs a second cluster against the
+  same bucket and moves clients over. In-place is an open request,
+  [grafana/mimir#13351](https://github.com/grafana/mimir/issues/13351).
+
+At this size neither is needed. Switching in either direction is a config change
+and a restart of the ingester, which comes back on the same PVC and replays its
+WAL - the rendered StatefulSet is byte for byte identical apart from the config
+checksum. Tested on mimir 3.2.0 with separate distributor, ingester, querier and
+store-gateway: samples written through kafka stayed readable after the switch to
+classic, kept arriving with kafka stopped, and were still there after switching
+back. What is lost either way is whatever sits in the topic unconsumed, a second
+or two, and prometheus `remoteWrite` retries over the restart anyway.
+
+**While ingest storage is on, lowering `ingester.replicas` is not an apply.** An
+ingester owns a partition of the topic, and a plain sync takes the pod away with
+the partition still assigned to it. The partition is then in the ring with no
+healthy owner and every read fails:
 
 ```
 500 partition 1: too many unhealthy instances in the ring
 ```
 
-Scaling back up restores it, and the samples are not lost - they sit in the
-`mimir-ingest` topic until an ingester consumes them, so long as that is inside
-the topic's retention. Going down for good needs the partition handed over
-first; see "Scaling down ingesters" in the mimir docs for the version in
-`helmfile.yaml`. This cluster went from two ingesters to one in #366 without
-it, read nothing for an hour and was rebuilt from scratch instead.
+Scaling back up restores it, and the samples are not lost meanwhile - they sit
+in the topic until an ingester consumes them. Going down for good needs the
+partition handed over first; see "Scaling down ingesters" in the mimir docs for
+the version in `helmfile.yaml`. This cluster went from two ingesters to one in
+#366 without it, read nothing for an hour and was rebuilt from scratch instead.
+That is also why the kafka is off now.
 
 **`mimir-nginx` is now `mimir-gateway`.** Both mimir URLs in
 [kubestack-values.yaml](./monitoring/kubestack-values.yaml) - the grafana
