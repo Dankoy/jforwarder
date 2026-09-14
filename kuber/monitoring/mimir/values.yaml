@@ -79,6 +79,14 @@ mimir:
       instance_limits:
         max_ingestion_rate: 0
       ring:
+        # One, against mimir's default of three. Under ingest storage the
+        # replication went through partitions and this number did nothing; on
+        # the classic write path the distributor wants this many healthy
+        # ingesters, there is one, and every read and write fails with "too
+        # many unhealthy instances in the ring". A single node cannot hold
+        # three copies in three failure domains anyway - what keeps the data
+        # here is the bucket, not the ring.
+        replication_factor: 1
         final_sleep: 0s
         num_tokens: 512
     ingester_client:
