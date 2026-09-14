@@ -144,6 +144,26 @@ kubeApiServer:
 kubelet:
   enabled: true
   namespace: kube-system
+  serviceMonitor:
+    # cAdvisor is the largest scrape in the cluster - 59443 samples against the
+    # apiserver's 49302 - and almost none of it is read. The list below is the
+    # complete set of container_* metrics named by anything that runs here: the
+    # dashboards the chart ships (k8s-resources-*, namespace-by-*, kubelet) and
+    # its recording rules and alerts. The three dashboards of our own, under
+    # monitoring/grafana/dashboards, name none of them at all.
+    #
+    # A keep and not a list of drops, because the useful set is small and known
+    # while the noise is not - and because this replaces the chart's own seven
+    # default rules either way, a keep leaves nothing of them to carry over.
+    #
+    # Windows-only names (container_available, container_private_working_set_
+    # usage) are left out; so are the per-device container_fs_* and container_
+    # blkio_* families, the spec metrics that duplicate kube-state-metrics, and
+    # the per-interface network error counters.
+    cAdvisorMetricRelabelings:
+      - sourceLabels: [__name__]
+        action: keep
+        regex: 'container_(cpu_usage_seconds_total|cpu_cfs_periods_total|cpu_cfs_throttled_periods_total|memory_cache|memory_rss|memory_swap|memory_working_set_bytes|fs_reads_bytes_total|fs_reads_total|fs_writes_bytes_total|fs_writes_total|network_receive_bytes_total|network_receive_packets_total|network_receive_packets_dropped_total|network_transmit_bytes_total|network_transmit_packets_total|network_transmit_packets_dropped_total)'
 
 kubeControllerManager:
   enabled: true
