@@ -92,10 +92,13 @@ services:
     networks:
       - jforwarder-network
 
+  # The prometheus-community exporter itself, from quay. The bitnami image
+  # this used to pull was a repackaging of it and is not maintained any
+  # more; the DATA_SOURCE_NAME contract and the 9187 port are the same.
   prometheus-postgres-exporter-subscriptions-holder:
     env_file:
     - ".env"
-    image: "bitnami/postgres-exporter:0.17.1"
+    image: "quay.io/prometheuscommunity/postgres-exporter:v0.17.1"
     container_name: "prometheus-postgres-exporter-subscriptions-holder"
     ports:
     - "9187:9187"
@@ -107,7 +110,7 @@ services:
   prometheus-postgres-exporter-telegram-chat:
     env_file:
     - ".env"
-    image: "bitnami/postgres-exporter:0.17.1"
+    image: "quay.io/prometheuscommunity/postgres-exporter:v0.17.1"
     container_name: "prometheus-postgres-exporter-telegram-chat"
     ports:
     - "9188:9187"
