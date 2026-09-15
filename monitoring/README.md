@@ -18,11 +18,19 @@
       - "KAFKA_JMX_OPTS=-javaagent:/prometheus/jmx_prometheus_javaagent-1.0.1.jar=12345:/prometheus/kafka-kraft-config-3_0_0.yml -Dcom.sun.management.jmxremote.rmi.port=12345 -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false  -Dcom.sun.management.jmxremote.ssl=false"
    ```
 
+   The standalone exporter ran as a container of its own, as an http server. That
+   was the block below, and it never worked - the exporter kept connecting to its
+   own localhost instead of the host from the config. Do not bring it back: the
+   only image that ever carried it was `docker.io/bitnami/jmx-exporter`, and
+   bitnami has moved its catalogue behind a paid subscription. What is left in
+   `bitnamilegacy` is frozen and gets no rebuilds, and the jmx_exporter project
+   itself publishes jars only, no image. The javaagent above needs neither.
+
    ```yml
       # for some unknown reason exporter tries to connect to localhost even if you define hostPort in config.yml.
-      # broken stuff.
+      # broken stuff. the bitnami image below is gone from the free catalogue anyway.
    jmx-exporter:
-    image: 'docker.io/bitnami/jmx-exporter:1.0.1'
+    image: 'docker.io/bitnamilegacy/jmx-exporter:1.0.1'
     container_name: jmx-exporter
     ports:
       - 5556:5556
