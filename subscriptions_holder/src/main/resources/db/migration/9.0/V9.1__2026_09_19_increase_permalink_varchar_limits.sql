@@ -1,0 +1,7 @@
+-- Active tables 
+alter table subscriptions alter column last_permalink type varchar(30);
+alter table sent_coubs_registry alter column coub_permalink type varchar(30);
+
+-- Not active tables, for removal
+alter table community_subscriptions alter column last_permalink type varchar(30);
+alter table tag_subscriptions alter column last_permalink type varchar(30);
