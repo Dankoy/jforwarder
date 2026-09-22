@@ -41,7 +41,7 @@ dependencies {
 	// }
 
     // Create a platform that enforces the version
-    implementation platform('com.google.api.grpc:proto-google-common-protos:2.53.0')
+    implementation platform('com.google.api.grpc:proto-google-common-protos:2.75.0')
 
 	// implementation 'com.google.protobuf:protobuf-java-util:4.30.1'
 
