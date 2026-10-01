@@ -115,6 +115,7 @@ Open coub channel in browser. Find the last word in URL. Use it.
 5. Loki + Fluent Bit (logs)
 6. Mimir + minio (metrics storage)
 7. cAdvisor (metrics)
+8. Prometheus blackbox exporter
 
 ## Microservice architecture
 
