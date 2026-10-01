@@ -11,7 +11,7 @@ serviceMonitor:
     module: http_2xx
     labels:
       release: kube-prometheus-stack
-    interval: 35s          # ← вот сюда (например, 30 секунд)
+    interval: 5m          # ← вот сюда (например, 30 секунд)
     scrapeTimeout: 30s     # ← таймаут опроса, должен быть меньше interval
   targets:
     - name: coub-forwarder-bot
