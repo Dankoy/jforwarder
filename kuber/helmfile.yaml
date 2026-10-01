@@ -140,3 +140,11 @@ releases:
     version: 0.45.0
     values:
       - headlamp/values.yaml
+
+  - name: blackbox-exporter
+    namespace: monitoring
+    chart: prometheus-community/prometheus-blackbox-exporter
+    version: 11.19.1
+    values:
+      - monitoring/blackbox-exporter/values.yaml
+

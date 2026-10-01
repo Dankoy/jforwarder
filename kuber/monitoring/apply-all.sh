@@ -34,7 +34,10 @@ kubectl apply -f monitoring/loki/loki-secret.yaml -n monitoring
 ## rendered while the cluster does not know them yet. See
 ## https://github.com/roboll/helmfile/issues/1353
 
-helmfile -l name=mimir -l name=loki -l name=fluent-operator sync \
+helmfile -l name=mimir \ 
+        -l name=loki \
+        -l name=fluent-operator \
+        -l name=blackbox-exporter sync \
     --include-needs --concurrency 1
 
 ## Custom multiline parser referenced from fluent-operator.yaml. Needs the
