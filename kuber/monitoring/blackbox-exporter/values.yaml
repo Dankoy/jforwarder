@@ -16,6 +16,8 @@ serviceMonitor:
   targets:
     - name: coub-forwarder-bot
       url: https://t.me/coub_forwarder_bot
+    - name: youtube-com
+      url: https://www.youtube.com
 
 resources:
   limits:
