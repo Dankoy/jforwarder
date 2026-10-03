@@ -14,7 +14,7 @@ spec:
 
       - alert: BlackboxProbeFailed
         expr: 'probe_success == 0'
-        for: 1m
+        for: 5m
         labels:
           severity: critical
         annotations:
@@ -23,7 +23,7 @@ spec:
 
       - alert: BlackboxProbeHttpFailure
         expr: 'probe_http_status_code <= 199 OR probe_http_status_code >= 400'
-        for: 1m
+        for: 5m
         labels:
           severity: critical
         annotations:
@@ -42,13 +42,13 @@ spec:
 
       # 1s threshold is a rough default; acceptable probe duration depends on what is being probed and the network path to it — adjust based on your baseline.
       - alert: BlackboxSlowProbe
-        expr: 'probe_duration_seconds > 1'
-        for: 1m
+        expr: 'probe_duration_seconds > 3'
+        for: 5m
         labels:
           severity: warning
         annotations:
           summary: Blackbox slow probe (instance {{ $labels.instance }})
-          description: "Blackbox probe took more than 1s to complete\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+          description: "Blackbox probe took more than 3s to complete\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
       # 1s threshold is a rough default; acceptable latency depends on the target endpoint and network path — adjust based on your baseline.
       - alert: BlackboxProbeSlowHttp
