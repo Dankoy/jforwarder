@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage.SendMessageBuilder;
+import org.telegram.telegrambots.meta.api.objects.ReplyParameters;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 import ru.dankoy.telegrambot.core.domain.message.ChannelSubscriptionMessage;
 import ru.dankoy.telegrambot.core.domain.message.CommunitySubscriptionMessage;
@@ -353,10 +354,17 @@ public class ReplyCreatorServiceImpl implements ReplyCreatorService {
   }
 
   private SendMessageBuilder<?, ?> createSendMessage(Message inputMessage) {
+
+    ReplyParameters replyParameters =
+        ReplyParameters.builder()
+            .chatId(inputMessage.getChat().getId())
+            .messageId(inputMessage.getMessageId())
+            .build();
+
     return SendMessage.builder()
         .chatId(inputMessage.getChat().getId())
         .messageThreadId(inputMessage.getMessageThreadId())
-        .replyToMessageId(inputMessage.getMessageId());
+        .replyParameters(replyParameters);
   }
 
   private SendMessageBuilder<?, ?> createSendMessageForSubscription(CoubMessage subscription) {
