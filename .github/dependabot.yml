@@ -9,6 +9,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "monthly"
+    ignore:
+      # Полностью игнорировать обновления этого пакета
+      - dependency-name: "com.google.api.grpc:proto-google-common-protos"
     groups:
       minor-patch-group:
         update-types:
