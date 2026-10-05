@@ -42,6 +42,7 @@ dependencies {
 	// }
 	
 	// because it comes from kafka-protobuf-serializer:8.3.1
+	// !!! update only if kafka-protobuf-serializer updates it
 	implementation platform('com.google.api.grpc:proto-google-common-protos:2.53.0')
 
 	testImplementation 'org.testcontainers:testcontainers-kafka'
