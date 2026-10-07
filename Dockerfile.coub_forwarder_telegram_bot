@@ -1,16 +1,25 @@
 ARG BUILD_HOME=/app
 
-FROM gradle:9.2.1-jdk21-jammy AS build
+FROM --platform=$BUILDPLATFORM gradle:9.8.0-jdk21-jammy AS build
 #FROM  --platform=linux/arm64 gradle:8.6.0-jdk17
 
 ARG BUILD_HOME
 ENV APP_HOME=$BUILD_HOME
 WORKDIR $APP_HOME
+ENV GRADLE_USER_HOME=/app/.gradle
 
 ARG SERVICE_NAME=telegram_bot
+
+# 1. Copy everything except ignored in .dockerignore
 COPY . ./
 
-RUN ["/bin/bash", "-c", "gradle :$SERVICE_NAME:clean :$SERVICE_NAME:bootJar -x test"]
+# 2. Download dependencies for everything (cached, unless build-files and buildSrc has not changed)
+RUN --mount=type=cache,id=gradle-cache,target=/app/.gradle \
+    gradle dependencies --no-daemon
+
+# 4. Build JAR
+RUN --mount=type=cache,id=gradle-cache,target=/app/.gradle \
+    gradle :$SERVICE_NAME:bootJar -x test
 
 FROM eclipse-temurin:21.0.2_13-jre-alpine
 LABEL authors="turtality"

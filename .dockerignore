@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+.github
+
+# Gradle
+**/build/
+**/.gradle/
+gradle-app.setting
+.gradletasknamecache
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+
+# Docker
+Dockerfile.*
+docker-compose*.yaml
+.dockerignore
+
+# Мониторинг и инфраструктура
+monitoring/
+kuber/
+scripts/
+config/
+
+# Документация и прочее
+*.md
+LICENSE
+CODE_OF_CONDUCT.md
+biome.json
+img.jpg
+*.drawio.svg
+
+# Окружение
+.env
+.env.*
