@@ -8,7 +8,7 @@ jobs:
   changes:
     permissions:
       pull-requests: read
-    uses: ./.github/workflows/check-changes.yml
+    uses: $/.github/workflows/check-changes.yml
   test:
     needs: changes
     if: needs.changes.outputs.packages != '[]'
